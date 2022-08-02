@@ -1,0 +1,8 @@
+node_modules/
+dist/
+bin/
+.vscode/
+.husky/
+*.config.js
+*.config.ts
+package.json

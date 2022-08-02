@@ -1,0 +1,39 @@
+.circle-button {
+  @apply inline-flex items-center justify-center p-1.5 h-9 w-9 font-semibold rounded-lg;
+}
+
+.button {
+  @apply inline-flex items-center justify-center px-4 py-2 font-semibold text-base tracking-tight rounded-lg cursor-pointer;
+}
+
+.dialog-container {
+  @apply fixed z-40 top-1/2 left-1/2 p-4 transform -translate-x-1/2 -translate-y-1/2;
+}
+
+.dialog {
+  @apply relative max-h-[calc(100vh-2rem)] max-w-[calc(100vw-2rem)] p-5 sm:p-8 bg-white rounded-3xl overflow-auto;
+}
+
+.dialog-inner-container {
+  @apply h-full p-4 md:p-8 space-y-8 overflow-y-auto;
+}
+
+.dropdown {
+  @apply min-w-52 p-4 rounded-xl;
+}
+
+.inner-section {
+  @apply p-8 bg-white rounded-xl;
+}
+
+.input {
+  @apply px-2 py-1.5 w-full text-base leading-5 bg-white rounded-lg;
+}
+
+.notification {
+  @apply p-4 bg-gray-50 rounded-xl;
+}
+
+.spinner {
+  @apply inline-flex items-center w-6 h-6 animate-spin;
+}
