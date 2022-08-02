@@ -18,7 +18,7 @@ const attentionProperties: Record<string, AttentionProperty> = {
 };
 
 async function toggle(property: AttentionProperty) {
-  const selProp = (s: SettingsState) => s.display[property];
+  const selProp = (s: SettingsState) => s.calmEngine[property];
   const state = useSettingsState.getState();
   const curr = selProp(state);
   await state.putEntry('calmEngine', property, !curr);
