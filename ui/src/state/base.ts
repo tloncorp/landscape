@@ -7,7 +7,8 @@ import { persist } from 'zustand/middleware';
 import Urbit, { FatalError, SubscriptionRequestInterface } from '@urbit/http-api';
 import { Poke } from '@urbit/api';
 import api from './api';
-import { clearStorageMigration, createStorageKey, storageVersion, useMockData } from './util';
+import { clearStorageMigration, createStorageKey, storageVersion } from './util';
+import UrbitMock from '@tloncorp/mock-http-api';
 
 setAutoFreeze(false);
 enablePatches();
@@ -94,7 +95,7 @@ export interface BaseState<StateType extends Record<string, unknown>> {
   addPatch: (id: string, ...patch: Patch[]) => void;
   removePatch: (id: string) => void;
   optSet: (fn: (state: StateType & BaseState<StateType>) => void) => string;
-  initialize: (api: Urbit) => Promise<void>;
+  initialize: (api: Urbit | UrbitMock) => Promise<void>;
 }
 
 export function createSubscription(
@@ -185,7 +186,6 @@ export async function pokeOptimisticallyN<A, S extends Record<string, unknown>>(
   let num: string | undefined;
   try {
     num = optReduceState(state, poke.json, reduce);
-    await (useMockData ? new Promise((res) => setTimeout(res, 500)) : api.poke(poke));
     state.getState().removePatch(num);
   } catch (e) {
     console.error(e);
