@@ -26,6 +26,8 @@ import ForwardSlashIcon from '../components/icons/ForwardSlashIcon';
 import { useSystemUpdate } from '../logic/useSystemUpdate';
 import { Bullet } from '../components/icons/Bullet';
 import SearchSystemPreferences from './SearchSystemPrefences';
+import { ShortcutPrefs } from './ShortcutPrefs';
+import { AttentionAndPrivacy } from './AttentionAndPrivacy';
 
 interface SystemPreferencesSectionProps {
   url: string;
@@ -171,7 +173,9 @@ export const SystemPreferences = (props: RouteComponentProps<{ submenu: string }
               <Route path={`${match.url}/help`} component={Help} />
               <Route path={`${match.url}/interface`} component={InterfacePrefs} />
               <Route path={`${match.url}/appearance`} component={AppearancePrefs} />
+              <Route path={`${match.url}/shortcuts`} component={ShortcutPrefs} />
               <Route path={`${match.url}/notifications`} component={NotificationPrefs} />
+              <Route path={`${match.url}/privacy`} component={AttentionAndPrivacy} />
               <Route path={[`${match.url}/system-updates`, match.url]} component={AboutSystem} />
             </Switch>
             <Link
