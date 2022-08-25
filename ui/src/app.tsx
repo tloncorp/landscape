@@ -10,11 +10,11 @@ import useKilnState from './state/kiln';
 import useContactState from './state/contact';
 import api from './state/api';
 import { useMedia } from './logic/useMedia';
-import { useHarkStore } from './state/hark';
 import { useSettingsState, useTheme } from './state/settings';
 import { useBrowserId, useLocalState } from './state/local';
 import { ErrorAlert } from './components/ErrorAlert';
 import { useErrorHandler } from './logic/useErrorHandler';
+import useHarkState from './state/hark';
 
 const getNoteRedirect = (path: string) => {
   if (path.startsWith('/desk/')) {
@@ -91,7 +91,7 @@ const AppRoutes = () => {
       fetchLag();
 
       useContactState.getState().initialize(api);
-      useHarkStore.getState().initialize(api);
+      useHarkState.getState().start();
 
       Mousetrap.bind(['command+/', 'ctrl+/'], () => {
         push('/leap/search');

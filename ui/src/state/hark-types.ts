@@ -1,22 +1,93 @@
-/**
- * I know this doesn't match our current hark type scheme, but since we're talking
- * about changing that I decided to just throw something together to at least test
- * this flow for updates.
- */
+export type Flag = string; // ~{ship}/{name}
+export type Id = string; // @uvH
 
-export interface RuntimeLagNotification {
-  type: 'runtime-lag';
+export type Thread = Id[];
+
+export interface Threads {
+  [time: string]: Thread; // time is @da
 }
 
-export interface BaseBlockedNotification {
-  type: 'system-updates-blocked';
-  desks: string[];
+export interface Yarn {
+  id: Id;
+  rope: Rope;
+  time: number;
+  con: YarnContent[];
+  wer: string;
+  but: YarnButton | null;
 }
 
-export interface BasicNotification {
-  type: 'basic';
-  time: string;
-  message: string;
+export interface YarnButton {
+  title: string;
+  handler: string;
 }
 
-export type Notification = BasicNotification | BaseBlockedNotification | RuntimeLagNotification;
+export interface YarnContentShip {
+  ship: string;
+}
+
+export interface YarnContentEmphasis {
+  emph: string;
+}
+
+export type YarnContent = string | YarnContentShip | YarnContentEmphasis;
+
+export function isYarnShip(obj: YarnContent): obj is YarnContentShip {
+  return typeof obj !== 'string' && 'ship' in obj;
+}
+
+export interface Rope {
+  group: Flag | null;
+  channel: Flag | null;
+  desk: string;
+  thread: string;
+}
+
+export type Seam = { group: Flag } | { desk: string } | { all: null };
+
+export interface Yarns {
+  [id: Id]: Yarn;
+}
+
+export interface Cable {
+  rope: Rope;
+  thread: Thread;
+}
+
+export interface Carpet {
+  seam: Seam;
+  yarns: Yarns;
+  cable: Cable[];
+  stitch: number;
+}
+
+export interface Blanket {
+  seam: Seam;
+  yarns: Yarns;
+  quilt: {
+    [key: number]: Thread;
+  };
+}
+
+export interface HarkAddYarn {
+  'add-yarn': {
+    all: boolean;
+    desk: boolean;
+    yarn: Yarn;
+  };
+}
+
+export interface HarkSawSeam {
+  'saw-seam': Seam;
+}
+
+export interface HarkSawRope {
+  'saw-rope': Rope;
+}
+
+export type HarkAction = HarkAddYarn | HarkSawSeam | HarkSawRope;
+
+export interface HarkUpdate {
+  yarns: Yarns;
+  seam: Seam;
+  threads: Threads;
+}
