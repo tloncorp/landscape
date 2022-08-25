@@ -6,7 +6,7 @@ import { IS_MOCK } from './state/api';
 import './styles/index.css';
 
 function authRedirect() {
-  document.location = `${document.location.protocol}//${document.location.host}`;
+  document.location.href = `${document.location.protocol}//${document.location.host}`;
 }
 
 function checkIfLoggedIn() {

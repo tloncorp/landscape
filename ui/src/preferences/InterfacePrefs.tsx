@@ -27,14 +27,17 @@ export function InterfacePrefs() {
         window.navigator.registerProtocolHandler(
           'web+urbitgraph',
           '/apps/grid/perma?ext=%s',
+          // @ts-expect-error ts has the wrong types for protocolhandler
           'Urbit Links'
         );
         setProtocolHandling(true);
       } catch (e) {
         console.error(e);
       }
+      // @ts-expect-error ts has the wrong types for protocolhandler
     } else if (protocolHandling && window.navigator?.unregisterProtocolHandler) {
       try {
+        // @ts-expect-error ts has the wrong types for protocolhandler
         window.navigator.unregisterProtocolHandler('web+urbitgraph', '/apps/grid/perma?ext=%s');
         setProtocolHandling(false);
       } catch (e) {

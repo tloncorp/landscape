@@ -86,7 +86,7 @@
     "tailwindcss": "^2.2.16",
     "tailwindcss-theming": "^3.0.0-beta.3",
     "tailwindcss-touch": "^1.0.1",
-    "typescript": "^4.3.2",
+    "typescript": "^4.7.4",
     "vite": "^2.9.15",
     "vite-plugin-html-config": "^1.0.5"
   },

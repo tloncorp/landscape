@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { differenceInDays, format, endOfToday } from 'date-fns';
 import useHarkState, { HarkState } from '../../state/hark';
-import { Thread, Yarn, Yarns } from '../../state/hark-types';
+import { isYarnShip, Thread, Yarn, Yarns } from '../../state/hark-types';
 
 export interface Bin {
   time: number;
@@ -24,15 +24,7 @@ function getYarns(thread: Thread, yarns: Yarns) {
 function getBin(thread: Thread, yarns: Yarns, unread: boolean): Bin {
   const ys = getYarns(thread, yarns);
   const topYarn = _.head(ys) as Yarn;
-  const shipCount = _.uniqBy(
-    ys,
-    (y) =>
-      (
-        y.con.find((con) => typeof con !== 'string' && 'ship' in con) as {
-          ship: string;
-        }
-      )?.ship
-  ).length;
+  const shipCount = _.uniqBy<Yarn>(ys, (y) => y.con.find(isYarnShip)?.ship).length;
 
   return {
     time: topYarn?.time || 0,
