@@ -18,7 +18,11 @@ export default ({ mode }) => {
     server: mode === 'mock' ? undefined : { https: true },
     build:
       mode !== 'profile'
-        ? undefined
+        ? {
+            rollupOptions: {
+              external: 'node-fetch'
+            }
+          }
         : {
             rollupOptions: {
               plugins: [
@@ -32,6 +36,9 @@ export default ({ mode }) => {
     plugins:
       mode === 'mock'
         ? []
-        : [urbitPlugin({ base: 'grid', target: SHIP_URL, secure: false }), reactRefresh()]
+        : [
+            urbitPlugin({ base: 'grid', target: SHIP_URL, changeOrigin: true, secure: false }),
+            reactRefresh()
+          ]
   });
 };

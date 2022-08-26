@@ -32,7 +32,12 @@ export function DeskLink({ children, className, desk, to = '', ...rest }: DeskLi
       rel="noreferrer"
       className={className}
       {...rest}
-      onClick={() => push('/')}
+      onClick={(event) => {
+        if (rest.onClick) {
+          rest.onClick(event);
+        }
+        push('/');
+      }}
     >
       {children}
     </a>

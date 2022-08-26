@@ -37,3 +37,11 @@
 .spinner {
   @apply inline-flex items-center w-6 h-6 animate-spin;
 }
+
+.new-dropdown {
+  @apply flex min-w-40 flex-col rounded-lg bg-white py-0 font-semibold shadow-lg dark:border dark:border-gray-50;
+}
+
+.new-dropdown-item {
+  @apply cursor-pointer rounded-lg px-2 py-3 ring-gray-200 hover:bg-gray-50 focus:outline-none;
+}
