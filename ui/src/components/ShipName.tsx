@@ -16,7 +16,6 @@ export const ShipName = ({ name, ...props }: ShipNameProps) => {
   const parts = citedName.replace('~', '').split(separator);
   const first = parts.shift();
 
-  debugger;
 
   return (
     <span {...props}>
