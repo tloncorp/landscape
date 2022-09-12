@@ -51,6 +51,7 @@ export default function Notification({ bin, groups }: NotificationProps) {
   const charge = useCharge(rope?.desk);
   const type = getNotificationType(rope);
   const ship = bin.topYarn?.con.find(isYarnShip)?.ship;
+  const invite = type === 'group' && bin.topYarn.wer === '/groups/find';
 
   const onClick = useCallback(() => {
     console.log('clearing notification', rope);
@@ -64,36 +65,63 @@ export default function Notification({ bin, groups }: NotificationProps) {
         bin.unread ? 'bg-blue-50' : 'bg-gray-50'
       )}
     >
-      <DeskLink
-        onClick={onClick}
-        to={`?grid-note=${encodeURIComponent(bin.topYarn?.wer || '')}`}
-        desk={bin.topYarn?.rope.desk || ''}
-        className="flex flex-1 space-x-3"
-      >
-        <div className="relative flex-none self-start">
-          <DocketImage {...charge} size="default" />
-        </div>
-        <div className="space-y-2 p-1">
-          {(type === 'channel' || type === 'group') && rope.group && (
-            <strong>{groups?.[rope.group]?.meta?.title}</strong>
-          )}
-          {type === 'desk' &&
-            (ship ? (
-              <ShipName name={ship} className="font-semibold" />
+      {invite ? (
+        <a
+          onClick={onClick}
+          className="flex flex-1 space-x-3"
+          href={`/apps/${rope.desk}${bin.topYarn?.wer}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <div className="relative flex-none self-start">
+            <DocketImage {...charge} size="default" />
+          </div>
+          <div className="space-y-2 p-1">
+            <p>{bin.topYarn && bin.topYarn.con.map(getContent)}</p>
+            {moreCount > 0 ? (
+              <p className="text-sm font-semibold">
+                {moreCount} more {pluralize('message', moreCount)} from{' '}
+                {bin.shipCount > 1 ? `${bin.shipCount} people` : '1 person'}
+              </p>
             ) : (
-              <strong>{charge?.title || ''}</strong>
-            ))}
-          <p>{bin.topYarn && bin.topYarn.con.map(getContent)}</p>
-          {moreCount > 0 ? (
-            <p className="text-sm font-semibold">
-              {moreCount} more {pluralize('message', moreCount)} from{' '}
-              {bin.shipCount > 1 ? `${bin.shipCount} people` : '1 person'}
-            </p>
-          ) : (
-            <p className="text-sm">&nbsp;</p>
-          )}
-        </div>
-      </DeskLink>
+              <p className="text-sm">&nbsp;</p>
+            )}
+          </div>
+        </a>
+      ) : (
+        <DeskLink
+          onClick={onClick}
+          to={invite ? bin.topYarn.wer : `?grid-note=${encodeURIComponent(bin.topYarn?.wer || '')}`}
+          desk={bin.topYarn?.rope.desk || ''}
+          className="flex flex-1 space-x-3"
+        >
+          <div className="relative flex-none self-start">
+            <DocketImage {...charge} size="default" />
+          </div>
+          <div className="space-y-2 p-1">
+            {(type === 'channel' || type === 'group') && rope.group && (
+              <>
+                <strong>{groups?.[rope.group]?.meta?.title}</strong>
+              </>
+            )}
+            {type === 'desk' &&
+              (ship ? (
+                <ShipName name={ship} className="font-semibold" />
+              ) : (
+                <strong>{charge?.title || ''}</strong>
+              ))}
+            <p>{bin.topYarn && bin.topYarn.con.map(getContent)}</p>
+            {moreCount > 0 ? (
+              <p className="text-sm font-semibold">
+                {moreCount} more {pluralize('message', moreCount)} from{' '}
+                {bin.shipCount > 1 ? `${bin.shipCount} people` : '1 person'}
+              </p>
+            ) : (
+              <p className="text-sm">&nbsp;</p>
+            )}
+          </div>
+        </DeskLink>
+      )}
       <div className="flex-none p-1">
         <div className="flex items-center">
           {bin.unread ? <Bullet16Icon className="h-4 w-4 text-blue-500" /> : null}
