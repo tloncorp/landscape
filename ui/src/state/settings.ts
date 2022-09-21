@@ -97,7 +97,7 @@ export const useSettingsState = createState<BaseSettingsState>(
     },
     display: {
       theme: 'auto',
-      doNotDisturb: true
+      doNotDisturb: false
     },
     tiles: {
       order: []
