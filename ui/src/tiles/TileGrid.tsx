@@ -79,7 +79,7 @@ export const TileGrid = ({ menu }: TileGridProps) => {
     >
       <div className="grid justify-center grid-cols-2 sm:grid-cols-[repeat(auto-fit,minmax(auto,250px))] gap-4 px-4 md:px-8 w-full max-w-6xl">
         {order
-          .filter((d) => d !== window.desk && d !== 'landscape' && d in charges)
+          .filter((d) => d !== window.desk && d in charges)
           .map((desk) => (
             <TileContainer key={desk} desk={desk}>
               <Tile charge={charges[desk]} desk={desk} disabled={menu === 'upgrading'} />
