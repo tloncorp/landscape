@@ -117,7 +117,7 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
         containerRef={dialogContentOpen ? dialogNavRef : navRef}
         className="flex items-center justify-center w-full space-x-2"
       >
-        <Link to="/leap/system-preferences" className="relative">
+        <Link to="/leap/system-preferences" className="relative flex-none">
           <Avatar shipName={window.ship} size="nav" />
           {systemBlocked && (
             <Bullet
