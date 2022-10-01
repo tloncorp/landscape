@@ -41,12 +41,14 @@ const RadioOption = ({ value, label, selected }: RadioOptionProps) => (
 
 export const AppearancePrefs = () => {
   const theme = useTheme();
+  const state = useSettingsState.getState();
   const [pref, setPref] = useState<prefType>(theme || 'auto');
 
   useEffect(() => {
     useSettingsState.getState().set((draft) => {
       draft.display.theme = pref;
     });
+    state.putEntry('display', 'theme', pref);
   }, [pref]);
 
   const handleChange = (value: string) => {
