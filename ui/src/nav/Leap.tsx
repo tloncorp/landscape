@@ -171,6 +171,8 @@ export const Leap = React.forwardRef(
             return 'My Urbit: Apperance';
           case matchSystemPrefs('shortcuts'):
             return 'My Urbit: Shortcuts';
+          case matchSystemPrefs('interface'):
+            return 'My Urbit: Interface Settings';
           default:
             return 'Settings';
         }

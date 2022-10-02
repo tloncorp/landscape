@@ -9,15 +9,23 @@ export const SecurityPrefs = () => {
   const { push } = useHistory();
 
   return (
-    <Dialog open onOpenChange={(open) => !open && push('/leap/system-preferences')}>
+    <Dialog
+      open
+      onOpenChange={(open) => !open && push('/leap/system-preferences')}
+    >
       <DialogContent containerClass="w-1/3" showClose={false}>
-        <h3 className="flex items-center mb-2 h4">Log Out</h3>
-        <div className="flex flex-col justify-center flex-1 space-y-6 pt-6">
-          <p>
-            Logging out of Landscape will additionally log you ot of any applications installed on
-            your urbit.
-          </p>
-          <p>You&apos;ll need to log into your urbit again in order to access its apps.</p>
+        <h3 className="h4 mb-6 flex items-center">Log Out</h3>
+        <div className="flex flex-1 flex-col justify-center space-y-6">
+          <div className="flex flex-col space-y-3">
+            <p className="leading-5">
+              Logging out of Landscape will additionally log you out of any
+              applications installed on your urbit.
+            </p>
+            <p className="leading-5">
+              You&apos;ll need to log into your urbit again in order to access
+              its apps.
+            </p>
+          </div>
           <Checkbox
             defaultChecked={false}
             checked={allSessions}
@@ -25,8 +33,11 @@ export const SecurityPrefs = () => {
           >
             Log out of all connected sessions.
           </Checkbox>
-          <div className="flex space-x-2 justify-end">
-            <Button variant="secondary" onClick={() => push('/leap/system-preferences')}>
+          <div className="flex justify-end space-x-2">
+            <Button
+              variant="secondary"
+              onClick={() => push('/leap/system-preferences')}
+            >
               Cancel
             </Button>
             <form method="post" action="/~/logout">

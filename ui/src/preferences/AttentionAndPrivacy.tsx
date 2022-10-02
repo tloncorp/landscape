@@ -35,7 +35,7 @@ export const AttentionAndPrivacy = () => {
 
   return (
     <div className="flex flex-col space-y-4">
-      <div className="inner-section space-y-8 relative">
+      <div className="inner-section relative space-y-8">
         <h2 className="h4">CalmEngine</h2>
         <span className="font-semibold text-gray-400">
           Modulate attention-hacking interfaces across your urbit
@@ -44,8 +44,10 @@ export const AttentionAndPrivacy = () => {
           on={disableAppTileUnreads}
           toggle={() => toggle(attentionProperties.disableAppTileUnreads)}
           name="Hide unread counts on Landscape app tiles"
+          className="text-gray-400"
+          disabled
         >
-          <p className="text-gray-600 leading-5">
+          <p className="leading-5 text-gray-400">
             Turn off notification counts on individual app tiles.
           </p>
         </Setting>
@@ -54,8 +56,9 @@ export const AttentionAndPrivacy = () => {
           toggle={() => toggle(attentionProperties.disableAvatars)}
           name="Disable avatars"
         >
-          <p className="text-gray-600 leading-5">
-            Turn user-set visual avatars off and only display urbit sigils across all of your apps.
+          <p className="leading-5 text-gray-600">
+            Turn user-set visual avatars off and only display urbit sigils
+            across all of your apps.
           </p>
         </Setting>
         <Setting
@@ -63,12 +66,13 @@ export const AttentionAndPrivacy = () => {
           toggle={() => toggle(attentionProperties.disableNicknames)}
           name="Disable nicknames"
         >
-          <p className="text-gray-600 leading-5">
-            Turn user-set nicknames off and only display urbit-style names across all of your apps.
+          <p className="leading-5 text-gray-600">
+            Turn user-set nicknames off and only display urbit-style names
+            across all of your apps.
           </p>
         </Setting>
       </div>
-      <div className="inner-section space-y-8 relative">
+      <div className="inner-section relative space-y-8">
         <h2 className="h4">Privacy</h2>
         <span className="font-semibold text-gray-400">
           Limit your urbit’s ability to be read or tracked by clearnet services
@@ -76,11 +80,12 @@ export const AttentionAndPrivacy = () => {
         <Setting
           on={disableSpellcheck}
           toggle={() => toggle(attentionProperties.disableSpellcheck)}
-          name="Disable spellcheck"
+          name="Disable spell-check"
         >
-          <p className="text-gray-600 leading-5">
-            Turn spellcheck off across all text inputs in your urbit’s software/applications. Spell
-            check reads your keyboard input, and may be undesirable.
+          <p className="leading-5 text-gray-600">
+            Turn spell-check off across all text inputs in your urbit’s
+            software/applications. Spell-check reads your keyboard input, which
+            may be undesirable.
           </p>
         </Setting>
         <Setting
@@ -88,10 +93,10 @@ export const AttentionAndPrivacy = () => {
           toggle={() => toggle(attentionProperties.disableRemoteContent)}
           name="Disable remote content"
         >
-          <p className="text-gray-600 leading-5">
-            Turn off automatically-displaying media embeds across all of your urbit’s
-            software/applications. This may result in some software appearing to have content
-            missing.
+          <p className="leading-5 text-gray-600">
+            Turn off automatically-displaying media embeds across all of your
+            urbit’s software/applications. This may result in some software
+            appearing to have content missing.
           </p>
         </Setting>
       </div>
