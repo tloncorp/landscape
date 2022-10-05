@@ -42,11 +42,12 @@ export const NotificationPrefs = () => {
 
   return (
     <>
-      <div className="space-y-3">
+      <div className="inner-section space-y-8">
+        <h2 className="h4">Notifications</h2>
         <Setting on={doNotDisturb} toggle={toggleDnd} name="Do Not Disturb">
-          <p>
-            Blocks Urbit notifications in Landscape from appearing as badges and prevents browser
-            notifications if enabled.
+          <p className="leading-5">
+            Blocks Urbit notifications in Landscape from appearing as badges and
+            prevents browser notifications if enabled.
           </p>
         </Setting>
         <Setting
@@ -55,7 +56,7 @@ export const NotificationPrefs = () => {
           name="Show Desktop Notifications"
           disabled={!notificationsAllowed}
         >
-          <p>
+          <p className="leading-5">
             Show desktop notifications in this browser.
             {!secure && (
               <>

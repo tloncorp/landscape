@@ -6,9 +6,9 @@ import create, { GetState, SetState, UseStore } from 'zustand';
 import { persist } from 'zustand/middleware';
 import Urbit, { FatalError, SubscriptionRequestInterface } from '@urbit/http-api';
 import { Poke } from '@urbit/api';
+import UrbitMock from '@tloncorp/mock-http-api';
 import api from './api';
 import { clearStorageMigration, createStorageKey, storageVersion } from './util';
-import UrbitMock from '@tloncorp/mock-http-api';
 
 setAutoFreeze(false);
 enablePatches();
@@ -95,7 +95,7 @@ export interface BaseState<StateType extends Record<string, unknown>> {
   addPatch: (id: string, ...patch: Patch[]) => void;
   removePatch: (id: string) => void;
   optSet: (fn: (state: StateType & BaseState<StateType>) => void) => string;
-  initialize: (api: Urbit | UrbitMock) => Promise<void>;
+  initialize: (airlock: Urbit | UrbitMock) => Promise<void>;
 }
 
 export function createSubscription(
@@ -109,7 +109,7 @@ export function createSubscription(
     event: e,
     err: () => {},
     quit: () => {
-      throw new FatalError("subscription clogged");
+      throw new FatalError('subscription clogged');
     }
   };
   // TODO: err, quit handling (resubscribe?)
@@ -186,6 +186,7 @@ export async function pokeOptimisticallyN<A, S extends Record<string, unknown>>(
   let num: string | undefined;
   try {
     num = optReduceState(state, poke.json, reduce);
+    await api.poke(poke);
     state.getState().removePatch(num);
   } catch (e) {
     console.error(e);

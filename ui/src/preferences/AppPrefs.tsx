@@ -20,13 +20,24 @@ export const AppPrefs = ({ match }: RouteComponentProps<{ desk: string }>) => {
   return (
     <>
       <h2 className="h3 mb-7">{getAppName(charge)} Settings</h2>
-      <div className="space-y-3">
+      <div className="space-y-8">
         {tracking ? (
-          <Setting on={otasEnabled} toggle={toggleUpdates} name="Automatic Updates">
-            <p>Automatically download and apply updates to keep {getAppName(charge)} up to date.</p>
+          <Setting
+            on={otasEnabled}
+            toggle={toggleUpdates}
+            name="Automatic Updates"
+          >
+            <p className="mb-1 leading-5">
+              Automatically download and apply updates to keep{' '}
+              {getAppName(charge)} up to date.
+            </p>
             {otaSource && (
               <p>
-                OTA Source: <ShipName name={otaSource} className="font-semibold font-mono" />
+                OTA Source:{' '}
+                <ShipName
+                  name={otaSource}
+                  className="font-mono font-semibold"
+                />
               </p>
             )}
           </Setting>

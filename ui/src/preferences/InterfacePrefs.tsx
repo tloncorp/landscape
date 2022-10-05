@@ -48,7 +48,8 @@ export function InterfacePrefs() {
 
   return (
     <>
-      <div className="space-y-3">
+      <div className="inner-section space-y-8">
+        <h2 className="h4">Interface Settings</h2>
         <Setting
           on={protocolHandling}
           toggle={toggleProtoHandling}

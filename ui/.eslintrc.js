@@ -1,87 +1,58 @@
 module.exports = {
-  root: true,
-  env: {
-    browser: true,
-    es2021: true
-  },
-  extends: [
-    'plugin:react/recommended',
-    'airbnb',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:import/errors',
-    'plugin:jsx-a11y/recommended',
-    'plugin:tailwind/recommended',
-    'prettier',
-    'prettier/prettier',
-    'plugin:prettier/recommended'
+  extends: ['@tloncorp/eslint-config', 'plugin:storybook/recommended'],
+  overrides: [
+    {
+      files: ['**/*.ts', '**/*.tsx'],
+      parserOptions: {
+        project: ['tsconfig.json'],
+        tsconfigRootDir: __dirname
+      }
+    }
   ],
-  ignorePatterns: ['**/*.config.js', '**/*.config.ts'],
-  parser: '@typescript-eslint/parser',
-  parserOptions: {
-    ecmaFeatures: {
-      jsx: true
-    },
-    ecmaVersion: 12,
-    sourceType: 'module'
-  },
-  plugins: ['react', '@typescript-eslint', 'import', 'jsx-a11y', 'react-hooks'],
   rules: {
-    'no-undef': 'off',
-    'no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-vars': [
-      'error',
-      { vars: 'all', args: 'after-used', ignoreRestSiblings: false }
-    ],
-    'no-unused-expressions': ['error', { allowShortCircuit: true }],
-    'no-use-before-define': 'off',
-    'no-param-reassign': ['error', { props: true, ignorePropertyModificationsFor: ['draft'] }],
-    '@typescript-eslint/no-use-before-define': 'off',
-    '@typescript-eslint/no-empty-function': 'off',
-    'react/jsx-filename-extension': ['warn', { extensions: ['.tsx'] }],
-    'import/extensions': [
-      'error',
-      'ignorePackages',
-      {
-        ts: 'never',
-        tsx: 'never'
-      }
-    ],
-    'no-shadow': 'off',
-    '@typescript-eslint/no-shadow': ['error'],
-    'react-hooks/rules-of-hooks': 'error',
-    'react-hooks/exhaustive-deps': 'off',
-    'react/no-array-index-key': 'off',
-    'import/prefer-default-export': 'off',
-    'react/prop-types': 'off',
-    'react/jsx-props-no-spreading': 'off',
+    semi: [2, 'always'],
+    'react/destructuring-assignment': 'off',
     'react/require-default-props': 'off',
-    'import/no-extraneous-dependencies': ['error'],
-    'tailwind/class-order': 'off',
-    'jsx-a11y/label-has-associated-control': [
-      'error',
+    'react/jsx-filename-extension': [
+      1,
       {
-        required: {
-          some: ['nesting', 'id']
-        }
+        extensions: ['.jsx', '.tsx']
       }
     ],
-    'jsx-a11y/label-has-for': [
+    'tailwindcss/no-custom-classname': [
+      0,
+      {
+        config: 'tailwind.config.js'
+      }
+    ],
+    'no-param-reassign': ['error', { props: true, ignorePropertyModificationsFor: ['draft'] }],
+    'no-use-before-define': 'off',
+    '@typescript-eslint/no-unused-vars': [
+      'warn',
+      { argsIgnorePattern: '^_', destructuredArrayIgnorePattern: '^_' }
+    ],
+    '@typescript-eslint/no-use-before-define': [
       'error',
       {
-        required: {
-          some: ['nesting', 'id']
-        }
+        typedefs: false
       }
     ]
   },
   settings: {
-    'import/parsers': {
-      '@typescript-eslint/parser': ['.ts']
+    tailwindcss: {
+      officialSorting: true
     },
-
     'import/resolver': {
-      typescript: {
-        alwaysTryTypes: true
+      alias: {
+        // mapping big-integer and fuzzy to a non-existent to squash error described here:
+        // https://github.com/johvin/eslint-import-resolver-alias/issues/18
+        map: [
+          ['@', './src'],
+          ['big-integer', 'hack'],
+          ['fuzzy', 'hack'],
+          ['vitest', 'hack']
+        ],
+        extensions: ['.ts', '.tsx']
       }
     }
   }

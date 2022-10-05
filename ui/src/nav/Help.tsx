@@ -66,25 +66,31 @@ const Wayfinding = ({ tlonCustomer }: { tlonCustomer: boolean }) => (
     <span className="text-lg font-bold">
       Urbit{!tlonCustomer ? ' Support & ' : null} Wayfinding
     </span>
-    <p>
-      A community of Urbit enthusiasts, developers, and various Urbit-building organizations are on
-      the network to guide you.
-    </p>
-    <p>
-      For direct assistance with any urbit-related issues, bugs, or unexpected behavior, please
-      contact <a href="mailto:support@urbit.org">support@urbit.org</a>.
-    </p>
-    <p>
-      If you need help getting situated on the network, or figuring out what fun things you can do
-      with your urbit, join the following groups:
-    </p>
+    <div className="flex flex-col space-y-2">
+      <p className="leading-5">
+        A community of Urbit enthusiasts, developers, and various Urbit-building
+        organizations are on the network to guide you.
+      </p>
+      <p className="leading-5">
+        For direct assistance with any urbit-related issues, bugs, or unexpected
+        behavior, please contact{' '}
+        <a href="mailto:support@urbit.org" className="font-bold">
+          support@urbit.org
+        </a>
+        .
+      </p>
+      <p className="leading-5">
+        If you need help getting situated on the network, or figuring out what
+        fun things you can do with your urbit, join the following groups:
+      </p>
+    </div>
     <div className="flex flex-col space-y-2">
       <GroupLink group={groups.uc} />
       <GroupLink group={groups.discovery} />
     </div>
-    <p>
-      If you are a developer and want to learn more about building applications for Urbit, check out
-      these groups:
+    <p className="leading-5">
+      If you are a developer and want to learn more about building applications
+      for Urbit, check out these groups:
     </p>
     <div className="flex flex-col space-y-2">
       <GroupLink group={groups.foundation} />
@@ -94,7 +100,7 @@ const Wayfinding = ({ tlonCustomer }: { tlonCustomer: boolean }) => (
 );
 
 export const Help = () => {
-  const tlonCustomer = !!window.URL.toString().indexOf('tlon.network');
+  const tlonCustomer = !window.URL.toString().indexOf('tlon.network');
   return (
     <div className="flex flex-col space-y-4">
       {tlonCustomer ? (
@@ -102,8 +108,12 @@ export const Help = () => {
           <span className="text-lg font-bold">Tlon Customer Support</span>
           <p>
             As a customer of Tlon, you’re able to receive 24/7 support from the{' '}
-            <span className="font-bold">Tlon Support Forum</span>, or you can email us at{' '}
-            <a href="mailto:support@tlon.io">support@tlon.io</a>.
+            <span className="font-bold">Tlon Support Forum</span>, or you can
+            email us at{' '}
+            <a href="mailto:support@tlon.io" className="font-bold">
+              support@tlon.io
+            </a>
+            .
           </p>
           <GroupLink group={groups.tlonSupport} />
         </div>

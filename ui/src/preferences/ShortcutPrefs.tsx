@@ -80,13 +80,19 @@ export const ShortcutPrefs = () => {
         setSearchInput={setSearchInput}
         setMatchingShortcuts={setMatchingShortcuts}
       />
-      <div className="grid grid-cols-2 rounded-lg border-2 border-gray-50 bg-gray-50 gap-y-2">
-        <span className="px-3 py-2 text-gray-400 text-sm font-semibold">Action</span>
-        <span className="px-3 py-2 text-gray-400 text-sm font-semibold">Keybinding</span>
+      <div className="grid grid-cols-2 gap-y-2 rounded-lg border-2 border-gray-50 bg-gray-50">
+        <span className="px-3 py-2 text-sm font-semibold text-gray-400">
+          Action
+        </span>
+        <span className="px-3 py-2 text-sm font-semibold text-gray-400">
+          Keybinding
+        </span>
         {shortcuts
           .map((shortcut) => ({
             action: shortcut.action,
-            keybinding: shortcut.keybinding.replace('Ctrl', metaKey).replace('Alt', altKey)
+            keybinding: shortcut.keybinding
+              .replace('Ctrl', metaKey)
+              .replace('Alt', altKey),
           }))
           .filter((shortcut) =>
             matchingShortcuts.length > 0
@@ -96,16 +102,22 @@ export const ShortcutPrefs = () => {
           .map((shortcut, index) => (
             <React.Fragment key={`${shortcut.action}-${index}`}>
               <span
-                className={classNames('text-gray-800 font-semibold p-3 rounded-lg', {
-                  'bg-white': index % 2 === 0
-                })}
+                className={classNames(
+                  'rounded-tl-lg rounded-bl-lg p-3 font-semibold text-gray-800',
+                  {
+                    'bg-white': index % 2 === 0,
+                  }
+                )}
               >
                 {shortcut.action}
               </span>
               <span
-                className={classNames('text-gray-800 font-semibold p-3 rounded-lg', {
-                  'bg-white': index % 2 === 0
-                })}
+                className={classNames(
+                  'rounded-tr-lg rounded-br-lg p-3 font-semibold text-gray-800',
+                  {
+                    'bg-white': index % 2 === 0,
+                  }
+                )}
               >
                 {shortcut.keybinding}
               </span>
