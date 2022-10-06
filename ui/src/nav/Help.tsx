@@ -103,10 +103,25 @@ export const Help = () => {
   const tlonCustomer = !window.URL.toString().indexOf('tlon.network');
   return (
     <div className="flex flex-col space-y-4">
+      <div className="inner-section space-y-8 bg-gray-50 mix-blend-multiply dark:mix-blend-screen">
+        <span className="text-lg font-bold">Submit Feedback</span>
+        <p className="leading-5">
+          Notice a bug? Have a suggestion? Want a feature? Use the button below
+          to submit feedback directly to Tlon’s product development team.
+        </p>
+        <Button
+          variant="alt-primary"
+          as="a"
+          href="https://airtable.com/shrflFkf5UyDFKhmW"
+          target="_blank"
+        >
+          Submit Feedback
+        </Button>
+      </div>
       {tlonCustomer ? (
         <div className="inner-section space-y-8">
           <span className="text-lg font-bold">Tlon Customer Support</span>
-          <p>
+          <p className="leading-5">
             As a customer of Tlon, you’re able to receive 24/7 support from the{' '}
             <span className="font-bold">Tlon Support Forum</span>, or you can
             email us at{' '}
