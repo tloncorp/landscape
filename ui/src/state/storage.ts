@@ -76,7 +76,9 @@ export const useStorageState = createState<BaseStorageState>(
       createSubscription('s3-store', '/all', (e) => {
         const d = _.get(e, 's3-update', false);
         if (d) {
+          console.log(d)
           reduceStateN(get(), d, reduce);
+          set({ loaded: true });
         }
       })
   ]

@@ -29,6 +29,7 @@ import BellIcon from '../components/icons/BellIcon';
 import BurstIcon from '../components/icons/BurstIcon';
 import PencilIcon from '../components/icons/PencilIcon';
 import ForwardSlashIcon from '../components/icons/ForwardSlashIcon';
+import SlidersIcon from '../components/icons/SlidersIcon';
 import Sig16Icon from '../components/icons/Sig16Icon';
 import { useSystemUpdate } from '../logic/useSystemUpdate';
 import { Bullet } from '../components/icons/Bullet';
@@ -184,7 +185,7 @@ export const SystemPreferences = (
                   url={subUrl('storage')}
                   active={matchSub('storage')}
                 >
-                  <Sig16Icon className="mr-3 h-6 w-6 rounded-md text-gray-600" />
+                  <SlidersIcon className="mr-3 h-6 w-6 rounded-md text-gray-600" />
                   Remote Storage
                 </SystemPreferencesSection>
               </ul>
