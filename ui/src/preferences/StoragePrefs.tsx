@@ -73,7 +73,7 @@ export const StoragePrefs = () => {
       <form onSubmit={handleSubmit(addS3Credentials)}>
         <div className="mb-8 flex flex-col space-y-2">
           <label className="font-semibold" htmlFor="endpoint">
-            Endpoint<span label="Required field">*</span>
+            Endpoint<span title="Required field">*</span>
           </label>
           <input
             disabled={!loaded}
@@ -87,7 +87,7 @@ export const StoragePrefs = () => {
         </div>
         <div className="mb-8 flex flex-col space-y-2">
           <label className="font-semibold" htmlFor="key">
-            Access Key ID<span label="Required field">*</span>
+            Access Key ID<span title="Required field">*</span>
           </label>
           <input
             disabled={!loaded}
@@ -101,7 +101,7 @@ export const StoragePrefs = () => {
         </div>
         <div className="mb-8 flex flex-col space-y-2">
           <label className="font-semibold" htmlFor="secretAccessKey">
-            Secret Access Key<span label="Required field">*</span>
+            Secret Access Key<span title="Required field">*</span>
           </label>
           <input
             disabled={!loaded}
@@ -115,7 +115,7 @@ export const StoragePrefs = () => {
         </div>
         <div className="mb-8 flex flex-col space-y-2">
           <label className="font-semibold" htmlFor="bucket">
-            Bucket Name<span label="Required field">*</span>
+            Bucket Name<span title="Required field">*</span>
           </label>
           <input
             disabled={!loaded}
