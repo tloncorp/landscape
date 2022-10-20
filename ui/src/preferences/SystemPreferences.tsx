@@ -1,5 +1,11 @@
 import React, { PropsWithChildren, useCallback } from 'react';
-import { Link, Route, RouteComponentProps, Switch, useRouteMatch } from 'react-router-dom';
+import {
+  Link,
+  Route,
+  RouteComponentProps,
+  Switch,
+  useRouteMatch,
+} from 'react-router-dom';
 import { ErrorBoundary } from 'react-error-boundary';
 import classNames from 'classnames';
 import { NotificationPrefs } from './NotificationPrefs';
@@ -9,6 +15,7 @@ import { SecurityPrefs } from './SecurityPrefs';
 import { AppearancePrefs } from './ApperancePrefs';
 import { useCharges } from '../state/docket';
 import { AppPrefs } from './AppPrefs';
+import { StoragePrefs } from './StoragePrefs';
 import { DocketImage } from '../components/DocketImage';
 import { ErrorAlert } from '../components/ErrorAlert';
 import { useMedia } from '../logic/useMedia';
@@ -37,15 +44,15 @@ interface SystemPreferencesSectionProps {
 function SystemPreferencesSection({
   url,
   active,
-  children
+  children,
 }: PropsWithChildren<SystemPreferencesSectionProps>) {
   return (
     <li>
       <Link
         to={url}
         className={classNames(
-          'flex items-center px-2 py-2 hover:text-black hover:bg-gray-50 rounded-lg',
-          active && 'text-black bg-gray-50'
+          'flex items-center rounded-lg px-2 py-2 hover:bg-gray-50 hover:text-black',
+          active && 'bg-gray-50 text-black'
         )}
       >
         {children}
@@ -54,14 +61,18 @@ function SystemPreferencesSection({
   );
 }
 
-export const SystemPreferences = (props: RouteComponentProps<{ submenu: string }>) => {
+export const SystemPreferences = (
+  props: RouteComponentProps<{ submenu: string }>
+) => {
   const { match, history } = props;
   const subMatch = useRouteMatch<{ submenu: string; desk?: string }>(
     `${match.url}/:submenu/:desk?`
   );
   const { systemBlocked } = useSystemUpdate();
   const charges = useCharges();
-  const filteredCharges = Object.values(charges).filter((charge) => charge.desk !== window.desk);
+  const filteredCharges = Object.values(charges).filter(
+    (charge) => charge.desk !== window.desk
+  );
   const isMobile = useMedia('(max-width: 639px)');
   const settingsPath = isMobile ? `${match.url}/:submenu` : '/';
 
@@ -84,7 +95,10 @@ export const SystemPreferences = (props: RouteComponentProps<{ submenu: string }
     [match, subMatch]
   );
 
-  const subUrl = useCallback((submenu: string) => `${match.url}/${submenu}`, [match]);
+  const subUrl = useCallback(
+    (submenu: string) => `${match.url}/${submenu}`,
+    [match]
+  );
 
   return (
     <ErrorBoundary
@@ -166,6 +180,13 @@ export const SystemPreferences = (props: RouteComponentProps<{ submenu: string }
                   <Sig16Icon className="mr-3 h-6 w-6 rounded-md text-gray-600" />
                   Interface Settings
                 </SystemPreferencesSection>
+                <SystemPreferencesSection
+                  url={subUrl('storage')}
+                  active={matchSub('storage')}
+                >
+                  <Sig16Icon className="mr-3 h-6 w-6 rounded-md text-gray-600" />
+                  Remote Storage
+                </SystemPreferencesSection>
               </ul>
             </nav>
             <nav className="flex flex-col px-2 sm:px-6">
@@ -212,6 +233,7 @@ export const SystemPreferences = (props: RouteComponentProps<{ submenu: string }
                 path={`${match.url}/privacy`}
                 component={AttentionAndPrivacy}
               />
+              <Route path={[`${match.url}/storage`]} component={StoragePrefs} />
               <Route
                 path={[`${match.url}/system-updates`, match.url]}
                 component={AboutSystem}
