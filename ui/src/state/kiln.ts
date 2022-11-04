@@ -22,23 +22,19 @@ interface KilnState {
   vats: Vats;
   pikes: Pikes;
   loaded: boolean;
-  fetchVats: () => Promise<void>;
   lag: boolean;
   fetchLag: () => Promise<void>;
   fetchPikes: () => Promise<void>;
   changeOTASource: (ship: string) => Promise<void>;
   toggleOTAs: (desk: string, on: boolean) => Promise<void>;
   set: (s: KilnState) => void;
+  initializeKiln: () => Promise<void>;
 }
 const useKilnState = create<KilnState>((set, get) => ({
   vats: {},
   pikes: useMockData ? mockPikes : {},
   lag: false,
   loaded: false,
-  fetchVats: async () => {
-    const vats = await api.scry<Vats>(getVats);
-    set({ vats, loaded: true });
-  },
   fetchPikes: async () => {
     if (useMockData) {
       await fakeRequest({}, 500);
@@ -58,31 +54,24 @@ const useKilnState = create<KilnState>((set, get) => ({
   toggleOTAs: async (desk: string, on: boolean) => {
     set(
       produce((draft: KilnState) => {
-        const { arak } = draft.vats[desk];
-        if (!arak.rail) {
+        const pike = draft.pikes[desk];
+        if (!pike) {
           return;
         }
-        if (on) {
-          arak.rail.paused = false;
-        } else {
-          arak.rail.paused = true;
-        }
+
+        pike.zest = on ? 'live' : 'held';
       })
     );
 
     await api.poke(on ? kilnResume(desk) : kilnPause(desk));
-    await get().fetchVats(); // refresh vat state
+    await get().fetchPikes(); // refresh pikes state
   },
-  set: produce(set)
-}));
-
-api.subscribe({
-  app: 'hood',
-  path: '/kiln/vats',
-  event: () => {
-    useKilnState.getState().fetchVats();
+  set: produce(set),
+  initializeKiln: async () => {
+      await get().fetchLag();
+      await get().fetchPikes();
   }
-});
+}));
 
 const selBlockers = (s: KilnState) => getBlockers(s.vats);
 export function useBlockers() {
