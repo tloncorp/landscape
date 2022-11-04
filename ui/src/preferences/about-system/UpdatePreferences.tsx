@@ -5,7 +5,7 @@ import { Button } from '../../components/Button';
 import { Setting } from '../../components/Setting';
 import { Spinner } from '../../components/Spinner';
 import { useAsyncCall } from '../../logic/useAsyncCall';
-import useKilnState from '../../state/kiln';
+import useKilnState, { usePike } from '../../state/kiln';
 
 interface UpdatePreferencesProps {
   base: Vat | undefined;
@@ -15,8 +15,9 @@ export const UpdatePreferences = ({ base }: UpdatePreferencesProps) => {
   const { changeOTASource, toggleOTAs } = useKilnState((s) =>
     _.pick(s, ['toggleOTAs', 'changeOTASource'])
   );
-  const otasEnabled = base && !(base.arak?.rail?.paused ?? true);
-  const otaSource = base && base.arak.rail?.ship;
+  const pike = usePike('base');
+  const otasEnabled = pike?.zest === 'live';
+  const otaSource = pike?.sync?.ship;
 
   const toggleBase = useCallback((on: boolean) => toggleOTAs('base', on), [toggleOTAs]);
 
