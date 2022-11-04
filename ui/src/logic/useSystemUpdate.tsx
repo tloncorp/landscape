@@ -30,7 +30,7 @@ export function useSystemUpdate() {
   const blockedCount = blockedCharges.length;
 
   const freezeApps = useCallback(async () => {
-    api.poke(kilnBump(true));
+    api.poke(kilnBump());
     push('/leap/upgrading');
   }, []);
 
