@@ -18,6 +18,7 @@ function getHash(vat: Vat): string {
 export const AboutSystem = () => {
   const garden = useVat('garden');
   const gardenCharge = useCharge('garden');
+  // TODO
   const { base, update, systemBlocked, blockedCharges, blockedCount, freezeApps } =
     useSystemUpdate();
   const hash = base && getHash(base);
