@@ -18,7 +18,8 @@ const configuration = (json: S3Update, state: StorageState): StorageState => {
   if (data) {
     state.s3.configuration = {
       buckets: new Set(data.buckets),
-      currentBucket: data.currentBucket
+      currentBucket: data.currentBucket,
+      region: data.region,
     };
   }
   return state;
@@ -28,6 +29,14 @@ const currentBucket = (json: S3Update, state: StorageState): StorageState => {
   const data = _.get(json, 'setCurrentBucket', false);
   if (data && state.s3) {
     state.s3.configuration.currentBucket = data;
+  }
+  return state;
+};
+
+const region = (json: S3Update, state: StorageState): StorageState => {
+  const data = _.get(json, 'setRegion', false);
+  if (data && state.s3) {
+    state.s3.configuration.region = data;
   }
   return state;
 };
@@ -81,5 +90,6 @@ export const reduce = [
   removeBucket,
   endpoint,
   accessKeyId,
-  secretAccessKey
+  secretAccessKey,
+  region
 ];

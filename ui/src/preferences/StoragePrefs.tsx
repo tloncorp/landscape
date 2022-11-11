@@ -17,6 +17,7 @@ interface CredentialsSubmit {
   endpoint: string;
   accessId: string;
   accessSecret: string;
+  region: string;
   bucket: string;
 }
 
@@ -38,6 +39,11 @@ export const StoragePrefs = () => {
       api.poke(setAccessKeyId(data.accessId));
       api.poke(setSecretAccessKey(data.accessSecret));
       api.poke(setCurrentBucket(data.bucket));
+      api.poke({
+        app: 's3-store',
+        mark: 's3-action',
+        json: { 'set-region': data.region },
+      });
     }, [])
   );
 
@@ -110,6 +116,20 @@ export const StoragePrefs = () => {
             type="text"
             defaultValue={s3.credentials?.secretAccessKey}
             {...register('accessSecret', { required: true })}
+            className="input default-ring bg-gray-50"
+          />
+        </div>
+        <div className="mb-8 flex flex-col space-y-2">
+          <label className="font-semibold" htmlFor="region">
+            Region<span title="Required field">*</span>
+          </label>
+          <input
+            disabled={!loaded}
+            required
+            id="region"
+            type="text"
+            defaultValue={s3.configuration?.region}
+            {...register('region', { required: true })}
             className="input default-ring bg-gray-50"
           />
         </div>
