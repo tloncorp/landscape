@@ -12,6 +12,7 @@ function pikeIsBlocked(newKelvin: number, pike: Pike) {
 
 export function useSystemUpdate() {
   const { push } = useHistory();
+  // TODO: fix update
   const base = usePike('base');
   const update = base?.arak?.rail?.next?.[0];
   const newKelvin = base?.wefts[0]?.kelvin ?? 418;
@@ -26,7 +27,7 @@ export function useSystemUpdate() {
   const blockedCount = blockedCharges.length;
 
   const freezeApps = useCallback(async () => {
-    api.poke(kilnBump());
+    await api.poke(kilnBump());
     push('/leap/upgrading');
   }, []);
 
