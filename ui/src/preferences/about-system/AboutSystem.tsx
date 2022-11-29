@@ -6,7 +6,6 @@ import { Dialog, DialogClose, DialogContent, DialogTrigger } from '../../compone
 import { FullTlon16Icon } from '../../components/icons/FullTlon16Icon';
 import { useSystemUpdate } from '../../logic/useSystemUpdate';
 import { useCharge } from '../../state/docket';
-import { useVat } from '../../state/kiln';
 import { disableDefault, pluralize } from '../../state/util';
 import { UpdatePreferences } from './UpdatePreferences';
 
@@ -16,11 +15,11 @@ function getHash(vat: Vat): string {
 }
 
 export const AboutSystem = () => {
-  const garden = useVat('garden');
   const gardenCharge = useCharge('garden');
   // TODO
   const { base, update, systemBlocked, blockedCharges, blockedCount, freezeApps } =
     useSystemUpdate();
+  // TODO: should aeon come from chad, or from the base weft? or elsewhere?
   const hash = base && getHash(base);
   const aeon = base ? base.arak.rail?.aeon : '';
   const nextAeon = update?.aeon;
