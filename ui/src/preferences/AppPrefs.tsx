@@ -14,12 +14,14 @@ export const AppPrefs = ({ match }: RouteComponentProps<{ desk: string }>) => {
   const { toggleSync } = useKilnState();
 
   return (
-    <SourceSetter
-      appName={appName}
-      title={`${appName} Settings`}
-      toggleSrc={toggleSync}
-      srcDesk={desk}
-      srcShip={srcShip}
-    />
+    <div className="inner-section space-y-8 relative">
+      <SourceSetter
+        appName={appName}
+        title={`${appName} Settings`}
+        toggleSrc={toggleSync}
+        srcDesk={desk}
+        srcShip={srcShip}
+      />
+    </div>
   );
 };

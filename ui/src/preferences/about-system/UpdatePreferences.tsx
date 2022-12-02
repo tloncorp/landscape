@@ -12,12 +12,14 @@ export const UpdatePreferences = () => {
   const { toggleInstall } = useKilnState();
   
   return (
-    <SourceSetter
-      appName={appName}
-      toggleSrc={toggleInstall}
-      srcDesk={desk}
-      srcShip={srcShip}
-      title="System Updates"
-    />
+    <div className="inner-section space-y-8 relative">
+      <SourceSetter
+        appName={appName}
+        toggleSrc={toggleInstall}
+        srcDesk={desk}
+        srcShip={srcShip}
+        title="System Updates"
+      />
+    </div>
   );
 };
