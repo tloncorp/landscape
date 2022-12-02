@@ -1,4 +1,4 @@
-import { Vat } from '@urbit/api';
+import { Pike } from '@urbit/api';
 import React from 'react';
 import { AppList } from '../../components/AppList';
 import { Button } from '../../components/Button';
@@ -6,24 +6,22 @@ import { Dialog, DialogClose, DialogContent, DialogTrigger } from '../../compone
 import { FullTlon16Icon } from '../../components/icons/FullTlon16Icon';
 import { useSystemUpdate } from '../../logic/useSystemUpdate';
 import { useCharge } from '../../state/docket';
+import { usePike } from '../../state/kiln';
 import { disableDefault, pluralize } from '../../state/util';
 import { UpdatePreferences } from './UpdatePreferences';
 
-function getHash(vat: Vat): string {
-  const parts = vat.hash.split('.');
+function getHash(pike: Pike): string {
+  const parts = pike.hash.split('.');
   return parts[parts.length - 1];
 }
 
 export const AboutSystem = () => {
   const gardenCharge = useCharge('garden');
-  // TODO
-  const { base, update, systemBlocked, blockedCharges, blockedCount, freezeApps } =
+  const gardenPike = usePike(window.desk);
+  const { systemBlocked, blockedCharges, blockedCount, freezeApps } =
     useSystemUpdate();
-  // TODO: should aeon come from chad, or from the base weft? or elsewhere?
-  const hash = base && getHash(base);
-  const aeon = base ? base.arak.rail?.aeon : '';
-  const nextAeon = update?.aeon;
-
+  const hash = gardenPike && getHash(gardenPike);
+  
   return (
     <>
       <div className="inner-section space-y-8 relative mb-4">
@@ -45,15 +43,6 @@ export const AboutSystem = () => {
             <p>
               Version {gardenCharge?.version} ({hash})
             </p>
-            {systemBlocked && (
-              <p>
-                Aeon {aeon}{' '}
-                <span className="text-orange-500 mx-4 space-x-2">
-                  <span>&mdash;&gt;</span> <span>/</span> <span>&mdash;&gt;</span>
-                </span>{' '}
-                Aeon {nextAeon}
-              </p>
-            )}
           </div>
           {systemBlocked ? (
             <>
@@ -98,7 +87,7 @@ export const AboutSystem = () => {
           )}
         </div>
       </div>
-      <UpdatePreferences base={base} />
+      <UpdatePreferences />
     </>
   );
 };

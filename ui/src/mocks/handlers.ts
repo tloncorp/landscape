@@ -1,6 +1,6 @@
 import { Handler, SubscriptionHandler, createResponse } from '@tloncorp/mock-http-api';
 import mockContacts from './mockContacts';
-import { mockAllies, mockCharges, mockTreaties, mockVats } from '../state/mock-data';
+import { mockAllies, mockCharges, mockTreaties } from '../state/mock-data';
 
 const settingsSub = {
   action: 'subscribe',
@@ -43,14 +43,6 @@ const mockHandlers: Handler[] = [
           theme: 'auto'
         }
       }
-    })
-  },
-  {
-    action: 'scry',
-    app: 'hood',
-    path: '/kiln/vats',
-    func: () => ({
-      mockVats
     })
   },
   {

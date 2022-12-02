@@ -4,12 +4,7 @@ import React from 'react';
 import SourceSetter from '../../components/SourceSetter';
 import useKilnState, { usePike } from '../../state/kiln';
 
-// TODO
-interface UpdatePreferencesProps {
-  base: Vat | undefined;
-}
-
-export const UpdatePreferences = ({ base }: UpdatePreferencesProps) => {
+export const UpdatePreferences = () => {
   const desk = 'base';
   const appName = 'your Urbit';
   const pike = usePike(desk);
