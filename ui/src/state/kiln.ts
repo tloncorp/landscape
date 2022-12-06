@@ -1,79 +1,76 @@
 import {
-  getVats,
-  Vats,
   scryLag,
-  getBlockers,
-  Vat,
-  kilnInstall,
-  kilnPause,
-  kilnResume
+  getPikes,
+  Pikes,
+  Pike,
+  kilnUnsync,
+  kilnSync,
+  kilnUninstall,
+  kilnInstall
 } from '@urbit/api';
 import create from 'zustand';
 import produce from 'immer';
 import { useCallback } from 'react';
 import api from './api';
+import { fakeRequest, useMockData } from './util';
+import { mockPikes } from './mock-data';
 
 interface KilnState {
-  vats: Vats;
+  pikes: Pikes;
   loaded: boolean;
-  fetchVats: () => Promise<void>;
   lag: boolean;
   fetchLag: () => Promise<void>;
-  changeOTASource: (ship: string) => Promise<void>;
-  toggleOTAs: (desk: string, on: boolean) => Promise<void>;
+  fetchPikes: () => Promise<void>;
+  toggleInstall: (desk: string, ship: string) => Promise<void>;
+  toggleSync: (desk: string, ship: string) => Promise<void>;
   set: (s: KilnState) => void;
+  initializeKiln: () => Promise<void>;
 }
 const useKilnState = create<KilnState>((set, get) => ({
-  vats: {},
+  pikes: useMockData ? mockPikes : {},
   lag: false,
   loaded: false,
-  fetchVats: async () => {
-    const vats = await api.scry<Vats>(getVats);
-    set({ vats, loaded: true });
+  fetchPikes: async () => {
+    if (useMockData) {
+      await fakeRequest({}, 500);
+      set({ loaded: true });
+      return;
+    }
+    const pikes = await api.scry<Pikes>(getPikes);
+    set({ pikes, loaded: true });
   },
   fetchLag: async () => {
     const lag = await api.scry<boolean>(scryLag);
     set({ lag });
   },
-  changeOTASource: async (ship: string) => {
-    await api.poke(kilnInstall(ship, 'kids', 'base'));
+  toggleInstall: async (desk: string, ship: string) => {
+    const synced = !!get().pikes[desk].sync;
+    await (useMockData
+      ? fakeRequest('')
+      : api.poke(synced ? kilnUninstall(desk) : kilnInstall(ship, 'kids', desk)));
+    await get().fetchPikes();
   },
-  toggleOTAs: async (desk: string, on: boolean) => {
-    set(
-      produce((draft: KilnState) => {
-        const { arak } = draft.vats[desk];
-        if (!arak.rail) {
-          return;
-        }
-        if (on) {
-          arak.rail.paused = false;
-        } else {
-          arak.rail.paused = true;
-        }
-      })
-    );
-
-    await api.poke(on ? kilnResume(desk) : kilnPause(desk));
-    await get().fetchVats(); // refresh vat state
-  },
-  set: produce(set)
+  toggleSync: async (desk: string, ship: string) => {
+    const synced = !!get().pikes[desk].sync;
+    await (useMockData
+      ? fakeRequest('')
+      : api.poke(synced ? kilnUnsync(ship, desk) : kilnSync(ship, desk)));
+    await get().fetchPikes();
+  },    
+  set: produce(set),
+  initializeKiln: async () => {
+      await get().fetchLag();
+      await get().fetchPikes();
+  }
 }));
 
-api.subscribe({
-  app: 'hood',
-  path: '/kiln/vats',
-  event: () => {
-    useKilnState.getState().fetchVats();
-  }
-});
-
-const selBlockers = (s: KilnState) => getBlockers(s.vats);
-export function useBlockers() {
-  return useKilnState(selBlockers);
+const selPikes = (s: KilnState) => s.pikes;
+export function usePikes(): Pikes {
+  return useKilnState(selPikes);
 }
 
-export function useVat(desk: string): Vat | undefined {
-  return useKilnState(useCallback((s) => s.vats[desk], [desk]));
+export function usePike(desk: string): Pike | undefined {
+  return useKilnState(useCallback((s) => s.pikes[desk], [desk]));
 }
 
 const selLag = (s: KilnState) => s.lag;
