@@ -7,7 +7,7 @@ import { useCharges } from '../state/docket';
 import useKilnState, { usePike } from '../state/kiln';
 
 function pikeIsBlocked(newKelvin: number, pike: Pike) {
-  return !pike.wefts?.find(({ kelvin }) => kelvin === newKelvin);
+  return pike.zest === 'live' && !pike.wefts?.find(({ kelvin }) => kelvin === newKelvin);
 }
 
 export function useSystemUpdate() {
