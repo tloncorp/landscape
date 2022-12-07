@@ -61,7 +61,7 @@ export const NotificationPrefs = () => {
             {!secure && (
               <>
                 <strong className="text-orange-500">
-                  Unavailable with this browser/connection.
+                  {" Unavailable with this browser/connection."}
                 </strong>
               </>
             )}

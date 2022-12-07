@@ -168,7 +168,7 @@ export const Leap = React.forwardRef(
           case matchSystemPrefs('privacy'):
             return 'My Urbit: Attention & Privacy';
           case matchSystemPrefs('appearance'):
-            return 'My Urbit: Apperance';
+            return 'My Urbit: Appearance';
           case matchSystemPrefs('shortcuts'):
             return 'My Urbit: Shortcuts';
           case matchSystemPrefs('interface'):
