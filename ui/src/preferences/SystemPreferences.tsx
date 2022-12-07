@@ -12,7 +12,7 @@ import { NotificationPrefs } from './NotificationPrefs';
 import { AboutSystem } from './about-system/AboutSystem';
 import { InterfacePrefs } from './InterfacePrefs';
 import { SecurityPrefs } from './SecurityPrefs';
-import { AppearancePrefs } from './ApperancePrefs';
+import { AppearancePrefs } from './AppearancePrefs';
 import { useCharges } from '../state/docket';
 import { AppPrefs } from './AppPrefs';
 import { StoragePrefs } from './StoragePrefs';

@@ -11,12 +11,12 @@ interface RadioOptionProps {
   selected: boolean;
 }
 
-interface ApperanceOption {
+interface AppearanceOption {
   value: prefType;
   label: string;
 }
 
-const apperanceOptions: ApperanceOption[] = [
+const appearanceOptions: AppearanceOption[] = [
   { value: 'auto', label: 'System Theme' },
   { value: 'light', label: 'Light' },
   { value: 'dark', label: 'Dark' }
@@ -57,13 +57,13 @@ export const AppearancePrefs = () => {
 
   return (
     <div className="inner-section space-y-8">
-      <h2 className="h4">Landscape Apperance</h2>
+      <h2 className="h4">Landscape Appearance</h2>
       <RadioGroup.Root
         className="flex flex-col space-y-3"
         value={pref}
         onValueChange={handleChange}
       >
-        {apperanceOptions.map((option) => (
+        {appearanceOptions.map((option) => (
           <RadioOption
             key={`radio-option-${option.value}`}
             value={option.value}
