@@ -22,12 +22,12 @@ interface TileGridProps {
 }
 
 export const dragTypes = {
-  TILE: 'tile'
+  TILE: 'tile',
 };
 
 export const selTiles = (s: SettingsState) => ({
   order: s.tiles.order,
-  loaded: s.loaded
+  loaded: s.loaded,
 });
 
 export const TileGrid = ({ menu }: TileGridProps) => {
@@ -50,11 +50,17 @@ export const TileGrid = ({ menu }: TileGridProps) => {
     if (!hasKeys && hasChargeKeys) {
       useSettingsState.getState().putEntry('tiles', 'order', chargeKeys);
     } else if (order.length < chargeKeys.length) {
-      useSettingsState.getState().putEntry('tiles', 'order', uniq(order.concat(chargeKeys)));
+      useSettingsState
+        .getState()
+        .putEntry('tiles', 'order', uniq(order.concat(chargeKeys)));
     } else if (order.length > chargeKeys.length && hasChargeKeys) {
       useSettingsState
         .getState()
-        .putEntry('tiles', 'order', uniq(order.filter((key) => key in charges).concat(chargeKeys)));
+        .putEntry(
+          'tiles',
+          'order',
+          uniq(order.filter((key) => key in charges).concat(chargeKeys))
+        );
     }
   }, [charges, order, loaded]);
 
@@ -71,18 +77,23 @@ export const TileGrid = ({ menu }: TileGridProps) => {
               delay: 50,
               scrollAngleRanges: [
                 { start: 30, end: 150 },
-                { start: 210, end: 330 }
-              ]
+                { start: 210, end: 330 },
+              ],
             }
           : undefined
       }
     >
-      <div className="grid justify-center grid-cols-2 sm:grid-cols-[repeat(auto-fit,minmax(auto,250px))] gap-4 px-4 md:px-8 w-full max-w-6xl">
+      <div className="grid w-full max-w-6xl grid-cols-2 justify-center gap-4 px-4 sm:grid-cols-[repeat(auto-fit,minmax(auto,250px))] md:px-8">
         {order
           .filter((d) => d !== window.desk && d in charges)
+          .filter((d) => d !== 'landscape')
           .map((desk) => (
             <TileContainer key={desk} desk={desk}>
-              <Tile charge={charges[desk]} desk={desk} disabled={menu === 'upgrading'} />
+              <Tile
+                charge={charges[desk]}
+                desk={desk}
+                disabled={menu === 'upgrading'}
+              />
             </TileContainer>
           ))}
       </div>
