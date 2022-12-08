@@ -195,16 +195,18 @@ export const SystemPreferences = (
                 Installed App Settings
               </span>
               <ul className="space-y-1">
-                {filteredCharges.map((charge) => (
-                  <SystemPreferencesSection
-                    key={charge.desk}
-                    url={subUrl(`apps/${charge.desk}`)}
-                    active={matchSub('apps', charge.desk)}
-                  >
-                    <DocketImage size="small" className="mr-3" {...charge} />
-                    {getAppName(charge)}
-                  </SystemPreferencesSection>
-                ))}
+                {filteredCharges
+                  .sort((a, b) => getAppName(a).localeCompare(getAppName(b)))
+                  .map((charge) => (
+                    <SystemPreferencesSection
+                      key={charge.desk}
+                      url={subUrl(`apps/${charge.desk}`)}
+                      active={matchSub('apps', charge.desk)}
+                    >
+                      <DocketImage size="small" className="mr-3" {...charge} />
+                      {getAppName(charge)}
+                    </SystemPreferencesSection>
+                  ))}
               </ul>
             </nav>
           </aside>
