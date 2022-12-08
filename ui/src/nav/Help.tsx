@@ -14,31 +14,31 @@ const groups: Record<string, Group> = {
     title: 'Urbit Community',
     icon: 'https://fabled-faster.nyc3.digitaloceanspaces.com/fabled-faster/2021.4.02..21.52.41-UC.png',
     color: 'bg-black',
-    link: '/apps/landscape/~landscape/ship/~bitbet-bolbel/urbit-community'
+    link: '/apps/groups/groups/~bitbet-bolbel/urbit-community'
   },
   discovery: {
     title: 'Group Discovery',
     icon: 'https://urbit.me/images/icons/icon-512x512.png',
     color: 'bg-green-300',
-    link: '/apps/landscape/~landscape/ship/~rondev/group-discovery'
+    link: '/apps/groups/groups/~rondev/group-discovery'
   },
   foundation: {
-    title: 'Foundation',
-    icon: 'https://interstellar.nyc3.digitaloceanspaces.com/battus-datsun/2022.6.10..21.28.21-urbit-inverted.png',
+    title: 'Urbit Foundation',
+    icon: 'https://interstellar.nyc3.digitaloceanspaces.com/battus-datsun/2022.11.07..19.39.22-Sig.png',
     color: 'bg-black',
-    link: '/apps/landscape/~landscape/ship/~wolref-podlex/foundation'
+    link: '/apps/groups/groups/~halbex-palheb/uf-public'
   },
   forge: {
     title: 'The Forge',
     icon: '',
     color: 'bg-black',
-    link: '/apps/landscape/~landscape/ship/~middev/the-forge'
+    link: '/apps/groups/groups/ship/~middev/the-forge'
   },
   tlonSupport: {
     title: 'Tlon Support Forum',
     icon: '',
     color: 'bg-yellow-500',
-    link: '/apps/landscape/~landscape/ship/~bitpyx-dildus/tlon-support'
+    link: '/apps/groups/groups/~bitpyx-dildus/tlon-support'
   }
 };
 
