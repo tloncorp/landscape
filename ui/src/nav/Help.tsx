@@ -23,10 +23,10 @@ const groups: Record<string, Group> = {
     link: '/apps/landscape/~landscape/ship/~rondev/group-discovery'
   },
   foundation: {
-    title: 'Foundation',
-    icon: 'https://interstellar.nyc3.digitaloceanspaces.com/battus-datsun/2022.6.10..21.28.21-urbit-inverted.png',
+    title: 'Urbit Foundation',
+    icon: 'https://interstellar.nyc3.digitaloceanspaces.com/battus-datsun/2022.11.07..19.39.22-Sig.png',
     color: 'bg-black',
-    link: '/apps/landscape/~landscape/ship/~wolref-podlex/foundation'
+    link: '/apps/landscape/~landscape/ship/~halbex-palheb/uf-public'
   },
   forge: {
     title: 'The Forge',
