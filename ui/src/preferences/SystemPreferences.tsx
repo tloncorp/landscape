@@ -71,9 +71,9 @@ export const SystemPreferences = (
   );
   const { systemBlocked } = useSystemUpdate();
   const charges = useCharges();
-  const filteredCharges = Object.values(charges).filter(
-    (charge) => charge.desk !== window.desk
-  );
+  const filteredCharges = Object.values(charges)
+    .filter((charge) => charge.desk !== window.desk)
+    .filter((charge) => charge.desk !== 'landscape');
   const isMobile = useMedia('(max-width: 639px)');
   const settingsPath = isMobile ? `${match.url}/:submenu` : '/';
 
