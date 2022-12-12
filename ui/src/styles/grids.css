@@ -63,3 +63,18 @@
       'icon  head actions';
   }
 }
+
+
+.system-preferences-grid {
+  display: grid;
+  grid-template-columns: 20rem 1fr;
+  grid-template-rows: auto;
+}
+
+.system-preferences-aside {
+  overflow-y: scroll;
+}
+
+.system-preferences-content {
+  overflow-y: scroll;
+}

@@ -106,9 +106,9 @@ export const SystemPreferences = (
       FallbackComponent={ErrorAlert}
       onReset={() => history.push('/leap/system-preferences')}
     >
-      <div className="h-full overflow-y-auto bg-gray-50 sm:flex">
+      <div className="system-preferences-grid bg-gray-50">
         <Route exact={isMobile} path={match.url}>
-          <aside className="w-full min-w-60 flex-none self-start border-r-2 border-gray-50 bg-white py-4 font-semibold text-black sm:w-auto sm:py-8 sm:text-gray-600">
+          <aside className="system-preferences-aside min-h-fit max-h-[85vh] w-full min-w-60 flex flex-col border-r-2 border-gray-50 bg-white py-4 font-semibold text-black sm:w-auto sm:py-8 sm:text-gray-600">
             <nav className="flex flex-col px-2 sm:px-6">
               <SearchSystemPreferences subUrl={subUrl} />
               <span className="pt-1 pl-2 pb-3 text-sm font-semibold text-gray-400">
@@ -212,7 +212,7 @@ export const SystemPreferences = (
           </aside>
         </Route>
         <Route path={settingsPath}>
-          <section className="flex min-h-[60vh] flex-1 flex-col bg-gray-50 p-4 text-gray-800 sm:p-8">
+          <section className="system-preferences-content flex min-h-[60vh] flex-1 flex-col bg-gray-50 p-4 text-gray-800 sm:p-8">
             <Switch>
               <Route path={`${match.url}/apps/:desk`} component={AppPrefs} />
               <Route path={`${match.url}/help`} component={Help} />
