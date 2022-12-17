@@ -65,16 +65,18 @@
 }
 
 
-.system-preferences-grid {
-  display: grid;
-  grid-template-columns: 20rem 1fr;
-  grid-template-rows: auto;
+@media (min-width: 640px){
+  .system-preferences-grid {
+    display: grid;
+    grid-template-columns: 20rem 1fr;
+    grid-template-rows: auto;
+  }
 }
 
 .system-preferences-aside {
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .system-preferences-content {
-  overflow-y: scroll;
+  overflow-y: auto;
 }
