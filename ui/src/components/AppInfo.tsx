@@ -61,7 +61,7 @@ export const AppInfo: FC<AppInfoProps> = ({ docket, pike, className }) => {
 
   const copyApp = useCallback(() => {
     setCopied(true);
-    clipboardCopy(`web+urbitgraph://${publisher}/${desk}`);
+    clipboardCopy(`/1/desk/${publisher}/${desk}`);
 
     setTimeout(() => {
       setCopied(false);
