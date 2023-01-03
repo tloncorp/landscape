@@ -19,14 +19,14 @@ interface NotificationProps {
 
 function getContent(content: YarnContent) {
   if (typeof content === 'string') {
-    return <span>{content}</span>;
+    return <span key={content}>{content}</span>;
   }
 
   if ('ship' in content) {
-    return <ShipName name={content.ship} className="font-semibold text-gray-800" />;
+    return <ShipName key={content.ship} name={content.ship} className="font-semibold text-gray-800" />;
   }
 
-  return <strong className="text-gray-800">{content.emph}</strong>;
+  return <strong key={content.emph} className="text-gray-800">{content.emph}</strong>;
 }
 
 function makePrettyTime(date: Date) {
