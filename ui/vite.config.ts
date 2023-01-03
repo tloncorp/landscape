@@ -15,7 +15,7 @@ export default ({ mode }) => {
 
   return defineConfig({
     base: mode === 'mock' ? undefined : '/apps/grid/',
-    server: mode === 'mock' ? undefined : { https: true },
+    server: mode === 'mock' || mode === 'development' ? undefined : { https: true },
     build:
       mode !== 'profile'
         ? {
