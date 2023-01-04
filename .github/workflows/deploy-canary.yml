@@ -1,0 +1,22 @@
+name: Deploy Landscape (canary)
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        type: string
+        required: false
+        description: Enter the tag to deploy
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: "Release to ~binnec-dozzod-marzod (canary)"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/release
+        with:
+          app: 'landscape'
+          ship: 'canary'
+          credentials: ${{ secrets.JANEWAY_SERVICE_KEY }}
+          ssh-sec-key: ${{ secrets.JANEWAY_SSH_SEC_KEY }}
+          ssh-pub-key: ${{ secrets.JANEWAY_SSH_PUB_KEY }}
+          ref: ${{ github.event.inputs.tag }}
