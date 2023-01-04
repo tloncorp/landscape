@@ -1,12 +1,12 @@
 # Landscape
 
-Landscape provides the primary launching interface for Tlon's suite of userspace applications. This directory contains the front-end web application to power said interface.
+Landscape provides the primary launching interface for Tlon's suite of userspace applications. This repository contains the front-end web application to power said interface.
 
 Landscape is built primarily using [React], [Typescript], and [Tailwind CSS]. [Vite] ensures that all code and assets are loaded appropriately, bundles the application for distribution and provides a functional dev environment.
 
 ## Getting Started
 
-To get started using Landscape first you need to run, `npm i` from the `ui` directory. This will install your npm dependencies and correctly link the current implementation of the packages at `pkg/npm/*` to your dependencies.
+To get started using Landscape first you need to run `npm i` from the `ui` directory.
 
 Once that's done, you can then run `npm run mock` if you'd like to get started immediately. This will use hard-coded mock data to power the interface so you can work on the interface without being connected to a ship.
 
