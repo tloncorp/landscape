@@ -17,7 +17,7 @@ const SubmitIssue = ({ error }: { error: Error }) => {
     <Button
       as="a"
       variant="caution"
-      href={`https://github.com/urbit/landscape/issues/new?assignees=&labels=bug&title=${title}&body=${body}`}
+      href={`https://github.com/tloncorp/landscape-apps/issues/new?assignees=&labels=bug&title=${title}&body=${body}`}
       target="_blank"
       rel="noreferrer"
     >

@@ -1,4 +1,4 @@
-:~  title+'System'
+:~  title+'Grid'
     info+'An app launcher for Urbit.'
     color+0xee.5432
     glob-http+['https://bootstrap.urbit.org/glob-0v1.tqd6t.ggt8r.roheb.l3bvq.sbm6d.glob' 0v1.tqd6t.ggt8r.roheb.l3bvq.sbm6d]
