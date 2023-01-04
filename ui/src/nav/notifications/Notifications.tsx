@@ -11,21 +11,24 @@ export const Notifications = ({ history }: RouteComponentProps) => {
   const { notifications } = useNotifications();
   const { groups, retrieve } = groupStore();
 
+  
+  let timeout = 0 as unknown as NodeJS.Timeout;
+  function visibilitychange() {
+    if (document.visibilityState === 'visible') {
+      timeout = setTimeout(() => {
+        useHarkState.getState().sawSeam({ all: null });
+      }, 3000);
+    } else {
+      clearTimeout(timeout);
+    }
+  }
+  
   useEffect(() => {
     retrieve();
   }, [retrieve]);
 
   useEffect(() => {
-    let timeout = 0 as unknown as NodeJS.Timeout;
-    function visibilitychange() {
-      if (document.visibilityState === 'visible') {
-        timeout = setTimeout(() => {
-          useHarkState.getState().sawSeam({ all: null });
-        }, 5000);
-      } else {
-        clearTimeout(timeout);
-      }
-    }
+    visibilitychange()
     document.addEventListener('visibilitychange', visibilitychange);
 
     return () => {
