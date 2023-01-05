@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { RouteComponentProps } from 'react-router-dom';
 import { ErrorAlert } from '../../components/ErrorAlert';
@@ -37,13 +37,22 @@ export const Notifications = ({ history }: RouteComponentProps) => {
     };
   }, []);
 
+  const markAllRead = useCallback(() => {
+    useHarkState.getState().sawSeam({ all: null });
+  }, [])
+
   return (
     <ErrorBoundary
       FallbackComponent={ErrorAlert}
       onReset={() => history.push('/leap/notifications')}
     >
       <div className="grid grid-rows-[1fr,auto] sm:grid-rows-[auto,1fr] h-full p-4 md:p-9 overflow-y-auto">
-        <h2 className="font-semibold text-xl">All Notifications</h2>
+        <div className="w-full flex items-center justify-between">
+          <h2 className="font-semibold text-xl">All Notifications</h2>
+          <button className='button text-white bg-blue-900' onClick={markAllRead}>
+            Mark All as Read
+          </button>
+        </div>
         <section className="w-full">
           {notifications.map((grouping) => (
             <div key={grouping.date}>
