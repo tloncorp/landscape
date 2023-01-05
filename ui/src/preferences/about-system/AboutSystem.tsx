@@ -16,12 +16,11 @@ function getHash(pike: Pike): string {
 }
 
 export const AboutSystem = () => {
-  const gardenCharge = useCharge('garden');
-  const gardenPike = usePike(window.desk);
+  const basePike = usePike('base');
   const { systemBlocked, blockedCharges, blockedCount, freezeApps } =
     useSystemUpdate();
   const gardenBlocked = null != blockedCharges.find(charge => charge.desk == 'garden');
-  const hash = gardenPike && getHash(gardenPike);
+  const hash = basePike && getHash(basePike);
   const lag = useLag();
   
   return (
@@ -38,12 +37,8 @@ export const AboutSystem = () => {
         <div className="leading-5 space-y-4">
           <FullTlon16Icon className="h-4" />
           <div>
-            <p>Landscape Operating Environment</p>
-            <p>by Tlon Corporation</p>
-          </div>
-          <div>
             <p>
-              Version {gardenCharge?.version} ({hash})
+              Urbit Kernel Version ({hash})
             </p>
           </div>
           {systemBlocked ? (
