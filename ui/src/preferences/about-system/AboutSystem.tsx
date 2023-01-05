@@ -84,7 +84,7 @@ export const AboutSystem = () => {
               {gardenBlocked ? (
                 <>
                 <p>
-                  Grid is the application launcher and system interface.
+                  Landscape is the application launcher and system interface.
                   It needs an update before you can apply the System Update.
                 </p>
                 </>
