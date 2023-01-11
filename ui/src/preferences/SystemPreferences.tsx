@@ -107,7 +107,7 @@ export const SystemPreferences = (
     >
       <div className="system-preferences-grid bg-gray-50">
         <Route exact={isMobile} path={match.url}>
-          <aside className="system-preferences-aside min-h-fit max-h-[calc(100vh-6.25rem)] w-full min-w-60 flex flex-col border-r-2 border-gray-50 bg-white py-4 font-semibold text-black sm:w-auto sm:py-8 sm:text-gray-600">
+          <aside className="system-preferences-aside min-h-fit flex max-h-[calc(100vh-6.25rem)] w-full min-w-60 flex-col border-r-2 border-gray-50 bg-white py-4 font-semibold text-black sm:w-auto sm:py-8 sm:text-gray-600">
             <nav className="flex flex-col px-2 sm:px-6">
               <SearchSystemPreferences subUrl={subUrl} />
               <span className="pt-1 pl-2 pb-3 text-sm font-semibold text-gray-400">
@@ -236,6 +236,7 @@ export const SystemPreferences = (
                 component={AttentionAndPrivacy}
               />
               <Route path={[`${match.url}/storage`]} component={StoragePrefs} />
+              <Route path={`${match.url}/security`} component={SecurityPrefs} />
               <Route
                 path={[`${match.url}/system-updates`, match.url]}
                 component={AboutSystem}
@@ -249,7 +250,6 @@ export const SystemPreferences = (
             </Link>
           </section>
         </Route>
-        <Route path={`${match.url}/security`} component={SecurityPrefs} />
       </div>
     </ErrorBoundary>
   );
