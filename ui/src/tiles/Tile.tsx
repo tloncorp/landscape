@@ -46,7 +46,8 @@ export const Tile: FunctionComponent<TileProps> = ({ charge, desk, disabled = fa
       target="_blank"
       rel="noreferrer"
       className={classNames(
-        'group absolute font-semibold w-full h-full rounded-3xl default-ring focus-visible:ring-4 overflow-hidden',
+        'default-ring group absolute h-full w-full overflow-hidden rounded-3xl font-semibold focus-visible:ring-4',
+        suspended && 'opacity-50 grayscale',
         isDragging && 'opacity-0',
         lightText && active && !loading ? 'text-gray-200' : 'text-gray-800',
         !active && 'cursor-default'
@@ -56,15 +57,21 @@ export const Tile: FunctionComponent<TileProps> = ({ charge, desk, disabled = fa
       onAuxClick={() => addRecentApp(desk)}
     >
       <div>
-        <div className="absolute z-10 top-4 left-4 sm:top-6 sm:left-6 flex items-center">
+        <div className="absolute top-4 left-4 z-10 flex items-center sm:top-6 sm:left-6">
           {pike?.zest === 'held' && !disabled && (
-            <Bullet className="w-4 h-4 text-orange-500 dark:text-black" />
+            <Bullet className="h-4 w-4 text-orange-500 dark:text-black" />
           )}
           {!active && (
             <>
-              {loading && <Spinner className="h-6 w-6 mr-2" />}
+              {loading && <Spinner className="mr-2 h-6 w-6" />}
               <span className="text-gray-500">
-                {suspended ? 'Suspended' : loading ? 'Installing' : hung ? 'Errored' : null}
+                {suspended
+                  ? 'Suspended'
+                  : loading
+                  ? 'Installing'
+                  : hung
+                  ? 'Errored'
+                  : null}
               </span>
             </>
           )}
@@ -74,18 +81,22 @@ export const Tile: FunctionComponent<TileProps> = ({ charge, desk, disabled = fa
           chad={chad}
           menuColor={active ? menuColor : suspendMenuColor}
           lightText={lightText}
-          className="absolute z-10 top-3 right-3 sm:top-5 sm:right-5 opacity-0 pointer-coarse:opacity-100 hover-none:opacity-100 focus:opacity-100 group-hover:opacity-100"
+          className="absolute top-3 right-3 z-10 opacity-0 focus:opacity-100 group-hover:opacity-100 pointer-coarse:opacity-100 hover-none:opacity-100 sm:top-5 sm:right-5"
         />
         {title && (
           <div
-            className="h4 absolute z-10 bottom-[8%] left-[5%] sm:bottom-7 sm:left-5 py-1 px-3 rounded-lg"
+            className="h4 absolute bottom-[8%] left-[5%] z-10 rounded-lg py-1 px-3 sm:bottom-7 sm:left-5"
             style={{ backgroundColor }}
           >
             <h3 className="mix-blend-hard-light">{title}</h3>
           </div>
         )}
         {image && !loading && (
-          <img className="absolute top-0 left-0 h-full w-full object-cover" src={image} alt="" />
+          <img
+            className="absolute top-0 left-0 h-full w-full object-cover"
+            src={image}
+            alt=""
+          />
         )}
       </div>
     </a>
