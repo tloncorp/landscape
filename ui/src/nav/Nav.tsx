@@ -3,7 +3,14 @@ import * as Portal from '@radix-ui/react-portal';
 import classNames from 'classnames';
 import React, { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import { Link, Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
+import {
+  Link,
+  LinkProps,
+  Route,
+  Switch,
+  useHistory,
+  useRouteMatch,
+} from 'react-router-dom';
 import create from 'zustand';
 import { Avatar } from '../components/Avatar';
 import { Dialog } from '../components/Dialog';
@@ -16,6 +23,7 @@ import { Search } from './Search';
 import { SystemPreferences } from '../preferences/SystemPreferences';
 import { useSystemUpdate } from '../logic/useSystemUpdate';
 import { Bullet } from '../components/icons/Bullet';
+import { Cross } from '../components/icons/Cross';
 
 export interface MatchItem {
   url: string;
@@ -43,8 +51,8 @@ export const useLeapStore = create<LeapStore>((set) => ({
     set({
       rawInput: input || '',
       searchInput: input || '',
-      selection
-    })
+      selection,
+    }),
 }));
 
 window.leap = useLeapStore.getState;
@@ -60,6 +68,42 @@ export type MenuState =
 interface NavProps {
   menu?: MenuState;
 }
+
+type PrefsLinkProps = Omit<LinkProps<HTMLAnchorElement>, 'to'> & {
+  menuState: string;
+  systemBlocked?: string[];
+};
+
+export const SystemPrefsLink = ({
+  menuState,
+  systemBlocked,
+}: PrefsLinkProps) => {
+  const active = ['system-preferences'].indexOf(menuState) >= 0;
+
+  if (active) {
+    return (
+      <Link
+        to="/"
+        className="circle-button h4 default-ring relative z-50 flex-none bg-gray-50"
+      >
+        <Cross className="h-3 w-3 fill-current" />
+        <span className="sr-only">Close</span>
+      </Link>
+    );
+  }
+
+  return (
+    <Link to="/leap/system-preferences" className="relative flex-none">
+      <Avatar shipName={window.ship} size="nav" />
+      {systemBlocked && (
+        <Bullet
+          className="absolute -top-2 -right-2 ml-auto h-5 w-5 text-orange-500"
+          aria-label="System Needs Attention"
+        />
+      )}
+    </Link>
+  );
+};
 
 export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
   const { push } = useHistory();
@@ -115,18 +159,13 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
       {/* Using portal so that we can retain the same nav items both in the dialog and in the base header */}
       <Portal.Root
         containerRef={dialogContentOpen ? dialogNavRef : navRef}
-        className="flex items-center justify-center w-full space-x-2"
+        className="flex w-full items-center justify-center space-x-2"
       >
-        <Link to="/leap/system-preferences" className="relative flex-none">
-          <Avatar shipName={window.ship} size="nav" />
-          {systemBlocked && (
-            <Bullet
-              className="absolute -top-2 -right-2 h-5 w-5 ml-auto text-orange-500"
-              aria-label="System Needs Attention"
-            />
-          )}
-        </Link>
-        <NotificationsLink navOpen={isOpen} notificationsOpen={menu === 'notifications'} />
+        <SystemPrefsLink menuState={menuState} systemBlocked={systemBlocked} />
+        <NotificationsLink
+          navOpen={isOpen}
+          notificationsOpen={menu === 'notifications'}
+        />
         <Leap
           ref={inputRef}
           menu={menuState}
@@ -138,7 +177,7 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
       <div
         ref={navRef}
         className={classNames(
-          'w-full max-w-[712px] mx-auto my-6 text-gray-400 font-semibold',
+          'mx-auto my-6 w-full max-w-[712px] font-semibold text-gray-400',
           dialogContentOpen && 'h-9'
         )}
         role="combobox"
@@ -150,7 +189,7 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
         <DialogContent
           onInteractOutside={preventClose}
           onOpenAutoFocus={onOpen}
-          className="max-h-full fixed bottom-0 sm:top-0 sm:bottom-auto scroll-left-50 flex flex-col justify-end sm:justify-start scroll-full-width h-full sm:h-auto max-w-[882px] px-4 sm:pb-4 text-gray-400 -translate-x-1/2 outline-none"
+          className="scroll-left-50 scroll-full-width outline-none fixed bottom-0 flex h-full max-h-full max-w-[882px] -translate-x-1/2 flex-col justify-end px-4 text-gray-400 sm:top-0 sm:bottom-auto sm:h-auto sm:justify-start sm:pb-4"
           role="combobox"
           aria-controls="leap-items"
           aria-owns="leap-items"
@@ -159,17 +198,20 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
           <header
             id="dialog-nav"
             ref={dialogNavRef}
-            className="max-w-[712px] w-full mx-auto my-6 sm:mb-3 order-last sm:order-none"
+            className="order-last mx-auto my-6 w-full max-w-[712px] sm:order-none sm:mb-3"
           />
           <div
             id="leap-items"
-            className="grid grid-rows-[fit-content(calc(100vh-6.25rem))] mt-4 sm:mt-0 bg-white rounded-xl overflow-hidden default-ring focus-visible:ring-2"
+            className="default-ring mt-4 grid grid-rows-[fit-content(calc(100vh-6.25rem))] overflow-hidden rounded-xl bg-white focus-visible:ring-2 sm:mt-0"
             tabIndex={0}
             role="listbox"
           >
             <Switch>
               <Route path="/leap/notifications" component={Notifications} />
-              <Route path="/leap/system-preferences" component={SystemPreferences} />
+              <Route
+                path="/leap/system-preferences"
+                component={SystemPreferences}
+              />
               <Route path="/leap/help-and-support" component={Help} />
               <Route path={['/leap/search', '/leap']} component={Search} />
             </Switch>
