@@ -275,7 +275,7 @@ export const Leap = React.forwardRef(
       <div className="relative z-50 w-full">
         <form
           className={classNames(
-            'flex items-center h-9 w-full px-2 rounded-lg bg-white default-ring focus-within:ring-2',
+            'default-ring flex h-9 w-full items-center rounded-lg bg-white px-2 focus-within:ring-2',
             !navOpen ? 'bg-gray-50' : '',
             menu === 'upgrading' ? 'bg-orange-500' : '',
             className
@@ -285,8 +285,12 @@ export const Leap = React.forwardRef(
           <label
             htmlFor="leap"
             className={classNames(
-              'inline-block flex-none p-2 h4 ',
-              menu === 'upgrading' ? 'text-white' : !selection ? 'sr-only' : 'text-blue-400'
+              'h4 inline-block flex-none p-2 ',
+              menu === 'upgrading'
+                ? 'text-white'
+                : !selection
+                ? 'sr-only'
+                : 'text-blue-400'
             )}
           >
             {menu === 'upgrading'
@@ -301,7 +305,7 @@ export const Leap = React.forwardRef(
               placeholder={selection ? '' : getPlaceholder()}
               // TODO: style placeholder text with 100% opacity.
               // Not immediately clear how to do this within tailwind.
-              className="flex-1 w-full h-full px-2 text-base bg-transparent text-gray-800 outline-none"
+              className="outline-none h-full w-full flex-1 bg-transparent px-2 text-lg text-gray-800 sm:text-base"
               value={rawInput}
               onClick={toggleSearch}
               onFocus={onFocus}
@@ -317,10 +321,10 @@ export const Leap = React.forwardRef(
         {menu === 'search' && (
           <Link
             to="/"
-            className="absolute flex-none w-8 h-8 text-gray-600 top-1/2 right-2 circle-button default-ring -translate-y-1/2"
+            className="circle-button default-ring absolute top-1/2 right-2 h-8 w-8 flex-none -translate-y-1/2 text-gray-600"
             onClick={() => select(null)}
           >
-            <Cross className="w-3 h-3" />
+            <Cross className="h-3 w-3" />
             <span className="sr-only">Close</span>
           </Link>
         )}
