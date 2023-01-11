@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { Chad, chadIsRunning } from '@urbit/api';
 import useDocketState from '../state/docket';
 import { disableDefault, handleDropdownLink } from '../state/util';
+import { useMedia } from '../logic/useMedia';
 
 export interface TileMenuProps {
   desk: string;
@@ -32,25 +33,32 @@ const Item = React.forwardRef(({ children, ...props }, ref) => (
   <DropdownMenu.Item
     ref={ref}
     {...props}
-    className="block w-full px-4 py-3 leading-none rounded mix-blend-hard-light select-none default-ring ring-gray-600"
+    className="default-ring block w-full select-none rounded px-4 py-3 leading-none mix-blend-hard-light ring-gray-600"
   >
     {children}
   </DropdownMenu.Item>
 )) as ItemComponent;
 
-export const TileMenu = ({ desk, chad, menuColor, lightText, className }: TileMenuProps) => {
+export const TileMenu = ({
+  desk,
+  chad,
+  menuColor,
+  lightText,
+  className,
+}: TileMenuProps) => {
   const [open, setOpen] = useState(false);
   const toggleDocket = useDocketState((s) => s.toggleDocket);
   const menuBg = { backgroundColor: menuColor };
   const linkOnSelect = useCallback(handleDropdownLink(setOpen), []);
   const active = chadIsRunning(chad);
   const suspended = 'suspend' in chad;
+  const isMobile = useMedia('(any-pointer: coarse)');
 
   return (
     <DropdownMenu.Root open={open} onOpenChange={(isOpen) => setOpen(isOpen)}>
       <DropdownMenu.Trigger
         className={classNames(
-          'flex items-center justify-center w-8 h-8 rounded-full transition-opacity duration-75 default-ring',
+          'default-ring flex h-8 w-8 items-center justify-center rounded-full transition-opacity duration-75',
           open && 'opacity-100',
           className
         )}
@@ -58,7 +66,10 @@ export const TileMenu = ({ desk, chad, menuColor, lightText, className }: TileMe
         // onMouseOver={() => queryClient.setQueryData(['apps', name], app)}
       >
         <MenuIcon
-          className={classNames('w-4 h-4 mix-blend-hard-light', lightText && 'text-gray-100')}
+          className={classNames(
+            'h-4 w-4 mix-blend-hard-light',
+            lightText && 'text-gray-100'
+          )}
         />
         <span className="sr-only">Menu</span>
       </DropdownMenu.Trigger>
@@ -72,23 +83,40 @@ export const TileMenu = ({ desk, chad, menuColor, lightText, className }: TileMe
         style={menuBg}
       >
         <DropdownMenu.Group>
-          <Item as={Link} to={`/app/${desk}`} onSelect={linkOnSelect}>
+          <Item
+            as={Link}
+            to={`/app/${desk}`}
+            onSelect={isMobile ? (e) => e.preventDefault() : linkOnSelect}
+          >
             App Info
           </Item>
         </DropdownMenu.Group>
         <DropdownMenu.Separator className="-mx-4 my-2 border-t-2 border-solid border-gray-600 mix-blend-soft-light" />
         <DropdownMenu.Group>
           {active && (
-            <Item as={Link} to={`/app/${desk}/suspend`} onSelect={linkOnSelect}>
+            <Item
+              as={Link}
+              to={`/app/${desk}/suspend`}
+              onSelect={isMobile ? (e) => e.preventDefault() : linkOnSelect}
+            >
               Suspend App
             </Item>
           )}
-          {suspended && <Item onSelect={() => toggleDocket(desk)}>Resume App</Item>}
-          <Item as={Link} to={`/app/${desk}/remove`} onSelect={linkOnSelect}>
+          {suspended && (
+            <Item onSelect={() => toggleDocket(desk)}>Resume App</Item>
+          )}
+          <Item
+            as={Link}
+            to={`/app/${desk}/remove`}
+            onSelect={isMobile ? (e) => e.preventDefault() : linkOnSelect}
+          >
             Uninstall App
           </Item>
         </DropdownMenu.Group>
-        <DropdownMenu.Arrow className="w-4 h-[10px] fill-current" style={{ color: menuColor }} />
+        <DropdownMenu.Arrow
+          className="h-[10px] w-4 fill-current"
+          style={{ color: menuColor }}
+        />
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   );
