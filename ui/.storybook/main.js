@@ -1,3 +1,5 @@
+const { urbitPlugin } = require('@urbit/vite-plugin-urbit');
+const { mergeConfig } = require('vite');
 const path = require('path');
 
 module.exports = {
@@ -23,16 +25,8 @@ module.exports = {
     builder: '@storybook/builder-vite',
   },
   async viteFinal(config, { configType }) {
-    return {
-      ...config,
-      resolve: {
-        alias: [
-          {
-            find: '@',
-            replacement: path.resolve(__dirname, '../src'),
-          },
-        ],
-      },
-    };
+    return mergeConfig(config, {
+      plugins: [urbitPlugin({ base: 'grid', target: 'http://localhost:8080', changeOrigin: false, secure: false })]
+    });
   },
 };
