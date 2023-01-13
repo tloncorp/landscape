@@ -52,3 +52,7 @@
 .default-ring {
   @apply focus-visible:ring-2 ring-blue-400 ring-opacity-80 focus-visible:outline-none focus:outline-none;
 }
+
+.sb-show-main {
+  @apply text-base font-sans text-gray-800 bg-white antialiased
+}
