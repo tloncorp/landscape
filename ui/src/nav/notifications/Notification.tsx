@@ -71,7 +71,7 @@ export default function Notification({ bin, groups }: NotificationProps) {
         className="flex flex-1 space-x-3"
       >
         <div className="relative flex-none self-start">
-          <DocketImage {...charge} size="default" />
+          {charge && <DocketImage {...charge} size="default" />}
         </div>
         <div className="space-y-2 p-1">
           {(type === 'channel' || type === 'group') && rope.group && (
@@ -96,8 +96,12 @@ export default function Notification({ bin, groups }: NotificationProps) {
       </DeskLink>
       <div className="flex-none p-1">
         <div className="flex items-center">
-          {bin.unread ? <Bullet16Icon className="h-4 w-4 text-blue-500" /> : null}
-          <span className="font-semibold">{makePrettyTime(new Date(bin.time))}</span>
+          {bin.unread ? (
+            <Bullet16Icon className="h-4 w-4 text-blue-500" />
+          ) : null}
+          <span className="font-semibold">
+            {makePrettyTime(new Date(bin.time))}
+          </span>
         </div>
       </div>
     </div>
