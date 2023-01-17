@@ -43,13 +43,13 @@ function getContent(content: YarnContent) {
 
   return (
     <span key={content.emph} className="text-gray-800">
-      {content.emph}
+      &ldquo;{content.emph}&rdquo;
     </span>
   );
 }
 
 function NotificationContent(content: Array<YarnContent>) {
-  return <p>{_.map(content, (c) => getContent(c))}</p>;
+  return <p className="leading-5">{_.map(content, (c) => getContent(c))}</p>;
 }
 
 function makePrettyTime(date: Date) {
@@ -57,6 +57,16 @@ function makePrettyTime(date: Date) {
 }
 
 function getNotificationType(rope: Rope) {
+  if (
+    rope.thread.endsWith('/channel/edit') ||
+    rope.thread.endsWith('/channel/add') ||
+    rope.thread.endsWith('/channel/del') ||
+    rope.thread.endsWith('/joins') ||
+    rope.thread.endsWith('/leaves')
+  ) {
+    return 'group-meta';
+  }
+
   if (rope.channel) {
     return 'channel';
   }
@@ -66,6 +76,65 @@ function getNotificationType(rope: Rope) {
   }
 
   return 'desk';
+}
+
+function NotificationTrigger({ type, groups, rope, ship }: any) {
+  switch (type) {
+    case 'group-meta':
+      return (
+        <GroupAvatar
+          image={groups?.[rope.group]?.meta?.image}
+          size="default w-12 h-12"
+        />
+      );
+    case 'desk':
+    case 'group':
+    case 'channel':
+      return <Avatar shipName={ship} size="default" />;
+    default:
+      return null;
+  }
+}
+
+function NotificationContext({ type, groups, rope, charge, app }: any) {
+  switch (type) {
+    case 'channel':
+      return (
+        <div className="flex items-center space-x-2 text-gray-400">
+          <GroupAvatar image={groups?.[rope.group]?.meta?.image} />
+          <span className="font-bold text-gray-400">
+            {app} • {groups?.[rope.group]?.meta?.title}:{' '}
+            {groups?.[rope.group]?.channels?.[rope.channel]?.meta?.title}
+          </span>
+        </div>
+      );
+    case 'group':
+      return (
+        <div className="flex items-center space-x-2 text-gray-400">
+          <GroupAvatar image={groups?.[rope.group]?.meta?.image} />
+          <span className="font-bold text-gray-400">
+            {app} • {groups?.[rope.group]?.meta?.title}
+          </span>
+        </div>
+      );
+    case 'group-meta':
+      return (
+        <div className="flex items-center text-gray-400">
+          <DocketImage {...charge} size="xs" />
+          <span className="font-bold text-gray-400">
+            {app}: {groups?.[rope.group]?.meta?.title}
+          </span>
+        </div>
+      );
+    case 'desk':
+    default:
+      return (
+        <div className="flex items-center text-gray-400">
+          <DocketImage {...charge} size="xs" />
+          <span className="font-bold text-gray-400">{app}</span>
+        </div>
+      );
+  }
 }
 
 export default function Notification({ bin, groups }: NotificationProps) {
@@ -95,57 +164,24 @@ export default function Notification({ bin, groups }: NotificationProps) {
         className="flex flex-1 space-x-3"
       >
         <div className="relative flex-none self-start">
-          {/* Main avatar display */}
-          {ship && (
-            // && (type === 'group' || type === 'channel')
-            <Avatar shipName={ship} size="default" />
-          )}
+          <NotificationTrigger
+            type={type}
+            groups={groups}
+            rope={rope}
+            ship={ship}
+          />
         </div>
-        <div className="flex-col space-y-2">
-          {/* Show group avatars || docket image || nothing */}
-          {(type === 'channel' || type === 'group') && rope.group && charge && (
-            <div className="flex items-center">
-              {charge && groups?.[rope.group]?.meta?.image && (
-                <GroupAvatar
-                  image={groups?.[rope.group]?.meta?.image}
-                  className="mr-2"
-                />
-              )}
-              {charge && !groups?.[rope.group]?.meta.image && (
-                <DocketImage {...charge} size="xs" />
-              )}
-              {!charge && <ColorBoxIcon color="white" letter="" />}
-
-              <span className="font-bold text-gray-400">
-                {app} {groups?.[rope.group]?.meta?.title && `• `}
-                {groups?.[rope.group]?.meta?.title}
-              </span>
-            </div>
-          )}
-
-          {/* Show docket image || nothing */}
-          {type === 'desk' &&
-            (ship ? (
-              <div className="flex items-center text-gray-400">
-                {charge && (
-                  <>
-                    <DocketImage {...charge} size="xs" />
-                    <span className="font-bold">{app}</span>
-                  </>
-                )}
-              </div>
-            ) : (
-              <span className="font-bold text-gray-400">
-                {charge?.title || ''}
-              </span>
-            ))}
-
-          {/* Notification content */}
+        <div className="w-full flex-col space-y-2">
+          <NotificationContext
+            groups={groups}
+            type={type}
+            rope={rope}
+            charge={charge}
+            app={app}
+          />
           <div className="">
-            {bin.topYarn && <NotificationContent {...bin.topYarn.con} />}
+            <NotificationContent {...bin.topYarn?.con} />
           </div>
-
-          {/* ...and more messages */}
           {moreCount > 1 ? (
             <div>
               <p className="text-sm font-semibold text-gray-600">
@@ -153,8 +189,6 @@ export default function Notification({ bin, groups }: NotificationProps) {
               </p>
             </div>
           ) : null}
-
-          {/* Action button */}
           {bin.topYarn.but?.title && (
             <Button variant="secondary">{bin.topYarn.but.title}</Button>
           )}

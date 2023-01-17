@@ -1,16 +1,7 @@
 import React, { useEffect } from 'react';
 import { ComponentMeta, Story } from '@storybook/react';
 import { MemoryRouter } from 'react-router';
-import {
-  reply,
-  groupInvite,
-  channelAdd,
-  channelDel,
-  channelEdit,
-  channelRename,
-  memberAdd,
-  memberLeave,
-} from './mock-bins';
+import { noteCommentYours, noteComment } from './mock-bins';
 import Notification from '../Notification';
 import { useSettingsState } from '../../../state/settings';
 import api from '../../../state/api';
@@ -21,7 +12,7 @@ import useKilnState from '../../../state/kiln';
 import { groupStore } from '../groups';
 
 export default {
-  title: 'Groups Notification',
+  title: 'Diary Notification',
   component: Notification,
 } as ComponentMeta<typeof Notification>;
 
@@ -54,37 +45,12 @@ const WrappedNotification: Story = ({ ...args }: any) => {
   );
 };
 
-export const Invite = WrappedNotification.bind({});
-Invite.args = {
-  bin: groupInvite,
+export const CommentOnPost = WrappedNotification.bind({});
+CommentOnPost.args = {
+  bin: noteComment,
 };
 
-export const ChannelAdded = WrappedNotification.bind({});
-ChannelAdded.args = {
-  bin: channelAdd,
-};
-
-export const ChannelRenamed = WrappedNotification.bind({});
-ChannelRenamed.args = {
-  bin: channelRename,
-};
-
-export const ChannelEdited = WrappedNotification.bind({});
-ChannelEdited.args = {
-  bin: channelEdit,
-};
-
-export const ChannelDeleted = WrappedNotification.bind({});
-ChannelDeleted.args = {
-  bin: channelDel,
-};
-
-export const MemberAdded = WrappedNotification.bind({});
-MemberAdded.args = {
-  bin: memberAdd,
-};
-
-export const MemberLeft = WrappedNotification.bind({});
-MemberLeft.args = {
-  bin: memberLeave,
+export const CommentOnYourPost = WrappedNotification.bind({});
+CommentOnYourPost.args = {
+  bin: noteCommentYours,
 };
