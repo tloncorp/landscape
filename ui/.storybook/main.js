@@ -26,7 +26,14 @@ module.exports = {
   },
   async viteFinal(config, { configType }) {
     return mergeConfig(config, {
-      plugins: [urbitPlugin({ base: 'grid', target: 'http://localhost:8080', changeOrigin: false, secure: false })]
+      plugins: [
+        urbitPlugin({
+          base: 'grid',
+          target: 'http://localhost:8080',
+          changeOrigin: false,
+          secure: false,
+        }),
+      ],
     });
   },
 };
