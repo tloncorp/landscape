@@ -1,5 +1,5 @@
 import { Docket, DocketHref, Treaty } from '@urbit/api';
-import { hsla, parseToHsla } from 'color2k';
+import { hsla, parseToHsla, parseToRgba } from 'color2k';
 import _ from 'lodash';
 
 export const useMockData = import.meta.env.MODE === 'mock';
@@ -16,7 +16,9 @@ export function getAppHref(href: DocketHref) {
   return 'site' in href ? href.site : `/apps/${href.glob.base}/`;
 }
 
-export function getAppName(app: (Docket & { desk: string }) | Treaty | undefined): string {
+export function getAppName(
+  app: (Docket & { desk: string }) | Treaty | undefined
+): string {
   if (!app) {
     return '';
   }
@@ -29,7 +31,9 @@ export function disableDefault<T extends Event>(e: T): void {
 }
 
 // hack until radix-ui fixes this behavior
-export function handleDropdownLink(setOpen?: (open: boolean) => void): (e: Event) => void {
+export function handleDropdownLink(
+  setOpen?: (open: boolean) => void
+): (e: Event) => void {
   return (e: Event) => {
     e.stopPropagation();
     e.preventDefault();
@@ -76,4 +80,16 @@ export function clearStorageMigration<T>() {
   return {} as T;
 }
 
-export const storageVersion = parseInt(import.meta.env.VITE_STORAGE_VERSION, 10);
+export const storageVersion = parseInt(
+  import.meta.env.VITE_STORAGE_VERSION,
+  10
+);
+
+export function isColor(color: string): boolean {
+  try {
+    parseToRgba(color);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
