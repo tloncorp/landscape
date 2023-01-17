@@ -57,9 +57,9 @@ export const Notifications = ({ history }: RouteComponentProps) => {
             </button>
           )}
         </div>
-        <section className="w-full rounded-xl bg-gray-50 p-4">
+        <section className="w-full">
           {notifications.map((grouping) => (
-            <div key={grouping.date}>
+            <div className="mb-4 rounded-xl bg-gray-50 p-4" key={grouping.date}>
               <h2 className="mb-4 text-lg font-bold text-gray-400">
                 {grouping.date}
               </h2>

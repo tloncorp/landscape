@@ -15,6 +15,7 @@ import { useCharge } from '../../state/docket';
 import { Groups } from './groups';
 import GroupAvatar from '../../components/GroupAvatar';
 import _ from 'lodash';
+import ColorBoxIcon from '../../components/icons/ColorBoxIcon';
 
 interface NotificationProps {
   bin: Bin;
@@ -94,27 +95,35 @@ export default function Notification({ bin, groups }: NotificationProps) {
         className="flex flex-1 space-x-3"
       >
         <div className="relative flex-none self-start">
+          {/* Main avatar display */}
           {ship && (
             // && (type === 'group' || type === 'channel')
             <Avatar shipName={ship} size="default" />
           )}
         </div>
         <div className="flex-col space-y-2">
-          {(type === 'channel' || type === 'group') && rope.group && (
+          {/* Show group avatars || docket image || nothing */}
+          {(type === 'channel' || type === 'group') && rope.group && charge && (
             <div className="flex items-center">
-              {charge && groups?.[rope.group]?.meta?.image ? (
+              {charge && groups?.[rope.group]?.meta?.image && (
                 <GroupAvatar
                   image={groups?.[rope.group]?.meta?.image}
                   className="mr-2"
                 />
-              ) : (
+              )}
+              {charge && !groups?.[rope.group]?.meta.image && (
                 <DocketImage {...charge} size="xs" />
               )}
+              {!charge && <ColorBoxIcon color="white" letter="" />}
+
               <span className="font-bold text-gray-400">
-                {app} &bull; {groups?.[rope.group]?.meta?.title}
+                {app} {groups?.[rope.group]?.meta?.title && `• `}
+                {groups?.[rope.group]?.meta?.title}
               </span>
             </div>
           )}
+
+          {/* Show docket image || nothing */}
           {type === 'desk' &&
             (ship ? (
               <div className="flex items-center text-gray-400">
@@ -131,19 +140,21 @@ export default function Notification({ bin, groups }: NotificationProps) {
               </span>
             ))}
 
+          {/* Notification content */}
           <div className="">
             {bin.topYarn && <NotificationContent {...bin.topYarn.con} />}
           </div>
 
+          {/* ...and more messages */}
           {moreCount > 1 ? (
             <div>
               <p className="text-sm font-semibold text-gray-600">
                 Latest of {moreCount} new {pluralize('message', moreCount)}
-                {bin.shipCount > 1 && ` from ${bin.shipCount} people`}
               </p>
             </div>
           ) : null}
 
+          {/* Action button */}
           {bin.topYarn.but?.title && (
             <Button variant="secondary">{bin.topYarn.but.title}</Button>
           )}
@@ -151,9 +162,6 @@ export default function Notification({ bin, groups }: NotificationProps) {
       </DeskLink>
       <div className="flex-none">
         <div className="flex items-center">
-          {bin.unread ? (
-            <Bullet16Icon className="h-4 w-4 text-blue-500" />
-          ) : null}
           <span className="font-semibold text-gray-400">
             {makePrettyTime(new Date(bin.time))}
           </span>
