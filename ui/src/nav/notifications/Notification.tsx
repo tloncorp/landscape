@@ -125,6 +125,7 @@ function NotificationContent({ type, content }: any) {
           key={c.ship}
           name={c.ship}
           className="font-semibold text-gray-800"
+          showAlias={true}
         />
       );
     }
@@ -135,10 +136,10 @@ function NotificationContent({ type, content }: any) {
   if (isMention) {
     return (
       <>
-        <p className="mb-2 leading-5 text-gray-400">
+        <p className="mb-2 leading-5 text-gray-400 line-clamp-2">
           {_.map(_.slice(content, 0, 2), (c: YarnContent) => renderContent(c))}
         </p>
-        <p className="leading-5 text-gray-800">
+        <p className="leading-5 text-gray-800 line-clamp-2">
           {_.map(_.slice(content, 2), (c: YarnContent) => renderContent(c))}
         </p>
       </>
@@ -148,17 +149,21 @@ function NotificationContent({ type, content }: any) {
   if (isReply) {
     return (
       <>
-        <p className="mb-2 leading-5 text-gray-400">
+        <p className="mb-2 leading-5 text-gray-400 line-clamp-2">
           {_.map(_.slice(content, 0, 4), (c: YarnContent) => renderContent(c))}
         </p>
-        <p className="leading-5 text-gray-800">
+        <p className="leading-5 text-gray-800 line-clamp-2">
           {_.map(_.slice(content, 6), (c: YarnContent) => renderContent(c))}
         </p>
       </>
     );
   }
 
-  return <p>{_.map(content, (c: YarnContent) => renderContent(c))}</p>;
+  return (
+    <p className="leading-5 text-gray-800 line-clamp-2">
+      {_.map(content, (c: YarnContent) => renderContent(c))}
+    </p>
+  );
 }
 
 export default function Notification({ bin, groups }: NotificationProps) {

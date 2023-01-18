@@ -12,8 +12,7 @@
     "lint": "eslint --cache \"**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "npm run lint -- --fix",
     "test": "tsc --noEmit",
-    "tsc": "tsc --noEmit",
-    "storybook": "start-storybook -p 6006"
+    "tsc": "tsc --noEmit"
   },
   "dependencies": {
     "@fingerprintjs/fingerprintjs": "^3.3.3",
@@ -57,14 +56,8 @@
     "zustand": "^3.5.7"
   },
   "devDependencies": {
-    "@storybook/addon-docs": "^6.5.15",
-    "@storybook/addon-essentials": "^6.5.15",
-    "@storybook/addon-interactions": "^6.5.15",
-    "@storybook/addon-links": "^6.5.15",
-    "@storybook/addon-postcss": "^2.0.0",
-    "@storybook/builder-vite": "^0.1.28",
-    "@storybook/react": "^6.5.15",
     "@tailwindcss/aspect-ratio": "^0.2.1",
+    "@tailwindcss/line-clamp": "^0.4.2",
     "@tloncorp/eslint-config": "^0.0.6",
     "@types/lodash": "^4.14.172",
     "@types/mousetrap": "^1.6.8",
