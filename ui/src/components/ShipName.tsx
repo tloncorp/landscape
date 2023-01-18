@@ -5,13 +5,19 @@ import { useContact } from '../state/contact';
 
 type ShipNameProps = {
   name: string;
+  truncate?: boolean;
   showAlias?: boolean;
 } & HTMLAttributes<HTMLSpanElement>;
 
-export function ShipName({ name, showAlias = false, ...props }: ShipNameProps) {
+export function ShipName({
+  name,
+  showAlias = false,
+  truncate = true,
+  ...props
+}: ShipNameProps) {
   const contact = useContact(name);
   const separator = /([_^-])/;
-  const citedName = cite(name);
+  const citedName = truncate ? cite(name) : name;
   const calm = useCalm();
 
   if (!citedName) {
