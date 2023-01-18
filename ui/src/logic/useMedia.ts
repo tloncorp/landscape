@@ -19,3 +19,7 @@ export const useMedia = (mediaQuery: string) => {
 
   return match;
 };
+
+export function useIsDark() {
+  return useMedia('(prefers-color-scheme: dark)');
+}

@@ -137,6 +137,11 @@ export function useTheme() {
   return useSettingsState(selTheme);
 }
 
+const selCalm = (s: SettingsState) => s.calmEngine;
+export function useCalm() {
+  return useSettingsState(selCalm);
+}
+
 export function parseBrowserSettings(settings: Stringified<BrowserSetting[]>): BrowserSetting[] {
   return settings !== '' ? JSON.parse<BrowserSetting[]>(settings) : [];
 }
