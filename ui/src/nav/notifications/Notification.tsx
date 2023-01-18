@@ -1,62 +1,32 @@
+import React, { useCallback } from 'react';
 import cn from 'classnames';
 import { format } from 'date-fns';
-import React, { useCallback } from 'react';
-import Bullet16Icon from '../../components/icons/Bullet16Icon';
+import _ from 'lodash';
+import useHarkState from '../../state/hark';
+import { pluralize, getAppName } from '../../state/util';
+import { isYarnShip, Rope, YarnContent } from '../../state/hark-types';
+import { useCharge } from '../../state/docket';
+import { Groups } from './groups';
+import { Bin } from './useNotifications';
 import { Button } from '../../components/Button';
 import { Avatar } from '../../components/Avatar';
 import { ShipName } from '../../components/ShipName';
 import { DeskLink } from '../../components/DeskLink';
-import { Bin } from './useNotifications';
-import useHarkState from '../../state/hark';
-import { pluralize, getAppName } from '../../state/util';
-import { isYarnShip, Rope, YarnContent } from '../../state/hark-types';
 import { DocketImage } from '../../components/DocketImage';
-import { useCharge } from '../../state/docket';
-import { Groups } from './groups';
 import GroupAvatar from '../../components/GroupAvatar';
-import _ from 'lodash';
-import ColorBoxIcon from '../../components/icons/ColorBoxIcon';
 
 interface NotificationProps {
   bin: Bin;
   groups?: Groups;
 }
 
-function getContent(content: YarnContent) {
-  if (typeof content === 'string') {
-    return (
-      <span className="text-gray-800" key={content}>
-        {content}
-      </span>
-    );
-  }
-
-  if ('ship' in content) {
-    return (
-      <ShipName
-        key={content.ship}
-        name={content.ship}
-        className="font-semibold text-gray-800"
-      />
-    );
-  }
-
-  return (
-    <span key={content.emph} className="text-gray-800">
-      &ldquo;{content.emph}&rdquo;
-    </span>
-  );
-}
-
-function NotificationContent(content: Array<YarnContent>) {
-  return <p className="leading-5">{_.map(content, (c) => getContent(c))}</p>;
-}
+type NotificationType = 'group-meta' | 'channel' | 'group' | 'desk';
 
 function makePrettyTime(date: Date) {
   return format(date, 'HH:mm');
 }
 
-function getNotificationType(rope: Rope) {
+function getNotificationType(rope: Rope): NotificationType {
   if (
     rope.thread.endsWith('/channel/edit') ||
     rope.thread.endsWith('/channel/add') ||
@@ -137,6 +107,60 @@ function NotificationContext({ type, groups, rope, charge, app }: any) {
   }
 }
 
+function NotificationContent({ type, content }: any) {
+  const mentionRe = new RegExp('mentioned');
+  const replyRe = new RegExp('replied');
+
+  const isMention = type === 'channel' && mentionRe.test(content[1]);
+  const isReply = type === 'channel' && replyRe.test(content[1]);
+
+  function renderContent(c: any) {
+    if (typeof c === 'string') {
+      return <span key={c}>{c}</span>;
+    }
+
+    if ('ship' in c) {
+      return (
+        <ShipName
+          key={c.ship}
+          name={c.ship}
+          className="font-semibold text-gray-800"
+        />
+      );
+    }
+
+    return <span key={c.emph}>&ldquo;{c.emph}&rdquo;</span>;
+  }
+
+  if (isMention) {
+    return (
+      <>
+        <p className="mb-2 leading-5 text-gray-400">
+          {_.map(_.slice(content, 0, 2), (c: YarnContent) => renderContent(c))}
+        </p>
+        <p className="leading-5 text-gray-800">
+          {_.map(_.slice(content, 2), (c: YarnContent) => renderContent(c))}
+        </p>
+      </>
+    );
+  }
+
+  if (isReply) {
+    return (
+      <>
+        <p className="mb-2 leading-5 text-gray-400">
+          {_.map(_.slice(content, 0, 4), (c: YarnContent) => renderContent(c))}
+        </p>
+        <p className="leading-5 text-gray-800">
+          {_.map(_.slice(content, 6), (c: YarnContent) => renderContent(c))}
+        </p>
+      </>
+    );
+  }
+
+  return <p>{_.map(content, (c: YarnContent) => renderContent(c))}</p>;
+}
+
 export default function Notification({ bin, groups }: NotificationProps) {
   const moreCount = bin.count;
   const rope = bin.topYarn?.rope;
@@ -180,7 +204,7 @@ export default function Notification({ bin, groups }: NotificationProps) {
             app={app}
           />
           <div className="">
-            <NotificationContent {...bin.topYarn?.con} />
+            <NotificationContent type={type} content={bin.topYarn?.con} />
           </div>
           {moreCount > 1 ? (
             <div>
