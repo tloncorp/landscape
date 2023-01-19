@@ -28,11 +28,13 @@ function makePrettyTime(date: Date) {
 
 function getNotificationType(rope: Rope): NotificationType {
   if (
-    rope.thread.endsWith('/channel/edit') ||
-    rope.thread.endsWith('/channel/add') ||
-    rope.thread.endsWith('/channel/del') ||
-    rope.thread.endsWith('/joins') ||
-    rope.thread.endsWith('/leaves')
+    [
+      '/channel/edit',
+      '/channel/add',
+      '/channel/del',
+      '/joins',
+      '/leaves'
+    ].some((thread) => rope.thread.endsWith(thread))
   ) {
     return 'group-meta';
   }
