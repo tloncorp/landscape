@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { ReactComponentElement, useCallback } from 'react';
 import cn from 'classnames';
 import { format } from 'date-fns';
 import _ from 'lodash';
@@ -14,6 +14,7 @@ import { ShipName } from '../../components/ShipName';
 import { DeskLink } from '../../components/DeskLink';
 import { DocketImage } from '../../components/DocketImage';
 import GroupAvatar from '../../components/GroupAvatar';
+import { Charge } from '@urbit/api';
 
 interface NotificationProps {
   bin: Bin;
@@ -22,19 +23,35 @@ interface NotificationProps {
 
 type NotificationType = 'group-meta' | 'channel' | 'group' | 'desk';
 
+interface NotificationContent {
+  type: NotificationType;
+  content: YarnContent[];
+}
+
+interface NotificationContext {
+  type: NotificationType;
+  groups: Groups | null;
+  rope: Record<string | number | symbol, any>;
+  charge: Charge;
+  app: string;
+}
+
+interface NotificationTrigger {
+  type: NotificationType;
+  groups: Groups | undefined;
+  rope: Record<string | number | symbol, any>;
+  ship: string | undefined;
+}
+
 function makePrettyTime(date: Date) {
   return format(date, 'HH:mm');
 }
 
 function getNotificationType(rope: Rope): NotificationType {
   if (
-    [
-      '/channel/edit',
-      '/channel/add',
-      '/channel/del',
-      '/joins',
-      '/leaves'
-    ].some((thread) => rope.thread.endsWith(thread))
+    ['/channel/edit', '/channel/add', '/channel/del', '/joins', '/leaves'].some(
+      (thread) => rope.thread.endsWith(thread)
+    )
   ) {
     return 'group-meta';
   }
@@ -50,7 +67,12 @@ function getNotificationType(rope: Rope): NotificationType {
   return 'desk';
 }
 
-function NotificationTrigger({ type, groups, rope, ship }: any) {
+const NotificationTrigger: React.FC<NotificationTrigger> = ({
+  type,
+  groups,
+  rope,
+  ship,
+}) => {
   switch (type) {
     case 'group-meta':
       return (
@@ -62,13 +84,19 @@ function NotificationTrigger({ type, groups, rope, ship }: any) {
     case 'desk':
     case 'group':
     case 'channel':
-      return <Avatar shipName={ship} size="default" />;
+      return ship ? <Avatar shipName={ship} size="default" /> : <></>;
     default:
-      return null;
+      return <></>;
   }
-}
+};
 
-function NotificationContext({ type, groups, rope, charge, app }: any) {
+const NotificationContext: React.FC<NotificationContext> = ({
+  type,
+  groups,
+  rope,
+  charge,
+  app,
+}) => {
   switch (type) {
     case 'channel':
       return (
@@ -94,7 +122,9 @@ function NotificationContext({ type, groups, rope, charge, app }: any) {
         <div className="flex items-center text-gray-400">
           <DocketImage {...charge} size="xs" />
           <span className="font-bold text-gray-400">
-            {app}: {groups?.[rope.group]?.meta?.title}
+            {app}
+            {groups?.[rope.group]?.meta?.title &&
+              `: ${groups?.[rope.group]?.meta?.title}`}
           </span>
         </div>
       );
@@ -107,16 +137,20 @@ function NotificationContext({ type, groups, rope, charge, app }: any) {
         </div>
       );
   }
-}
+};
 
-function NotificationContent({ type, content }: any) {
+const NotificationContent: React.FC<NotificationContent> = ({
+  type,
+  content,
+}) => {
+  const con = content;
   const mentionRe = new RegExp('mentioned');
   const replyRe = new RegExp('replied');
 
-  const isMention = type === 'channel' && mentionRe.test(content[1]);
-  const isReply = type === 'channel' && replyRe.test(content[1]);
+  const isMention = type === 'channel' && mentionRe.test(content[1].toString());
+  const isReply = type === 'channel' && replyRe.test(content[1].toString());
 
-  function renderContent(c: any) {
+  function renderContent(c: YarnContent) {
     if (typeof c === 'string') {
       return <span key={c}>{c}</span>;
     }
@@ -166,7 +200,7 @@ function NotificationContent({ type, content }: any) {
       {_.map(content, (c: YarnContent) => renderContent(c))}
     </p>
   );
-}
+};
 
 export default function Notification({ bin, groups }: NotificationProps) {
   const moreCount = bin.count;
@@ -204,7 +238,7 @@ export default function Notification({ bin, groups }: NotificationProps) {
         </div>
         <div className="w-full flex-col space-y-2">
           <NotificationContext
-            groups={groups}
+            groups={groups ? groups : null}
             type={type}
             rope={rope}
             charge={charge}
