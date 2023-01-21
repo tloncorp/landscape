@@ -57,6 +57,7 @@
   },
   "devDependencies": {
     "@tailwindcss/aspect-ratio": "^0.2.1",
+    "@tailwindcss/line-clamp": "^0.4.2",
     "@tloncorp/eslint-config": "^0.0.6",
     "@types/lodash": "^4.14.172",
     "@types/mousetrap": "^1.6.8",

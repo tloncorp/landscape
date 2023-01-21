@@ -10,6 +10,7 @@ export interface GroupMeta {
 
 export interface Group {
   meta: GroupMeta;
+  channels?: any;
 }
 
 export interface Groups {

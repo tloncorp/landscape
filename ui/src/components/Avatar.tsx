@@ -28,7 +28,9 @@ const sizeMap: Record<AvatarSizes, AvatarMeta> = {
   default: { classes: 'w-12 h-12 rounded-lg', size: 24 },
 };
 
-const foregroundFromBackground = (background: string): 'black' | 'white' => {
+export const foregroundFromBackground = (
+  background: string
+): 'black' | 'white' => {
   const rgb = {
     r: parseInt(background.slice(1, 3), 16),
     g: parseInt(background.slice(3, 5), 16),

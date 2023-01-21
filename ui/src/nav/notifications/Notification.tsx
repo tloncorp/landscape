@@ -1,39 +1,61 @@
+import React, { ReactComponentElement, useCallback } from 'react';
 import cn from 'classnames';
 import { format } from 'date-fns';
-import React, { useCallback } from 'react';
-import Bullet16Icon from '../../components/icons/Bullet16Icon';
-import { ShipName } from '../../components/ShipName';
-import { DeskLink } from '../../components/DeskLink';
-import { Bin } from './useNotifications';
+import _ from 'lodash';
 import useHarkState from '../../state/hark';
-import { pluralize } from '../../state/util';
+import { pluralize, getAppName } from '../../state/util';
 import { isYarnShip, Rope, YarnContent } from '../../state/hark-types';
-import { DocketImage } from '../../components/DocketImage';
 import { useCharge } from '../../state/docket';
 import { Groups } from './groups';
+import { Bin } from './useNotifications';
+import { Button } from '../../components/Button';
+import { Avatar } from '../../components/Avatar';
+import { ShipName } from '../../components/ShipName';
+import { DeskLink } from '../../components/DeskLink';
+import { DocketImage } from '../../components/DocketImage';
+import GroupAvatar from '../../components/GroupAvatar';
+import { Charge } from '@urbit/api';
 
 interface NotificationProps {
   bin: Bin;
   groups?: Groups;
 }
 
-function getContent(content: YarnContent) {
-  if (typeof content === 'string') {
-    return <span key={content}>{content}</span>;
-  }
+type NotificationType = 'group-meta' | 'channel' | 'group' | 'desk';
 
-  if ('ship' in content) {
-    return <ShipName key={content.ship} name={content.ship} className="font-semibold text-gray-800" />;
-  }
+interface NotificationContent {
+  type: NotificationType;
+  content: YarnContent[];
+}
 
-  return <strong key={content.emph} className="text-gray-800">{content.emph}</strong>;
+interface NotificationContext {
+  type: NotificationType;
+  groups: Groups | null;
+  rope: Record<string | number | symbol, any>;
+  charge: Charge;
+  app: string;
+}
+
+interface NotificationTrigger {
+  type: NotificationType;
+  groups: Groups | undefined;
+  rope: Record<string | number | symbol, any>;
+  ship: string | undefined;
 }
 
 function makePrettyTime(date: Date) {
   return format(date, 'HH:mm');
 }
 
-function getNotificationType(rope: Rope) {
+function getNotificationType(rope: Rope): NotificationType {
+  if (
+    ['/channel/edit', '/channel/add', '/channel/del', '/joins', '/leaves'].some(
+      (thread) => rope.thread.endsWith(thread)
+    )
+  ) {
+    return 'group-meta';
+  }
+
   if (rope.channel) {
     return 'channel';
   }
@@ -45,10 +67,146 @@ function getNotificationType(rope: Rope) {
   return 'desk';
 }
 
+const NotificationTrigger: React.FC<NotificationTrigger> = ({
+  type,
+  groups,
+  rope,
+  ship,
+}) => {
+  switch (type) {
+    case 'group-meta':
+      return (
+        <GroupAvatar
+          image={groups?.[rope.group]?.meta?.image}
+          size="default w-12 h-12"
+        />
+      );
+    case 'desk':
+    case 'group':
+    case 'channel':
+      return ship ? <Avatar shipName={ship} size="default" /> : <></>;
+    default:
+      return <></>;
+  }
+};
+
+const NotificationContext: React.FC<NotificationContext> = ({
+  type,
+  groups,
+  rope,
+  charge,
+  app,
+}) => {
+  switch (type) {
+    case 'channel':
+      return (
+        <div className="flex items-center space-x-2 text-gray-400">
+          <GroupAvatar image={groups?.[rope.group]?.meta?.image} />
+          <span className="font-bold text-gray-400">
+            {app} • {groups?.[rope.group]?.meta?.title}:{' '}
+            {groups?.[rope.group]?.channels?.[rope.channel]?.meta?.title}
+          </span>
+        </div>
+      );
+    case 'group':
+      return (
+        <div className="flex items-center space-x-2 text-gray-400">
+          <GroupAvatar image={groups?.[rope.group]?.meta?.image} />
+          <span className="font-bold text-gray-400">
+            {app} • {groups?.[rope.group]?.meta?.title}
+          </span>
+        </div>
+      );
+    case 'group-meta':
+      return (
+        <div className="flex items-center text-gray-400">
+          <DocketImage {...charge} size="xs" />
+          <span className="font-bold text-gray-400">
+            {app}
+            {groups?.[rope.group]?.meta?.title &&
+              `: ${groups?.[rope.group]?.meta?.title}`}
+          </span>
+        </div>
+      );
+    case 'desk':
+    default:
+      return (
+        <div className="flex items-center text-gray-400">
+          <DocketImage {...charge} size="xs" />
+          <span className="font-bold text-gray-400">{app}</span>
+        </div>
+      );
+  }
+};
+
+const NotificationContent: React.FC<NotificationContent> = ({
+  type,
+  content,
+}) => {
+  const con = content;
+  const mentionRe = new RegExp('mentioned');
+  const replyRe = new RegExp('replied');
+
+  const isMention = type === 'channel' && mentionRe.test(content[1].toString());
+  const isReply = type === 'channel' && replyRe.test(content[1].toString());
+
+  function renderContent(c: YarnContent) {
+    if (typeof c === 'string') {
+      return <span key={c}>{c}</span>;
+    }
+
+    if ('ship' in c) {
+      return (
+        <ShipName
+          key={c.ship}
+          name={c.ship}
+          className="font-semibold text-gray-800"
+          showAlias={true}
+        />
+      );
+    }
+
+    return <span key={c.emph}>&ldquo;{c.emph}&rdquo;</span>;
+  }
+
+  if (isMention) {
+    return (
+      <>
+        <p className="mb-2 leading-5 text-gray-400 line-clamp-2">
+          {_.map(_.slice(content, 0, 2), (c: YarnContent) => renderContent(c))}
+        </p>
+        <p className="leading-5 text-gray-800 line-clamp-2">
+          {_.map(_.slice(content, 2), (c: YarnContent) => renderContent(c))}
+        </p>
+      </>
+    );
+  }
+
+  if (isReply) {
+    return (
+      <>
+        <p className="mb-2 leading-5 text-gray-400 line-clamp-2">
+          {_.map(_.slice(content, 0, 4), (c: YarnContent) => renderContent(c))}
+        </p>
+        <p className="leading-5 text-gray-800 line-clamp-2">
+          {_.map(_.slice(content, 6), (c: YarnContent) => renderContent(c))}
+        </p>
+      </>
+    );
+  }
+
+  return (
+    <p className="leading-5 text-gray-800 line-clamp-2">
+      {_.map(content, (c: YarnContent) => renderContent(c))}
+    </p>
+  );
+};
+
 export default function Notification({ bin, groups }: NotificationProps) {
-  const moreCount = bin.count - 1;
+  const moreCount = bin.count;
   const rope = bin.topYarn?.rope;
   const charge = useCharge(rope?.desk);
+  const app = getAppName(charge);
   const type = getNotificationType(rope);
   const ship = bin.topYarn?.con.find(isYarnShip)?.ship;
 
@@ -61,7 +219,7 @@ export default function Notification({ bin, groups }: NotificationProps) {
     <div
       className={cn(
         'flex space-x-3 rounded-xl p-3 text-gray-600 transition-colors duration-1000',
-        bin.unread ? 'bg-blue-50' : 'bg-gray-50'
+        bin.unread ? 'bg-blue-50 mix-blend-multiply' : 'bg-white'
       )}
     >
       <DeskLink
@@ -71,33 +229,41 @@ export default function Notification({ bin, groups }: NotificationProps) {
         className="flex flex-1 space-x-3"
       >
         <div className="relative flex-none self-start">
-          <DocketImage {...charge} size="default" />
+          <NotificationTrigger
+            type={type}
+            groups={groups}
+            rope={rope}
+            ship={ship}
+          />
         </div>
-        <div className="space-y-2 p-1">
-          {(type === 'channel' || type === 'group') && rope.group && (
-            <strong>{groups?.[rope.group]?.meta?.title}</strong>
-          )}
-          {type === 'desk' &&
-            (ship ? (
-              <ShipName name={ship} className="font-semibold" />
-            ) : (
-              <strong>{charge?.title || ''}</strong>
-            ))}
-          <p>{bin.topYarn && bin.topYarn.con.map(getContent)}</p>
-          {moreCount > 0 ? (
-            <p className="text-sm font-semibold">
-              {moreCount} more {pluralize('message', moreCount)} from{' '}
-              {bin.shipCount > 1 ? `${bin.shipCount} people` : '1 person'}
-            </p>
-          ) : (
-            <p className="text-sm">&nbsp;</p>
+        <div className="w-full flex-col space-y-2">
+          <NotificationContext
+            groups={groups ? groups : null}
+            type={type}
+            rope={rope}
+            charge={charge}
+            app={app}
+          />
+          <div className="">
+            <NotificationContent type={type} content={bin.topYarn?.con} />
+          </div>
+          {moreCount > 1 ? (
+            <div>
+              <p className="text-sm font-semibold text-gray-600">
+                Latest of {moreCount} new {pluralize('message', moreCount)}
+              </p>
+            </div>
+          ) : null}
+          {bin.topYarn.but?.title && (
+            <Button variant="secondary">{bin.topYarn.but.title}</Button>
           )}
         </div>
       </DeskLink>
-      <div className="flex-none p-1">
+      <div className="flex-none">
         <div className="flex items-center">
-          {bin.unread ? <Bullet16Icon className="h-4 w-4 text-blue-500" /> : null}
-          <span className="font-semibold">{makePrettyTime(new Date(bin.time))}</span>
+          <span className="font-semibold text-gray-400">
+            {makePrettyTime(new Date(bin.time))}
+          </span>
         </div>
       </div>
     </div>

@@ -197,29 +197,30 @@ module.exports = {
       lg: ['1rem', '1.5rem'],
       xl: ['1.25rem', '2rem'],
       '2xl': ['1.5rem', '2rem'],
-      '3xl': ['2rem', '3rem']
+      '3xl': ['2rem', '3rem'],
     },
     extend: {
-      minWidth: (theme) => theme('spacing')
-    }
+      minWidth: (theme) => theme('spacing'),
+    },
   },
   screens: {
     ...defaultTheme.screens,
     xl: '1440px',
-    '2xl': '2200px'
+    '2xl': '2200px',
   },
   variants: {
     extend: {
       opacity: ['hover-none'],
-      display: ['group-hover']
-    }
+      display: ['group-hover'],
+    },
   },
   plugins: [
+    require('@tailwindcss/line-clamp'),
     require('@tailwindcss/aspect-ratio'),
     require('tailwindcss-touch')(),
     require('tailwindcss-theming')({
       themes,
-      strategy: 'class'
-    })
-  ]
+      strategy: 'class',
+    }),
+  ],
 };
