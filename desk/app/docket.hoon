@@ -3,7 +3,7 @@
 |%
 +$  card  card:agent:gall
 +$  app-state
-  $:  %3
+  $:  %4
       ::  local
       charges=(map desk charge)
   ==
@@ -61,14 +61,17 @@
     ?.  ?=(%2 -.old)  `old
     :_  old(- %3)  :_  ~
     ~(tire pass /tire)
-  ?>  ?=(%3 -.old)
+  =^  cards-3  old
+    ?.  ?=(%3 -.old)  `old
+    :_  old(- %4)  :_  ~
+    [%pass /reinstall %agent [our.bowl dap.bowl] %poke %reinstall-groups !>(~)]
+  ?>  ?=(%4 -.old)
   =/  cards-tire  [~(tire pass /tire) ~]
   =.  -.state  old
   ::  inflate-cache needs to be called after the state is set
   ::
   =.  +.state  inflate-cache
-  [:(weld cards-1 cards-2 cards-tire) this]
-
+  [:(weld cards-1 cards-2 cards-3 cards-tire) this]
   ::
   ++  inflate-cache
     ^-  cache
@@ -83,9 +86,11 @@
     $%  state-0-sig
         state-1
         state-2
+        state-3
         app-state
     ==
   ::
+  +$  state-3  [%3 (map desk charge)]
   +$  state-2  [%2 (map desk charge)]
   +$  state-1  [%1 (map desk charge)]
   +$  state-0-sig
@@ -115,6 +120,26 @@
         %handle-http-request
       =+  !<([id=@ta req=inbound-request:eyre] vase)
       (handle-http-request:cc id req)
+    ::
+        %reinstall-groups
+      :_  state
+      =+  .^  sources=(map desk [=ship desk])  %gx
+              /(scot %p our.bowl)/hood/(scot %da now.bowl)/kiln/sources/noun
+          ==
+      =/  talk    (~(get by sources) %talk)
+      =/  groups  (~(get by sources) %groups)
+      %+  welp
+        ?:  &(?=(^ talk) =(%earl (clan:title ship.u.talk)))  ~
+        :_  ~
+        :*  %pass  /reinstall/talk  %agent  [our.bowl %hood]  %poke
+            %kiln-install  !>([%talk ~sogryp-dister-dozzod-dozzod %talk])
+        ==
+      ?:  &(?=(^ groups) =(%earl (clan:title ship.u.groups)))  ~
+      :_  ~
+      :*  %pass  /reinstall/groups  %agent  [our.bowl %hood]  %poke
+
+          %kiln-install  !>([%groups ~sogryp-dister-dozzod-dozzod %groups])
+      ==
     ==
   [cards this]
   ::
@@ -222,10 +247,11 @@
   =^  cards  state
     ?+  wire  ~&(bad-docket-take+wire `state)
       ~  `state
-      [%rein ~]      ~&(%reined `state)
-      [%nuke ~]      ~&(%nuked `state)
-      [%kiln ~]      `state
-      [%charge @ *]  (take-charge i.t.wire t.t.wire)
+      [%rein ~]       ~&(%reined `state)
+      [%nuke ~]       ~&(%nuked `state)
+      [%kiln ~]       `state
+      [%charge @ *]   (take-charge i.t.wire t.t.wire)
+      [%reinstall *]  `state
     ==
   [cards this]
   ::
