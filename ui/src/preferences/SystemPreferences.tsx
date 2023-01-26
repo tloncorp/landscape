@@ -16,6 +16,7 @@ import { AppearancePrefs } from './AppearancePrefs';
 import { useCharges } from '../state/docket';
 import { AppPrefs } from './AppPrefs';
 import { StoragePrefs } from './StoragePrefs';
+import { InvitePrefs } from './InvitePrefs';
 import { DocketImage } from '../components/DocketImage';
 import { ErrorAlert } from '../components/ErrorAlert';
 import { useMedia } from '../logic/useMedia';
@@ -31,6 +32,7 @@ import PencilIcon from '../components/icons/PencilIcon';
 import ForwardSlashIcon from '../components/icons/ForwardSlashIcon';
 import SlidersIcon from '../components/icons/SlidersIcon';
 import Sig16Icon from '../components/icons/Sig16Icon';
+import InvitesIcom from '../components/icons/InvitesIcon';
 import { useSystemUpdate } from '../logic/useSystemUpdate';
 import { Bullet } from '../components/icons/Bullet';
 import SearchSystemPreferences from './SearchSystemPrefences';
@@ -187,6 +189,13 @@ export const SystemPreferences = (
                   <SlidersIcon className="mr-3 h-6 w-6 rounded-md text-gray-600" />
                   Remote Storage
                 </SystemPreferencesSection>
+                <SystemPreferencesSection
+                  url={subUrl('invites')}
+                  active={matchSub('invites')}
+                >
+                  <InvitesIcom className="mr-3 h-6 w-6 rounded-md text-gray-600" />
+                  Invite Links
+                </SystemPreferencesSection>
               </ul>
             </nav>
             <nav className="flex flex-col px-2 sm:px-6">
@@ -205,7 +214,7 @@ export const SystemPreferences = (
                       <DocketImage size="small" className="mr-3" {...charge} />
                       {getAppName(charge)}
                     </SystemPreferencesSection>
-                  ))}
+                ))}
               </ul>
             </nav>
           </aside>
@@ -237,6 +246,7 @@ export const SystemPreferences = (
               />
               <Route path={[`${match.url}/storage`]} component={StoragePrefs} />
               <Route path={`${match.url}/security`} component={SecurityPrefs} />
+              <Route path={[`${match.url}/invites`]} component={InvitePrefs} />
               <Route
                 path={[`${match.url}/system-updates`, match.url]}
                 component={AboutSystem}
