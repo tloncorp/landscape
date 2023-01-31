@@ -7,3 +7,5 @@ stats.html
 .eslintcache
 .vercel
 .vscode
+
+gha-creds-*
