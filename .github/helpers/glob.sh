@@ -24,8 +24,8 @@ hood "commit %work"
 dojo "-garden!make-glob %work /glob"
 
 gsutil cp zod/.urb/put/*.glob gs://bootstrap.urbit.org
-hash=$(ls -1 -c zod/.urb/put | head -1 | sed -rn "s/glob-([a-z0-9\.]*).glob/\1/")
-sed -rn "s/( *glob\-http\+\['https:\/\/bootstrap.urbit.org\/glob\-)[a-z0-9\.]*glob' *[a-z0-9\.]*\]/\1$hash.glob' $hash]/g" $2
+hash=$(ls -1 -c zod/.urb/put | head -1 | sed "s/glob-\([a-z0-9\.]*\).glob/\1/")
+sed "s/\( *glob\-http\+\['https:\/\/bootstrap.urbit.org\/glob\-\)[a-z0-9\.]*glob' *[a-z0-9\.]*\]/\1$hash.glob' $hash]/g" $2
 
 hood "exit"
 rm -rf zod
