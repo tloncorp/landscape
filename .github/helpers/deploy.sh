@@ -7,6 +7,7 @@ repo=$1
 desk=$2
 ship=$3
 zone=$4
+ref=${5:-.}
 folder=$ship/$desk
 
 set -e
@@ -18,7 +19,7 @@ git clone git@github.com:'$repo'.git $source_repo
 urbit_repo=$(mktemp --dry-run /tmp/repo.urbit.XXXXXXXXX)
 git clone git@github.com:urbit/urbit.git $urbit_repo
 cd $source_repo
-git checkout .
+git checkout '$ref'
 cd /home/urb || return
 curl -s --data '"'"'{"source":{"dojo":"+hood/mount %'$desk'"},"sink":{"app":"hood"}}'"'"' http://localhost:12321
 rsync -avL --delete $source_repo/desk/ '$folder'
