@@ -14,7 +14,7 @@ jobs:
           token: ${{ secrets.REPO_TOKEN }}
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
       - id: 'auth'
         uses: 'google-github-actions/auth@v1'
         with:
@@ -25,7 +25,7 @@ jobs:
         working-directory: ./ui
         run: | 
           npm ci
-          npm build
+          npm run build
       - id: glob
         uses: ./.github/actions/glob
         with:
