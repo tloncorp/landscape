@@ -3,16 +3,14 @@ import { useState, useEffect } from 'react';
 
 export default function useInviteState() {
   const [baitURL, setBaitURL] = useState('');
-  const [baitShip, setBaitShip] = useState('');
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
-    api.scry<{url: string, ship: string}>({
+    api.scry<{url: string}>({
       app: 'reel',
       path: '/bait'
-    }).then(({url, ship}) => {
+    }).then(({url}) => {
       setBaitURL(url);
-      setBaitShip(ship);
       setLoaded(true);
     });
   }, []);
@@ -20,16 +18,13 @@ export default function useInviteState() {
   return {
     baitURL: baitURL,
     setBaitURL: setBaitURL,
-    baitShip: baitShip,
-    setBaitShip: setBaitShip,
     loaded: loaded,
-    save: async (data: {url: string, ship: string}) => {
+    save: async (data: {url: string}) => {
       await api.poke({
         app: 'reel',
         mark: 'reel-command',
         json: {
           url: data.url,
-          ship: data.ship
         }
       })
     }

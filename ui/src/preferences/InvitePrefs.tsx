@@ -6,13 +6,13 @@ import { Spinner } from '../components/Spinner';
 import cn from 'classnames';
 
 export const InvitePrefs = () => {
-  const {baitURL, setBaitURL, baitShip, setBaitShip, loaded, save} = useInviteState();
+  const {baitURL, setBaitURL, loaded, save} = useInviteState();
   const {
     register,
     handleSubmit,
     reset,
     formState: { isSubmitting, isDirty, isValid, isSubmitSuccessful },
-  } = useForm<{url: string, ship: string}>({
+  } = useForm<{url: string}>({
     mode: 'onChange',
   });
 
@@ -30,19 +30,6 @@ export const InvitePrefs = () => {
             type="text"
             defaultValue={baitURL}
             {...register('url', { pattern: /^http.*\/$/ })}
-            className="input default-ring bg-gray-50"
-          />
-        </div>
-        <div className="mb-8 flex flex-col space-y-2">
-          <label className="font-semibold" htmlFor="endpoint">
-            Invite Server Ship
-          </label>
-          <input
-            disabled={!loaded}
-            id="ship"
-            type="text"
-            defaultValue={baitShip}
-            {...register('ship', { pattern: /^~.*$/ })}
             className="input default-ring bg-gray-50"
           />
         </div>
