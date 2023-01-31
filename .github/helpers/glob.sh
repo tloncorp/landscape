@@ -8,7 +8,7 @@
 # $2: the location of the docket file
 
 # globber is a prebooted and docked fakezod
-curl https://bootstrap.urbit.org/globber.tar.gz | tar xzk
+curl https://bootstrap.urbit.org/globberv2.tar.gz | tar xzk
 ./zod/.run -d
 
 dojo () {
@@ -18,11 +18,6 @@ dojo () {
 hood () {
   curl -s --data '{"source":{"dojo":"+hood/'"$1"'"},"sink":{"app":"hood"}}' http://localhost:12321    
 }
-
-hood "merge %work our %base"
-hood "mount %work"
-
-rm -rf zod/work/*
 
 rsync -avL $1 zod/work/glob
 hood "commit %work"
