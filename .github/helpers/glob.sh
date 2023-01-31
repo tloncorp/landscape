@@ -12,11 +12,11 @@ curl https://bootstrap.urbit.org/globber.tar.gz | tar xzk
 ./zod/.run -d
 
 dojo () {
-  curl -s --data '{"source":{"dojo":"$1"},"sink":{"stdout":null}}' http://localhost:12321    
+  curl -s --data '{"source":{"dojo":"'"$1"'"},"sink":{"stdout":null}}' http://localhost:12321    
 }
 
 hood () {
-  curl -s --data '{"source":{"dojo":"+hood/$1"},"sink":{"app":"hood"}}' http://localhost:12321    
+  curl -s --data '{"source":{"dojo":"+hood/'"$1"'"},"sink":{"app":"hood"}}' http://localhost:12321    
 }
 
 hood "merge %work our %base"
