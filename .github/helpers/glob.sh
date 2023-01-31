@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # this script globs a folder of files, then subsequently uploads the 
 # glob to bootstrap.urbit.org and replaces the hash in the docket file.
 # assumes gcloud credentials are loaded and gsutil installed.

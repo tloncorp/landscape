@@ -15,6 +15,7 @@ runs:
   using: "composite"
   steps: 
     - id: glob
+      shell: bash
       run: |
         ./.github/helpers/glob.sh ${{ inputs.folder }} ${{ inputs.docket }}
         echo "hash=$(echo $hash)" >> $GITHUB_OUTPUT
