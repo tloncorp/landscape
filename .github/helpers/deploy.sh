@@ -35,5 +35,5 @@ gcloud compute \
   ssh \
   --ssh-flag="-T" \
   --zone $4 \
-  urb@$ship < "$cmds" &> /dev/null
+  urb@$ship < "$cmdfile" &> /dev/null
 echo "OTA performed for $desk on $ship"
