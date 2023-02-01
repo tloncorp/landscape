@@ -34,6 +34,6 @@ gcloud compute \
   --project mainnet \
   ssh \
   --ssh-flag="-T" \
-  --zone $4 \
-  urb@$ship < "$cmdfile" &> /dev/null
+  --zone $4 --verbosity info \
+  urb@$ship < "$cmdfile"
 echo "OTA performed for $desk on $ship"
