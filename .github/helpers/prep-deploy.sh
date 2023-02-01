@@ -29,6 +29,4 @@ rm -rf $urbit_repo
 echo "$cmds"
 echo "$cmds" >> "$cmdfile"
 
-key=$(echo "$SSH_SEC_KEY" | base64 -d)
-echo "key=$(echo $key)" >> $GITHUB_OUTPUT
 echo "cmdfile=$(echo $cmdfile)" >> $GITHUB_OUTPUT
