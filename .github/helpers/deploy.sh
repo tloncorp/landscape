@@ -42,6 +42,7 @@ echo "$SSH_SEC_KEY" >> "$sshpriv"
 gcloud compute \
   --project mainnet \
   ssh \
+  --tunnel-through-iap \
   --ssh-key-file "$sshpriv" \
   --ssh-flag="-T" \
   --zone "$zone" --verbosity info \
