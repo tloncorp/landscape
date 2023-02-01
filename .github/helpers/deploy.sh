@@ -12,8 +12,8 @@ folder=$ship/$desk
 
 set -e
 set -o pipefail
-cmds=$(mktemp "${TMPDIR:-/tmp/}janeway.XXXXXXXXX")
-echo '
+cmdfile=$(mktemp "${TMPDIR:-/tmp/}janeway.XXXXXXXXX")
+cmds='
 source_repo=$(mktemp --dry-run /tmp/repo.janeway.XXXXXXXXX)
 git clone git@github.com:'$repo'.git $source_repo
 urbit_repo=$(mktemp --dry-run /tmp/repo.urbit.XXXXXXXXX)
@@ -27,7 +27,9 @@ rsync -avL $urbit_repo/pkg/base-dev/ '$folder'
 curl -s --data '"'"'{"source":{"dojo":"+hood/commit %'$desk'"},"sink":{"app":"hood"}}'"'"' http://localhost:12321
 rm -rf $source_repo
 rm -rf $urbit_repo
-' >> "$cmds"
+'
+echo "$cmds"
+echo "$cmds" >> "$cmdfile"
 gcloud compute \
   --project mainnet \
   ssh \
