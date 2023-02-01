@@ -32,7 +32,9 @@ rm -rf $source_repo
 rm -rf $urbit_repo
 '
 echo "$cmds" >> "$cmdfile"
-sshfile=$(mktemp "${TMPDIR:-/tmp/}ssh.XXXXXXXXX")
+sshpriv=$(mktemp "${TMPDIR:-/tmp/}ssh.XXXXXXXXX")
+sshpub="$sshpriv".pub
+echo "$SSH_PUB_KEY" >> "$sshpub"
 echo "$SSH_SEC_KEY" >> "$sshfile"
 
 gcloud compute \
