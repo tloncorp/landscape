@@ -1,9 +1,6 @@
 name: Deploy Landscape
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-      - 'master'
   push:
     branches:
       - 'master'
@@ -34,9 +31,6 @@ jobs:
         with:
           folder: 'ui/dist/*'
           docket: 'desk/desk.docket-0'
-      - run: |
-          git status
-          cat desk/desk.docket-0
       - name: Commit Glob
         uses: EndBug/add-and-commit@v9
         with:
