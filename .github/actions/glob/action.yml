@@ -17,4 +17,4 @@ runs:
     - id: glob
       shell: bash
       run:
-        ./.github/helpers/glob.sh ${{ inputs.folder }} ${{ inputs.docket }}
+        ./.github/helpers/glob.sh "${{ inputs.folder }}" ${{ inputs.docket }}
