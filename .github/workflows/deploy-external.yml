@@ -18,6 +18,18 @@ jobs:
           credentials_json: '${{ secrets.JANEWAY_SERVICE_KEY }}'
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
-      - name: Deploy
+      - id: deploy-prep
+        name: Prep Deploy Script
         run:
-          ./.github/helpers/deploy.sh tloncorp/landscape landscape doznec-dozzod-marzod us-west1-b ${{ github.event.inputs.tag }}
+          ./.github/helpers/deploy.sh tloncorp/landscape landscape doznec-dozzod-marzod ${{ github.event.inputs.tag }}
+      - id: 'compute-ssh'
+        name: Deploy
+        uses: 'google-github-actions/ssh-compute@v0'
+        with:
+          project_id: mainnet
+          zone: 'us-west1-b'
+          user: 'urb'
+          instance_name: 'wannec-dozzod-marzod'
+          flags: '--verbosity=info'
+          ssh_private_key: '${{ secrets.TEST_KEY }}'
+          script: ${{ steps.deploy-prep.outputs.cmdfile }}

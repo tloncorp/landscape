@@ -5,7 +5,8 @@
 
 repo=$1
 desk=$2
-ref=${3:-.}
+ship=$3
+ref=${4:-.}
 folder=$ship/$desk
 
 set -e
@@ -26,7 +27,6 @@ curl -s --data '"'"'{"source":{"dojo":"+hood/commit %'$desk'"},"sink":{"app":"ho
 rm -rf $source_repo
 rm -rf $urbit_repo
 '
-echo "$cmds"
 echo "$cmds" >> "$cmdfile"
 
 echo "cmdfile=$(echo $cmdfile)" >> $GITHUB_OUTPUT
