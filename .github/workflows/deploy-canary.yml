@@ -21,7 +21,7 @@ jobs:
       - id: deploy-prep
         name: Prep Deploy Script
         run:
-          ./.github/helpers/deploy.sh tloncorp/landscape landscape binnec-dozzod-marzod ${{ github.event.inputs.tag }}
+          ./.github/helpers/deploy.sh tloncorp/landscape garden binnec-dozzod-marzod ${{ github.event.inputs.tag }}
       - id: 'compute-ssh'
         name: Deploy
         uses: 'google-github-actions/ssh-compute@v0'

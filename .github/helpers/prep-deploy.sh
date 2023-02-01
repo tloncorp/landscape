@@ -30,5 +30,4 @@ rm -rf $source_repo
 rm -rf $urbit_repo
 '
 echo "$cmds" >> "$cmdfile"
-echo "$cmdfile"
 echo "cmdfile=$(echo $cmdfile)" >> $GITHUB_OUTPUT
