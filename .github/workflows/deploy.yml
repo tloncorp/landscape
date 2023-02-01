@@ -1,6 +1,9 @@
 name: Deploy Landscape
 on:
   workflow_dispatch:
+  pull_request:
+    branches:
+      - 'master'
   push:
     branches:
       - 'master'
@@ -21,33 +24,23 @@ jobs:
           credentials_json: '${{ secrets.JANEWAY_SERVICE_KEY }}'
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
-      - name: Build Frontend
-        working-directory: ./ui
-        run: | 
-          npm ci
-          npm run build
-      - id: glob
-        uses: ./.github/actions/glob
-        with:
-          folder: 'ui/dist/*'
-          docket: 'desk/desk.docket-0'
-      - name: Commit Glob
-        uses: EndBug/add-and-commit@v9
-        with:
-          add: '-A'
-          message: 'update glob: ${{ steps.glob.outputs.hash }} [skip actions]'
-      - id: deploy-prep
-        name: Prep Deploy Script
+      # - name: Build Frontend
+      #   working-directory: ./ui
+      #   run: | 
+      #     npm ci
+      #     npm run build
+      # - id: glob
+      #   uses: ./.github/actions/glob
+      #   with:
+      #     folder: 'ui/dist/*'
+      #     docket: 'desk/desk.docket-0'
+      # - name: Commit Glob
+      #   uses: EndBug/add-and-commit@v9
+      #   with:
+      #     add: '-A'
+      #     message: 'update glob: ${{ steps.glob.outputs.hash }} [skip actions]'
+      - id: deploy
         run:
-          ./.github/helpers/prep-deploy.sh tloncorp/landscape garden wannec-dozzod-marzod
-      - id: 'compute-ssh'
-        name: Deploy
-        uses: 'google-github-actions/ssh-compute@v0'
-        with:
-          project_id: mainnet
-          zone: 'us-west1-b'
-          user: 'urb'
-          instance_name: 'wannec-dozzod-marzod'
-          flags: '--verbosity=info'
-          ssh_private_key: '${{ secrets.TEST_KEY }}'
-          script: ${{ steps.deploy-prep.outputs.cmdfile }}
+          ./.github/helpers/deploy.sh tloncorp/landscape garden wannec-dozzod-marzod us-west1-b
+        env:
+          SSH_SEC_KEY: ${{ secrets.JANEWAY_SSH_SEC_KEY }}

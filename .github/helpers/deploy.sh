@@ -6,17 +6,19 @@
 repo=$1
 desk=$2
 ship=$3
-ref=${4:-.}
+zone=$4
+ref=${5:-.}
 folder=$ship/$desk
 
 set -e
 set -o pipefail
 cmdfile=$(mktemp "${TMPDIR:-/tmp/}janeway.XXXXXXXXX")
+# mktemp only used for generating a random folder name below
 cmds='
-source_repo=$(mktemp -d /tmp/repo.janeway.XXXXXXXXX)
+source_repo=$(mktemp --dry-run /tmp/repo.janeway.XXXXXXXXX)
 echo $source_repo;
 git clone git@github.com:'$repo'.git $source_repo
-urbit_repo=$(mktemp -d /tmp/repo.urbit.XXXXXXXXX)
+urbit_repo=$(mktemp --dry-run /tmp/repo.urbit.XXXXXXXXX)
 echo $urbit_repo;
 git clone git@github.com:urbit/urbit.git $urbit_repo
 cd $source_repo
@@ -30,4 +32,15 @@ rm -rf $source_repo
 rm -rf $urbit_repo
 '
 echo "$cmds" >> "$cmdfile"
-echo "cmdfile=$(echo $cmdfile)" >> $GITHUB_OUTPUT
+sshfile=$(mktemp "${TMPDIR:-/tmp/}ssh.XXXXXXXXX")
+echo "$SSH_SEC_KEY" >> "$sshfile"
+
+gcloud compute \
+  --project mainnet \
+  ssh \
+  --ssh-key-file "$sshfile" \
+  --ssh-flag="-T" \
+  --zone "$zone" --verbosity info \
+  urb@"$ship" < "$cmdfile"
+
+echo "OTA performed for $desk on $ship"
