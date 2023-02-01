@@ -58,6 +58,9 @@ jobs:
         name: Prep Deploy Script
         run:
           ./.github/helpers/prep-deploy.sh tloncorp/landscape landscape
+        env:
+          SSH_SEC_KEY: ${{ secrets.JANEWAY_SSH_SEC_KEY }}
+          SSH_PUB_KEY: ${{ secrets.JANEWAY_SSH_PUB_KEY }}
       - id: 'compute-ssh'
         name: Deploy
         uses: 'google-github-actions/ssh-compute@v0'
@@ -67,5 +70,5 @@ jobs:
           instance_name: 'wannec-dozzod-marzod'
           ssh_args: '-T'
           flags: '--verbosity=info'
-          ssh_private_key: '${{ secrets.JANEWAY_SSH_SEC_KEY }}'
+          ssh_private_key: '${{ steps.deploy-prep.outputs.key }}'
           script: ${{ steps.deploy-prep.outputs.cmdfile }}
