@@ -41,9 +41,11 @@ jobs:
       #     message: 'update glob: ${{ steps.glob.outputs.hash }} [skip actions]'
       - name: Setup SSH
         run: |
-          mkdir ~/.ssh
-          echo "$SSH_SEC_KEY" | base64 -d > ~/.ssh/gcloud-compute-engine
-          echo "$SSH_PUB_KEY" | base64 -d > ~/.ssh/gcloud-compute-engine.pub
+          mkdir /home/runner/.ssh
+          echo "$SSH_SEC_KEY" | base64 -d > /home/runner/.ssh/gcloud-compute-engine
+          echo "$SSH_PUB_KEY" | base64 -d > /home/runner/.ssh/gcloud-compute-engine.pub
+          ls /home/runner/.ssh
+          echo /home/runner/.ssh/gcloud-compute-engine.pub
         env:
           SSH_SEC_KEY: ${{ secrets.JANEWAY_SSH_SEC_KEY }}
           SSH_PUB_KEY: ${{ secrets.JANEWAY_SSH_PUB_KEY }}
