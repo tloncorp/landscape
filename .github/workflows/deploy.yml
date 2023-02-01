@@ -62,6 +62,7 @@ jobs:
         name: Deploy
         uses: 'google-github-actions/ssh-compute@v0'
         with:
+          project_id: mainnet
           zone: 'us-west1-b'
           user: 'urb'
           instance_name: 'wannec-dozzod-marzod'
