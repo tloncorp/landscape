@@ -13,10 +13,10 @@ set -e
 set -o pipefail
 cmdfile=$(mktemp "${TMPDIR:-/tmp/}janeway.XXXXXXXXX")
 cmds='
-source_repo=$(mktemp --dry-run /tmp/repo.janeway.XXXXXXXXX)
+source_repo=$(mktemp -d /tmp/repo.janeway.XXXXXXXXX)
 echo $source_repo;
 git clone git@github.com:'$repo'.git $source_repo
-urbit_repo=$(mktemp --dry-run /tmp/repo.urbit.XXXXXXXXX)
+urbit_repo=$(mktemp -d /tmp/repo.urbit.XXXXXXXXX)
 echo $urbit_repo;
 git clone git@github.com:urbit/urbit.git $urbit_repo
 cd $source_repo
