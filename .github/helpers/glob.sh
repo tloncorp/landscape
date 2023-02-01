@@ -25,7 +25,7 @@ dojo "-garden!make-glob %work /glob"
 
 gsutil cp zod/.urb/put/*.glob gs://bootstrap.urbit.org
 hash=$(ls -1 -c zod/.urb/put | head -1 | sed "s/glob-\([a-z0-9\.]*\).glob/\1/")
-sed -i "s/glob\-[a-z0-9\.]*glob' *[a-z0-9\.]*\]/$hash.glob' $hash]/g" $2
+sed -i "s/glob\-[a-z0-9\.]*glob' *[a-z0-9\.]*\]/glob-$hash.glob' $hash]/g" $2
 
 echo "hash=$(echo $hash)" >> $GITHUB_OUTPUT
 
