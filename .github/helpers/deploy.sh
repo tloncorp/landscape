@@ -35,12 +35,12 @@ echo "$cmds" >> "$cmdfile"
 sshpriv=$(mktemp "${TMPDIR:-/tmp/}ssh.XXXXXXXXX")
 sshpub="$sshpriv".pub
 echo "$SSH_PUB_KEY" >> "$sshpub"
-echo "$SSH_SEC_KEY" >> "$sshfile"
+echo "$SSH_SEC_KEY" >> "$sshpriv"
 
 gcloud compute \
   --project mainnet \
   ssh \
-  --ssh-key-file "$sshfile" \
+  --ssh-key-file "$sshpriv" \
   --ssh-flag="-T" \
   --zone "$zone" --verbosity info \
   urb@"$ship" < "$cmdfile"
