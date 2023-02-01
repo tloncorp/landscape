@@ -65,7 +65,6 @@ jobs:
           zone: 'us-west1-b'
           user: 'urb'
           instance_name: 'wannec-dozzod-marzod'
-          ssh_args: '-T'
           flags: '--verbosity=info'
           ssh_private_key: '${{ secrets.TEST_KEY }}'
           script: ${{ steps.deploy-prep.outputs.cmdfile }}
