@@ -35,9 +35,9 @@ echo "$cmds" >> "$cmdfile"
 sshpriv=$(mktemp "${TMPDIR:-/tmp/}ssh.XXXXXXXXX")
 sshpub=$sshpriv.pub
 echo "$SSH_PUB_KEY" >> "$sshpub"
-echo $sshpub
-chmod 600 $sshpub
 echo "$SSH_SEC_KEY" >> "$sshpriv"
+chmod 600 $sshpub
+chmod 600 $sshpriv
 
 gcloud compute \
   --project mainnet \
