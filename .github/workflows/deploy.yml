@@ -45,6 +45,8 @@ jobs:
           chmod 700 /home/runner/.ssh          
           echo "$SSH_SEC_KEY" | base64 -d > /home/runner/.ssh/google-compute-engine
           echo "$SSH_PUB_KEY" | base64 -d > /home/runner/.ssh/google-compute-engine.pub
+          chmod 600 /home/runner/.ssh/google-compute-engine
+          chmod 600 /home/runner/.ssh/google-compute-engine.pub
           eval "$(ssh-agent -s)"
           cat /home/runner/.ssh/google-compute-engine.pub
           ssh-add /home/runner/.ssh/google-compute-engine
