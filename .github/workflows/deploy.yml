@@ -39,20 +39,33 @@ jobs:
       #   with:
       #     add: '-A'
       #     message: 'update glob: ${{ steps.glob.outputs.hash }} [skip actions]'
-      - name: Setup SSH
-        run: |
-          mkdir /home/runner/.ssh
-          chmod 700 /home/runner/.ssh          
-          echo "$SSH_SEC_KEY" | base64 -d > /home/runner/.ssh/google-compute-engine
-          echo "$SSH_PUB_KEY" | base64 -d > /home/runner/.ssh/google-compute-engine.pub
-          chmod 600 /home/runner/.ssh/google-compute-engine
-          chmod 600 /home/runner/.ssh/google-compute-engine.pub
-          eval "$(ssh-agent -s)"
-          cat /home/runner/.ssh/google-compute-engine.pub
-          ssh-add /home/runner/.ssh/google-compute-engine
-        env:
-          SSH_SEC_KEY: ${{ secrets.JANEWAY_SSH_SEC_KEY }}
-          SSH_PUB_KEY: ${{ secrets.JANEWAY_SSH_PUB_KEY }}
-      - id: deploy
+      # - name: Setup SSH
+      #   run: |
+      #     mkdir /home/runner/.ssh
+      #     chmod 700 /home/runner/.ssh          
+      #     echo "$SSH_SEC_KEY" | base64 -d > /home/runner/.ssh/google-compute-engine
+      #     echo "$SSH_PUB_KEY" | base64 -d > /home/runner/.ssh/google-compute-engine.pub
+      #     chmod 600 /home/runner/.ssh/google-compute-engine
+      #     chmod 600 /home/runner/.ssh/google-compute-engine.pub
+      #     eval "$(ssh-agent -s)"
+      #     cat /home/runner/.ssh/google-compute-engine.pub
+      #     ssh-add /home/runner/.ssh/google-compute-engine
+      #   env:
+      #     SSH_SEC_KEY: ${{ secrets.JANEWAY_SSH_SEC_KEY }}
+      #     SSH_PUB_KEY: ${{ secrets.JANEWAY_SSH_PUB_KEY }}
+
+      - id: deploy-prep
+        name: Prep Deploy Script
         run:
-          ./.github/helpers/deploy.sh tloncorp/landscape landscape wannec-dozzod-marzod us-west1-b
+          ./.github/helpers/prep-deploy.sh tloncorp/landscape landscape
+      - id: 'compute-ssh'
+        name: Deploy
+        uses: 'google-github-actions/ssh-compute@v0'
+        with:
+          zone: 'us-west1-b'
+          user: 'urb'
+          instance_name: 'wannec-dozzod-marzod'
+          ssh_args: '-T'
+          flags: '--verbosity=info'
+          ssh_private_key: '${{ secrets.JANEWAY_SSH_SEC_KEY }}'
+          script: ${{ steps.deploy-prep.outputs.cmdfile }}

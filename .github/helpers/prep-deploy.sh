@@ -5,9 +5,7 @@
 
 repo=$1
 desk=$2
-ship=$3
-zone=$4
-ref=${5:-.}
+ref=${3:-.}
 folder=$ship/$desk
 
 set -e
@@ -30,10 +28,5 @@ rm -rf $urbit_repo
 '
 echo "$cmds"
 echo "$cmds" >> "$cmdfile"
-gcloud compute \
-  --project mainnet \
-  ssh \
-  --ssh-flag="-T" \
-  --zone $4 --verbosity info \
-  urb@$ship < "$cmdfile"
-echo "OTA performed for $desk on $ship"
+
+echo "cmdfile=$(echo $cmdfile)" >> $GITHUB_OUTPUT
