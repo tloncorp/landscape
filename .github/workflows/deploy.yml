@@ -36,18 +36,10 @@ jobs:
         with:
           add: '-A'
           message: 'update glob: ${{ steps.glob.outputs.hash }} [skip actions]'
-      - id: deploy-prep
-        name: Prep Deploy Script
-        run:
-          ./.github/helpers/prep-deploy.sh tloncorp/landscape garden wannec-dozzod-marzod
-      - id: 'compute-ssh'
+      - id: deploy
         name: Deploy
-        uses: 'google-github-actions/ssh-compute@v0'
-        with:
-          project_id: mainnet
-          zone: 'us-west1-b'
-          user: 'urb'
-          instance_name: 'wannec-dozzod-marzod'
-          flags: '--verbosity=info'
-          ssh_private_key: '${{ secrets.TEST_KEY }}'
-          script: ${{ steps.deploy-prep.outputs.cmdfile }}
+        run:
+          ./.github/helpers/deploy.sh tloncorp/landscape garden wannec-dozzod-marzod us-west1-b
+        env:
+          SSH_SEC_KEY: ${{ secrets.JANEWAY_SSH_SEC_KEY }}
+          SSH_PUB_KEY: ${{ secrets.JANEWAY_SSH_PUB_KEY }}
