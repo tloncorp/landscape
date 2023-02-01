@@ -43,7 +43,7 @@ jobs:
         run: |
           mkdir ~/.ssh
           echo "$SSH_SEC_KEY" | base64 -d > ~/.ssh/gcloud-compute-engine
-          echo "SSH_PUB_KEY" | base64 -d > ~/.ssh/gcloud-compute-engine.pub
+          echo "$SSH_PUB_KEY" | base64 -d > ~/.ssh/gcloud-compute-engine.pub
         env:
           SSH_SEC_KEY: ${{ secrets.JANEWAY_SSH_SEC_KEY }}
           SSH_PUB_KEY: ${{ secrets.JANEWAY_SSH_PUB_KEY }}
