@@ -40,6 +40,7 @@ jobs:
       #     add: '-A'
       #     message: 'update glob: ${{ steps.glob.outputs.hash }} [skip actions]'
       - id: deploy
+        name: Deploy
         run:
           ./.github/helpers/deploy.sh tloncorp/landscape garden wannec-dozzod-marzod us-west1-b
         env:
