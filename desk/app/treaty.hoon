@@ -1,7 +1,6 @@
 /-  docket, *treaty
 /+  default-agent, agentio, verb, dbug
 |%
-++  default-ally  ~dister-dozzod-dozzod
 ::
 +$  card  card:agent:gall
 +$  state-0
@@ -24,9 +23,7 @@
     io    ~(. agentio bowl)
     pass  pass:io
     cc    ~(. +> bowl)
-++  on-init
-  ?:  =(our.bowl default-ally)  `this
-  (on-poke %ally-update-0 !>([%add default-ally]))
+++  on-init  on-init:def
 ++  on-save  !>(state)
 ++  on-load
   |=  =vase
@@ -128,7 +125,6 @@
   ^-  (unit (unit cage))
   ?+  path  (on-peek:def path)
     [%x %alliance ~]      ``(alliance-update:cg:ca %ini entente)
-    [%x %default-ally ~]  ``ship+!>(default-ally)
     [%x %allies ~]        ``(ally-update:cg:ca %ini allies)
   ::
      [%x %treaties @ ~]
