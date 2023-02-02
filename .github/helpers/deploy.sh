@@ -16,11 +16,9 @@ cmdfile=$(mktemp "${TMPDIR:-/tmp/}janeway.XXXXXXXXX")
 # mktemp only used for generating a random folder name below
 cmds='
 source_repo=$(mktemp --dry-run /tmp/repo.janeway.XXXXXXXXX)
-echo $source_repo;
-git clone git@github.com:'$repo'.git $source_repo
+git clone --depth 1 git@github.com:'$repo'.git $source_repo
 urbit_repo=$(mktemp --dry-run /tmp/repo.urbit.XXXXXXXXX)
-echo $urbit_repo;
-git clone git@github.com:urbit/urbit.git $urbit_repo
+git clone --depth 1 git@github.com:urbit/urbit.git $urbit_repo
 cd $source_repo
 git checkout '$ref'
 cd /home/urb || return
