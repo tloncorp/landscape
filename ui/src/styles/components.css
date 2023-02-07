@@ -11,7 +11,7 @@
 }
 
 .dialog {
-  @apply relative max-h-[calc(100vh-2rem)] min-w-[360px] overflow-auto rounded-3xl bg-white p-5 sm:p-8 md:max-w-[calc(100vw-2rem)];
+  @apply relative max-h-[600px] min-w-[300px] overflow-auto rounded-3xl bg-white p-5 sm:p-8 md:max-h-[calc(100vh-2rem)] md:max-w-[calc(100vw-2rem)];
 }
 
 .dialog-inner-container {
