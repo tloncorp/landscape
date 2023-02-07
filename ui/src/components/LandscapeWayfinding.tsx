@@ -136,11 +136,11 @@ function LandscapeDescription() {
           link={groups.door.link}
         />
         <GroupLink
-          title={groups.tlonSupport.title}
-          description={groups.tlonSupport.description}
-          icon={groups.tlonSupport.icon}
-          color={groups.tlonSupport.color}
-          link={groups.tlonSupport.link}
+          title={groups.tlonPublic.title}
+          description={groups.tlonPublic.description}
+          icon={groups.tlonPublic.icon}
+          color={groups.tlonPublic.color}
+          link={groups.tlonPublic.link}
         />
       </div>
     </div>
