@@ -3,7 +3,7 @@
 }
 
 .button {
-  @apply inline-flex cursor-pointer items-center justify-center rounded-lg px-4 py-2 text-base font-semibold tracking-tight;
+  @apply inline-flex cursor-pointer items-center justify-center whitespace-nowrap rounded-lg p-2 text-center text-base font-semibold tracking-tight md:px-4 md:py-2;
 }
 
 .dialog-container {
