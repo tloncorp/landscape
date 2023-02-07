@@ -22,7 +22,12 @@ function getHash(pike: Pike): string {
   return parts[parts.length - 1];
 }
 
-export const SystemMenu = ({ className, open, subMenuOpen, shouldDim }: SystemMenuProps) => {
+export const SystemMenu = ({
+  className,
+  open,
+  subMenuOpen,
+  shouldDim,
+}: SystemMenuProps) => {
   const { push } = useHistory();
   const [copied, setCopied] = useState(false);
   const garden = usePike(window.desk);
@@ -67,7 +72,7 @@ export const SystemMenu = ({ className, open, subMenuOpen, shouldDim }: SystemMe
           <Link
             to={open || subMenuOpen ? '/' : '/system-menu'}
             className={classNames(
-              'relative appearance-none circle-button default-ring',
+              'circle-button default-ring relative appearance-none',
               open && 'text-gray-300',
               shouldDim && 'opacity-60',
               className
@@ -76,13 +81,13 @@ export const SystemMenu = ({ className, open, subMenuOpen, shouldDim }: SystemMe
           >
             {!open && !subMenuOpen && (
               <>
-                <Adjust className="w-6 h-6 fill-current text-gray" />
+                <Adjust className="text-gray h-6 w-6 fill-current" />
                 <span className="sr-only">System Menu</span>
               </>
             )}
             {(open || subMenuOpen) && (
               <>
-                <Cross className="w-3 h-3 fill-current" />
+                <Cross className="h-3 w-3 fill-current" />
                 <span className="sr-only">Close</span>
               </>
             )}
@@ -97,47 +102,49 @@ export const SystemMenu = ({ className, open, subMenuOpen, shouldDim }: SystemMe
               onPointerDownOutside={preventFlash}
               side={isMobile ? 'top' : 'bottom'}
               sideOffset={12}
-              className="dropdown relative z-40 min-w-64 p-4 font-semibold text-gray-500 bg-white"
+              className="dropdown relative z-40 min-w-64 bg-white p-4 font-semibold text-gray-500"
             >
               <DropdownMenu.Group>
-                <DropdownMenu.Item
-                  as={Link}
-                  to="/leap/system-preferences"
-                  className="flex items-center p-2 mb-2 space-x-2 focus:bg-blue-200 focus:outline-none rounded"
-                  onSelect={handleDropdownLink()}
-                >
-                  <span className="w-5 h-5 bg-gray-100 rounded-full" />
-                  <span className="h4">System Preferences</span>
+                <DropdownMenu.Item onSelect={handleDropdownLink()}>
+                  <Link
+                    to="/leap/system-preferences"
+                    className="focus:outline-none mb-2 flex items-center space-x-2 rounded p-2 focus:bg-blue-200"
+                  >
+                    <span className="h-5 w-5 rounded-full bg-gray-100" />
+                    <span className="h4">System Preferences</span>
+                  </Link>
                 </DropdownMenu.Item>
-                <DropdownMenu.Item
-                  as={Link}
-                  to="/leap/help-and-support"
-                  className="flex items-center p-2 mb-2 space-x-2 focus:bg-blue-200 focus:outline-none rounded"
-                  onSelect={handleDropdownLink()}
-                >
-                  <span className="w-5 h-5 bg-gray-100 rounded-full" />
-                  <span className="h4">Help and Support</span>
+                <DropdownMenu.Item asChild onSelect={handleDropdownLink()}>
+                  <Link
+                    to="/leap/help-and-support"
+                    className="focus:outline-none mb-2 flex items-center space-x-2 rounded p-2 focus:bg-blue-200"
+                  >
+                    <span className="h-5 w-5 rounded-full bg-gray-100" />
+                    <span className="h4">Help and Support</span>
+                  </Link>
                 </DropdownMenu.Item>
-                <DropdownMenu.Item
-                  as={Link}
-                  to={`/app/${window.desk}`}
-                  className="flex items-center p-2 mb-2 space-x-2 focus:bg-blue-200 focus:outline-none rounded"
-                  onSelect={handleDropdownLink()}
-                >
-                  <span className="w-5 h-5 bg-gray-100 rounded-full" />
-                  <span className="h4">About</span>
+                <DropdownMenu.Item asChild onSelect={handleDropdownLink()}>
+                  <Link
+                    to={`/app/${window.desk}`}
+                    className="focus:outline-none mb-2 flex items-center space-x-2 rounded p-2 focus:bg-blue-200"
+                  >
+                    <span className="h-5 w-5 rounded-full bg-gray-100" />
+                    <span className="h4">About</span>
+                  </Link>
                 </DropdownMenu.Item>
                 {hash && (
-                  <DropdownMenu.Item
-                    as="button"
-                    className="inline-flex items-center py-2 px-3 m-2 h4 text-black bg-gray-100 rounded focus:bg-blue-200 focus:outline-none"
-                    onSelect={copyHash}
-                  >
-                    <span className="sr-only">Base Hash</span>
-                    <code>
-                      {!copied && <span aria-label={hash.split('').join('-')}>{hash}</span>}
-                      {copied && 'copied!'}
-                    </code>
+                  <DropdownMenu.Item asChild onSelect={copyHash}>
+                    <button className="h4 focus:outline-none m-2 inline-flex items-center rounded bg-gray-100 py-2 px-3 text-black focus:bg-blue-200">
+                      <span className="sr-only">Base Hash</span>
+                      <code>
+                        {!copied && (
+                          <span aria-label={hash.split('').join('-')}>
+                            {hash}
+                          </span>
+                        )}
+                        {copied && 'copied!'}
+                      </code>
+                    </button>
                   </DropdownMenu.Item>
                 )}
               </DropdownMenu.Group>
@@ -148,7 +155,7 @@ export const SystemMenu = ({ className, open, subMenuOpen, shouldDim }: SystemMe
       <Route path="/system-menu">
         <div
           id="system-menu-overlay"
-          className="fixed z-30 right-0 bottom-0 w-screen h-screen bg-black opacity-30"
+          className="fixed right-0 bottom-0 z-30 h-screen w-screen bg-black opacity-30"
         />
       </Route>
     </>

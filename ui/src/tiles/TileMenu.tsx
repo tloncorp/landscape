@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { ReactElement, useCallback, useState } from 'react';
 import type * as Polymorphic from '@radix-ui/react-polymorphic';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import classNames from 'classnames';
@@ -24,20 +24,17 @@ const MenuIcon = ({ className }: { className: string }) => (
   </svg>
 );
 
-type ItemComponent = Polymorphic.ForwardRefComponent<
-  Polymorphic.IntrinsicElement<typeof DropdownMenu.Item>,
-  Polymorphic.OwnProps<typeof DropdownMenu.Item>
->;
-
-const Item = React.forwardRef(({ children, ...props }, ref) => (
-  <DropdownMenu.Item
-    ref={ref}
-    {...props}
-    className="default-ring block w-full select-none rounded px-4 py-3 leading-none mix-blend-hard-light ring-gray-600"
-  >
-    {children}
-  </DropdownMenu.Item>
-)) as ItemComponent;
+const Item = React.forwardRef<HTMLDivElement, DropdownMenu.MenuItemProps>(
+  ({ children, ...props }, ref) => (
+    <DropdownMenu.Item
+      ref={ref}
+      {...props}
+      className="default-ring block w-full select-none rounded px-4 py-3 leading-none mix-blend-hard-light ring-gray-600"
+    >
+      {children}
+    </DropdownMenu.Item>
+  )
+);
 
 export const TileMenu = ({
   desk,
@@ -83,34 +80,28 @@ export const TileMenu = ({
         style={menuBg}
       >
         <DropdownMenu.Group>
-          <Item
-            as={Link}
-            to={`/app/${desk}`}
-            onSelect={isMobile ? (e) => e.preventDefault() : linkOnSelect}
-          >
-            App Info
+          <Item onSelect={isMobile ? (e) => e.preventDefault() : linkOnSelect}>
+            <Link to={`/app/${desk}`}>App Info</Link>
           </Item>
         </DropdownMenu.Group>
         <DropdownMenu.Separator className="-mx-4 my-2 border-t-2 border-solid border-gray-600 mix-blend-soft-light" />
         <DropdownMenu.Group>
           {active && (
             <Item
-              as={Link}
-              to={`/app/${desk}/suspend`}
+              asChild
               onSelect={isMobile ? (e) => e.preventDefault() : linkOnSelect}
             >
-              Suspend App
+              <Link to={`/app/${desk}/suspend`}>Suspend App</Link>
             </Item>
           )}
           {suspended && (
             <Item onSelect={() => toggleDocket(desk)}>Resume App</Item>
           )}
           <Item
-            as={Link}
-            to={`/app/${desk}/remove`}
+            asChild
             onSelect={isMobile ? (e) => e.preventDefault() : linkOnSelect}
           >
-            Uninstall App
+            <Link to={`/app/${desk}/remove`}>Uninstall App</Link>
           </Item>
         </DropdownMenu.Group>
         <DropdownMenu.Arrow
