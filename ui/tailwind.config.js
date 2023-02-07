@@ -11,7 +11,7 @@ const themableProperties = [
   'lineHeight',
   'borderRadius',
   'borderWidth',
-  'boxShadow'
+  'boxShadow',
 ];
 
 function variablizeTheme(themeConfig, theme) {
@@ -34,18 +34,18 @@ const config = resolveConfig({
         'San Francisco',
         'Helvetica Neue',
         'Arial',
-        'sans-serif'
+        'sans-serif',
       ],
-      mono: ['Source Code Pro', 'Roboto mono', 'Courier New', 'monospace']
+      mono: ['Source Code Pro', 'Roboto mono', 'Courier New', 'monospace'],
     },
     extend: {
       lineHeight: {
         tight: 1.2,
         snug: 1.33334,
-        relaxed: 1.66667
-      }
-    }
-  }
+        relaxed: 1.66667,
+      },
+    },
+  },
 });
 
 const base = new Theme().addColors({
@@ -62,9 +62,10 @@ const base = new Theme().addColors({
     600: '#666666',
     700: '#4D4D4D',
     800: '#333333',
-    900: '#1A1A1A'
+    900: '#1A1A1A',
   },
   blue: {
+    DEFAULT: '#008EFF',
     50: '#EFF9FF',
     100: '#C8EDFF',
     200: '#A0E1FF',
@@ -74,7 +75,7 @@ const base = new Theme().addColors({
     600: '#0252B2',
     700: '#00388B',
     800: '#002364',
-    900: '#00133E'
+    900: '#00133E',
   },
   red: {
     50: '#FFF4F2',
@@ -86,7 +87,7 @@ const base = new Theme().addColors({
     600: '#D03B22',
     700: '#B12918',
     800: '#931C13',
-    900: '#751410'
+    900: '#751410',
   },
   orange: {
     50: '#FFF4EF',
@@ -98,20 +99,20 @@ const base = new Theme().addColors({
     600: '#B2420C',
     700: '#8B2B00',
     800: '#641E00',
-    900: '#3E1100'
+    900: '#3E1100',
   },
   green: {
     100: '#E6F5F0',
     200: '#B3E2D1',
-    300: '#009F65'
+    300: '#009F65',
   },
   yellow: {
     100: '#FFF9E6',
     200: '#FFEEB3',
     300: '#FFDD66',
     400: '#FFC700',
-    500: '#ECCB27'
-  }
+    500: '#ECCB27',
+  },
 });
 variablizeTheme(config.theme, base);
 
@@ -132,7 +133,7 @@ const dark = new Theme()
       600: '#B3B3B3',
       700: '#CCCCCC',
       800: '#E5E5E5',
-      900: '#F2F2F2'
+      900: '#F2F2F2',
     },
     red: {
       50: '#751410',
@@ -144,9 +145,10 @@ const dark = new Theme()
       600: '#FC9B84',
       700: '#FFC8B9',
       800: '#FFDED6',
-      900: '#FFF4F2'
+      900: '#FFF4F2',
     },
     blue: {
+      DEFAULT: '#008EFF',
       50: '#00133E',
       100: '#002364',
       200: '#00388B',
@@ -156,7 +158,7 @@ const dark = new Theme()
       600: '#5FBFFF',
       700: '#A0E1FF',
       800: '#C8EDFF',
-      900: '#EFF9FF'
+      900: '#EFF9FF',
     },
     orange: {
       50: '#3E1100',
@@ -168,19 +170,19 @@ const dark = new Theme()
       600: '#FFA56F',
       700: '#FFCEAB',
       800: '#FFE2CE',
-      900: '#FFF4EF'
+      900: '#FFF4EF',
     },
     green: {
       100: '#182722',
       200: '#134231',
-      300: '#009F65'
+      300: '#009F65',
     },
     yellow: {
       100: '#312B18',
       200: '#5F4E13',
       300: '#A4820B',
-      400: '#FFC700'
-    }
+      400: '#FFC700',
+    },
   });
 
 const themes = new ThemeManager().setDefaultTheme(base).addTheme(dark);

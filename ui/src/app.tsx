@@ -1,6 +1,12 @@
 import React, { useEffect } from 'react';
 import Mousetrap from 'mousetrap';
-import { BrowserRouter, Switch, Route, useHistory, useLocation } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Switch,
+  Route,
+  useHistory,
+  useLocation,
+} from 'react-router-dom';
 import { ErrorBoundary } from 'react-error-boundary';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import { Grid } from './pages/Grid';
@@ -77,11 +83,13 @@ const AppRoutes = () => {
     handleError(() => {
       window.name = 'grid';
 
-      const { initialize: settingsInitialize, fetchAll } = useSettingsState.getState();
+      const { initialize: settingsInitialize, fetchAll } =
+        useSettingsState.getState();
       settingsInitialize(api);
       fetchAll();
 
-      const { fetchDefaultAlly, fetchAllies, fetchCharges } = useDocketState.getState();
+      const { fetchDefaultAlly, fetchAllies, fetchCharges } =
+        useDocketState.getState();
       fetchDefaultAlly();
       fetchCharges();
       fetchAllies();
@@ -111,7 +119,10 @@ export function App() {
   const base = import.meta.env.MODE === 'mock' ? undefined : '/apps/grid';
 
   return (
-    <ErrorBoundary FallbackComponent={ErrorAlert} onReset={() => window.location.reload()}>
+    <ErrorBoundary
+      FallbackComponent={ErrorAlert}
+      onReset={() => window.location.reload()}
+    >
       <BrowserRouter basename={base}>
         <AppRoutes />
       </BrowserRouter>

@@ -2,22 +2,7 @@ import React from 'react';
 import { Setting } from '../components/Setting';
 import { SettingsState, useSettingsState } from '../state/settings';
 
-type AttentionProperty =
-  | 'disableAppTileUnreads'
-  | 'disableAvatars'
-  | 'disableNicknames'
-  | 'disableSpellcheck'
-  | 'disableRemoteContent';
-
-const attentionProperties: Record<string, AttentionProperty> = {
-  disableAppTileUnreads: 'disableAppTileUnreads',
-  disableAvatars: 'disableAvatars',
-  disableNicknames: 'disableNicknames',
-  disableSpellcheck: 'disableSpellcheck',
-  disableRemoteContent: 'disableRemoteContent'
-};
-
-async function toggle(property: AttentionProperty) {
+async function toggle(property: keyof SettingsState['calmEngine']) {
   const selProp = (s: SettingsState) => s.calmEngine[property];
   const state = useSettingsState.getState();
   const curr = selProp(state);
@@ -30,7 +15,8 @@ export const AttentionAndPrivacy = () => {
     disableAvatars,
     disableNicknames,
     disableSpellcheck,
-    disableRemoteContent
+    disableRemoteContent,
+    disableWayfinding,
   } = useSettingsState().calmEngine;
 
   return (
@@ -42,7 +28,7 @@ export const AttentionAndPrivacy = () => {
         </span>
         <Setting
           on={disableAppTileUnreads}
-          toggle={() => toggle(attentionProperties.disableAppTileUnreads)}
+          toggle={() => toggle('disableAppTileUnreads')}
           name="Hide unread counts on Landscape app tiles"
           className="text-gray-400"
           disabled
@@ -53,7 +39,7 @@ export const AttentionAndPrivacy = () => {
         </Setting>
         <Setting
           on={disableAvatars}
-          toggle={() => toggle(attentionProperties.disableAvatars)}
+          toggle={() => toggle('disableAvatars')}
           name="Disable avatars"
         >
           <p className="leading-5 text-gray-600">
@@ -63,12 +49,21 @@ export const AttentionAndPrivacy = () => {
         </Setting>
         <Setting
           on={disableNicknames}
-          toggle={() => toggle(attentionProperties.disableNicknames)}
+          toggle={() => toggle('disableNicknames')}
           name="Disable nicknames"
         >
           <p className="leading-5 text-gray-600">
             Turn user-set nicknames off and only display urbit-style names
             across all of your apps.
+          </p>
+        </Setting>
+        <Setting
+          on={disableWayfinding}
+          toggle={() => toggle('disableWayfinding')}
+          name="Disable wayfinding"
+        >
+          <p className="leading-5 text-gray-600">
+            Turn off the "wayfinding" menu in the bottom left of Landscape.
           </p>
         </Setting>
       </div>
@@ -79,7 +74,7 @@ export const AttentionAndPrivacy = () => {
         </span>
         <Setting
           on={disableSpellcheck}
-          toggle={() => toggle(attentionProperties.disableSpellcheck)}
+          toggle={() => toggle('disableSpellcheck')}
           name="Disable spell-check"
         >
           <p className="leading-5 text-gray-600">
@@ -90,7 +85,7 @@ export const AttentionAndPrivacy = () => {
         </Setting>
         <Setting
           on={disableRemoteContent}
-          toggle={() => toggle(attentionProperties.disableRemoteContent)}
+          toggle={() => toggle('disableRemoteContent')}
           name="Disable remote content"
         >
           <p className="leading-5 text-gray-600">
