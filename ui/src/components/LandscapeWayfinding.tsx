@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import * as Popover from '@radix-ui/react-popover';
-import { setCalmSetting, SettingsState } from '../state/settings';
+import * as Dropdown from '@radix-ui/react-dropdown-menu';
+import { setCalmSetting } from '../state/settings';
 import { Dialog, DialogContent } from './Dialog';
 import { Button } from './Button';
 import { useCharges } from '../state/docket';
@@ -109,7 +109,7 @@ function LandscapeDescription() {
         />
         <AppLink
           title="Terminal"
-          description="Build or join Urbit-based communities"
+          description="Pop open the hood of your urbit"
           link="/apps/webterm"
           image={charges.webterm?.image || ''}
           color={charges.webterm?.color || 'bg-black'}
@@ -155,50 +155,64 @@ export default function LandscapeWayfinding() {
   };
 
   return (
-    <Popover.Root>
+    <Dropdown.Root>
       <div className="absolute left-4 bottom-16 z-50">
-        <Popover.Trigger className="relative" asChild>
+        <Dropdown.Trigger className="relative" asChild>
           <button className="h-9 w-9 cursor-pointer rounded-lg bg-black text-xl text-white">
             ?
           </button>
-        </Popover.Trigger>
-        <Popover.Content
+        </Dropdown.Trigger>
+        <Dropdown.Content
           side="bottom"
           sideOffset={8}
-          className="mx-4 flex w-[208px] flex-col space-y-4 rounded-lg bg-white p-4 text-sm font-semibold text-black drop-shadow-lg"
+          className="new-dropdown mx-4 flex w-[208px] flex-col space-y-2 rounded-lg bg-white p-4 text-sm font-semibold text-black drop-shadow-lg"
         >
-          <span
-            onClick={() => setShowModal(true)}
-            className="cursor-pointer text-blue"
-          >
-            Basic Wayfinding
-          </span>
-          <hr className="my-2 border-[1px] border-gray-50" />
-          <a
-            className="no-underline"
-            href="/apps/groups/groups/~nibset-napwyn/tlon"
-            target="_blank"
-          >
-            Help & Support
-          </a>
-          <a
-            className="no-underline"
-            href="https://airtable.com/shrflFkf5UyDFKhmW"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Submit Feedback
-          </a>
-          <span className="cursor-pointer" onClick={handleHide}>
-            Hide This Button
-          </span>
-        </Popover.Content>
+          <Dropdown.Item asChild className="new-dropdown-item p-2">
+            <span
+              onClick={() => setShowModal(true)}
+              className="cursor-pointer text-blue"
+            >
+              Basic Wayfinding
+            </span>
+          </Dropdown.Item>
+          <Dropdown.Separator asChild>
+            <hr className="my-2 border-[1px] border-gray-50" />
+          </Dropdown.Separator>
+          <Dropdown.Item asChild className="new-dropdown-item p-2">
+            <a
+              className="no-underline"
+              href="/apps/groups/groups/~nibset-napwyn/tlon"
+              target="_blank"
+            >
+              Help & Support
+            </a>
+          </Dropdown.Item>
+          <Dropdown.Item asChild className="new-dropdown-item p-2">
+            <a
+              className="no-underline"
+              href="https://airtable.com/shrflFkf5UyDFKhmW"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Submit Feedback
+            </a>
+          </Dropdown.Item>
+          <Dropdown.Item asChild className="new-dropdown-item p-2">
+            <span className="cursor-pointer" onClick={handleHide}>
+              Hide This Button
+            </span>
+          </Dropdown.Item>
+        </Dropdown.Content>
       </div>
       <Dialog open={showModal} onOpenChange={() => setShowModal(false)}>
-        <DialogContent showClose={false}>
+        <DialogContent
+          // onOpenAutoFocus={(e) => e.preventDefault()}
+          showClose={false}
+          containerClass="focus:outline-none"
+        >
           <LandscapeDescription />
         </DialogContent>
       </Dialog>
-    </Popover.Root>
+    </Dropdown.Root>
   );
 }
