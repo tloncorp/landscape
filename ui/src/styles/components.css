@@ -1,41 +1,41 @@
 .circle-button {
-  @apply inline-flex items-center justify-center p-1.5 h-9 w-9 font-semibold rounded-lg;
+  @apply inline-flex h-9 w-9 items-center justify-center rounded-lg p-1.5 font-semibold;
 }
 
 .button {
-  @apply inline-flex items-center justify-center px-4 py-2 font-semibold text-base tracking-tight rounded-lg cursor-pointer;
+  @apply inline-flex cursor-pointer items-center justify-center rounded-lg px-4 py-2 text-base font-semibold tracking-tight;
 }
 
 .dialog-container {
-  @apply fixed z-40 top-1/2 left-1/2 p-4 transform -translate-x-1/2 -translate-y-1/2;
+  @apply fixed top-1/2 left-1/2 z-40 -translate-x-1/2 -translate-y-1/2 transform p-4;
 }
 
 .dialog {
-  @apply relative max-h-[calc(100vh-2rem)] max-w-[calc(100vw-2rem)] p-5 sm:p-8 bg-white rounded-3xl overflow-auto;
+  @apply relative max-h-[calc(100vh-2rem)] min-w-[360px] overflow-auto rounded-3xl bg-white p-5 sm:p-8 md:max-w-[calc(100vw-2rem)];
 }
 
 .dialog-inner-container {
-  @apply h-full p-4 md:p-8 space-y-8 overflow-y-auto;
+  @apply h-full space-y-8 overflow-y-auto p-4 md:p-8;
 }
 
 .dropdown {
-  @apply min-w-52 p-4 rounded-xl;
+  @apply min-w-52 rounded-xl p-4;
 }
 
 .inner-section {
-  @apply p-8 bg-white rounded-xl;
+  @apply rounded-xl bg-white p-8;
 }
 
 .input {
-  @apply px-2 py-1.5 w-full text-base leading-5 bg-white rounded-lg;
+  @apply w-full rounded-lg bg-white px-2 py-1.5 text-base leading-5;
 }
 
 .notification {
-  @apply p-4 bg-gray-50 rounded-xl;
+  @apply rounded-xl bg-gray-50 p-4;
 }
 
 .spinner {
-  @apply inline-flex items-center w-6 h-6 animate-spin;
+  @apply inline-flex h-6 w-6 animate-spin items-center;
 }
 
 .new-dropdown {
@@ -43,5 +43,5 @@
 }
 
 .new-dropdown-item {
-  @apply cursor-pointer rounded-lg px-2 py-3 ring-gray-200 hover:bg-gray-50 focus:outline-none;
+  @apply focus:outline-none cursor-pointer rounded-lg px-2 py-3 ring-gray-200 hover:bg-gray-50;
 }
