@@ -2,8 +2,10 @@ import React, { FunctionComponent, useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Route, useHistory, useParams } from 'react-router-dom';
 import { ErrorAlert } from '../components/ErrorAlert';
+import LandscapeWayfinding from '../components/LandscapeWayfinding';
 import { MenuState, Nav } from '../nav/Nav';
 import useKilnState from '../state/kiln';
+import { useCalm } from '../state/settings';
 import { RemoveApp } from '../tiles/RemoveApp';
 import { SuspendApp } from '../tiles/SuspendApp';
 import { TileGrid } from '../tiles/TileGrid';
@@ -17,6 +19,7 @@ interface RouteProps {
 export const Grid: FunctionComponent = () => {
   const { push } = useHistory();
   const { menu } = useParams<RouteProps>();
+  const { disableWayfinding } = useCalm();
 
   useEffect(() => {
     // TOOD: rework
@@ -40,12 +43,13 @@ export const Grid: FunctionComponent = () => {
   }, [menu]);
 
   return (
-    <div className="flex flex-col">
-      <header className="fixed sm:sticky bottom-0 sm:bottom-auto sm:top-0 left-0 z-30 flex justify-center w-full px-4">
+    <div className="flex h-screen w-full flex-col">
+      {!disableWayfinding && <LandscapeWayfinding />}
+      <header className="fixed bottom-0 left-0 z-30 flex w-full justify-center px-4 sm:sticky sm:bottom-auto sm:top-0">
         <Nav menu={menu} />
       </header>
 
-      <main className="h-full w-full flex justify-center pt-4 md:pt-16 pb-32 relative z-0">
+      <main className="relative z-0 flex h-full w-full justify-center pt-4 pb-32 md:pt-16">
         <TileGrid menu={menu} />
         <ErrorBoundary FallbackComponent={ErrorAlert} onReset={() => push('/')}>
           <Route exact path="/app/:desk">

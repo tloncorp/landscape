@@ -83,7 +83,11 @@ export const TileGrid = ({ menu }: TileGridProps) => {
           : undefined
       }
     >
-      <div className="grid w-full max-w-6xl grid-cols-2 justify-center gap-4 px-4 sm:grid-cols-[repeat(auto-fit,minmax(auto,250px))] md:px-8">
+      <div
+        // This version of tailwind does not have h-fit
+        style={{ height: 'fit-content' }}
+        className="grid w-full max-w-6xl grid-cols-2 justify-center gap-4 px-4 sm:grid-cols-[repeat(auto-fit,minmax(auto,250px))] md:px-8"
+      >
         {order
           .filter((d) => d !== window.desk && d in charges)
           .filter((d) => d !== 'landscape')
