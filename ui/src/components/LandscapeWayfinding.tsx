@@ -77,7 +77,6 @@ const AppLink = ({ link, title, description, image, color }: App) => {
 
 function LandscapeDescription() {
   const charges = useCharges();
-  console.log({ charges });
   return (
     <div className="flex flex-col leading-5">
       <h1 className="my-8 text-2xl font-bold">Where am I?</h1>

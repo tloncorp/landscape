@@ -74,7 +74,7 @@ export const AppInfo: FC<AppInfoProps> = ({ docket, pike, className }) => {
     // TODO: maybe replace spinner with skeletons
     return (
       <div className="dialog-inner-container flex justify-center text-black">
-        <Spinner className="w-10 h-10" />
+        <Spinner className="h-10 w-10" />
       </div>
     );
   }
@@ -82,7 +82,7 @@ export const AppInfo: FC<AppInfoProps> = ({ docket, pike, className }) => {
   return (
     <div className={cn('text-black', className)}>
       <DocketHeader docket={docket}>
-        <div className="col-span-2 md:col-span-1 flex items-center space-x-4">
+        <div className="col-span-2 flex items-center space-x-4 md:col-span-1">
           {installStatus === 'installed' && (
             <PillButton
               variant="alt-primary"
@@ -97,32 +97,39 @@ export const AppInfo: FC<AppInfoProps> = ({ docket, pike, className }) => {
           )}
           {installStatus !== 'installed' && (
             <Dialog>
-              <DialogTrigger as={PillButton} disabled={installing} variant="alt-primary">
-                {installing ? (
-                  <>
-                    <Spinner />
-                    <span className="sr-only">Installing...</span>
-                  </>
-                ) : (
-                  'Get App'
-                )}
+              <DialogTrigger asChild>
+                <PillButton variant="alt-primary" disabled={installing}>
+                  {installing ? (
+                    <>
+                      <Spinner />
+                      <span className="sr-only">Installing...</span>
+                    </>
+                  ) : (
+                    'Get App'
+                  )}
+                </PillButton>
               </DialogTrigger>
               <DialogContent
                 showClose={false}
                 className="space-y-6"
                 containerClass="w-full max-w-md"
               >
-                <h2 className="h4">Install &ldquo;{getAppName(docket)}&rdquo;</h2>
-                <p className="tracking-tight pr-6">
-                  This application will be able to view and interact with the contents of your
-                  Urbit. Only install if you trust the developer.
+                <h2 className="h4">
+                  Install &ldquo;{getAppName(docket)}&rdquo;
+                </h2>
+                <p className="pr-6 tracking-tight">
+                  This application will be able to view and interact with the
+                  contents of your Urbit. Only install if you trust the
+                  developer.
                 </p>
                 <div className="flex space-x-6">
-                  <DialogClose as={Button} variant="secondary">
-                    Cancel
+                  <DialogClose asChild>
+                    <Button variant="secondary">Cancel</Button>
                   </DialogClose>
-                  <DialogClose as={Button} onClick={installApp}>
-                    Get &ldquo;{getAppName(docket)}&rdquo;
+                  <DialogClose asChild onClick={installApp}>
+                    <Button onClick={installApp}>
+                      Get &ldquo;{getAppName(docket)}&rdquo;
+                    </Button>
                   </DialogClose>
                 </div>
               </DialogContent>
@@ -137,13 +144,13 @@ export const AppInfo: FC<AppInfoProps> = ({ docket, pike, className }) => {
       <div className="space-y-6">
         {pike ? (
           <>
-            <hr className="-mx-5 sm:-mx-8 border-gray-50" />
+            <hr className="-mx-5 border-gray-50 sm:-mx-8" />
             <PikeMeta pike={pike} />
           </>
         ) : null}
         {!treaty ? null : (
           <>
-            <hr className="-mx-5 sm:-mx-8 border-gray-50" />
+            <hr className="-mx-5 border-gray-50 sm:-mx-8" />
             <TreatyMeta treaty={treaty} />
           </>
         )}

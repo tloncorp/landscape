@@ -26,12 +26,16 @@ const SubmitIssue = ({ error }: { error: Error }) => {
   );
 };
 
-export const ErrorAlert = ({ error, resetErrorBoundary, className }: ErrorAlertProps) => {
+export const ErrorAlert = ({
+  error,
+  resetErrorBoundary,
+  className,
+}: ErrorAlertProps) => {
   return (
     <Dialog defaultOpen modal onOpenChange={() => resetErrorBoundary()}>
       <DialogContent
         showClose={false}
-        className={cn('pr-8 space-y-6', className)}
+        className={cn('space-y-6 pr-8', className)}
         containerClass="w-full max-w-3xl"
       >
         <h2 className="h4">
@@ -39,15 +43,17 @@ export const ErrorAlert = ({ error, resetErrorBoundary, className }: ErrorAlertP
           <span className="font-mono">{error.message}</span>
         </h2>
         {error.stack && (
-          <div className="w-full p-2 bg-gray-50 overflow-x-auto rounded">
+          <div className="w-full overflow-x-auto rounded bg-gray-50 p-2">
             <pre>{error.stack}</pre>
           </div>
         )}
         <div className="flex space-x-6">
-          <DialogClose as={Button} variant="secondary">
-            Try Again
+          <DialogClose asChild>
+            <Button variant="secondary">Try Again</Button>
           </DialogClose>
-          <DialogClose as={SubmitIssue} error={error} />
+          <DialogClose asChild>
+            <SubmitIssue error={error} />
+          </DialogClose>
         </div>
       </DialogContent>
     </Dialog>
