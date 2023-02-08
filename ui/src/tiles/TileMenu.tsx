@@ -74,7 +74,7 @@ export const TileMenu = ({
       <DropdownMenu.Content
         onCloseAutoFocus={disableDefault}
         className={classNames(
-          'dropdown py-2 font-semibold',
+          'dropdown py-2 font-semibold z-40',
           lightText ? 'text-gray-100' : 'text-gray-800'
         )}
         style={menuBg}
