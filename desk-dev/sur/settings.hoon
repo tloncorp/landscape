@@ -1,7 +1,7 @@
 /+  *mip
 |%
 ::
-++  settings-0  
+++  settings-0
   =<  settings
   |%
   +$  settings  (map key bucket)
@@ -28,7 +28,7 @@
       [%a p=(list val)]
   ==
 ::
-+$  settings  (mip desk key bucket) 
++$  settings  (mip desk key bucket)
 +$  event
   $%  [%put-bucket =desk =key =bucket]
       [%del-bucket =desk =key]

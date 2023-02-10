@@ -56,7 +56,7 @@
   ::
   ++  all-stats
     |=  places=(map ^place ^stats)
-    ^-  json 
+    ^-  json
     :-  %a
     ^-  (list json)
     %+  turn  ~(tap by places)
@@ -64,7 +64,6 @@
     %-  pairs
     :~  stats+(stats s)
         place+(place p)
-        
     ==
   ::
   ++  stats
@@ -129,7 +128,7 @@
         time+(^time time)
         link+s+(spat link)
     ==
-  :: 
+  ::
   ++  binned-notification
     |=  [=^bin =^notification]
     %-  pairs
@@ -172,7 +171,7 @@
   =,  dejs:format
   |%
   ++  ship  (su ;~(pfix sig fed:ag))
-  :: TODO: fix +stab 
+  :: TODO: fix +stab
   ::
   ++  pa
     |=  j=json
@@ -202,7 +201,7 @@
   ::  parse date as @ud
   ::    TODO: move to zuse
   ++  sd
-    |=  jon=json 
+    |=  jon=json
     ^-  @da
     ?>  ?=(%s -.jon)
     `@da`(rash p.jon dem:ag)

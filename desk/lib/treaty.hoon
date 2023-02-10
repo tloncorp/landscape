@@ -25,7 +25,7 @@
     %+  frond  -.c
     ?-  -.c
       %da   s+(scot %da p.c)
-      %tas  s+(scot %tas p.c)  
+      %tas  s+(scot %tas p.c)
       %ud   (numb p.c)
     ==
   ::
@@ -37,7 +37,7 @@
   ++  alliance
     |=  a=^alliance
     ^-  json
-    :-  %a 
+    :-  %a
     %+  turn  ~(tap in a)
     |=  [=^ship =desk]
     ^-  json
