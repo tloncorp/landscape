@@ -3,7 +3,7 @@
 ++  grow
   |%
   ++  noun  treaties
-  ++  json  
+  ++  json
     ^-  ^json
     %-  pairs:enjs:format
     %+  turn  treaties

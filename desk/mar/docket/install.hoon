@@ -8,7 +8,7 @@
 ++  grab
   |%
   ++  noun  _[ship desk]
-  ++  json  
+  ++  json
     (su:dejs:format ;~((glue fas) ;~(pfix sig fed:ag) sym))
   --
 --

@@ -1,4 +1,4 @@
-/+  *hark-store 
+/+  *hark-store
 |_  act=action
 ++  grad  %noun
 ++  grow

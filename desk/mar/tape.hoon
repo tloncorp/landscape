@@ -1,5 +1,5 @@
 |_  tap=tape
-++  grad  %noun 
+++  grad  %noun
 ++  grow
   |%
   ++  noun  tap

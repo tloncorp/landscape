@@ -9,7 +9,7 @@
 ::  - each. Hark-store will store an index for each item that is unread.
 ::  Usefull for non-linear, low-volume applications, i.e. blogs,
 ::  collections
-::  
+::
 /-  store=hark-store
 /+  verb, dbug, default-agent, re=hark-unreads, agentio
 ::
@@ -110,7 +110,7 @@
     $(-.old %9, archive.old *archive:store)
   ==
 ::
-++  on-watch  
+++  on-watch
   |=  =path
   ^-  (quip card _this)
   ?>  (team:title [src our]:bowl)
@@ -135,7 +135,7 @@
   --
 ::
 ++  on-peek
-  ~/  %hark-store-peek   
+  ~/  %hark-store-peek
   |=  =path
   ^-  (unit (unit cage))
   ?+  path  (on-peek:def path)
@@ -200,7 +200,7 @@
 ++  on-agent  on-agent:def
 ::
 ++  on-leave  on-leave:def
-++  on-arvo  
+++  on-arvo
   |=  [=wire =sign-arvo]
   ^-  (quip card _this)
   ?.  ?=([%autoseen ~] wire)
@@ -217,7 +217,7 @@
   |_  [out=(list update:store) cards=(list card)]
   ++  poke-core  .
   ::
-  ++  abed 
+  ++  abed
     |=  in=action:store
     ^+   poke-core
     ?-  -.in
@@ -246,13 +246,13 @@
     :_  state
     %+  snoc  (flop cards)
     [%give %fact ~[/updates] %hark-update !>([%more (flop out)])]
-  :: 
+  ::
   ++  give  |=(=update:store poke-core(out [update out]))
   ++  emit  |=(=card poke-core(cards [card cards]))
   ::
   ::
   ::  +|  %note
-  ::  
+  ::
   ::  notification tracking
   ++  put-notifs
     |=  [time=@da =timebox:store]
@@ -261,7 +261,7 @@
   ++  put-lid
     |=  [=lid:store =bin:store =notification:store]
     ^+  poke-core
-    =.  by-place  (~(put ju by-place) place.bin [lid path.bin]) 
+    =.  by-place  (~(put ju by-place) place.bin [lid path.bin])
     ?-  -.lid
         %seen
       poke-core(seen (~(put by seen) bin notification))
@@ -309,7 +309,7 @@
   ::
   ++  do-archive
     |=  [=lid:store =bin:store]
-    ^+  poke-core  
+    ^+  poke-core
     ~|  %already-archived
     ?<  ?=(%time -.lid)
     ~|  %non-existent
@@ -333,7 +333,7 @@
   ::
   ::
   ::  +|  %each
-  ::  
+  ::
   ::  each unread tracking
   ::
   ++  unread-each
@@ -396,7 +396,7 @@
     |=  =place:store
     =/  bins=(list [=lid:store =path])
       ~(tap in (~(get ju by-place) place))
-    |-  
+    |-
     ?~  bins  poke-core
     =/  =bin:store
       [path.i.bins place]
@@ -410,7 +410,7 @@
     =/  =time  (~(gut by half-open) bin now.bowl)
     =?  half-open  !(~(has by half-open) bin)
       (~(put by half-open) bin now.bowl)
-    =/  existing  (get-lid archive/time bin) 
+    =/  existing  (get-lid archive/time bin)
     =/  new  (merge-notification existing note)
     =?  half-open  (lth 30 (lent body.new))
       (~(del by half-open) bin)
@@ -427,10 +427,10 @@
     %+  jub-place  place
     |=  =stats:store
     stats(count 0, timebox `now.bowl)
-  :: 
+  ::
   ++  read-bins
     |=  bins=(list bin:store)
-    |- 
+    |-
     ?~  bins  poke-core
     =/  core
       (read-note i.bins)
@@ -459,11 +459,10 @@
     =/  old
       (~(got by unseen) bin)
     =.  poke-core
-      (del-lid unseen/~ bin) 
+      (del-lid unseen/~ bin)
     =/  se  (~(get by seen) bin)
-    %^  put-lid  seen/~  bin 
+    %^  put-lid  seen/~  bin
     (merge-notification se old)
-    
   ::
   ++  archive-all
     |^
