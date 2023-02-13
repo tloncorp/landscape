@@ -1,3 +1,4 @@
+import { preSig } from '@urbit/api';
 import cookies from 'browser-cookies';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -10,6 +11,7 @@ function authRedirect() {
 }
 
 function checkIfLoggedIn() {
+  debugger;
   if (IS_MOCK) {
     return;
   }
@@ -23,9 +25,12 @@ function checkIfLoggedIn() {
     fetch('/~/name')
       .then((res) => res.text())
       .then((name) => {
-        if (name !== window.ship) {
+        if (name !== preSig(window.ship)) {
           authRedirect();
         }
+      })
+      .catch(() => {
+        authRedirect();
       });
   }
 }
