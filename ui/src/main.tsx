@@ -20,7 +20,13 @@ function checkIfLoggedIn() {
 
   const session = cookies.get(`urbauth-~${window.ship}`);
   if (!session) {
-    authRedirect();
+    fetch('/~/name')
+      .then((res) => res.text())
+      .then((name) => {
+        if (name !== window.ship) {
+          authRedirect();
+        }
+      });
   }
 }
 
