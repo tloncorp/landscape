@@ -11,7 +11,6 @@ function authRedirect() {
 }
 
 function checkIfLoggedIn() {
-  debugger;
   if (IS_MOCK) {
     return;
   }
