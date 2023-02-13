@@ -1,3 +1,4 @@
+import { preSig } from '@urbit/api';
 import cookies from 'browser-cookies';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -20,7 +21,16 @@ function checkIfLoggedIn() {
 
   const session = cookies.get(`urbauth-~${window.ship}`);
   if (!session) {
-    authRedirect();
+    fetch('/~/name')
+      .then((res) => res.text())
+      .then((name) => {
+        if (name !== preSig(window.ship)) {
+          authRedirect();
+        }
+      })
+      .catch(() => {
+        authRedirect();
+      });
   }
 }
 
