@@ -1,10 +1,10 @@
 /-  *treaty
 /+  treat=treaty
-|_  tret=treaty-0:treaty
+|_  tret=treaty
 ++  grow
   |%
   ++  noun  tret
-  ++  json  (treaty:enjs:treat (treaty-0-to-1:treat tret))
+  ++  json  (treaty:enjs:treat tret)
   --
 ++  grab
   |%

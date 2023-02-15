@@ -1,7 +1,14 @@
-/-  docket, *treaty
-/+  default-agent, agentio, verb, dbug
+/-  docket
+/+  *treaty, default-agent, agentio, verb, dbug
 |%
 ++  default-ally  ~dister-dozzod-dozzod
+::
+::TODO  state adapter, we're actually at state-1 already.
+::      adapter should also issue bill & seal warps
+::TODO  needs to be made backwards compatible. probably:
+::  - publish treaty-1 only on new sub path,
+::  - downgrade & keep publishing treaty-0 on old path
+::  - on-upgrade, try to re-establish subs, backoff retry if they fail?
 ::
 +$  card  card:agent:gall
 +$  state-0
@@ -44,10 +51,9 @@
   ::
       %noun
     =+  ;;([%add =desk] q.vase)
-    =/  =docket:docket  ~(get-docket so:cc desk)
-    =/  =treaty  (treaty-from-docket:cc desk docket)
+    =/  =treaty  (build-treaty:cc desk)
     =.  sovereign  (~(put by sovereign) desk treaty)
-    `this
+    `this  ::NOTE  this doesn't set up fully, use :treaty|publish instead
   ==
   ::
   ++  ally-update
@@ -74,11 +80,10 @@
       =.  entente  (~(put in entente) [ship desk])
       ?.  =(our.bowl ship)  `this
       =*  so  ~(. so:cc desk)
-      =/  =docket:docket  get-docket:so
-      =/  =treaty  (treaty-from-docket:cc desk docket)
+      =/  =treaty  (build-treaty:cc desk)
       =.  sovereign  (~(put by sovereign) desk treaty)
       :_  this
-      [publish warp give]:so
+      [publish warp-docket warp-bill warp-seal give]:so
     ::
         %del
       =,  update
@@ -221,10 +226,14 @@
       [gone:tr this]
     ::
         %fact
-      ?.  =(%treaty-0 p.cage.sign)  `this
-      =+  !<(=treaty q.cage.sign)
-      ?>  =([ship desk] [ship desk]:treaty)
-      =.  treaties  (~(put by treaties) [ship desk]:treaty treaty)
+      =/  treaty=(unit treaty)
+        ?+  p.cage.sign  ~
+          %treaty-0  `(treaty-0-to-1 !<(treaty-0:treaty q.cage.sign))
+          %treaty-1  `!<(treaty q.cage.sign)
+        ==
+      ?~  treaty  `this
+      ?>  =([ship desk] [ship desk]:u.treaty)
+      =.  treaties  (~(put by treaties) [ship desk]:u.treaty u.treaty)
       [give:tr this]
     ==
   --
@@ -235,27 +244,57 @@
   ?+  wire  (on-arvo:def wire sign)
     [%init ~]  !! :: setup sponsor ally
   ::
-      [%sovereign @ ~]
+      [%sovereign @ *]
     =*  desk  i.t.wire
-    (take-sovereign desk)
+    (take-sovereign t.t.wire desk)
   ==
   ::
   ++  take-sovereign
-    |=  =desk
+    |=  [=^wire =desk]
     =/  so  ~(. so:cc desk)
     ?>  ?=([?(%clay %behn) %writ *] sign)
     ?.  (~(has by sovereign) desk)  `this
     =*  riot  p.sign
-    ?~  riot  :: docket file is gone
+    ?:  &(?=(~ riot) ?=(?(~ [%docket ~]) wire))
+      ::  if the docket file is gone, we can no longer publish this desk
+      ::
       =.  sovereign  (~(del by sovereign) desk)
       [~[kick:so] this]
-    =*  cage  r.u.riot
-    ?.  =(%docket-0 p.cage)  `this
-    =+  !<(=docket:docket q.cage)
-    =/  =treaty  (treaty-from-docket:cc desk docket)
-    =.  sovereign  (~(put by sovereign) desk treaty)
-    =*  so  ~(. so:cc desk)
-    :_(this [warp give]:so)
+    =/  =treaty  (~(got by sovereign) desk)
+    =+  og=treaty
+    ::  modify either the docket, bill or treaty,
+    ::  depending on which one got updated
+    ::
+    =?  docket.treaty  ?=(?(~ [%docket ~]) wire)
+      ?>  ?=(^ riot)
+      =*  cage  r.u.riot
+      ?>  =(%docket-0 p.cage)
+      !<(docket:docket q.cage)
+    =?  bill.treaty  ?=([%bill ~] wire)
+      ?~  riot  ~
+      =*  cage  r.u.riot
+      ?>  =(%bill p.cage)
+      !<(bill:clay q.cage)
+    =?  seal.treaty  ?=([%seal ~] wire)
+      ?~  riot  ~
+      =*  cage  r.u.riot
+      ?>  =(%seal p.cage)
+      (sy +:!<([%0 (list perm:gall)] q.cage))
+    ::TODO  this updates the hash of the whole desk, but is only run whenever
+    ::      any of these files change. (previously, more coherently, only when
+    ::      the docket file changed.) should we always have a %next %z request,
+    ::      or just leave the hash out of treaties?
+    =?  treaty  !=(og treaty)  (update-treaty:cc treaty)
+    ::  save the changes, push out the update,
+    ::  and request the next version of the file
+    ::
+    :_  this(sovereign (~(put by sovereign) desk treaty))
+    :_  ?:(=(og treaty) ~ give:so)
+    ?+  wire  ~|(wire !!)
+      ?(~ [%docket ~])  warp-docket:so
+      [%bill ~]         warp-bill:so
+      [%seal ~]         warp-seal:so
+    ==
   --
 
 ::
@@ -266,11 +305,25 @@
 ++  io  ~(. agentio bowl)
 ++  pass  pass:io
 ::
-++  treaty-from-docket
-  |=  [=desk =docket:docket]
-  =+  .^(=cass:clay %cw (scry:io desk /desk/docket))
-  =+  .^(hash=@uv %cz (scry:io desk ~))
-  [our.bowl desk da+da.cass hash docket]
+++  build-treaty
+  |=  =desk
+  ^-  treaty
+  =/  so  ~(. so desk)
+  %:  update-treaty
+    our.bowl
+    desk
+    *case
+    *@uv
+    get-docket:so
+    get-bill:so
+    get-seal:so
+  ==
+::
+++  update-treaty
+  |=  =treaty
+  =+  .^(=cass:clay %cw (scry:io desk.treaty /))
+  =+  .^(hash=@uv %cz (scry:io desk.treaty /))
+  treaty(case da+da.cass, hash hash)
 ::  +al: Side effects for allies
 ++  al
   |_  =ship
@@ -283,8 +336,8 @@
   |%
   ++  ally-update      |=(=update:ally ally-update-0+!>(update))
   ++  alliance-update  |=(=update:alliance alliance-update-0+!>(update))
-  ++  treaty  |=(t=^treaty treaty-0+!>(t))
-  ++  treaty-update  |=(u=update:^treaty treaty-update-0+!>(u))
+  ++  treaty  |=(t=^treaty treaty-1+!>(t))
+  ++  treaty-update  |=(u=update:^treaty treaty-update-1+!>(u))
   --
 ::  +ca: Card construction
 ++  ca
@@ -319,12 +372,27 @@
 ::  +so: engine for sovereign treaties
 ++  so
   |_  =desk
-  ++  wire  /sovereign/[desk]
+  ++  wire  `^wire`/sovereign/[desk]
   ++  pass  ~(. ^pass wire)
   ++  path  /treaty/(scot %p our.bowl)/[desk]
   ++  get-docket  .^(docket:docket %cx (scry:io desk /desk/docket-0))
-  ++  warp
-    (warp-our:pass desk `[%next %x da+now.bowl /desk/docket-0])
+  ++  get-bill
+    ^-  bill:clay
+    ?.  .^(? %cu (scry:io desk /desk/bill))  ~
+    .^(bill:clay %cx (scry:io desk /desk/bill))
+  ++  get-seal
+    ^-  pers:gall
+    ?.  .^(? %cu (scry:io desk /desk/seal))  ~
+    (sy +:.^([%0 (list perm:gall)] %cx (scry:io desk /desk/seal)))
+  ++  warp-docket
+    %+  ~(warp-our ^pass (snoc wire %docket))  desk
+    `[%next %x da+now.bowl /desk/docket-0]
+  ++  warp-bill
+    %+  ~(warp-our ^pass (snoc wire %bill))  desk
+    `[%next %x da+now.bowl /desk/bill]
+  ++  warp-seal
+    %+  ~(warp-our ^pass (snoc wire %seal))  desk
+    `[%next %x da+now.bowl /desk/seal]
   ++  kick
     (kick:io path ~)
   ++  give
@@ -338,6 +406,7 @@
         (fact:io (treaty:cg t) path ~)
     ==
   ++  publish
+    ::TODO  just issue a [%c %perm] ourselves???
     (poke-our:pass %hood kiln-permission+!>([desk / &]))
   --
 --

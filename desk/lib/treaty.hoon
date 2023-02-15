@@ -1,6 +1,17 @@
 /-  *treaty
 /+  dock=docket
 |%
+++  treaty-0-to-1  ::TODO  how safe/sane is this?
+  |=  t=treaty-0:treaty
+  t(docket [docket.t ~ ~])
+::
+++  update-0-to-1
+  |=  u=update-0:treaty
+  ?+  -.u  u
+    %ini  [%ini (~(run by init.u) treaty-0-to-1)]
+    %add  [%add (treaty-0-to-1 treaty-0.u)]
+  ==
+::
 ++  enjs
   =,  enjs:format
   |%
@@ -18,6 +29,8 @@
         desk+s+desk.t
         cass+(case case.t)
         hash+s+(scot %uv hash.t)
+        bill+a+(turn bill.t (lead %s))
+        ::TODO  seal
     ==
   ::
   ++  case
