@@ -29,7 +29,7 @@ const Item = React.forwardRef<HTMLDivElement, DropdownMenu.MenuItemProps>(
     <DropdownMenu.Item
       ref={ref}
       {...props}
-      className="default-ring block w-full select-none rounded px-4 py-3 leading-none mix-blend-hard-light ring-gray-600"
+      className="default-ring block w-full select-none rounded leading-none mix-blend-hard-light ring-gray-600"
     >
       {children}
     </DropdownMenu.Item>
@@ -74,14 +74,19 @@ export const TileMenu = ({
       <DropdownMenu.Content
         onCloseAutoFocus={disableDefault}
         className={classNames(
-          'dropdown py-2 font-semibold z-40',
+          'dropdown z-40 py-2 font-semibold',
           lightText ? 'text-gray-100' : 'text-gray-800'
         )}
         style={menuBg}
       >
         <DropdownMenu.Group>
-          <Item onSelect={isMobile ? (e) => e.preventDefault() : linkOnSelect}>
-            <Link to={`/app/${desk}`}>App Info</Link>
+          <Item
+            onSelect={isMobile ? (e) => e.preventDefault() : linkOnSelect}
+            asChild
+          >
+            <Link to={`/app/${desk}`} className="block w-full px-4 py-3">
+              App Info
+            </Link>
           </Item>
         </DropdownMenu.Group>
         <DropdownMenu.Separator className="-mx-4 my-2 border-t-2 border-solid border-gray-600 mix-blend-soft-light" />
@@ -91,7 +96,12 @@ export const TileMenu = ({
               asChild
               onSelect={isMobile ? (e) => e.preventDefault() : linkOnSelect}
             >
-              <Link to={`/app/${desk}/suspend`}>Suspend App</Link>
+              <Link
+                to={`/app/${desk}/suspend`}
+                className="block w-full px-4 py-3"
+              >
+                Suspend App
+              </Link>
             </Item>
           )}
           {suspended && (
@@ -101,7 +111,9 @@ export const TileMenu = ({
             asChild
             onSelect={isMobile ? (e) => e.preventDefault() : linkOnSelect}
           >
-            <Link to={`/app/${desk}/remove`}>Uninstall App</Link>
+            <Link to={`/app/${desk}/remove`} className="block w-full px-4 py-3">
+              Uninstall App
+            </Link>
           </Item>
         </DropdownMenu.Group>
         <DropdownMenu.Arrow
