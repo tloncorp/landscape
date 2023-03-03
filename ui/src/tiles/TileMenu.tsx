@@ -1,5 +1,4 @@
 import React, { ReactElement, useCallback, useState } from 'react';
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
@@ -71,56 +70,63 @@ export const TileMenu = ({
         <span className="sr-only">Menu</span>
       </DropdownMenu.Trigger>
 
-      <DropdownMenu.Content
-        onCloseAutoFocus={disableDefault}
-        className={classNames(
-          'dropdown z-40 py-2 font-semibold',
-          lightText ? 'text-gray-100' : 'text-gray-800'
-        )}
-        style={menuBg}
-      >
-        <DropdownMenu.Group>
-          <Item
-            onSelect={isMobile ? (e) => e.preventDefault() : linkOnSelect}
-            asChild
-          >
-            <Link to={`/app/${desk}`} className="block w-full px-4 py-3">
-              App Info
-            </Link>
-          </Item>
-        </DropdownMenu.Group>
-        <DropdownMenu.Separator className="-mx-4 my-2 border-t-2 border-solid border-gray-600 mix-blend-soft-light" />
-        <DropdownMenu.Group>
-          {active && (
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content
+          onCloseAutoFocus={disableDefault}
+          className={classNames(
+            'dropdown z-40 py-2 font-semibold',
+            lightText ? 'text-gray-100' : 'text-gray-800'
+          )}
+          style={menuBg}
+        >
+          <DropdownMenu.Group>
+            <Item
+              onSelect={isMobile ? (e) => e.preventDefault() : linkOnSelect}
+              asChild
+            >
+              <Link to={`/app/${desk}`} className="block w-full px-4 py-3">
+                App Info
+              </Link>
+            </Item>
+          </DropdownMenu.Group>
+          <DropdownMenu.Separator className="-mx-4 my-2 border-t-2 border-solid border-gray-600 mix-blend-soft-light" />
+          <DropdownMenu.Group>
+            {active && (
+              <Item
+                asChild
+                onSelect={isMobile ? (e) => e.preventDefault() : linkOnSelect}
+              >
+                <Link
+                  to={`/app/${desk}/suspend`}
+                  className="block w-full px-4 py-3"
+                >
+                  Suspend App
+                </Link>
+              </Item>
+            )}
+            {suspended && (
+              <Item onSelect={() => toggleDocket(desk)}>
+                <span className="block w-full px-4 py-3">Resume App</span>
+              </Item>
+            )}
             <Item
               asChild
               onSelect={isMobile ? (e) => e.preventDefault() : linkOnSelect}
             >
               <Link
-                to={`/app/${desk}/suspend`}
+                to={`/app/${desk}/remove`}
                 className="block w-full px-4 py-3"
               >
-                Suspend App
+                Uninstall App
               </Link>
             </Item>
-          )}
-          {suspended && (
-            <Item onSelect={() => toggleDocket(desk)}>Resume App</Item>
-          )}
-          <Item
-            asChild
-            onSelect={isMobile ? (e) => e.preventDefault() : linkOnSelect}
-          >
-            <Link to={`/app/${desk}/remove`} className="block w-full px-4 py-3">
-              Uninstall App
-            </Link>
-          </Item>
-        </DropdownMenu.Group>
-        <DropdownMenu.Arrow
-          className="h-[10px] w-4 fill-current"
-          style={{ color: menuColor }}
-        />
-      </DropdownMenu.Content>
+          </DropdownMenu.Group>
+          <DropdownMenu.Arrow
+            className="h-[10px] w-4 fill-current"
+            style={{ color: menuColor }}
+          />
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
     </DropdownMenu.Root>
   );
 };
