@@ -16,11 +16,18 @@ import useKilnState from './state/kiln';
 import useContactState from './state/contact';
 import api from './state/api';
 import { useMedia } from './logic/useMedia';
-import { useSettingsState, useTheme } from './state/settings';
+import {
+  useBrowserNotifications,
+  useSettingsState,
+  useTheme,
+} from './state/settings';
 import { useBrowserId, useLocalState } from './state/local';
 import { ErrorAlert } from './components/ErrorAlert';
 import { useErrorHandler } from './logic/useErrorHandler';
 import useHarkState from './state/hark';
+import { useNotifications } from './nav/notifications/useNotifications';
+import { getNotificationType } from './nav/notifications/Notification';
+import { isYarnShip } from './state/hark-types';
 
 const getNoteRedirect = (path: string) => {
   if (path.startsWith('/desk/')) {
@@ -51,6 +58,23 @@ const AppRoutes = () => {
   const { search } = useLocation();
   const handleError = useErrorHandler();
   const browserId = useBrowserId();
+  const { count, unreadNotifications } = useNotifications();
+  const browserNotifications = useBrowserNotifications(browserId);
+
+  useEffect(() => {
+    if (count > 0 && browserNotifications && 'Notification' in window) {
+      unreadNotifications.forEach((bin) => {
+        const rope = bin.topYarn?.rope;
+        // need to capitalize desk name
+        const app = rope?.desk.slice(0, 1).toUpperCase() + rope?.desk.slice(1);
+        const type = getNotificationType(rope);
+        const ship = bin.topYarn?.con.find(isYarnShip)?.ship;
+        new Notification(`Landscape: ${app}`, {
+          body: `${ship}${bin.topYarn.con[1]}${bin.topYarn.con[2]}`,
+        });
+      });
+    }
+  }, [count, browserNotifications, unreadNotifications]);
 
   useEffect(() => {
     getId().then((value) => {

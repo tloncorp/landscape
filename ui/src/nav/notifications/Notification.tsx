@@ -47,7 +47,7 @@ function makePrettyTime(date: Date) {
   return format(date, 'HH:mm');
 }
 
-function getNotificationType(rope: Rope): NotificationType {
+export function getNotificationType(rope: Rope): NotificationType {
   if (
     ['/channel/edit', '/channel/add', '/channel/del', '/joins', '/leaves'].some(
       (thread) => rope.thread.endsWith(thread)
