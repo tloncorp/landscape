@@ -69,6 +69,7 @@ export type MenuState =
   | 'closed'
   | 'search'
   | 'get-apps'
+  | 'app'
   | 'notifications'
   | 'help-and-support'
   | 'system-preferences'
@@ -138,7 +139,8 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
   const select = useAppSearchStore((state) => state.select);
 
   const menuState = menu || 'closed';
-  const isOpen = menuState !== 'upgrading' && menuState !== 'closed';
+  const isOpen =
+    menuState !== 'upgrading' && menuState !== 'closed' && menuState !== 'app';
 
   useEffect(() => {
     if (!isOpen) {

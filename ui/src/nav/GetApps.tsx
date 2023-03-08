@@ -7,6 +7,7 @@ const SECTIONS = {
   PALS: 'Powered by Pals',
   DEV: 'Develop on Urbit',
   USEFUL: 'Make Urbit Useful',
+  FUN: 'Make Urbit Fun',
 };
 
 const APPS = [
@@ -85,6 +86,15 @@ const APPS = [
     image: 'https://ladrut.xyz/quorum/quorum-logo.png',
   },
   {
+    title: 'cliff',
+    description: 'filesystem explorer',
+    color: '#E39871',
+    link: '/apps/cliff',
+    section: SECTIONS.DEV,
+    desk: 'cliff',
+    source: '~paldev',
+  },
+  {
     title: 'silo',
     description: 'An S3 storage manager',
     color: '#4F46E5',
@@ -103,6 +113,54 @@ const APPS = [
     source: '~hodler-datder-sonnet',
     image:
       'https://user-images.githubusercontent.com/16504501/194947852-8802fd63-5954-4ce8-b147-2072bd929242.png',
+  },
+  {
+    title: 'Goals',
+    description: 'Urbit task manager.',
+    color: '#EEDFC9',
+    link: '/apps/goals',
+    section: SECTIONS.USEFUL,
+    desk: 'gol-cli',
+    source: '~dister-dozzod-niblyx-malnus',
+  },
+  {
+    title: '%blog',
+    description: 'a tool for publishing',
+    color: '#573C7C',
+    link: '/apps/blog',
+    section: SECTIONS.USEFUL,
+    desk: 'blog',
+    source: '~hanrut-sillet-dachus-tiprel',
+  },
+  {
+    title: 'Board',
+    description: 'A tapestry of boards',
+    color: '#9E34EB',
+    link: '/apps/board',
+    section: SECTIONS.FUN,
+    desk: 'board',
+    source: '~dister-hanfel-dovned',
+  },
+  {
+    title: 'DukeBox',
+    description: 'Emulated DOS games on Urbit',
+    color: '#209AFA',
+    link: '/apps/dukebox',
+    section: SECTIONS.FUN,
+    desk: 'dukebox',
+    source: '~tagrev-lacmur-lomped-firser',
+    image:
+      'https://cdn.pixabay.com/photo/2012/04/13/11/41/joystick-32023_960_720.png',
+  },
+  {
+    title: 'radio',
+    description: 'an app for urbit disc jockeys',
+    color: '#FF0000',
+    link: '/apps/radio',
+    section: SECTIONS.FUN,
+    desk: 'radio',
+    source: '~nodmyn-dosrux',
+    image: 'https://0x0.st/o4--.png',
   },
 ];
 
