@@ -9,7 +9,7 @@ import { usePike } from '../state/kiln';
 import { disableDefault, handleDropdownLink } from '../state/util';
 import { useMedia } from '../logic/useMedia';
 import { Cross } from '../components/icons/Cross';
-import { useLeapStore } from './Nav';
+import { useAppSearchStore } from './Nav';
 
 type SystemMenuProps = HTMLAttributes<HTMLButtonElement> & {
   open: boolean;
@@ -33,7 +33,7 @@ export const SystemMenu = ({
   const garden = usePike(window.desk);
   const hash = garden ? getHash(garden) : null;
   const isMobile = useMedia('(max-width: 639px)');
-  const select = useLeapStore((s) => s.select);
+  const select = useAppSearchStore((s) => s.select);
   const clearSelection = useCallback(() => select(null), [select]);
 
   const copyHash = useCallback(

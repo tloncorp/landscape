@@ -5,10 +5,10 @@ import { Spinner } from '../../components/Spinner';
 import useDocketState, { useCharge, useTreaty } from '../../state/docket';
 import { usePike } from '../../state/kiln';
 import { getAppName } from '../../state/util';
-import { useLeapStore } from '../Nav';
+import { useAppSearchStore } from '../Nav';
 
 export const TreatyInfo = () => {
-  const select = useLeapStore((state) => state.select);
+  const select = useAppSearchStore((state) => state.select);
   const { host, desk } = useParams<{ host: string; desk: string }>();
   const treaty = useTreaty(host, desk);
   const pike = usePike(desk);
@@ -23,7 +23,7 @@ export const TreatyInfo = () => {
 
   useEffect(() => {
     select(<>{name}</>);
-    useLeapStore.setState({ matches: [] });
+    useAppSearchStore.setState({ matches: [] });
   }, [name]);
 
   if (!treaty) {

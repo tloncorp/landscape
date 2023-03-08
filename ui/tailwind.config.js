@@ -66,6 +66,7 @@ const base = new Theme().addColors({
   },
   blue: {
     DEFAULT: '#008EFF',
+    soft: '#E5F4FF',
     50: '#EFF9FF',
     100: '#C8EDFF',
     200: '#A0E1FF',

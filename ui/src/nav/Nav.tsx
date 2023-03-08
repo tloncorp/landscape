@@ -22,7 +22,7 @@ import { Avatar } from '../components/Avatar';
 import { Dialog } from '../components/Dialog';
 import { ErrorAlert } from '../components/ErrorAlert';
 import { Help } from './Help';
-import { Leap } from './Leap';
+import { AppSearch } from './AppSearch';
 import { Notifications } from './notifications/Notifications';
 import { NotificationsLink } from './notifications/NotificationsLink';
 import { Search } from './Search';
@@ -30,6 +30,8 @@ import { SystemPreferences } from '../preferences/SystemPreferences';
 import { useSystemUpdate } from '../logic/useSystemUpdate';
 import { Bullet } from '../components/icons/Bullet';
 import { Cross } from '../components/icons/Cross';
+import MagnifyingGlass16Icon from '../components/icons/MagnifyingGlass16Icon';
+import GetApps from './GetApps';
 
 export interface MatchItem {
   url: string;
@@ -38,7 +40,7 @@ export interface MatchItem {
   display?: string;
 }
 
-interface LeapStore {
+interface AppSearchStore {
   rawInput: string;
   searchInput: string;
   matches: MatchItem[];
@@ -47,7 +49,7 @@ interface LeapStore {
   select: (selection: React.ReactNode, input?: string) => void;
 }
 
-export const useLeapStore = create<LeapStore>((set) => ({
+export const useAppSearchStore = create<AppSearchStore>((set) => ({
   rawInput: '',
   searchInput: '',
   matches: [],
@@ -61,7 +63,7 @@ export const useLeapStore = create<LeapStore>((set) => ({
     }),
 }));
 
-window.leap = useLeapStore.getState;
+window.appSearch = useAppSearchStore.getState;
 
 export type MenuState =
   | 'closed'
@@ -99,7 +101,7 @@ export const SystemPrefsLink = ({
   }
 
   return (
-    <Link to="/leap/system-preferences" className="relative flex-none">
+    <Link to="/system-preferences" className="relative flex-none">
       <Avatar shipName={window.ship} size="nav" />
       {systemBlocked && (
         <Bullet
@@ -111,15 +113,28 @@ export const SystemPrefsLink = ({
   );
 };
 
+export const GetAppsLink = ({ menuState }: PrefsLinkProps) => {
+  const active = ['get-apps'].indexOf(menuState) >= 0;
+
+  return (
+    <Link
+      to="/get-apps"
+      className="flex h-9 w-[150px] items-center justify-center space-x-2 rounded-lg bg-blue-soft px-3 py-2.5"
+    >
+      <MagnifyingGlass16Icon className="h-4 w-4 fill-current text-blue" />
+      <span className="whitespace-nowrap text-blue">Get Urbit Apps</span>
+    </Link>
+  );
+};
+
 export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
   const { push } = useHistory();
   const inputRef = useRef<HTMLInputElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
   const dialogNavRef = useRef<HTMLDivElement>(null);
-  const systemMenuOpen = useRouteMatch('/leap/system-preferences');
   const { systemBlocked } = useSystemUpdate();
   const [dialogContentOpen, setDialogContentOpen] = useState(false);
-  const select = useLeapStore((state) => state.select);
+  const select = useAppSearchStore((state) => state.select);
 
   const menuState = menu || 'closed';
   const isOpen = menuState !== 'upgrading' && menuState !== 'closed';
@@ -172,13 +187,16 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
           navOpen={isOpen}
           notificationsOpen={menu === 'notifications'}
         />
-        <Leap
-          ref={inputRef}
-          menu={menuState}
-          dropdown="leap-items"
-          navOpen={isOpen}
-          systemMenuOpen={!!systemMenuOpen}
-        />
+        {menuState === 'search' ? (
+          <AppSearch
+            ref={inputRef}
+            menu={menuState}
+            dropdown="leap-items"
+            navOpen={isOpen}
+          />
+        ) : (
+          <GetAppsLink menuState={menuState} />
+        )}
       </Portal.Root>
       <div
         ref={navRef}
@@ -213,13 +231,11 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
             role="listbox"
           >
             <Switch>
-              <Route path="/leap/notifications" component={Notifications} />
-              <Route
-                path="/leap/system-preferences"
-                component={SystemPreferences}
-              />
-              <Route path="/leap/help-and-support" component={Help} />
-              <Route path={['/leap/search', '/leap']} component={Search} />
+              <Route path="/notifications" component={Notifications} />
+              <Route path="/system-preferences" component={SystemPreferences} />
+              <Route path="/help-and-support" component={Help} />
+              <Route path="/get-apps" component={GetApps} />
+              <Route path={['/search']} component={Search} />
             </Switch>
           </div>
         </DialogContent>

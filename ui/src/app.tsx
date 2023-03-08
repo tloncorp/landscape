@@ -16,10 +16,7 @@ import useKilnState from './state/kiln';
 import useContactState from './state/contact';
 import api from './state/api';
 import { useMedia } from './logic/useMedia';
-import {
-  useSettingsState,
-  useTheme,
-} from './state/settings';
+import { useCalm, useSettingsState, useTheme } from './state/settings';
 import { useBrowserId, useLocalState } from './state/local';
 import { ErrorAlert } from './components/ErrorAlert';
 import { useErrorHandler } from './logic/useErrorHandler';
@@ -56,10 +53,13 @@ const AppRoutes = () => {
   const { search } = useLocation();
   const handleError = useErrorHandler();
   const browserId = useBrowserId();
+  const {
+    display: { doNotDisturb },
+  } = useSettingsState.getState();
   const { count, unreadNotifications } = useNotifications();
 
   useEffect(() => {
-    if ('Notification' in window) {
+    if ('Notification' in window && !doNotDisturb) {
       if (count > 0 && Notification.permission === 'granted') {
         unreadNotifications.forEach((bin) => {
           makeBrowserNotification(bin);
@@ -120,7 +120,7 @@ const AppRoutes = () => {
       useHarkState.getState().start();
 
       Mousetrap.bind(['command+/', 'ctrl+/'], () => {
-        push('/leap/search');
+        push('/search');
       });
     }),
     []
@@ -129,7 +129,7 @@ const AppRoutes = () => {
   return (
     <Switch>
       <Route path="/perma" component={PermalinkRoutes} />
-      <Route path={['/leap/:menu', '/']} component={Grid} />
+      <Route path={['/:menu', '/']} component={Grid} />
     </Switch>
   );
 };
