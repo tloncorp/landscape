@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 import { Button } from './Button';
 
 interface WayfindingAppLinkProps {
@@ -8,6 +9,8 @@ interface WayfindingAppLinkProps {
   color: string;
   link: string;
   installed: boolean;
+  source: string;
+  desk: string;
 }
 
 const WayfindingAppLink = ({
@@ -17,6 +20,8 @@ const WayfindingAppLink = ({
   image = null,
   color,
   installed,
+  source,
+  desk,
 }: WayfindingAppLinkProps) => {
   return (
     <div className="flex items-center justify-between py-2">
@@ -44,9 +49,13 @@ const WayfindingAppLink = ({
           Open App
         </Button>
       ) : (
-        <Button variant="alt-primary" as="a" href={link} target="_blank">
-          Install App
-        </Button>
+        <NavLink to={`/search/${source}/apps/${source}/${desk}`}>
+          <Button
+            variant="alt-primary"
+          >
+            Install App
+          </Button>
+        </NavLink>
       )}
     </div>
   );

@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import WayfindingAppLink from '../components/WayfindingAppLink';
 import { useCharges } from '../state/docket';
 import { AppSearch } from './AppSearch';
-import { MenuState} from './Nav';
+import { MenuState } from './Nav';
 
 const SECTIONS = {
   SELECTS: 'Tlon Selects',
@@ -29,12 +29,14 @@ const APPS = [
     link: '/apps/webterm',
     section: SECTIONS.SELECTS,
     desk: 'webterm',
+    source: '~mister-dister-dozzod-dozzod',
   },
   {
     title: 'face',
     description: 'see your friends',
     color: '#3B5998',
     link: '/apps/face',
+    source: '~paldev',
     section: SECTIONS.PALS,
     desk: 'face',
   },
@@ -43,6 +45,7 @@ const APPS = [
     description: 'Anonymous gossip from friends of friends',
     color: '#BB77DD',
     link: '/apps/rumors',
+    source: '~paldev',
     section: SECTIONS.PALS,
     desk: 'rumors',
   },
@@ -52,6 +55,7 @@ const APPS = [
     color: '#338899',
     link: '/apps/whom',
     section: SECTIONS.PALS,
+    source: '~holnes',
     desk: 'whom',
   },
   {
@@ -59,6 +63,7 @@ const APPS = [
     description: "leaderboard for groups' ['o']s, as seen on tv!",
     color: '#FFFF00',
     link: '/apps/scooore',
+    source: '~paldev',
     section: SECTIONS.PALS,
     desk: 'scooore',
   },
@@ -69,6 +74,7 @@ const APPS = [
     link: '/apps/docs',
     section: SECTIONS.DEV,
     desk: 'docs',
+    source: '~pocwet',
   },
   {
     title: 'Quorum',
@@ -78,6 +84,7 @@ const APPS = [
     link: '/apps/quorom',
     section: SECTIONS.DEV,
     desk: 'quorum',
+    source: '~dister-dister-sidnum-ladrut',
     image: 'https://ladrut.xyz/quorum/quorum-logo.png',
   },
   {
@@ -86,6 +93,7 @@ const APPS = [
     color: '#4F46E5',
     link: '/apps/silo',
     section: SECTIONS.USEFUL,
+    source: '~dister-nocsyx-lassul',
     desk: 'silo',
   },
   {
@@ -95,6 +103,7 @@ const APPS = [
     link: '/apps/hodl',
     section: SECTIONS.USEFUL,
     desk: 'hodl',
+    source: '~hodler-datder-sonnet',
     image:
       'https://user-images.githubusercontent.com/16504501/194947852-8802fd63-5954-4ce8-b147-2072bd929242.png',
   },
@@ -148,6 +157,8 @@ export default function GetApps() {
                     }
                     link={charges[app.desk] ? app.link : ''}
                     installed={charges[app.desk] ? true : false}
+                    source={app.source}
+                    desk={app.desk}
                   />
                 );
               }

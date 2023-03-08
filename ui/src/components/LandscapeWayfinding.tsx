@@ -63,6 +63,8 @@ function LandscapeDescription() {
           image={charges.groups?.image || ''}
           color={charges.groups?.color || 'bg-gray'}
           installed={charges['groups'] ? true : false}
+          source="~sogryp-dister-dozzod-dozzod"
+          desk="groups"
         />
         <WayfindingAppLink
           title="Talk"
@@ -71,6 +73,8 @@ function LandscapeDescription() {
           image={charges.talk?.image || ''}
           color={charges.talk?.color || 'bg-blue'}
           installed={charges['talk'] ? true : false}
+          source="~sogryp-dister-dozzod-dozzod"
+          desk="talk"
         />
         <WayfindingAppLink
           title="Terminal"
@@ -79,6 +83,8 @@ function LandscapeDescription() {
           image={charges.webterm?.image || ''}
           color={charges.webterm?.color || 'bg-black'}
           installed={charges['terminal'] ? true : false}
+          source="~mister-dister-dozzod-dozzod"
+          desk="terminal"
         />
       </div>
       <h1 className="my-8 text-2xl font-bold">Where are the people?</h1>
