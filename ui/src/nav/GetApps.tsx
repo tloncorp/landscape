@@ -1,9 +1,6 @@
-import React, { useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import React from 'react';
 import WayfindingAppLink from '../components/WayfindingAppLink';
 import { useCharges } from '../state/docket';
-import { AppSearch } from './AppSearch';
-import { MenuState } from './Nav';
 
 const SECTIONS = {
   SELECTS: 'Tlon Selects',
@@ -111,10 +108,6 @@ const APPS = [
 
 export default function GetApps() {
   const charges = useCharges();
-  const { menu } = useParams<{ menu?: MenuState }>();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const menuState = menu || 'closed';
-  const isOpen = menuState !== 'upgrading' && menuState !== 'closed';
 
   return (
     <div className="flex h-full flex-col space-y-8 overflow-y-scroll p-8">
