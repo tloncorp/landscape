@@ -119,16 +119,13 @@ export default function GetApps() {
   return (
     <div className="flex h-full flex-col space-y-8 overflow-y-scroll p-8">
       <h1 className="text-xl font-bold text-gray-800">Find Urbit Apps</h1>
-      <div className="flex flex-col space-y-2">
+      <div className="flex flex-col space-y-3">
         <h2 className="font-semibold text-gray-800">
           Find Urbit App Developers
         </h2>
-        <AppSearch
-          ref={inputRef}
-          menu={menuState}
-          dropdown="leap-items"
-          navOpen={isOpen}
-        />
+        <span>
+          Use the search field above to find apps or ships hosting apps.
+        </span>
       </div>
       {Object.entries(SECTIONS).map(([key, name]) => (
         <div key={key} className="flex flex-col space-y-2">

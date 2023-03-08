@@ -68,6 +68,7 @@ window.appSearch = useAppSearchStore.getState;
 export type MenuState =
   | 'closed'
   | 'search'
+  | 'get-apps'
   | 'notifications'
   | 'help-and-support'
   | 'system-preferences'
@@ -187,7 +188,7 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
           navOpen={isOpen}
           notificationsOpen={menu === 'notifications'}
         />
-        {menuState === 'search' ? (
+        {menuState === 'search' || menuState === 'get-apps' ? (
           <AppSearch
             ref={inputRef}
             menu={menuState}
