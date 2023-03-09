@@ -102,7 +102,7 @@ export const AppInfo: FC<AppInfoProps> = ({
             </PillButton>
           )}
           {installStatus !== 'installed' && (
-            <Dialog>
+            <Dialog portal={false}>
               <DialogTrigger asChild>
                 <PillButton variant="alt-primary" disabled={installing}>
                   {installing ? (
