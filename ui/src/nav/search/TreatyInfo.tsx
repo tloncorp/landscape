@@ -30,9 +30,16 @@ export const TreatyInfo = () => {
     // TODO: maybe replace spinner with skeletons
     return (
       <div className="dialog-inner-container flex justify-center text-black">
-        <Spinner className="w-10 h-10" />
+        <Spinner className="h-10 w-10" />
       </div>
     );
   }
-  return <AppInfo className="dialog-inner-container" docket={charge || treaty} pike={pike} />;
+  return (
+    <AppInfo
+      treatyInfoShip={treaty.ship}
+      className="dialog-inner-container"
+      docket={charge || treaty}
+      pike={pike}
+    />
+  );
 };
