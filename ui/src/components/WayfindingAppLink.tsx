@@ -24,7 +24,7 @@ const WayfindingAppLink = ({
   desk,
 }: WayfindingAppLinkProps) => {
   return (
-    <div className="flex items-center justify-between py-2">
+    <div className="flex items-center justify-between py-2 space-x-2">
       <div className="flex items-center space-x-2">
         {image !== null && image !== '' ? (
           <img
