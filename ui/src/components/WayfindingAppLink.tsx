@@ -33,7 +33,7 @@ const WayfindingAppLink = ({
             style={{ backgroundColor: color }}
           />
         ) : (
-          <div className="h-8 w-8 rounded" style={{ backgroundColor: color }} />
+          <div className="h-8 w-8 min-w-8 rounded" style={{ backgroundColor: color }} />
         )}
         <div className="flex flex-col">
           <span className="font-semibold text-gray-800">{title}</span>
