@@ -126,7 +126,7 @@ export const AppInfo: FC<AppInfoProps> = ({ docket, pike, className }) => {
                   <DialogClose asChild>
                     <Button variant="secondary">Cancel</Button>
                   </DialogClose>
-                  <DialogClose asChild onClick={installApp}>
+                  <DialogClose asChild>
                     <Button onClick={installApp}>
                       Get &ldquo;{getAppName(docket)}&rdquo;
                     </Button>
