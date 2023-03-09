@@ -20,7 +20,7 @@ import {
   ChargeUpdate,
   kilnRevive,
   kilnSuspend,
-  allyShip
+  allyShip,
 } from '@urbit/api';
 import api from './api';
 import { normalizeUrbitColor } from './util';
@@ -65,11 +65,14 @@ const useDocketState = create<DocketState>((set, get) => ({
   fetchCharges: async () => {
     const charg = (await api.scry<ChargeUpdateInitial>(scryCharges)).initial;
 
-    const charges = Object.entries(charg).reduce((obj: ChargesWithDesks, [key, value]) => {
-      // eslint-disable-next-line no-param-reassign
-      obj[key] = normalizeDocket(value as ChargeWithDesk, key);
-      return obj;
-    }, {});
+    const charges = Object.entries(charg).reduce(
+      (obj: ChargesWithDesks, [key, value]) => {
+        // eslint-disable-next-line no-param-reassign
+        obj[key] = normalizeDocket(value as ChargeWithDesk, key);
+        return obj;
+      },
+      {}
+    );
 
     set({ charges });
   },
@@ -79,7 +82,8 @@ const useDocketState = create<DocketState>((set, get) => ({
     return allies;
   },
   fetchAllyTreaties: async (ally: string) => {
-    let treaties = (await api.scry<TreatyUpdateIni>(scryAllyTreaties(ally))).ini;
+    let treaties = (await api.scry<TreatyUpdateIni>(scryAllyTreaties(ally)))
+      .ini;
     treaties = normalizeDockets(treaties);
     set((s) => ({ treaties: { ...s.treaties, ...treaties } }));
     return treaties;
@@ -95,7 +99,7 @@ const useDocketState = create<DocketState>((set, get) => ({
     const result = await api.subscribeOnce('treaty', `/treaty/${key}`, 20000);
     const treaty = { ...normalizeDocket(result, desk), ship };
     set((state) => ({
-      treaties: { ...state.treaties, [key]: treaty }
+      treaties: { ...state.treaties, [key]: treaty },
     }));
     return treaty;
   },
@@ -104,16 +108,18 @@ const useDocketState = create<DocketState>((set, get) => ({
     if (!treaty) {
       throw new Error('Bad install');
     }
-    set((state) => addCharge(state, desk, { ...treaty, chad: { install: null } }));
+    set((state) =>
+      addCharge(state, desk, { ...treaty, chad: { install: null } })
+    );
 
-    return api.poke(docketInstall(ship, desk));
+    await api.poke(docketInstall(ship, desk));
   },
   uninstallDocket: async (desk: string) => {
     set((state) => delCharge(state, desk));
     await api.poke({
       app: 'docket',
       mark: 'docket-uninstall',
-      json: desk
+      json: desk,
     });
   },
   toggleDocket: async (desk: string) => {
@@ -139,28 +145,38 @@ const useDocketState = create<DocketState>((set, get) => ({
 
     return api.poke(allyShip(ship));
   },
-  set
+  set,
 }));
 
 function normalizeDocket<T extends Docket>(docket: T, desk: string): T {
   return {
     ...docket,
     desk,
-    color: normalizeUrbitColor(docket.color)
+    color: normalizeUrbitColor(docket.color),
   };
 }
 
-function normalizeDockets<T extends Docket>(dockets: Record<string, T>): Record<string, T> {
-  return Object.entries(dockets).reduce((obj: Record<string, T>, [key, value]) => {
-    const [, desk] = key.split('/');
-    // eslint-disable-next-line no-param-reassign
-    obj[key] = normalizeDocket(value, desk);
-    return obj;
-  }, {});
+function normalizeDockets<T extends Docket>(
+  dockets: Record<string, T>
+): Record<string, T> {
+  return Object.entries(dockets).reduce(
+    (obj: Record<string, T>, [key, value]) => {
+      const [, desk] = key.split('/');
+      // eslint-disable-next-line no-param-reassign
+      obj[key] = normalizeDocket(value, desk);
+      return obj;
+    },
+    {}
+  );
 }
 
 function addCharge(state: DocketState, desk: string, charge: Charge) {
-  return { charges: { ...state.charges, [desk]: normalizeDocket(charge as ChargeWithDesk, desk) } };
+  return {
+    charges: {
+      ...state.charges,
+      [desk]: normalizeDocket(charge as ChargeWithDesk, desk),
+    },
+  };
 }
 
 function delCharge(state: DocketState, desk: string) {
@@ -184,7 +200,7 @@ api.subscribe({
 
       return { charges: state.charges };
     });
-  }
+  },
 });
 
 api.subscribe({
@@ -203,7 +219,7 @@ api.subscribe({
         draft.treaties = { ...draft.treaties, ...treaties };
       }
     });
-  }
+  },
 });
 
 api.subscribe({
@@ -216,7 +232,7 @@ api.subscribe({
         draft.allies[ship] = alliance;
       }
     });
-  }
+  },
 });
 
 const selCharges = (s: DocketState) => {
@@ -259,7 +275,9 @@ export function useAllyTreaties(ship: string) {
       if (isAllied) {
         setStatus('loading');
         try {
-          const newTreaties = await useDocketState.getState().fetchAllyTreaties(ship);
+          const newTreaties = await useDocketState
+            .getState()
+            .fetchAllyTreaties(ship);
 
           if (Object.keys(newTreaties).length > 0) {
             setTreaties(newTreaties);
@@ -303,7 +321,7 @@ export function useAllyTreaties(ship: string) {
   return {
     isAllied,
     treaties,
-    status
+    status,
   };
 }
 
@@ -322,7 +340,9 @@ export function useTreaty(host: string, desk: string) {
 export function allyForTreaty(ship: string, desk: string) {
   const ref = `${ship}/${desk}`;
   const { allies } = useDocketState.getState();
-  const ally = Object.entries(allies).find(([, allied]) => allied.includes(ref))?.[0];
+  const ally = Object.entries(allies).find(([, allied]) =>
+    allied.includes(ref)
+  )?.[0];
   return ally;
 }
 

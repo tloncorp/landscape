@@ -389,6 +389,8 @@
       ?.  (~(has by charges) desk)
         `state
       =/  =charge  (~(got by charges) desk)
+      ?:  &(?=(%install -.chad.charge) ?=(%held zest))
+        `state
       ?-    zest
           %live
         ?.  ?=(%glob -.href.docket.charge)
