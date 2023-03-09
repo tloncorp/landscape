@@ -1,14 +1,10 @@
 import React, { FC } from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
 import classNames from 'classnames';
 
-export type DialogProps = Polymorphic.Merge<
-  Polymorphic.OwnProps<typeof DialogPrimitive.Root>,
-  {
-    portal?: boolean;
-  }
->;
+interface DialogProps extends DialogPrimitive.DialogProps {
+  portal?: boolean;
+}
 
 export const Dialog: FC<DialogProps> = ({
   children,
