@@ -18,6 +18,7 @@ type App = ChargeWithDesk | Treaty;
 interface AppInfoProps {
   docket: App;
   pike?: Pike;
+  treatyInfoShip?: string;
   className?: string;
 }
 
@@ -34,20 +35,25 @@ function getInstallStatus(docket: App): InstallStatus {
   return 'uninstalled';
 }
 
-function getRemoteDesk(docket: App, pike?: Pike) {
+function getRemoteDesk(docket: App, pike?: Pike, treatyInfoShip?: string) {
   if (pike && pike.sync) {
     return [pike.sync.ship, pike.sync.desk];
   }
   if ('chad' in docket) {
-    return ['', docket.desk];
+    return [treatyInfoShip ?? '', docket.desk];
   }
   const { ship, desk } = docket;
   return [ship, desk];
 }
 
-export const AppInfo: FC<AppInfoProps> = ({ docket, pike, className }) => {
+export const AppInfo: FC<AppInfoProps> = ({
+  docket,
+  pike,
+  className,
+  treatyInfoShip,
+}) => {
   const installStatus = getInstallStatus(docket);
-  const [ship, desk] = getRemoteDesk(docket, pike);
+  const [ship, desk] = getRemoteDesk(docket, pike, treatyInfoShip);
   const publisher = pike?.sync?.ship ?? ship;
   const [copied, setCopied] = useState(false);
   const treaty = useTreaty(ship, desk);
@@ -96,7 +102,7 @@ export const AppInfo: FC<AppInfoProps> = ({ docket, pike, className }) => {
             </PillButton>
           )}
           {installStatus !== 'installed' && (
-            <Dialog>
+            <Dialog portal={false}>
               <DialogTrigger asChild>
                 <PillButton variant="alt-primary" disabled={installing}>
                   {installing ? (
@@ -126,7 +132,7 @@ export const AppInfo: FC<AppInfoProps> = ({ docket, pike, className }) => {
                   <DialogClose asChild>
                     <Button variant="secondary">Cancel</Button>
                   </DialogClose>
-                  <DialogClose asChild onClick={installApp}>
+                  <DialogClose asChild>
                     <Button onClick={installApp}>
                       Get &ldquo;{getAppName(docket)}&rdquo;
                     </Button>

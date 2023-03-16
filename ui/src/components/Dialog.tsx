@@ -1,16 +1,29 @@
 import React, { FC } from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import type * as Polymorphic from '@radix-ui/react-polymorphic';
 import classNames from 'classnames';
 
-export const Dialog: FC<DialogPrimitive.DialogProps> = ({
+interface DialogProps extends DialogPrimitive.DialogProps {
+  portal?: boolean;
+}
+
+export const Dialog: FC<DialogProps> = ({
   children,
+  portal = true,
   ...props
 }) => {
   return (
     <DialogPrimitive.Root {...props}>
-      <DialogPrimitive.Overlay className="fixed top-0 bottom-0 left-0 right-0 z-30 transform-gpu bg-black opacity-30" />
-      {children}
+      {portal ? (
+        <DialogPrimitive.Portal>
+          <DialogPrimitive.Overlay className="fixed top-0 bottom-0 left-0 right-0 z-30 transform-gpu bg-black opacity-30" />
+          {children}
+        </DialogPrimitive.Portal>
+      ) : (
+        <>
+          <DialogPrimitive.Overlay className="fixed top-0 bottom-0 left-0 right-0 z-30 transform-gpu bg-black opacity-30" />
+          {children}
+        </>
+      )}
     </DialogPrimitive.Root>
   );
 };

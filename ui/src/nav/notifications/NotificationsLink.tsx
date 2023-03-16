@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import React, { useCallback } from 'react';
 import { Link, LinkProps } from 'react-router-dom';
 import { Cross } from '../../components/icons/Cross';
-import { useLeapStore } from '../Nav';
+import { useAppSearchStore } from '../Nav';
 import { SettingsState, useSettingsState } from '../../state/settings';
 import BellIcon from '../../components/icons/BellIcon';
 import { useNotifications } from './useNotifications';
@@ -32,12 +32,12 @@ export const NotificationsLink = ({ navOpen, notificationsOpen }: NotificationsL
   const dnd = useSettingsState(selDnd);
   const { count } = useNotifications();
   const state = getNotificationsState(notificationsOpen, count, dnd);
-  const select = useLeapStore((s) => s.select);
+  const select = useAppSearchStore((s) => s.select);
   const clearSelection = useCallback(() => select(null), [select]);
 
   return (
     <Link
-      to={state === 'open' ? '/' : '/leap/notifications'}
+      to={state === 'open' ? '/' : '/notifications'}
       className={classNames(
         'relative z-50 flex-none circle-button h4 default-ring',
         navOpen && 'text-opacity-60',

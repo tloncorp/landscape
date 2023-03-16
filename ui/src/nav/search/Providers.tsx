@@ -3,7 +3,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import fuzzy from 'fuzzy';
 import { Provider, deSig } from '@urbit/api';
 import * as ob from 'urbit-ob';
-import { MatchItem, useLeapStore } from '../Nav';
+import { MatchItem, useAppSearchStore } from '../Nav';
 import { useAllies, useCharges } from '../../state/docket';
 import { ProviderList } from '../../components/ProviderList';
 import useContactState from '../../state/contact';
@@ -19,7 +19,7 @@ export function providerMatch(provider: Provider | string): MatchItem {
   return {
     value,
     display,
-    url: `/leap/search/${value}/apps`,
+    url: `/search/${value}/apps`,
     openInNewTab: false
   };
 }
@@ -34,7 +34,7 @@ function fuzzySort(search: string) {
 }
 
 export const Providers = ({ match }: ProvidersProps) => {
-  const selectedMatch = useLeapStore((state) => state.selectedMatch);
+  const selectedMatch = useAppSearchStore((state) => state.selectedMatch);
   const provider = match?.params.ship;
   const contacts = useContactState((s) => s.contacts);
   const charges = useCharges();
@@ -87,7 +87,7 @@ export const Providers = ({ match }: ProvidersProps) => {
 
   useEffect(() => {
     if (search) {
-      useLeapStore.setState({ rawInput: search });
+      useAppSearchStore.setState({ rawInput: search });
     }
   }, []);
 
@@ -106,7 +106,7 @@ export const Providers = ({ match }: ProvidersProps) => {
       const newProviderMatches = isValidPatp
         ? [
             {
-              url: `/leap/search/${patp}/apps`,
+              url: `/search/${patp}/apps`,
               value: patp,
               display: patp,
               openInNewTab: false
@@ -114,7 +114,7 @@ export const Providers = ({ match }: ProvidersProps) => {
           ]
         : [];
 
-      useLeapStore.setState({
+      useAppSearchStore.setState({
         matches: ([] as MatchItem[]).concat(appMatches, providerMatches, newProviderMatches)
       });
     }

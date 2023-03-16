@@ -8,14 +8,15 @@ import React, {
   useCallback,
   useImperativeHandle,
   useRef,
-  useEffect
+  useEffect,
+  useState,
 } from 'react';
 import { Link, useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 import { Cross } from '../components/icons/Cross';
 import { useDebounce } from '../logic/useDebounce';
 import { useErrorHandler } from '../logic/useErrorHandler';
 import { useMedia } from '../logic/useMedia';
-import { MenuState, useLeapStore } from './Nav';
+import { MenuState, useAppSearchStore } from './Nav';
 
 function normalizePathEnding(path: string) {
   const end = path.length - 1;
@@ -37,7 +38,6 @@ type LeapProps = {
   menu: MenuState;
   dropdown: string;
   navOpen: boolean;
-  systemMenuOpen: boolean;
 } & HTMLAttributes<HTMLDivElement>;
 
 function normalizeMatchString(match: string, keepAltChars: boolean): string {
@@ -50,19 +50,21 @@ function normalizeMatchString(match: string, keepAltChars: boolean): string {
   return normalizedString;
 }
 
-export const Leap = React.forwardRef(
-  ({ menu, dropdown, navOpen, systemMenuOpen, className }: LeapProps, ref) => {
+export const AppSearch = React.forwardRef(
+  ({ menu, dropdown, navOpen, className }: LeapProps, ref) => {
     const { push } = useHistory();
-    const location = useLocation();
-    const isMobile = useMedia('(max-width: 639px)');
-    const deskMatch = useRouteMatch<{ menu?: MenuState; query?: string; desk?: string }>(
-      `/leap/${menu}/:query?/(apps)?/:desk?`
+    const deskMatch = useRouteMatch<{
+      menu?: MenuState;
+      query?: string;
+      desk?: string;
+    }>(`/${menu}/:query?/(apps)?/:desk?`);
+    const appsMatch = useRouteMatch(
+      `/${menu}/${deskMatch?.params.query}/apps`
     );
-    const systemPrefMatch = useRouteMatch<{ submenu: string }>(`/leap/system-preferences/:submenu`);
-    const appsMatch = useRouteMatch(`/leap/${menu}/${deskMatch?.params.query}/apps`);
     const inputRef = useRef<HTMLInputElement>(null);
     useImperativeHandle(ref, () => inputRef.current);
-    const { rawInput, selectedMatch, matches, selection, select } = useLeapStore();
+    const { rawInput, selectedMatch, matches, selection, select } =
+      useAppSearchStore();
     const handleError = useErrorHandler();
 
     useEffect(() => {
@@ -77,16 +79,24 @@ export const Leap = React.forwardRef(
     useEffect(() => {
       const newMatch = getMatch(rawInput);
       if (newMatch && rawInput) {
-        useLeapStore.setState({ selectedMatch: newMatch });
+        useAppSearchStore.setState({ selectedMatch: newMatch });
       }
     }, [rawInput, matches]);
+
+    useEffect(() => {
+      if (menu === 'search') {
+        inputRef.current?.focus();
+      } else {
+        inputRef.current?.blur();
+      }
+    }, [menu]);
 
     const toggleSearch = useCallback(() => {
       if (selection || menu === 'search') {
         return;
       }
 
-      push('/leap/search');
+      push('/search');
     }, [selection, menu]);
 
     const onFocus = useCallback(
@@ -119,7 +129,7 @@ export const Leap = React.forwardRef(
           .trim()
           .replace('%', '')
           .replace(/(~?[\w^_-]{3,13})\//, '$1/apps/$1/');
-        push(`/leap/${menu}/${normalizedValue}`);
+        push(`/${menu}/${normalizedValue}`);
       },
       [menu]
     );
@@ -130,7 +140,7 @@ export const Leap = React.forwardRef(
           return;
         }
 
-        useLeapStore.setState({ searchInput: input });
+        useAppSearchStore.setState({ searchInput: input });
         navigateByInput(input);
       },
       300,
@@ -139,52 +149,12 @@ export const Leap = React.forwardRef(
 
     const handleSearch = useCallback(debouncedSearch, [deskMatch]);
 
-    const matchSystemPrefs = useCallback(
-      (target: string) => {
-        if (isMobile) {
-          return false;
-        }
-
-        if (!systemPrefMatch && target === 'system-updates') {
-          return true;
-        }
-
-        return systemPrefMatch?.params.submenu === target;
-      },
-      [location, systemPrefMatch]
-    );
-
-    const getPlaceholder = () => {
-      if (systemMenuOpen) {
-        switch (true) {
-          case matchSystemPrefs('system-updates'):
-            return 'My Urbit: About';
-          case matchSystemPrefs('help'):
-            return 'My Urbit: Help';
-          case matchSystemPrefs('security'):
-            return 'My Urbit: Security';
-          case matchSystemPrefs('notifications'):
-            return 'My Urbit: Notifications';
-          case matchSystemPrefs('privacy'):
-            return 'My Urbit: Attention & Privacy';
-          case matchSystemPrefs('appearance'):
-            return 'My Urbit: Appearance';
-          case matchSystemPrefs('shortcuts'):
-            return 'My Urbit: Shortcuts';
-          case matchSystemPrefs('interface'):
-            return 'My Urbit: Interface Settings';
-          default:
-            return 'Settings';
-        }
-      }
-      return 'Search';
-    };
-
     const onChange = useCallback(
       handleError((e: ChangeEvent<HTMLInputElement>) => {
         const input = e.target as HTMLInputElement;
         const value = input.value.trim();
-        const isDeletion = (e.nativeEvent as InputEvent).inputType === 'deleteContentBackward';
+        const isDeletion =
+          (e.nativeEvent as InputEvent).inputType === 'deleteContentBackward';
         const inputMatch = getMatch(value);
         const matchValue = inputMatch?.value;
 
@@ -192,16 +162,17 @@ export const Leap = React.forwardRef(
           inputRef.current.value = matchValue;
           const start = matchValue.startsWith(value)
             ? value.length
-            : matchValue.substring(0, matchValue.indexOf(value)).length + value.length;
+            : matchValue.substring(0, matchValue.indexOf(value)).length +
+              value.length;
           inputRef.current.setSelectionRange(start, matchValue.length);
-          useLeapStore.setState({
+          useAppSearchStore.setState({
             rawInput: matchValue,
-            selectedMatch: inputMatch
+            selectedMatch: inputMatch,
           });
         } else {
-          useLeapStore.setState({
+          useAppSearchStore.setState({
             rawInput: value,
-            selectedMatch: matches[0]
+            selectedMatch: matches[0],
           });
         }
 
@@ -227,7 +198,7 @@ export const Leap = React.forwardRef(
         }
 
         push(currentMatch.url);
-        useLeapStore.setState({ rawInput: '' });
+        useAppSearchStore.setState({ rawInput: '' });
       }),
       [deskMatch, selectedMatch]
     );
@@ -239,7 +210,12 @@ export const Leap = React.forwardRef(
 
         if (deletion && !rawInput && selection) {
           e.preventDefault();
-          select(null, appsMatch && !appsMatch.isExact ? undefined : deskMatch?.params.query);
+          select(
+            null,
+            appsMatch && !appsMatch.isExact
+              ? undefined
+              : deskMatch?.params.query
+          );
           const pathBack = createPreviousPath(deskMatch?.url || '');
           push(pathBack);
         }
@@ -257,14 +233,15 @@ export const Leap = React.forwardRef(
                 return matchValue === searchValue;
               })
             : 0;
-          const unsafeIndex = e.key === 'ArrowUp' ? currentIndex - 1 : currentIndex + 1;
+          const unsafeIndex =
+            e.key === 'ArrowUp' ? currentIndex - 1 : currentIndex + 1;
           const index = (unsafeIndex + matches.length) % matches.length;
 
           const newMatch = matches[index];
-          useLeapStore.setState({
+          useAppSearchStore.setState({
             rawInput: newMatch.value,
             // searchInput: matchValue,
-            selectedMatch: newMatch
+            selectedMatch: newMatch,
           });
         }
       }),
@@ -302,7 +279,7 @@ export const Leap = React.forwardRef(
               id="leap"
               type="text"
               ref={inputRef}
-              placeholder={selection ? '' : getPlaceholder()}
+              placeholder={selection ? '' : 'e.g., ~paldev or ~paldev/pals'}
               // TODO: style placeholder text with 100% opacity.
               // Not immediately clear how to do this within tailwind.
               className="outline-none h-full w-full flex-1 bg-transparent px-2 text-lg text-gray-800 sm:text-base"
@@ -320,7 +297,7 @@ export const Leap = React.forwardRef(
         </form>
         {menu === 'search' && (
           <Link
-            to="/"
+            to="/get-apps"
             className="circle-button default-ring absolute top-1/2 right-2 h-8 w-8 flex-none -translate-y-1/2 text-gray-600"
             onClick={() => select(null)}
           >

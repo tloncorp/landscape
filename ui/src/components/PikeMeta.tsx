@@ -8,8 +8,8 @@ export function PikeMeta(props: { pike: Pike }) {
 
   const pluralUpdates = pike.wefts?.length !== 1;
   return (
-    <div className="mt-5 sm:mt-8 space-y-5 sm:space-y-8">
-      <Attribute title="Desk Hash" attr="hash">
+    <div className="mt-5 space-y-5 sm:mt-8 sm:space-y-8">
+      <Attribute title="Desk Hash" attr="hash" className="break-all">
         {pike.hash}
       </Attribute>
       <Attribute title="Installed into" attr="local-desk">
@@ -17,7 +17,8 @@ export function PikeMeta(props: { pike: Pike }) {
       </Attribute>
       {pike.wefts && pike.wefts.length > 0 ? (
         <Attribute attr="next" title="Pending Updates">
-          {pike.wefts.length} update{pluralUpdates ? 's are' : ' is'} pending a System Update
+          {pike.wefts.length} update{pluralUpdates ? 's are' : ' is'} pending a
+          System Update
         </Attribute>
       ) : null}
     </div>

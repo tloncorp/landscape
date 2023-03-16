@@ -1,4 +1,9 @@
-import Urbit, { PokeInterface, Scry, SubscriptionRequestInterface, Thread } from '@urbit/http-api';
+import Urbit, {
+  PokeInterface,
+  Scry,
+  SubscriptionRequestInterface,
+  Thread,
+} from '@urbit/http-api';
 import type UrbitMock from '@tloncorp/mock-http-api';
 
 declare global {
@@ -9,7 +14,8 @@ declare global {
 }
 
 export const IS_MOCK = import.meta.env.MODE === 'mock';
-const URL = (import.meta.env.VITE_MOCK_URL || import.meta.env.VITE_VERCEL_URL) as string;
+const URL = (import.meta.env.VITE_MOCK_URL ||
+  import.meta.env.VITE_VERCEL_URL) as string;
 
 let client = undefined as unknown as Urbit | UrbitMock;
 
@@ -61,6 +67,15 @@ const api = {
 
     return client.subscribe(params);
   },
+  async subscribeOnce<T>(app: string, path: string, timeout?: number) {
+    if (!client) {
+      await setupAPI();
+    }
+
+    const clientPoke = await client.subscribeOnce<T>(app, path, timeout);
+
+    return clientPoke;
+  },
   async thread<Return, T>(params: Thread<T>) {
     if (!client) {
       await setupAPI();
@@ -74,7 +89,7 @@ const api = {
     }
 
     return client.unsubscribe(id);
-  }
+  },
 } as Urbit | UrbitMock;
 
 export default api;
