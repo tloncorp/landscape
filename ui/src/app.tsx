@@ -6,6 +6,8 @@ import {
   Route,
   useHistory,
   useLocation,
+  RouteComponentProps,
+  Redirect,
 } from 'react-router-dom';
 import { ErrorBoundary } from 'react-error-boundary';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
@@ -47,6 +49,11 @@ const getId = async () => {
   const result = await fp.get();
   return result.visitorId;
 };
+
+function OldLeapRedirect({ location }: RouteComponentProps) {
+  const path = location.pathname.replace('/leap', '');
+  return <Redirect to={path} />;
+}
 
 const AppRoutes = () => {
   const { push } = useHistory();
@@ -129,6 +136,7 @@ const AppRoutes = () => {
   return (
     <Switch>
       <Route path="/perma" component={PermalinkRoutes} />
+      <Route path="/leap/*" component={OldLeapRedirect} />
       <Route path={['/:menu', '/']} component={Grid} />
     </Switch>
   );
