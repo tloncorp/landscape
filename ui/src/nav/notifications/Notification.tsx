@@ -219,7 +219,7 @@ export default function Notification({ bin, groups }: NotificationProps) {
     <div
       className={cn(
         'flex space-x-3 rounded-xl p-3 text-gray-600 transition-colors duration-1000',
-        bin.unread ? 'bg-blue-50 mix-blend-multiply' : 'bg-white'
+        bin.unread ? 'bg-blue-50 mix-blend-multiply dark:mix-blend-screen' : 'bg-white'
       )}
     >
       <DeskLink

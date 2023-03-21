@@ -3,6 +3,7 @@ import produce from 'immer';
 import create from 'zustand';
 import { Blanket, Carpet, HarkAction, Rope, Seam } from './hark-types';
 import api from './api';
+import { decToUd } from '@urbit/api';
 
 export interface HarkState {
   set: (fn: (sta: HarkState) => void) => void;
@@ -24,7 +25,7 @@ export function emptyCarpet(seam: Seam) {
     seam,
     yarns: {},
     cable: [],
-    stitch: 0
+    stitch: 0,
   };
 }
 
@@ -32,7 +33,7 @@ export function emptyBlanket(seam: Seam) {
   return {
     seam,
     yarns: {},
-    quilt: {}
+    quilt: {},
   };
 }
 
@@ -40,7 +41,7 @@ function harkAction(action: HarkAction) {
   return {
     app: 'hark',
     mark: 'hark-action',
-    json: action
+    json: action,
   };
 }
 
@@ -65,18 +66,18 @@ const useHarkState = create<HarkState>((set, get) => ({
         console.log(event, get().carpet);
         const { retrieve } = get();
         retrieve();
-      }
+      },
     });
   },
   retrieve: async () => {
     const carpet = await api.scry<Carpet>({
       app: 'hark',
-      path: `/all/latest`
+      path: `/all/latest`,
     });
 
     const blanket = await api.scry<Blanket>({
       app: 'hark',
-      path: `/all/quilt/${carpet.stitch}`
+      path: `/all/quilt/${decToUd(carpet.stitch.toString())}`,
     });
 
     get().batchSet((draft) => {
@@ -87,17 +88,17 @@ const useHarkState = create<HarkState>((set, get) => ({
   sawRope: (rope) => {
     api.poke(
       harkAction({
-        'saw-rope': rope
+        'saw-rope': rope,
       })
     );
   },
   sawSeam: (seam) => {
     api.poke(
       harkAction({
-        'saw-seam': seam
+        'saw-seam': seam,
       })
     );
-  }
+  },
 }));
 
 export default useHarkState;

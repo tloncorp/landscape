@@ -9,7 +9,7 @@
   ==
 +$  state-0  [%0 settings=settings-0]
 +$  state-1  [%1 settings=settings-1]
-+$  state-2  [%2 =settings] 
++$  state-2  [%2 =settings]
 --
 =|  state-2
 =*  state  -

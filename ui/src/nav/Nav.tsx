@@ -1,7 +1,13 @@
 import { DialogContent } from '@radix-ui/react-dialog';
 import * as Portal from '@radix-ui/react-portal';
 import classNames from 'classnames';
-import React, { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import {
   Link,
@@ -189,7 +195,7 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
         <DialogContent
           onInteractOutside={preventClose}
           onOpenAutoFocus={onOpen}
-          className="scroll-left-50 scroll-full-width outline-none fixed bottom-0 flex h-full max-h-full max-w-[882px] -translate-x-1/2 flex-col justify-end px-4 text-gray-400 sm:top-0 sm:bottom-auto sm:h-auto sm:justify-start sm:pb-4"
+          className="scroll-left-50 scroll-full-width outline-none fixed bottom-0 z-50 flex h-full max-h-full max-w-[882px] -translate-x-1/2 flex-col justify-end px-4 text-gray-400 sm:top-0 sm:bottom-auto sm:h-auto sm:justify-start sm:pb-4"
           role="combobox"
           aria-controls="leap-items"
           aria-owns="leap-items"

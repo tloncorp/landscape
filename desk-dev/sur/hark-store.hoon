@@ -1,8 +1,8 @@
-^? 
+^?
 ::
 ::  %hark-store: Notification, unreads store
 ::
-::    Timeboxing & binning: 
+::    Timeboxing & binning:
 ::
 ::    Unread notifications accumulate in $unreads. They are grouped by
 ::    their $bin. A notification may become read by either:
@@ -17,7 +17,7 @@
 ::    Unread tracking:
 ::    Unread tracking has two 'modes' which may be used concurrently,
 ::    if necessary.
-::    
+::
 ::    count:
 ::      This stores the unreads as a simple atom, describing the number
 ::      of unread items. May be increased with %unread-count and
@@ -31,7 +31,7 @@
 ::
 |%
 ::  $place: A location, under which landscape stores stats
-::    
+::
 ::  .desk must match q.byk.bowl
 ::  Examples:
 ::    A chat:
@@ -47,7 +47,7 @@
 ::
 ::  $bin: Identifier for grouping notifications
 ::
-::  Examples 
+::  Examples
 ::   A mention in a chat:
 ::  [/mention %landscape /~dopzod/urbit-help]
 ::   New messages in a chat
@@ -103,7 +103,7 @@
       ::  %unread-each: Add .path to list of unreads for .place
       [%unread-each =place =path]
       ::  %saw-place: Update last-updated for .place to now.bowl
-      [%saw-place =place time=(unit time)] 
+      [%saw-place =place time=(unit time)]
       ::  store actions
       ::
       ::  %archive: archive single notification
@@ -138,7 +138,7 @@
       last=@da
       timebox=(unit @da)
   ==
-::  
+::
 +$  update
   $%  action
       :: %more: more updates
@@ -147,7 +147,7 @@
       :: %note-read: note has been read with timestamp
       [%note-read =time =bin]
       [%added =notification]
-      :: %timebox: description of timebox. 
+      :: %timebox: description of timebox.
       ::
       [%timebox =lid =(list notification)]
       :: %place-stats: description of .stats for a .place

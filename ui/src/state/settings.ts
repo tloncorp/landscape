@@ -4,7 +4,7 @@ import {
   Value,
   putEntry as doPutEntry,
   getDeskSettings,
-  DeskData
+  DeskData,
 } from '@urbit/api';
 import _ from 'lodash';
 import {
@@ -12,7 +12,7 @@ import {
   createState,
   createSubscription,
   pokeOptimisticallyN,
-  reduceStateN
+  reduceStateN,
 } from './base';
 import api from './api';
 
@@ -29,6 +29,7 @@ interface BaseSettingsState {
     disableNicknames: boolean;
     disableSpellcheck: boolean;
     disableRemoteContent: boolean;
+    disableWayfinding: boolean;
   };
   display: {
     theme: 'light' | 'dark' | 'auto';
@@ -93,17 +94,18 @@ export const useSettingsState = createState<BaseSettingsState>(
       disableAvatars: false,
       disableNicknames: false,
       disableSpellcheck: false,
-      disableRemoteContent: false
+      disableRemoteContent: false,
+      disableWayfinding: false,
     },
     display: {
       theme: 'auto',
-      doNotDisturb: false
+      doNotDisturb: false,
     },
     tiles: {
-      order: []
+      order: [],
     },
     browserSettings: {
-      settings: '' as Stringified<BrowserSetting[]>
+      settings: '' as Stringified<BrowserSetting[]>,
     },
     loaded: false,
     putEntry: async (bucket, key, val) => {
@@ -111,13 +113,16 @@ export const useSettingsState = createState<BaseSettingsState>(
       await pokeOptimisticallyN(useSettingsState, poke, reduceUpdate);
     },
     fetchAll: async () => {
-      const result = (await api.scry<DeskData>(getDeskSettings(window.desk))).desk;
+      const result = (await api.scry<DeskData>(getDeskSettings(window.desk)))
+        .desk;
       const newState = {
-        ..._.mergeWith(get(), result, (obj, src) => (_.isArray(src) ? src : undefined)),
-        loaded: true
+        ..._.mergeWith(get(), result, (obj, src) =>
+          _.isArray(src) ? src : undefined
+        ),
+        loaded: true,
       };
       set(newState);
-    }
+    },
   }),
   [],
   [
@@ -128,7 +133,7 @@ export const useSettingsState = createState<BaseSettingsState>(
           reduceStateN(get(), data, reduceUpdate);
           set({ loaded: true });
         }
-      })
+      }),
   ]
 );
 
@@ -142,7 +147,16 @@ export function useCalm() {
   return useSettingsState(selCalm);
 }
 
-export function parseBrowserSettings(settings: Stringified<BrowserSetting[]>): BrowserSetting[] {
+export function setCalmSetting(
+  key: keyof SettingsState['calmEngine'],
+  val: boolean
+) {
+  useSettingsState.getState().putEntry('calmEngine', key, val);
+}
+
+export function parseBrowserSettings(
+  settings: Stringified<BrowserSetting[]>
+): BrowserSetting[] {
   return settings !== '' ? JSON.parse<BrowserSetting[]>(settings) : [];
 }
 
@@ -159,11 +173,13 @@ export function setBrowserSetting(
   browserId: string
 ): BrowserSetting[] {
   const oldSettings = settings.slice(0);
-  const oldSettingIndex = oldSettings.findIndex((s) => s.browserId === browserId);
+  const oldSettingIndex = oldSettings.findIndex(
+    (s) => s.browserId === browserId
+  );
   const setting = {
     ...oldSettings[oldSettingIndex],
     browserId,
-    ...newSetting
+    ...newSetting,
   };
 
   if (oldSettingIndex >= 0) {

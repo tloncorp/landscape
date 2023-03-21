@@ -24,22 +24,26 @@ export const SuspendApp = () => {
 
   return (
     <Dialog open onOpenChange={(open) => !open && history.push('/')}>
-      <DialogContent showClose={false} className="space-y-6" containerClass="w-full max-w-md">
+      <DialogContent
+        showClose={false}
+        className="space-y-6"
+        containerClass="w-full max-w-md"
+      >
         <h1 className="h4">Suspend &ldquo;{getAppName(charge)}&rdquo;</h1>
-        <p className="tracking-tight pr-6">
-          All processes will be stopped and data archived. The app will continue to receive updates
-          from its publisher.
+        <p className="pr-6 tracking-tight">
+          All processes will be stopped and data archived. The app will continue
+          to receive updates from its publisher.
         </p>
-        <p className="tracking-tight pr-6">
-          When unsuspended, archived data will be loaded and all processes will resume running, so
-          you can pick up where you left off.
+        <p className="pr-6 tracking-tight">
+          When unsuspended, archived data will be loaded and all processes will
+          resume running, so you can pick up where you left off.
         </p>
         <div className="flex space-x-6">
-          <DialogClose as={Button} variant="secondary">
-            Cancel
+          <DialogClose asChild>
+            <Button variant="secondary">Cancel</Button>
           </DialogClose>
-          <DialogClose as={Button} onClick={handleSuspendApp}>
-            Suspend
+          <DialogClose asChild>
+            <Button onClick={handleSuspendApp}>Suspend</Button>
           </DialogClose>
         </div>
       </DialogContent>
