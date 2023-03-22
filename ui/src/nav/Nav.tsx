@@ -251,5 +251,3 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
     </ErrorBoundary>
   );
 };
-
-//
