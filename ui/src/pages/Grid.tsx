@@ -2,10 +2,8 @@ import React, { FunctionComponent, useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Route, useHistory, useParams } from 'react-router-dom';
 import { ErrorAlert } from '../components/ErrorAlert';
-import LandscapeWayfinding from '../components/LandscapeWayfinding';
 import { MenuState, Nav } from '../nav/Nav';
 import useKilnState from '../state/kiln';
-import { useCalm } from '../state/settings';
 import { RemoveApp } from '../tiles/RemoveApp';
 import { SuspendApp } from '../tiles/SuspendApp';
 import { TileGrid } from '../tiles/TileGrid';
@@ -19,7 +17,6 @@ interface RouteProps {
 export const Grid: FunctionComponent = () => {
   const { push } = useHistory();
   const { menu } = useParams<RouteProps>();
-  const { disableWayfinding } = useCalm();
 
   useEffect(() => {
     // TOOD: rework
@@ -62,7 +59,6 @@ export const Grid: FunctionComponent = () => {
           </Route>
         </ErrorBoundary>
       </main>
-      {!disableWayfinding && <LandscapeWayfinding />}
     </div>
   );
 };

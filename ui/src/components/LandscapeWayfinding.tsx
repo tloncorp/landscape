@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import * as Dropdown from '@radix-ui/react-dropdown-menu';
+import cn from 'classnames';
 import { setCalmSetting } from '../state/settings';
 import { Dialog, DialogContent } from './Dialog';
 import { Button } from './Button';
@@ -128,9 +129,9 @@ export default function LandscapeWayfinding() {
 
   return (
     <Dropdown.Root>
-      <div className="fixed bottom-[4.25rem] left-4 z-[100] sm:bottom-4">
+      <div className="sm:fixed sm:left-4 sm:bottom-4 sm:z-[100]">
         <Dropdown.Trigger className="relative" asChild>
-          <button className="h-9 w-9 cursor-pointer rounded-lg bg-black text-xl text-white">
+          <button className="h-8 w-8 cursor-pointer rounded-lg bg-black text-xl text-white sm:h-9 sm:w-9">
             ?
           </button>
         </Dropdown.Trigger>
