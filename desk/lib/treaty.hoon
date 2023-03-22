@@ -12,6 +12,19 @@
     %add  [%add (treaty-0-to-1 treaty-0.u)]
   ==
 ::
+++  treaty-1-to-0
+  |=  t=treaty
+  ^-  treaty-0:treaty
+  t(|4 &5.t)
+::
+++  update-1-to-0
+  |=  u=update:treaty
+  ^-  update-0:treaty
+  ?+  -.u  u
+    %ini  [%ini (~(run by init.u) treaty-1-to-0)]
+    %add  [%add (treaty-1-to-0 treaty.u)]
+  ==
+::
 ++  enjs
   =,  enjs:format
   |%

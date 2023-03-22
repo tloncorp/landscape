@@ -3,26 +3,22 @@
 |%
 ++  default-ally  ~dister-dozzod-dozzod
 ::
-::TODO  state adapter, we're actually at state-1 already.
-::      adapter should also issue bill & seal warps
-::TODO  needs to be made backwards compatible. probably:
-::  - publish treaty-1 only on new sub path,
-::  - downgrade & keep publishing treaty-0 on old path
-::  - on-upgrade, try to re-establish subs, backoff retry if they fail?
-::
-+$  card  card:agent:gall
-+$  state-0
-  $:  treaties=(map [=ship =desk] treaty)
++$  card  $+(card card:agent:gall)
++$  state-1
+  $:  %1
+      treaties=(map [=ship =desk] treaty)
       sovereign=(map desk treaty)
       entente=alliance
       =allies:ally
-      direct=(set [=ship =desk])
+      versions=(map ship (each @ud (set desk)))  ::  known ver or pending subs
   ==
 --
+::
 ^-  agent:gall
 %+  verb  |
 %-  agent:dbug
-=|  state-0
+^-  agent:gall
+=|  state-1
 =*  state  -
 =<
 |_  =bowl:gall
@@ -37,8 +33,63 @@
 ++  on-save  !>(state)
 ++  on-load
   |=  =vase
-  =+  !<(old=state-0 vase)
-  `this(state old)
+  ^-  (quip card _this)
+  |^  =/  old=state-any
+        ::NOTE  v0 was untagged, so we must extract it carefully, $? no bueno
+        ?:  ?|(?=([~ *] q.vase) ?=([^ *] -.q.vase))
+          [%0 !<(state-0 vase)]
+        !<(state-any vase)
+      =^  caz  old
+        ?:  ?=(%1 -.old)  [~ old]
+        :_  (state-0-to-1 +.old)
+        ::  kick incoming subscriptions so they reestablish their connection
+        ::
+        :-  =;  pas=(list path)  [%give %kick pas ~]
+            %+  turn
+              %+  weld  ~(tap in ~(key by treaties))
+              (turn ~(tap in ~(key by sovereign)) (lead our.bowl))
+            |=([s=ship d=desk] /treaty/(scot %p s)/[d])
+        %+  weld
+          ::  issue warps for bills and seals for things we publish
+          ::
+          ^-  (list card)
+          %-  zing
+          %+  turn  ~(tap in ~(key by sovereign))
+          |=  =desk
+          ^-  (list card)
+          ~[warp-bill warp-seal]:~(. so:cc desk)
+        ::  start version negotiation with everyone we're subscribed to
+        ::
+        %~  tap  in
+        %+  roll  ~(tap by wex.bowl)
+        |=  [[[=wire =ship =term] [acked=? =path]] cas=(set card)]
+        ^+  cas
+        ?.  =(term dap.bowl)  ~
+        ?.  ?=([%treaty *] wire)  ~
+        ?.  ?=([%treaty *] path)  ~
+        %-  ~(put in cas)
+        `card`[%pass /version %agent [ship dap.bowl] %watch /version]
+      ?>  ?=(%1 -.old)
+      [caz this(state old)]
+  ::
+  +$  state-any  $%(state-1 [%0 state-0])
+  ::
+  +$  state-0
+    $:  treaties=(map [=ship =desk] treaty-0:treaty)
+        sovereign=(map desk treaty-0:treaty)
+        entente=alliance
+        =allies:ally
+        direct=(set [=ship =desk])
+    ==
+  ::
+  ++  state-0-to-1
+    |=  state-0
+    ^-  state-1
+    :^  %1
+        (~(run by treaties) treaty-0-to-1)
+      (~(run by sovereign) treaty-0-to-1)
+    [entente allies ~]
+  --
 ::
 ++  on-poke
   |=  [=mark =vase]
@@ -99,19 +150,30 @@
   ^-  (quip card _this)
   ?+  path  (on-watch:def path)
     ::  syncing
-      [%treaty @ @ ~]
+      [?(%treaty %treaty-1) @ @ ~]
     =/  =ship  (slav %p i.t.path)
     =*  desk   i.t.t.path
+    =/  mage
+      ?-  -.path
+        %treaty    treaty-0:cg:cc
+        %treaty-1  treaty:cg:cc
+      ==
     ?:  =(our.bowl ship)
-      :_(this (fact-init:io (treaty:cg:cc (~(got by sovereign) desk)))^~)
+      :_  this
+      [(fact-init:io (mage (~(got by sovereign) desk)))]~
     ?^  treat=(~(get by treaties) [ship desk])
       :_  this
-      (fact-init:io (treaty:cg:cc u.treat))^~
+      [(fact-init:io (mage u.treat))]~
     ?>  =(our.bowl src.bowl)
-    =.  direct  (~(put in direct) [ship desk])
     :_(this (drop ~(safe-watch tr:cc [ship desk])))
     ::
       [%treaties ~]
+    :_  this
+    ::NOTE  this assumes that all treaties in sovereign are also
+    ::      present in the treaties map
+    (fact-init:io (treaty-update-0:cg:cc %ini treaties))^~
+    ::
+      [%treaties-1 ~]
     :_  this
     ::NOTE  this assumes that all treaties in sovereign are also
     ::      present in the treaties map
@@ -127,10 +189,10 @@
     (fact-init:io (ally-update:cg:cc %ini allies))^~
   ==
 ::
-::
 ++  on-peek
   |=  =path
   ^-  (unit (unit cage))
+  ::TODO  :ca here, but :cc in all other callsites. sane y/n?
   ?+  path  (on-peek:def path)
     [%x %alliance ~]      ``(alliance-update:cg:ca %ini entente)
     [%x %default-ally ~]  ``ship+!>(default-ally)
@@ -158,15 +220,74 @@
   =*  ship  src.bowl
   |^
   ?+  wire  (on-agent:def wire sign)
-    [%ally @ ~]  ?>(=(src.bowl (slav %p i.t.wire)) take-ally)
+    [%ally @ ~]  ?>(=(ship (slav %p i.t.wire)) take-ally)
   ::
-      [%treaty @ @ ~]
+      [?(%treaty %treaty-1) @ @ ~]
     =*  desk  i.t.t.wire
     ?>  =(ship (slav %p i.t.wire))
-    (take-treaty desk)
+    (take-treaty i.wire desk)
+  ::
+      [%version ~]  ::  version negotiation
+    ?+  -.sign  !!
+      %kick  [[%pass /version %agent [src dap]:bowl %watch /version]~ this]
+    ::
+        %watch-ack
+      ?~  p.sign  [~ this]
+      ::  if the watch gets rejected, this means they're still on v0. register
+      ::  them as such and send any pending subs as v0 ones.
+      ::
+      =/  des=(set desk)
+        =+  v=(~(gut by versions) src.bowl [%| p=~])
+        ?:(?=(%| -.v) p.v ~)
+      :_  this(versions (~(put by versions) src.bowl &+0))
+      %+  murn  ~(tap in des)
+      |=  d=desk
+      ~(safe-watch-0 tr src.bowl d)
+    ::
+        %fact
+      ?>  ?=(%atom p.cage.sign)
+      =+  !<(v=atom q.cage.sign)
+      ::  we are v1, so only understand v1 at most
+      ::
+      =.  v  (min v 1)
+      ::  other versions won't happen, v0 had no version negotiation
+      ::
+      ?>  =(1 v)
+      ::  find v0 subs and re-establish them as v1 subs
+      ::
+      :_  this(versions (~(put by versions) src.bowl &+v))
+      %+  weld
+        ^-  (list card)
+        ::  establish any desired subscriptions
+        ::
+        ::TODO  dedupe with watch-nack case
+        =/  des=(set desk)
+          =+  v=(~(gut by versions) src.bowl [%| p=~])
+          ?:(?=(%| -.v) p.v ~)
+        %+  murn  ~(tap in des)
+        |=  d=desk
+        ~(safe-watch tr src.bowl d)
+      ::  upgrade any existing v0 subscriptions
+      ::
+      ^-  (list card)
+      %-  zing
+      %+  turn  ~(tap by wex.bowl)
+      |=  [[=^wire =^ship =term] [acked=? =path]]
+      ^-  (list card)
+      ?.  =(ship src.bowl)  ~
+      ?.  =(term dap.bowl)  ~
+      ?.  ?=([%treaty *] wire)  ~
+      ?.  ?=([%treaty *] path)  ~
+      =/  new=^^wire  wire(- %treaty-1)
+      =/  nep=^path   path(- %treaty-1)
+      :~  [%pass wire %agent [src dap]:bowl %leave ~]
+          [%pass new %agent [src dap]:bowl %watch nep]
+      ==
+    ==
   ==
   ::
   ++  take-ally
+    ^-  (quip card _this)
     ?+  -.sign  (on-agent:def wire sign)
     ::
         %kick
@@ -182,22 +303,42 @@
         %fact
       ?.  =(%alliance-update-0 p.cage.sign)  `this
       =+  !<(=update:alliance q.cage.sign)
-      =^  cards  allies
+      =.  allies
         ?-  -.update
+          %ini  (~(put by allies) src.bowl init.update)
+          %add  (~(put ju allies) src.bowl [ship desk]:update)
+          %del  (~(del ju allies) src.bowl [ship desk]:update)
+        ==
+      =^  cards  versions
+        ^-  (quip card _versions)
+        =/  v=(each @ud (set desk))
+          (~(gut by versions) src.bowl |+~)
+        ::  if we haven't done version negotiation yet,
+        ::  start it if we haven't yet,
+        ::  and queue up the desks we care about
         ::
-            %ini
-          :_   (~(put by allies) src.bowl init.update)
-          %+  murn  ~(tap in init.update)
-          |=  [s=^ship =desk]
-          ~(safe-watch tr:cc s desk)
+        ?:  ?=(%| -.v)
+          :-  ?:  (~(has by wex.bowl) /version [src dap]:bowl)  ~
+              [%pass /version %agent [src dap]:bowl %watch /version]~
+          =-  (~(put by versions) src.bowl |+-)
+          ?-  -.update
+            %ini  (~(uni in p.v) `(set desk)`(~(run in init.update) tail))
+            %add  (~(put in p.v) desk.update)
+            %del  (~(del in p.v) desk.update)
+          ==
+        ::  if we've netogiated a version already, establish subs with that
         ::
-            %add
-          :_  (~(put ju allies) src.bowl [ship desk]:update)
-          (drop ~(safe-watch tr:cc [ship desk]:update))
-
-          %del
-          :_  (~(del ju allies) src.bowl [ship desk]:update)
-          ~[~(leave tr:cc [ship desk]:update)]
+        :_  versions
+        =/  w
+          |=  [s=^ship d=desk]
+          ?+  p.v  !!
+            %0  ~(safe-watch-0 tr:cc s d)
+            %1  ~(safe-watch tr:cc s d)
+          ==
+        ?-  -.update
+          %ini  (murn ~(tap in init.update) w)
+          %add  (drop (w [ship desk]:update))
+          %del  [leave-0 leave ~]:~(. tr:cc [ship desk]:update)
         ==
       :_  this
       :_  cards
@@ -205,7 +346,8 @@
     ==
   ::
   ++  take-treaty
-    |=  =desk
+    |=  [version=?(%treaty %treaty-1) =desk]
+    ^-  (quip card _this)
     =*  tr   ~(. tr:cc ship desk)
     ?+  -.sign  (on-agent:def wire sign)
     ::
@@ -215,13 +357,18 @@
         %kick
       :_  this
       ?:  =(our.bowl ship)  ~
-      ~[watch:tr]
+      ?:  ?=(%treaty-1 version)  [watch:tr]~
+      ::  v0 subscription got kicked, which could indicate the host upgraded
+      ::  to v1. we bring the v0 sub back, but also (re)try version negotiation
+      ::
+      :~  watch-0:tr
+          [%pass /version %agent [src dap]:bowl %watch /version]
+      ==
     ::
         %watch-ack
-      ?~  p.sign  `this
-      =:  treaties  (~(del by treaties) ship desk)
-          direct    (~(del in direct) ship desk)
-        ==
+      ?~  p.sign
+        [~ this]
+      =.  treaties  (~(del by treaties) ship desk)
       %-  (slog leaf+"treaty: withdrew from {<ship>}/{<desk>}" u.p.sign)
       [gone:tr this]
     ::
@@ -240,7 +387,7 @@
 ::
 ++  on-arvo
   |=  [=wire sign=sign-arvo]
-  |^
+  |^  ^-  (quip card _this)
   ?+  wire  (on-arvo:def wire sign)
     [%init ~]  !! :: setup sponsor ally
   ::
@@ -337,7 +484,9 @@
   ++  ally-update      |=(=update:ally ally-update-0+!>(update))
   ++  alliance-update  |=(=update:alliance alliance-update-0+!>(update))
   ++  treaty  |=(t=^treaty treaty-1+!>(t))
+  ++  treaty-0  |=(t=^treaty treaty-0+!>((treaty-1-to-0 t)))
   ++  treaty-update  |=(u=update:^treaty treaty-update-1+!>(u))
+  ++  treaty-update-0  |=(u=update:^treaty treaty-update-0+!>((update-1-to-0 u)))
   --
 ::  +ca: Card construction
 ++  ca
@@ -349,32 +498,42 @@
   --
 ::  +tr: engine for treaties
 ++  tr
+  =/  version=term  %treaty-1
   |_  [=ship =desk]
   ++  pass  ~(. ^pass path)
-  ++  path  /treaty/(scot %p ship)/[desk]
+  ++  path  /[version]/(scot %p ship)/[desk]
   ++  dock  [ship dap.bowl]
   ++  watch  (watch:pass dock path)
+  ++  watch-0  watch(version %treaty)
   ++  watching  (~(has by wex.bowl) [path dock])
+  ++  watching-0  watching(version %treaty)
   ++  safe-watch  `(unit card)`?:(|(watching =(our.bowl ship)) ~ `watch)
+  ++  safe-watch-0  safe-watch(version %treaty)
   ++  leave  (leave:pass dock)
+  ++  leave-0  leave(version %treaty)
   ++  gone
     ^-  (list card)
-    :~  (fact:io (treaty-update:cg %del ship desk) /treaties ~)
+    :~  (fact:io (treaty-update:cg %del ship desk) /treaties-1 ~)
+        (fact:io (treaty-update-0:cg %del ship desk) /treaties ~)
         (kick-only:io our.bowl path ~)
+        (kick-only:io our.bowl path(version %treaty) ~)
     ==
   ++  give
     ^-  (list card)
     =/  t=treaty  (~(got by treaties) ship desk)
-    :~  (fact:io (treaty-update:cg %add t) /treaties ~)
+    :~  (fact:io (treaty-update:cg %add t) /treaties-1 ~)
+        (fact:io (treaty-update-0:cg %add t) /treaties ~)
         (fact:io (treaty:cg t) path ~)
+        (fact:io (treaty-0:cg t) path(version %treaty) ~)
     ==
   --
 ::  +so: engine for sovereign treaties
 ++  so
+  =/  version=term  %treaty-1
   |_  =desk
   ++  wire  `^wire`/sovereign/[desk]
   ++  pass  ~(. ^pass wire)
-  ++  path  /treaty/(scot %p our.bowl)/[desk]
+  ++  path  /[version]/(scot %p our.bowl)/[desk]
   ++  get-docket  .^(docket:docket %cx (scry:io desk /desk/docket-0))
   ++  get-bill
     ^-  bill:clay
@@ -402,8 +561,10 @@
     ::
     ^-  (list card)
     =/  t=treaty  (~(got by sovereign) desk)
-    :~  (fact:io (treaty-update:cg %add t) /treaties ~)
+    :~  (fact:io (treaty-update:cg %add t) /treaties-1 ~)
+        (fact:io (treaty-update-0:cg %add t) /treaties ~)
         (fact:io (treaty:cg t) path ~)
+        (fact:io (treaty-0:cg t) path(version %treaty) ~)
     ==
   ++  publish
     ::TODO  just issue a [%c %perm] ourselves???
