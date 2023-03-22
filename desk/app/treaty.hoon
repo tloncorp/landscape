@@ -68,7 +68,7 @@
         ?.  ?=([%treaty *] wire)  ~
         ?.  ?=([%treaty *] path)  ~
         %-  ~(put in cas)
-        `card`[%pass /version %agent [ship dap.bowl] %watch /version]
+        [%pass /version %agent [ship dap.bowl] %watch /version]
       ?>  ?=(%1 -.old)
       [caz this(state old)]
   ::
@@ -232,16 +232,15 @@
     ::
         %watch-ack
       ?~  p.sign  [~ this]
-      ::  if the watch gets rejected, this means they're still on v0. register
-      ::  them as such and send any pending subs as v0 ones.
+      ::  if the watch gets rejected, this means they're still on v0.
+      ::  register them as such and send any pending subs as v0 ones.
       ::
       =/  des=(set desk)
         =+  v=(~(gut by versions) src.bowl [%| p=~])
         ?:(?=(%| -.v) p.v ~)
       :_  this(versions (~(put by versions) src.bowl &+0))
       %+  murn  ~(tap in des)
-      |=  d=desk
-      ~(safe-watch-0 tr src.bowl d)
+      |=(d=desk ~(safe-watch-0 tr src.bowl d))
     ::
         %fact
       ?>  ?=(%atom p.cage.sign)
@@ -259,13 +258,11 @@
         ^-  (list card)
         ::  establish any desired subscriptions
         ::
-        ::TODO  dedupe with watch-nack case
         =/  des=(set desk)
           =+  v=(~(gut by versions) src.bowl [%| p=~])
           ?:(?=(%| -.v) p.v ~)
         %+  murn  ~(tap in des)
-        |=  d=desk
-        ~(safe-watch tr src.bowl d)
+        |=(d=desk ~(safe-watch tr src.bowl d))
       ::  upgrade any existing v0 subscriptions
       ::
       ^-  (list card)
