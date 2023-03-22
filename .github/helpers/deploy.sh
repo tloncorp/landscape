@@ -23,8 +23,8 @@ cd $source_repo
 git checkout '$ref'
 cd /home/urb || return
 curl -s --data '\''{"source":{"dojo":"+hood/mount %'$desk'"},"sink":{"app":"hood"}}'\'' http://localhost:12321
-rsync -avL --delete $source_repo/desk/ '$folder'
-rsync -avL $urbit_repo/pkg/base-dev/ '$folder'
+rsync -avL --delete $urbit_repo/pkg/base-dev/ '$folder'
+rsync -avL $source_repo/desk/ '$folder'
 curl -s --data '\''{"source":{"dojo":"+hood/commit %'$desk'"},"sink":{"app":"hood"}}'\'' http://localhost:12321
 rm -rf $source_repo
 rm -rf $urbit_repo
