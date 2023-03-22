@@ -32,6 +32,8 @@ import { Bullet } from '../components/icons/Bullet';
 import { Cross } from '../components/icons/Cross';
 import MagnifyingGlass16Icon from '../components/icons/MagnifyingGlass16Icon';
 import GetApps from './GetApps';
+import LandscapeWayfinding from '../components/LandscapeWayfinding';
+import { useCalm } from '../state/settings';
 
 export interface MatchItem {
   url: string;
@@ -134,6 +136,7 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
   const dialogNavRef = useRef<HTMLDivElement>(null);
+  const { disableWayfinding } = useCalm();
   const { systemBlocked } = useSystemUpdate();
   const [dialogContentOpen, setDialogContentOpen] = useState(false);
   const select = useAppSearchStore((state) => state.select);
@@ -200,7 +203,9 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
         ) : (
           <GetAppsLink />
         )}
+        {!disableWayfinding && <LandscapeWayfinding />}
       </Portal.Root>
+
       <div
         ref={navRef}
         className={classNames(
