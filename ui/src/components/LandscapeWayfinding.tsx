@@ -128,7 +128,7 @@ export default function LandscapeWayfinding() {
 
   return (
     <Dropdown.Root>
-      <div className="absolute left-4 bottom-16 z-50">
+      <div className="absolute left-4 bottom-16 z-[100]">
         <Dropdown.Trigger className="relative" asChild>
           <button className="h-9 w-9 cursor-pointer rounded-lg bg-black text-xl text-white">
             ?

@@ -3,14 +3,13 @@ import React from 'react';
 import { AppList } from '../../components/AppList';
 import { Button } from '../../components/Button';
 import {
-  Dialog,
   DialogClose,
   DialogContent,
   DialogTrigger,
 } from '../../components/Dialog';
+import * as Dialog from '@radix-ui/react-dialog';
 import { FullTlon16Icon } from '../../components/icons/FullTlon16Icon';
 import { useSystemUpdate } from '../../logic/useSystemUpdate';
-import { useCharge } from '../../state/docket';
 import { usePike, useLag } from '../../state/kiln';
 import { disableDefault, pluralize } from '../../state/util';
 import { UpdatePreferences } from './UpdatePreferences';
@@ -28,6 +27,8 @@ export const AboutSystem = () => {
     null != blockedCharges.find((charge) => charge.desk == 'garden');
   const hash = basePike && getHash(basePike);
   const lag = useLag();
+
+  console.log(systemBlocked, lag, blockedCount, gardenBlocked);
 
   return (
     <>
@@ -90,46 +91,50 @@ export const AboutSystem = () => {
                       </p>
                     </>
                   ) : (
-                    <Dialog>
+                    <Dialog.Root>
                       <DialogTrigger asChild>
                         <Button variant="caution">
                           Suspend {blockedCount}{' '}
                           {pluralize('App', blockedCount)} and Apply Update
                         </Button>
                       </DialogTrigger>
-                      <DialogContent
-                        showClose={false}
-                        onOpenAutoFocus={disableDefault}
-                        className="space-y-6 tracking-tight"
-                        containerClass="w-full max-w-md"
-                      >
-                        <h2 className="h4">
-                          Suspend {blockedCount}{' '}
-                          {pluralize('App', blockedCount)} and Apply System
-                          Update
-                        </h2>
-                        <p>
-                          The following {pluralize('app', blockedCount)} will be
-                          suspended until their developer provides an update.
-                        </p>
-                        <AppList
-                          apps={blockedCharges}
-                          labelledBy="blocked-apps"
-                          size="xs"
-                        />
-                        <div className="flex space-x-6">
-                          <DialogClose asChild>
-                            <Button variant="secondary">Cancel</Button>
-                          </DialogClose>
-                          <DialogClose asChild>
-                            <Button variant="caution" onClick={freezeApps}>
-                              Suspend {pluralize('App', blockedCount)} and
-                              Update
-                            </Button>
-                          </DialogClose>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
+                      <Dialog.Portal>
+                        <Dialog.Overlay className="fixed top-0 bottom-0 left-0 right-0 z-[60] transform-gpu bg-black opacity-30" />
+                        <DialogContent
+                          showClose={false}
+                          onOpenAutoFocus={disableDefault}
+                          className="space-y-6 tracking-tight"
+                          containerClass="w-full max-w-md z-[70]"
+                        >
+                          <h2 className="h4">
+                            Suspend {blockedCount}{' '}
+                            {pluralize('App', blockedCount)} and Apply System
+                            Update
+                          </h2>
+                          <p>
+                            The following {pluralize('app', blockedCount)} will
+                            be suspended until their developer provides an
+                            update.
+                          </p>
+                          <AppList
+                            apps={blockedCharges}
+                            labelledBy="blocked-apps"
+                            size="xs"
+                          />
+                          <div className="flex space-x-6">
+                            <DialogClose asChild>
+                              <Button variant="secondary">Cancel</Button>
+                            </DialogClose>
+                            <DialogClose asChild>
+                              <Button variant="caution" onClick={freezeApps}>
+                                Suspend {pluralize('App', blockedCount)} and
+                                Update
+                              </Button>
+                            </DialogClose>
+                          </div>
+                        </DialogContent>
+                      </Dialog.Portal>
+                    </Dialog.Root>
                   )}
                 </>
               )}
