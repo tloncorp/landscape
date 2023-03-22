@@ -192,11 +192,10 @@
 ++  on-peek
   |=  =path
   ^-  (unit (unit cage))
-  ::TODO  :ca here, but :cc in all other callsites. sane y/n?
   ?+  path  (on-peek:def path)
-    [%x %alliance ~]      ``(alliance-update:cg:ca %ini entente)
+    [%x %alliance ~]      ``(alliance-update:cg:cc %ini entente)
     [%x %default-ally ~]  ``ship+!>(default-ally)
-    [%x %allies ~]        ``(ally-update:cg:ca %ini allies)
+    [%x %allies ~]        ``(ally-update:cg:cc %ini allies)
   ::
      [%x %treaties @ ~]
     =/  =ship  (slav %p i.t.t.path)
@@ -206,7 +205,7 @@
       %+  skim  ~(tap by treaties)
       |=  [ref=[^ship desk] =treaty]
       (~(has in alliance) ref)
-    ``(treaty-update:cg:ca:cc %ini allied)
+    ``(treaty-update:cg:cc %ini allied)
   ::
       [%x %treaty @ @ ~]
     =/  =ship  (slav %p i.t.t.path)
