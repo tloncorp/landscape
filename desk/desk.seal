@@ -1,0 +1,38 @@
+:-  %0
+:~
+  ::  externals
+  ::
+  [%reads %$ ~ `%$ /zen/lag]
+  [%reads %c `%u ~ /desk/docket-0]
+  [%reads %c `%w ~ /]
+  [%reads %c `%x ~ /desk/docket-0]
+  [%reads %c `%x `%$ /tire]
+  [%reads %c `%z ~ /]
+  ::
+  [%watch | %spider /thread-result]
+  ::
+  [%write | %hood]
+  [%write | %spider]
+  ::
+  [%behn %timer]
+  [%clay %local `%z ~ /desk/docket-0]
+  [%clay %local `%z ~ /]
+  [%clay %local `%x ~ /desk/docket-0]
+  [%clay %write ~ /desk/docket-0]
+  [%clay %creds ~]
+  [%clay %pulse ~]
+  [%eyre %serve]
+::
+  ::  internals
+  ::
+  [%reads %g `%x `%treaty /treaty]
+  ::
+  [%watch & %treaty /version]
+  [%watch & %treaty /alliance]
+  [%watch & %treaty /treaty]
+  [%watch & %treaty /treaty-1]
+  [%watch | %docket /dockets]
+  ::
+  [%write | %hark-graph-hook]
+  [%write | %hark-store]
+==
