@@ -44,7 +44,6 @@ export const Grid: FunctionComponent = () => {
 
   return (
     <div className="flex h-screen w-full flex-col">
-      {!disableWayfinding && <LandscapeWayfinding />}
       <header className="fixed bottom-0 left-0 z-30 flex w-full justify-center px-4 sm:sticky sm:bottom-auto sm:top-0">
         <Nav menu={menu} />
       </header>
@@ -63,6 +62,7 @@ export const Grid: FunctionComponent = () => {
           </Route>
         </ErrorBoundary>
       </main>
+      {!disableWayfinding && <LandscapeWayfinding />}
     </div>
   );
 };

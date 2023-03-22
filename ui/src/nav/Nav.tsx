@@ -183,7 +183,7 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
       {/* Using portal so that we can retain the same nav items both in the dialog and in the base header */}
       <Portal.Root
         containerRef={dialogContentOpen ? dialogNavRef : navRef}
-        className="flex w-full items-center justify-center space-x-2"
+        className="flex w-full items-center space-x-2 sm:justify-center"
       >
         <SystemPrefsLink menuState={menuState} systemBlocked={systemBlocked} />
         <NotificationsLink
