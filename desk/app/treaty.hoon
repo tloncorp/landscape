@@ -567,7 +567,6 @@
         (fact:io (treaty-0:cg t) path(version %treaty) ~)
     ==
   ++  publish
-    ::TODO  just issue a [%c %perm] ourselves???
-    (poke-our:pass %hood kiln-permission+!>([desk / &]))
+    (arvo:pass %c %perm desk / [%r ~ %black ~])
   --
 --
