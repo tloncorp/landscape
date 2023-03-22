@@ -28,8 +28,6 @@ export const AboutSystem = () => {
   const hash = basePike && getHash(basePike);
   const lag = useLag();
 
-  console.log(systemBlocked, lag, blockedCount, gardenBlocked);
-
   return (
     <>
       <div className="inner-section relative mb-4 space-y-8">
