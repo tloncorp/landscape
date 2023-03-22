@@ -119,7 +119,7 @@ export const GetAppsLink = () => {
   return (
     <Link
       to="/get-apps"
-      className="flex h-9 w-full items-center space-x-2 rounded-lg bg-blue-soft px-3 py-2.5 sm:w-[150px] sm:justify-center"
+      className="flex h-9 w-[150px] items-center justify-center space-x-2 rounded-lg bg-blue-soft px-3 py-2.5"
     >
       <MagnifyingGlass16Icon className="h-4 w-4 fill-current text-blue" />
       <span className="whitespace-nowrap font-semibold text-blue">
@@ -183,7 +183,7 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
       {/* Using portal so that we can retain the same nav items both in the dialog and in the base header */}
       <Portal.Root
         containerRef={dialogContentOpen ? dialogNavRef : navRef}
-        className="flex w-full items-center justify-center space-x-2"
+        className="flex w-full items-center space-x-2 sm:justify-center"
       >
         <SystemPrefsLink menuState={menuState} systemBlocked={systemBlocked} />
         <NotificationsLink
