@@ -203,7 +203,7 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
         ) : (
           <GetAppsLink />
         )}
-        {!disableWayfinding && <LandscapeWayfinding />}
+        {!disableWayfinding && <LandscapeWayfinding className="sm:hidden" />}
       </Portal.Root>
 
       <div

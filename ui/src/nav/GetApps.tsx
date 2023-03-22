@@ -2,9 +2,11 @@ import React from 'react';
 import WayfindingAppLink from '../components/WayfindingAppLink';
 import { useCharges } from '../state/docket';
 import { APPS, SECTIONS } from '../constants';
+import { useMedia } from '../logic/useMedia';
 
 export default function GetApps() {
   const charges = useCharges();
+  const isMobile = useMedia('(max-width: 639px)');
 
   return (
     <div className="flex h-full flex-col space-y-8 overflow-y-scroll p-8">
@@ -14,7 +16,8 @@ export default function GetApps() {
           Find Urbit App Developers
         </h2>
         <span>
-          Use the search field above to find apps or ships hosting apps.
+          Use the search field {isMobile ? 'below' : 'above'} to find apps or
+          ships hosting apps.
         </span>
       </div>
       {Object.entries(SECTIONS).map(([key, name]) => (
