@@ -18,13 +18,16 @@ import useKilnState from './state/kiln';
 import useContactState from './state/contact';
 import api from './state/api';
 import { useMedia } from './logic/useMedia';
-import { useCalm, useSettingsState, useTheme } from './state/settings';
+import { useSettingsState, useTheme } from './state/settings';
 import { useBrowserId, useLocalState } from './state/local';
 import { ErrorAlert } from './components/ErrorAlert';
 import { useErrorHandler } from './logic/useErrorHandler';
 import useHarkState from './state/hark';
 import { useNotifications } from './nav/notifications/useNotifications';
-import { makeBrowserNotification } from './logic/utils';
+import {
+  isNewNotificationSupported,
+  makeBrowserNotification,
+} from './logic/utils';
 
 const getNoteRedirect = (path: string) => {
   if (path.startsWith('/desk/')) {
@@ -66,15 +69,17 @@ const AppRoutes = () => {
   const { count, unreadNotifications } = useNotifications();
 
   useEffect(() => {
-    if ('Notification' in window && !doNotDisturb) {
-      if (count > 0 && Notification.permission === 'granted') {
-        unreadNotifications.forEach((bin) => {
-          makeBrowserNotification(bin);
-        });
-      }
-      if (count > 0 && Notification.permission === 'default') {
-        Notification.requestPermission();
-      }
+    if (!isNewNotificationSupported() || doNotDisturb) {
+      return;
+    }
+
+    if (count > 0 && Notification.permission === 'granted') {
+      unreadNotifications.forEach((bin) => {
+        makeBrowserNotification(bin);
+      });
+    }
+    if (count > 0 && Notification.permission === 'default') {
+      Notification.requestPermission();
     }
   }, [count, unreadNotifications]);
 
