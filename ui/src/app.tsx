@@ -66,7 +66,11 @@ const AppRoutes = () => {
   const { count, unreadNotifications } = useNotifications();
 
   useEffect(() => {
-    if ('Notification' in window && !doNotDisturb) {
+    if (!('Notification' in window) || doNotDisturb) {
+      return;
+    }
+
+    try {
       if (count > 0 && Notification.permission === 'granted') {
         unreadNotifications.forEach((bin) => {
           makeBrowserNotification(bin);
@@ -75,6 +79,8 @@ const AppRoutes = () => {
       if (count > 0 && Notification.permission === 'default') {
         Notification.requestPermission();
       }
+    } catch (error) {
+      console.error(error);
     }
   }, [count, unreadNotifications]);
 
