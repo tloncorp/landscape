@@ -10,7 +10,21 @@ export const makeBrowserNotification = (bin: Bin) => {
   const emph = bin.topYarn?.con.find(isYarnEmph)?.emph || '';
   const emphLast = findLast(bin.topYarn?.con, isYarnEmph)?.emph || '';
 
-  new Notification(`Landscape: ${app}`, {
-    body: `${ship}${emph}${bin.topYarn.con[1]}${emphLast}`,
-  });
+  try {
+    new Notification(`Landscape: ${app}`, {
+      body: `${ship}${emph}${bin.topYarn.con[1]}${emphLast}`,
+    });
+  } catch (error) {
+    console.error(error);
+  }
 };
+
+export function isNewNotificationSupported() {
+  if (!window.Notification || !Notification.requestPermission) return false;
+  try {
+    new Notification('');
+  } catch (e: any) {
+    if (e.name == 'TypeError') return false;
+  }
+  return true;
+}
