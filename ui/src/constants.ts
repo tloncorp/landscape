@@ -103,7 +103,7 @@ export const APPS = [
     title: 'Grove (alpha)',
     description: 'Groups file drive',
     color: '#e5e7eb',
-    links: '/apps/grove',
+    link: '/apps/grove',
     section: SECTIONS.USEFUL,
     source: '~dister-dozzod-dalten',
     desk: 'grove',
