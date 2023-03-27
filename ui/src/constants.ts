@@ -106,7 +106,8 @@ export const APPS = [
     links: '/apps/grove',
     section: SECTIONS.USEFUL,
     source: '~dister-dozzod-dalten',
-    desk: 'grove'
+    desk: 'grove',
+    image: 'https://freedom-club.sfo2.digitaloceanspaces.com/grove.png',
   },
   {
     title: 'hodl',
