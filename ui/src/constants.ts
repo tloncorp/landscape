@@ -100,6 +100,16 @@ export const APPS = [
     desk: 'silo',
   },
   {
+    title: 'Grove (alpha)',
+    description: 'Groups file drive',
+    color: '#e5e7eb',
+    link: '/apps/grove',
+    section: SECTIONS.USEFUL,
+    source: '~dister-dozzod-dalten',
+    desk: 'grove',
+    image: 'https://freedom-club.sfo2.digitaloceanspaces.com/grove.png',
+  },
+  {
     title: 'hodl',
     description: 'A portfolio for all that you hodl',
     color: '#B8A3D1',
