@@ -124,7 +124,7 @@ export const APPS = [
     title: 'Goals',
     description: 'Urbit task manager.',
     color: '#EEDFC9',
-    link: '/apps/goals',
+    link: '/apps/gol-cli',
     section: SECTIONS.USEFUL,
     desk: 'gol-cli',
     source: '~dister-dozzod-niblyx-malnus',
