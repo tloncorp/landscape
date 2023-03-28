@@ -6,6 +6,8 @@ import {
   Route,
   useHistory,
   useLocation,
+  RouteComponentProps,
+  Redirect,
 } from 'react-router-dom';
 import { ErrorBoundary } from 'react-error-boundary';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
@@ -21,6 +23,11 @@ import { useBrowserId, useLocalState } from './state/local';
 import { ErrorAlert } from './components/ErrorAlert';
 import { useErrorHandler } from './logic/useErrorHandler';
 import useHarkState from './state/hark';
+import { useNotifications } from './nav/notifications/useNotifications';
+import {
+  isNewNotificationSupported,
+  makeBrowserNotification,
+} from './logic/utils';
 
 const getNoteRedirect = (path: string) => {
   if (path.startsWith('/desk/')) {
@@ -46,11 +53,35 @@ const getId = async () => {
   return result.visitorId;
 };
 
+function OldLeapRedirect({ location }: RouteComponentProps) {
+  const path = location.pathname.replace('/leap', '');
+  return <Redirect to={path} />;
+}
+
 const AppRoutes = () => {
   const { push } = useHistory();
   const { search } = useLocation();
   const handleError = useErrorHandler();
   const browserId = useBrowserId();
+  const {
+    display: { doNotDisturb },
+  } = useSettingsState.getState();
+  const { count, unreadNotifications } = useNotifications();
+
+  useEffect(() => {
+    if (!isNewNotificationSupported() || doNotDisturb) {
+      return;
+    }
+
+    if (count > 0 && Notification.permission === 'granted') {
+      unreadNotifications.forEach((bin) => {
+        makeBrowserNotification(bin);
+      });
+    }
+    if (count > 0 && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }, [count, unreadNotifications]);
 
   useEffect(() => {
     getId().then((value) => {
@@ -101,7 +132,7 @@ const AppRoutes = () => {
       useHarkState.getState().start();
 
       Mousetrap.bind(['command+/', 'ctrl+/'], () => {
-        push('/leap/search');
+        push('/search');
       });
     }),
     []
@@ -110,7 +141,8 @@ const AppRoutes = () => {
   return (
     <Switch>
       <Route path="/perma" component={PermalinkRoutes} />
-      <Route path={['/leap/:menu', '/']} component={Grid} />
+      <Route path="/leap/*" component={OldLeapRedirect} />
+      <Route path={['/:menu', '/']} component={Grid} />
     </Switch>
   );
 };

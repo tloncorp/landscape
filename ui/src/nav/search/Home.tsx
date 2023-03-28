@@ -3,7 +3,7 @@ import create from 'zustand';
 import _ from 'lodash';
 import React, { useEffect } from 'react';
 import { persist } from 'zustand/middleware';
-import { MatchItem, useLeapStore } from '../Nav';
+import { MatchItem, useAppSearchStore } from '../Nav';
 import { providerMatch } from './Providers';
 import { AppList } from '../../components/AppList';
 import { ProviderList } from '../../components/ProviderList';
@@ -88,7 +88,7 @@ function getApps(desks: string[], charges: ChargesWithDesks) {
 }
 
 export const Home = () => {
-  const selectedMatch = useLeapStore((state) => state.selectedMatch);
+  const selectedMatch = useAppSearchStore((state) => state.selectedMatch);
   const { recentApps, recentDevs } = useRecentsStore();
   const charges = useCharges();
   const groups = charges?.landscape;
@@ -108,7 +108,7 @@ export const Home = () => {
     }));
     const devs = recentDevs.map(providerMatch);
 
-    useLeapStore.setState({
+    useAppSearchStore.setState({
       matches: ([] as MatchItem[]).concat(appMatches, devs)
     });
   }, [recentApps, recentDevs]);

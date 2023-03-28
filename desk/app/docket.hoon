@@ -1,5 +1,5 @@
 /-  *docket, hood, treaty
-/+  *server, agentio, default-agent, multipart, dbug, verb
+/+  *server, *hood, agentio, default-agent, multipart, dbug, verb
 |%
 +$  card  card:agent:gall
 +$  app-state
@@ -229,7 +229,7 @@
     ?~  got=(~(get by tyr) desk)
       ~
     ?:  ?&  ?=(%dead zest.u.got)
-            ?=(~ (get-apps-have:hood our.bowl desk now.bowl))
+            ?=(~ (get-apps-have our.bowl desk now.bowl))
         ==
       ~
     `u=[desk (get-light-charge charge)]
@@ -389,6 +389,8 @@
       ?.  (~(has by charges) desk)
         `state
       =/  =charge  (~(got by charges) desk)
+      ?:  &(?=(%install -.chad.charge) ?=(%held zest))
+        `state
       ?-    zest
           %live
         ?.  ?=(%glob -.href.docket.charge)

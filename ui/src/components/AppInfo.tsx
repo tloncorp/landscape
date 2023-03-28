@@ -3,7 +3,8 @@ import clipboardCopy from 'clipboard-copy';
 import React, { FC, useCallback, useState } from 'react';
 import cn from 'classnames';
 import { Button, PillButton } from './Button';
-import { Dialog, DialogClose, DialogContent, DialogTrigger } from './Dialog';
+import * as Dialog from '@radix-ui/react-dialog';
+import { DialogClose, DialogContent, DialogTrigger } from './Dialog';
 import { DocketHeader } from './DocketHeader';
 import { Spinner } from './Spinner';
 import { PikeMeta } from './PikeMeta';
@@ -18,6 +19,7 @@ type App = ChargeWithDesk | Treaty;
 interface AppInfoProps {
   docket: App;
   pike?: Pike;
+  treatyInfoShip?: string;
   className?: string;
 }
 
@@ -34,20 +36,25 @@ function getInstallStatus(docket: App): InstallStatus {
   return 'uninstalled';
 }
 
-function getRemoteDesk(docket: App, pike?: Pike) {
+function getRemoteDesk(docket: App, pike?: Pike, treatyInfoShip?: string) {
   if (pike && pike.sync) {
     return [pike.sync.ship, pike.sync.desk];
   }
   if ('chad' in docket) {
-    return ['', docket.desk];
+    return [treatyInfoShip ?? '', docket.desk];
   }
   const { ship, desk } = docket;
   return [ship, desk];
 }
 
-export const AppInfo: FC<AppInfoProps> = ({ docket, pike, className }) => {
+export const AppInfo: FC<AppInfoProps> = ({
+  docket,
+  pike,
+  className,
+  treatyInfoShip,
+}) => {
   const installStatus = getInstallStatus(docket);
-  const [ship, desk] = getRemoteDesk(docket, pike);
+  const [ship, desk] = getRemoteDesk(docket, pike, treatyInfoShip);
   const publisher = pike?.sync?.ship ?? ship;
   const [copied, setCopied] = useState(false);
   const treaty = useTreaty(ship, desk);
@@ -96,7 +103,7 @@ export const AppInfo: FC<AppInfoProps> = ({ docket, pike, className }) => {
             </PillButton>
           )}
           {installStatus !== 'installed' && (
-            <Dialog>
+            <Dialog.Root>
               <DialogTrigger asChild>
                 <PillButton variant="alt-primary" disabled={installing}>
                   {installing ? (
@@ -109,31 +116,34 @@ export const AppInfo: FC<AppInfoProps> = ({ docket, pike, className }) => {
                   )}
                 </PillButton>
               </DialogTrigger>
-              <DialogContent
-                showClose={false}
-                className="space-y-6"
-                containerClass="w-full max-w-md"
-              >
-                <h2 className="h4">
-                  Install &ldquo;{getAppName(docket)}&rdquo;
-                </h2>
-                <p className="pr-6 tracking-tight">
-                  This application will be able to view and interact with the
-                  contents of your Urbit. Only install if you trust the
-                  developer.
-                </p>
-                <div className="flex space-x-6">
-                  <DialogClose asChild>
-                    <Button variant="secondary">Cancel</Button>
-                  </DialogClose>
-                  <DialogClose asChild onClick={installApp}>
-                    <Button onClick={installApp}>
-                      Get &ldquo;{getAppName(docket)}&rdquo;
-                    </Button>
-                  </DialogClose>
-                </div>
-              </DialogContent>
-            </Dialog>
+              <Dialog.Portal>
+                <Dialog.Overlay className="fixed top-0 bottom-0 left-0 right-0 z-[60] transform-gpu bg-black opacity-30" />
+                <DialogContent
+                  showClose={false}
+                  className="space-y-6"
+                  containerClass="w-full max-w-md z-[70]"
+                >
+                  <h2 className="h4">
+                    Install &ldquo;{getAppName(docket)}&rdquo;
+                  </h2>
+                  <p className="pr-6 tracking-tight">
+                    This application will be able to view and interact with the
+                    contents of your Urbit. Only install if you trust the
+                    developer.
+                  </p>
+                  <div className="flex space-x-6">
+                    <DialogClose asChild>
+                      <Button variant="secondary">Cancel</Button>
+                    </DialogClose>
+                    <DialogClose asChild>
+                      <Button onClick={installApp}>
+                        Get &ldquo;{getAppName(docket)}&rdquo;
+                      </Button>
+                    </DialogClose>
+                  </div>
+                </DialogContent>
+              </Dialog.Portal>
+            </Dialog.Root>
           )}
           <PillButton variant="alt-secondary" onClick={copyApp}>
             {!copied && 'Copy App Link'}

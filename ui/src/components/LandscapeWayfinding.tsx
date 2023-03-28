@@ -2,22 +2,14 @@ import React, { useState } from 'react';
 import * as Dropdown from '@radix-ui/react-dropdown-menu';
 import { setCalmSetting } from '../state/settings';
 import { Dialog, DialogContent } from './Dialog';
-import { Button } from './Button';
 import { useCharges } from '../state/docket';
 import { GroupLink } from './GroupLink';
+import WayfindingAppLink from './WayfindingAppLink';
 
 interface Group {
   title: string;
   description: string;
   icon: string;
-  color: string;
-  link: string;
-}
-
-interface App {
-  title: string;
-  description: string;
-  image: string;
   color: string;
   link: string;
 }
@@ -46,35 +38,6 @@ const groups: Record<string, Group> = {
   },
 };
 
-const AppLink = ({ link, title, description, image, color }: App) => {
-  return (
-    <div className="flex items-center justify-between py-2">
-      <div className="flex items-center space-x-2">
-        {image !== '' ? (
-          <img
-            src={image}
-            className="h-8 w-8 rounded"
-            style={{ backgroundColor: color }}
-          />
-        ) : (
-          <div className="h-8 w-8 rounded" style={{ backgroundColor: color }} />
-        )}
-        <div className="flex flex-col">
-          <span className="font-semibold">{title}</span>
-          {description && (
-            <span className="text-sm font-semibold text-gray-400">
-              {description}
-            </span>
-          )}
-        </div>
-      </div>
-      <Button variant="alt-primary" as="a" href={link} target="_blank">
-        Open App
-      </Button>
-    </div>
-  );
-};
-
 function LandscapeDescription() {
   const charges = useCharges();
   return (
@@ -92,26 +55,35 @@ function LandscapeDescription() {
         software developer, like “~paldev”.
       </p>
       <div className="mt-8 space-y-2">
-        <AppLink
+        <WayfindingAppLink
           title="Groups"
           description="Build or join Urbit-based communities"
           link="/apps/groups"
           image={charges.groups?.image || ''}
           color={charges.groups?.color || 'bg-gray'}
+          installed={charges['groups'] ? true : false}
+          source="~sogryp-dister-dozzod-dozzod"
+          desk="groups"
         />
-        <AppLink
+        <WayfindingAppLink
           title="Talk"
           description="Simple instant messaging app"
           link="/apps/talk"
           image={charges.talk?.image || ''}
           color={charges.talk?.color || 'bg-blue'}
+          installed={charges['talk'] ? true : false}
+          source="~sogryp-dister-dozzod-dozzod"
+          desk="talk"
         />
-        <AppLink
+        <WayfindingAppLink
           title="Terminal"
           description="Pop open the hood of your urbit"
           link="/apps/webterm"
           image={charges.webterm?.image || ''}
           color={charges.webterm?.color || 'bg-black'}
+          installed={charges['terminal'] ? true : false}
+          source="~mister-dister-dozzod-dozzod"
+          desk="terminal"
         />
       </div>
       <h1 className="my-8 text-2xl font-bold">Where are the people?</h1>
@@ -146,7 +118,11 @@ function LandscapeDescription() {
   );
 }
 
-export default function LandscapeWayfinding() {
+export default function LandscapeWayfinding({
+  className,
+}: {
+  className?: string;
+}) {
   const [showModal, setShowModal] = useState(false);
 
   const handleHide = () => {
@@ -155,9 +131,9 @@ export default function LandscapeWayfinding() {
 
   return (
     <Dropdown.Root>
-      <div className="absolute left-4 bottom-16 z-50">
+      <div className={className}>
         <Dropdown.Trigger className="relative" asChild>
-          <button className="h-9 w-9 cursor-pointer rounded-lg bg-black text-xl text-white">
+          <button className="h-8 w-8 cursor-pointer rounded-lg bg-black text-xl text-white sm:h-9 sm:w-9">
             ?
           </button>
         </Dropdown.Trigger>

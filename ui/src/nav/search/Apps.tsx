@@ -4,7 +4,7 @@ import fuzzy from 'fuzzy';
 import { Treaty } from '@urbit/api';
 import { ShipName } from '../../components/ShipName';
 import { useAllyTreaties } from '../../state/docket';
-import { useLeapStore } from '../Nav';
+import { useAppSearchStore } from '../Nav';
 import { AppList } from '../../components/AppList';
 import { addRecentDev } from './Home';
 import { Spinner } from '../../components/Spinner';
@@ -12,7 +12,7 @@ import { Spinner } from '../../components/Spinner';
 type AppsProps = RouteComponentProps<{ ship: string }>;
 
 export const Apps = ({ match }: AppsProps) => {
-  const { searchInput, selectedMatch, select } = useLeapStore((state) => ({
+  const { searchInput, selectedMatch, select } = useAppSearchStore((state) => ({
     searchInput: state.searchInput,
     select: state.select,
     selectedMatch: state.selectedMatch
@@ -61,7 +61,7 @@ export const Apps = ({ match }: AppsProps) => {
 
   useEffect(() => {
     if (results) {
-      useLeapStore.setState({
+      useAppSearchStore.setState({
         matches: results.map((r) => ({
           url: getAppPath(r),
           openInNewTab: false,

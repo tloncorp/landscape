@@ -9,7 +9,6 @@ import { useCalm } from '../state/settings';
 import { RemoveApp } from '../tiles/RemoveApp';
 import { SuspendApp } from '../tiles/SuspendApp';
 import { TileGrid } from '../tiles/TileGrid';
-
 import { TileInfo } from '../tiles/TileInfo';
 
 interface RouteProps {
@@ -44,7 +43,6 @@ export const Grid: FunctionComponent = () => {
 
   return (
     <div className="flex h-screen w-full flex-col">
-      {/* !disableWayfinding && <LandscapeWayfinding /> */}
       <header className="fixed bottom-0 left-0 z-30 flex w-full justify-center px-4 sm:sticky sm:bottom-auto sm:top-0">
         <Nav menu={menu} />
       </header>
@@ -62,6 +60,9 @@ export const Grid: FunctionComponent = () => {
             <RemoveApp />
           </Route>
         </ErrorBoundary>
+        {!disableWayfinding && (
+          <LandscapeWayfinding className="hidden sm:fixed sm:bottom-4 sm:left-4 sm:z-[100] sm:block" />
+        )}
       </main>
     </div>
   );
