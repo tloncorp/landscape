@@ -4,8 +4,12 @@
   ::
   [%reads %$ ~ `%$ /zen/lag]
   [%reads %c `%u ~ /desk/docket-0]
+  [%reads %c `%u ~ /desk/bill]
+  [%reads %c `%u ~ /desk/seal]
   [%reads %c `%w ~ /]
   [%reads %c `%x ~ /desk/docket-0]
+  [%reads %c `%x ~ /desk/bill]
+  [%reads %c `%x ~ /desk/seal]
   [%reads %c `%x `%$ /tire]
   [%reads %c `%z ~ /]
   ::
@@ -18,6 +22,8 @@
   [%clay %local `%z ~ /desk/docket-0]
   [%clay %local `%z ~ /]
   [%clay %local `%x ~ /desk/docket-0]
+  [%clay %local `%x ~ /desk/bill]
+  [%clay %local `%x ~ /desk/seal]
   [%clay %write ~ /desk/docket-0]
   [%clay %creds ~]
   [%clay %pulse ~]
