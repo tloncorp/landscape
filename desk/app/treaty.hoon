@@ -42,14 +42,18 @@
       =^  caz  old
         ?:  ?=(%1 -.old)  [~ old]
         :_  (state-0-to-1 +.old)
-        ::  kick incoming subscriptions so they reestablish their connection
+        ;:  weld
+          ::  kick incoming subscriptions so they reestablish their connection
+          ::
+          %-  drop
+          =;  pas=(list path)
+            ?:  =(~ pas)  ~
+            (some [%give %kick pas ~])
+          %+  turn
+            %+  weld  ~(tap in ~(key by treaties))
+            (turn ~(tap in ~(key by sovereign)) (lead our.bowl))
+          |=([s=ship d=desk] /treaty/(scot %p s)/[d])
         ::
-        :-  =;  pas=(list path)  [%give %kick pas ~]
-            %+  turn
-              %+  weld  ~(tap in ~(key by treaties))
-              (turn ~(tap in ~(key by sovereign)) (lead our.bowl))
-            |=([s=ship d=desk] /treaty/(scot %p s)/[d])
-        %+  weld
           ::  issue warps for bills and seals for things we publish
           ::
           ^-  (list card)
@@ -58,17 +62,19 @@
           |=  =desk
           ^-  (list card)
           ~[warp-bill warp-seal]:~(. so:cc desk)
-        ::  start version negotiation with everyone we're subscribed to
         ::
-        %~  tap  in
-        %+  roll  ~(tap by wex.bowl)
-        |=  [[[=wire =ship =term] [acked=? =path]] cas=(set card)]
-        ^+  cas
-        ?.  =(term dap.bowl)  ~
-        ?.  ?=([%treaty *] wire)  ~
-        ?.  ?=([%treaty *] path)  ~
-        %-  ~(put in cas)
-        [%pass /version %agent [ship dap.bowl] %watch /version]
+          ::  start version negotiation with everyone we're subscribed to
+          ::
+          %~  tap  in
+          %+  roll  ~(tap by wex.bowl)
+          |=  [[[=wire =ship =term] [acked=? =path]] cas=(set card)]
+          ^+  cas
+          ?.  =(term dap.bowl)  ~
+          ?.  ?=([%treaty *] wire)  ~
+          ?.  ?=([%treaty *] path)  ~
+          %-  ~(put in cas)
+          [%pass /version %agent [ship dap.bowl] %watch /version]
+        ==
       ?>  ?=(%1 -.old)
       [caz this(state old)]
   ::
