@@ -58,7 +58,7 @@
           ::
           ^-  (list card)
           %-  zing
-          %+  turn  ~(tap in ~(key by sovereign))
+          %+  turn  ~(tap in ~(key by sovereign.old))
           |=  =desk
           ^-  (list card)
           ~[warp-bill warp-seal]:~(. so:cc desk)
@@ -92,9 +92,20 @@
     |=  state-0
     ^-  state-1
     :^  %1
-        (~(run by treaties) treaty-0-to-1)
-      (~(run by sovereign) treaty-0-to-1)
+        (~(run by treaties) ^treaty-0-to-1)
+      (~(urn by sovereign) treaty-0-to-1)
     [entente allies ~]
+  ::
+  ++  treaty-0-to-1
+    |=  [=desk t=treaty-0:treaty]
+    ^-  treaty
+    =-  t(docket [docket.t bill seal])
+    ^-  [=bill:clay seal=pers:gall]
+    =/  bas=path  /(scot %p our.bowl)/[desk]/(scot %da now.bowl)
+    :-  =/  pax=path  (weld bas /desk/bill)
+        ?.(.^(? %cu pax) ~ .^(bill:clay %cx pax))
+    =/  pax=path  (weld bas /desk/seal)
+    ?.(.^(? %cu pax) ~ (sy +:.^([%0 (list perm:gall)] %cx pax)))
   --
 ::
 ++  on-poke
