@@ -50,8 +50,8 @@
             ?:  =(~ pas)  ~
             (some [%give %kick pas ~])
           %+  turn
-            %+  weld  ~(tap in ~(key by treaties))
-            (turn ~(tap in ~(key by sovereign)) (lead our.bowl))
+            %+  weld  ~(tap in ~(key by treaties.old))
+            (turn ~(tap in ~(key by sovereign.old)) (lead our.bowl))
           |=([s=ship d=desk] /treaty/(scot %p s)/[d])
         ::
           ::  issue warps for bills and seals for things we publish
@@ -69,9 +69,9 @@
           %+  roll  ~(tap by wex.bowl)
           |=  [[[=wire =ship =term] [acked=? =path]] cas=(set card)]
           ^+  cas
-          ?.  =(term dap.bowl)  ~
-          ?.  ?=([%treaty *] wire)  ~
-          ?.  ?=([%treaty *] path)  ~
+          ?.  =(term dap.bowl)  cas
+          ?.  ?=([%treaty *] wire)  cas
+          ?.  ?=([%treaty *] path)  cas
           %-  ~(put in cas)
           [%pass /version %agent [ship dap.bowl] %watch /version]
         ==
