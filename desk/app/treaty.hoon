@@ -248,7 +248,7 @@
         ?:(?=(%| -.v) p.v ~)
       :_  this(versions (~(put by versions) src.bowl &+0))
       %+  murn  ~(tap in des)
-      |=(d=desk ~(safe-watch-0 tr src.bowl d))
+      |=(d=desk ~(safe-watch-0 tr:cc src.bowl d))
     ::
         %fact
       ?>  ?=(%atom p.cage.sign)
@@ -270,7 +270,7 @@
           =+  v=(~(gut by versions) src.bowl [%| p=~])
           ?:(?=(%| -.v) p.v ~)
         %+  murn  ~(tap in des)
-        |=(d=desk ~(safe-watch tr src.bowl d))
+        |=(d=desk ~(safe-watch tr:cc src.bowl d))
       ::  upgrade any existing v0 subscriptions
       ::
       ^-  (list card)
