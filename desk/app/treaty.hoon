@@ -155,6 +155,8 @@
   |=  =path
   ^-  (quip card _this)
   ?+  path  (on-watch:def path)
+    [%version ~]  [[(fact-init:io %atom !>(1))]~ this]
+  ::
     ::  syncing
       [?(%treaty %treaty-1) @ @ ~]
     =/  =ship  (slav %p i.t.path)
