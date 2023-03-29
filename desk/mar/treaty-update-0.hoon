@@ -9,6 +9,6 @@
   --
 ++  grab
   |%
-  ++  noun  update:treaty
+  ++  noun  update-0:treaty
   --
 --

@@ -8,7 +8,7 @@
   --
 ++  grab
   |%
-  ++  noun  treaty
+  ++  noun  treaty-0:treaty
   --
 ++  grad  %noun
 --
