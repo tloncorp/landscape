@@ -35,11 +35,13 @@ export default function useInviteState() {
     setBaitURL: setBaitURL,
     loaded: loaded,
     save: async (data: {url: string}) => {
+      const fixedUrl = data.url.substr(-1) === '/' ? data.url : data.url + '/';
+
       await api.poke({
         app: 'reel',
         mark: 'reel-command',
         json: {
-          url: data.url,
+          url: fixedUrl,
         }
       })
     }
