@@ -78,7 +78,7 @@ export const APPS = [
     link: '/apps/quorom',
     section: SECTIONS.DEV,
     desk: 'quorum',
-    source: '~dister-dister-sidnum-ladrut',
+    source: '~dister-dister-sidynm-ladrut',
     image: 'https://ladrut.xyz/quorum/quorum-logo.png',
   },
   {
