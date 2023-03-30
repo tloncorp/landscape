@@ -38,7 +38,6 @@ import { Bullet } from '../components/icons/Bullet';
 import SearchSystemPreferences from './SearchSystemPrefences';
 import { ShortcutPrefs } from './ShortcutPrefs';
 import { AttentionAndPrivacy } from './AttentionAndPrivacy';
-import { useReelInstalled } from "../state/invites"
 
 interface SystemPreferencesSectionProps {
   url: string;
@@ -81,7 +80,6 @@ export const SystemPreferences = (
     .filter((charge) => charge.desk !== 'landscape');
   const isMobile = useMedia('(max-width: 639px)');
   const settingsPath = isMobile ? `${match.url}/:submenu` : '/';
-  const reelInstalled = useReelInstalled();
 
   const matchSub = useCallback(
     (target: string, desk?: string) => {
@@ -197,7 +195,6 @@ export const SystemPreferences = (
                 <SystemPreferencesSection
                   url={subUrl('invites')}
                   active={matchSub('invites')}
-                  visible={reelInstalled}
                 >
                   <InvitesIcom className="mr-3 h-6 w-6 rounded-md text-gray-600" />
                   Invite Links
