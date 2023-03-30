@@ -29,7 +29,7 @@ export const InvitePrefs = () => {
             id="url"
             type="text"
             defaultValue={baitURL}
-            {...register('url', { pattern: /^http.*\/$/ })}
+            {...register('url', { pattern: /^http.*$/ })}
             className="input default-ring bg-gray-50"
           />
         </div>
