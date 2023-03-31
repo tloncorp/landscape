@@ -73,9 +73,13 @@
     ?-  -.command
         %set-service
       :_  this(vic vic.command)
-      ~[[%pass /set-ship %arvo %k %fard q.byk.bowl %reel-set-ship %noun !>(vic)]]
+      ~[[%pass /set-ship %arvo %k %fard q.byk.bowl %reel-set-ship %noun !>(vic.command)]]
         %set-ship
-      `this(civ civ.command)
+      :_  this(civ civ.command)
+      %+  turn  ~(tap by our-metadata)
+      |=  [token=cord =metadata:reel]
+      ^-  card
+      [%pass /describe %agent [civ %bait] %poke %bait-describe !>([token metadata])]
     ==
   ::
       %reel-bite
