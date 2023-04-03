@@ -9,10 +9,13 @@ export const makeBrowserNotification = (bin: Bin) => {
   const ship = bin.topYarn?.con.find(isYarnShip)?.ship || '';
   const emph = bin.topYarn?.con.find(isYarnEmph)?.emph || '';
   const emphLast = findLast(bin.topYarn?.con, isYarnEmph)?.emph || '';
+  const content = isYarnEmph(bin.topYarn?.con[2])
+    ? ''
+    : bin.topYarn.con[2] || '';
 
   try {
     new Notification(`Landscape: ${app}`, {
-      body: `${ship}${emph}${bin.topYarn.con[1]}${emphLast}`,
+      body: `${ship ? ship : emph}${bin.topYarn.con[1]}${emphLast} ${content}`,
     });
   } catch (error) {
     console.error(error);
@@ -21,10 +24,5 @@ export const makeBrowserNotification = (bin: Bin) => {
 
 export function isNewNotificationSupported() {
   if (!window.Notification || !Notification.requestPermission) return false;
-  try {
-    new Notification('');
-  } catch (e: any) {
-    if (e.name == 'TypeError') return false;
-  }
   return true;
 }
