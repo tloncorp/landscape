@@ -58,9 +58,7 @@ export const AppSearch = React.forwardRef(
       query?: string;
       desk?: string;
     }>(`/${menu}/:query?/(apps)?/:desk?`);
-    const appsMatch = useRouteMatch(
-      `/${menu}/${deskMatch?.params.query}/apps`
-    );
+    const appsMatch = useRouteMatch(`/${menu}/${deskMatch?.params.query}/apps`);
     const inputRef = useRef<HTMLInputElement>(null);
     useImperativeHandle(ref, () => inputRef.current);
     const { rawInput, selectedMatch, matches, selection, select } =
@@ -128,7 +126,7 @@ export const AppSearch = React.forwardRef(
         const normalizedValue = input
           .trim()
           .replace('%', '')
-          .replace(/(~?[\w^_-]{3,13})\//, '$1/apps/$1/');
+          .replace(/(~?[\w^_-]{3,56})\//, '$1/apps/$1/');
         push(`/${menu}/${normalizedValue}`);
       },
       [menu]
