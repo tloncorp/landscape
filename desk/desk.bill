@@ -1,10 +1,7 @@
 :~  %docket
     %treaty
-    %hark-store
-    %hark-system-hook
-    %settings
-    %settings-store
     %storage
+    %settings
     %reel
     %bait
 ==
