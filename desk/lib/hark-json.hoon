@@ -1,4 +1,5 @@
 /-  h=hark
+/+  gj=groups-json
 |%
 ++  enjs
   =,  enjs:format
@@ -135,13 +136,8 @@
       %desk   s/desk.s
     ==
   ::
-  ++  flag
-    |=  f=flag:h
-    (rap 3 (scot %p p.f) '/' q.f ~)
-  ::
-  ++  nest
-    |=  n=nest:h
-    (rap 3 p.n '/' (flag q.n) ~)
+  ++  flag  flag:enjs:gj
+  ++  nest  nest:enjs:gj
   ::
   ++  rope
     |=  r=rope:h
@@ -171,8 +167,8 @@
         group/flag
     ==
   ::
-  ++  flag  (su ;~((glue fas) ;~(pfix sig fed:ag) ^sym))
-  ++  nest  (su ;~((glue fas) ^sym ;~(pfix sig fed:ag) 
+  ++  flag  flag:dejs:gj
+  ++  nest  nest:dejs:gj
   ::
   ++  rope
     %-  ot

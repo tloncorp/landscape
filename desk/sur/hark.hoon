@@ -1,10 +1,11 @@
+/-  g=groups
 |%
 ::  $rope: notification origin
 ::    
 ::    Shows where a notification has come from. Used to group
 ::    notifications into threads
 +$  rope
-  $:  gop=(unit flag)                 :: originating group
+  $:  gop=(unit flag:g)               :: originating group
       can=(unit nest:g)               :: originating channel
       des=desk                        :: originating desk
       ted=path                        :: threading identifer
@@ -28,7 +29,7 @@
   $:  title=cord
       handler=path
   ==
-+$  flag  (pair ship term)
+::
 ::  $content: notification text to be rendered
 +$  content
   $@  @t
@@ -69,7 +70,7 @@
 ::
 ::    All notifications end up in one of these inboxes
 +$  seam
-  $%  [%group =flag]
+  $%  [%group =flag:g]
       [%desk =desk]
       [%all ~]
   ==
@@ -100,13 +101,4 @@
       unread=?
   ==
 ::
-::  pulled from groups
-::
-::  $flag: ID for a group
-::
-+$  flag  (pair ship term)
-::
-::  $nest: ID for a channel, {app}/{ship}/{name}
-::
-+$  nest  (pair dude:gall flag)
 --
