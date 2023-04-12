@@ -1,13 +1,15 @@
-/+  *hark-store
-|_  act=action
+/-  h=hark
+/+  j=hark-json
+|_  =action:h
 ++  grad  %noun
 ++  grow
   |%
-  ++  noun  act
+  ++  noun  action
+  ++  json  (action:enjs:j action)
   --
 ++  grab
   |%
-  ++  noun  action
-  ++  json  action:dejs
+  ++  noun  action:h
+  ++  json  action:dejs:j
   --
 --
