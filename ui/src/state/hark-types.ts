@@ -32,11 +32,11 @@ export interface YarnContentEmphasis {
 export type YarnContent = string | YarnContentShip | YarnContentEmphasis;
 
 export function isYarnShip(obj: YarnContent): obj is YarnContentShip {
-  return typeof obj !== 'string' && 'ship' in obj;
+  return !!obj && typeof obj !== 'string' && 'ship' in obj;
 }
 
 export function isYarnEmph(obj: YarnContent): obj is YarnContentEmphasis {
-  return typeof obj !== 'string' && 'emph' in obj;
+  return !!obj && typeof obj !== 'string' && 'emph' in obj;
 }
 
 export interface Rope {
