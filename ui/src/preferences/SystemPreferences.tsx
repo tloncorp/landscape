@@ -38,6 +38,7 @@ import { Bullet } from '../components/icons/Bullet';
 import SearchSystemPreferences from './SearchSystemPrefences';
 import { ShortcutPrefs } from './ShortcutPrefs';
 import { AttentionAndPrivacy } from './AttentionAndPrivacy';
+import { Avatar } from '../components/Avatar';
 
 interface SystemPreferencesSectionProps {
   url: string;
@@ -116,6 +117,24 @@ export const SystemPreferences = (
             <nav className="flex flex-col px-2 sm:px-6">
               <SearchSystemPreferences subUrl={subUrl} />
               <span className="pt-1 pl-2 pb-3 text-sm font-semibold text-gray-400">
+                System
+              </span>
+              <ul className="space-y-1">
+                <SystemPreferencesSection
+                  url={subUrl('system')}
+                  active={matchSub('system')}
+                >
+                  <Avatar shipName={window.ship} size="xs" className="mr-3" />
+                  <span>~{window.ship}</span>
+                  {systemBlocked && (
+                    <Bullet className="ml-auto h-5 w-5 text-orange-500" />
+                  )}
+                </SystemPreferencesSection>
+              </ul>
+            </nav>
+
+            <nav className="flex flex-col px-2 sm:px-6">
+              <span className="pt-5 pl-2 pb-3 text-sm font-semibold text-gray-400">
                 Landscape
               </span>
               <ul className="space-y-1">
@@ -124,7 +143,7 @@ export const SystemPreferences = (
                   active={matchSub('system-updates')}
                 >
                   <TlonIcon className="mr-3 h-6 w-6 rounded-md text-gray-600" />
-                  About System
+                  About
                   {systemBlocked && (
                     <Bullet className="ml-auto h-5 w-5 text-orange-500" />
                   )}
