@@ -10,6 +10,17 @@ import React, {
 import { Avatar } from '../components/Avatar';
 import { Button } from '../components/Button';
 import { useAzimuthBlock } from '../state/azimuth';
+import { useShipAvailability } from '../state/connectivity';
+import { UpdatePreferences } from './about-system/UpdatePreferences';
+
+export const SystemPrefs = () => {
+  return (
+    <>
+      <ShipPrefs />
+      <P2PServicePrefs />
+    </>
+  );
+};
 
 export const ShipPrefs = () => {
   const { block, isLoading, isStale, forceUpdate } = useAzimuthBlock();
@@ -98,5 +109,61 @@ const CopyButton = ({
     <Button {...buttonProps} onClick={copy}>
       {successMessageActive ? 'Copied' : label}
     </Button>
+  );
+};
+
+const P2PServicePrefs = () => {
+  return (
+    <div className="inner-section mt-4 space-y-8">
+      <h2 className="h4">P2P Services</h2>
+
+      <div className="leading-5">
+        <h3 className="font-semibold">System Update Provider</h3>
+        <p className="text-gray-400">Urbit ID of your kernel update source</p>
+        <ShipInput verifyConnection={true} />
+
+        <UpdatePreferences />
+      </div>
+    </div>
+  );
+};
+
+const ShipInput = ({ verifyConnection }: { verifyConnection: boolean }) => {
+  const [shipName, setShipName] = useState('');
+  const { isChecking, availabilityStatus, checkAvailability } =
+    useShipAvailability(shipName);
+
+  return (
+    <div className="flex w-full flex-row items-center">
+      <div className="flex flex-1 flex-row items-center">
+        <input
+          type="text"
+          className="mr-2 w-32 flex-1 rounded border border-solid border-gray-400 px-2 py-1"
+          placeholder="~zod"
+          value={shipName}
+          onChange={(e) => setShipName(e.target.value)}
+        />
+        {verifyConnection && (
+          <Button
+            type="submit"
+            className="py-1 px-3 text-sm"
+            disabled={isChecking || !shipName}
+            onClick={checkAvailability}
+          >
+            Save
+          </Button>
+        )}
+      </div>
+      {verifyConnection && (
+        <div className="ml-2">
+          {availabilityStatus === 'available' && (
+            <span className="text-green-400">Available</span>
+          )}
+          {availabilityStatus === 'unavailable' && (
+            <span className="text-red-400">Unavailable</span>
+          )}
+        </div>
+      )}
+    </div>
   );
 };

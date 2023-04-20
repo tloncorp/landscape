@@ -1,15 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
-
-const delay = (duration: number) =>
-  new Promise((res) => setTimeout(res, duration));
+import { fakeRequest } from './util';
 
 const api = {
   forceUpdate() {
-    return delay(1000);
+    return fakeRequest(null, 1000);
   },
   async getAzimuthBlock() {
-    await delay(1000);
-    return '16.514.728';
+    return fakeRequest('16.514.728', 1000);
   },
 };
 
