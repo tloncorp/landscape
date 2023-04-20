@@ -9,18 +9,23 @@ import React, {
 } from 'react';
 import { Avatar } from '../components/Avatar';
 import { Button } from '../components/Button';
+import { Spinner } from '../components/Spinner';
+import { Bullet } from '../components/icons/Bullet';
+import { Cross } from '../components/icons/Cross';
 import { useAzimuthBlock } from '../state/azimuth';
-import { useShipAvailability } from '../state/connectivity';
-import { UpdatePreferences } from './about-system/UpdatePreferences';
+import {
+  AvailabilityStatus,
+  usePeerDiscoveryShips,
+  useShipAvailability,
+} from '../state/connectivity';
 
-export const SystemPrefs = () => {
-  return (
-    <>
-      <ShipPrefs />
-      <P2PServicePrefs />
-    </>
-  );
-};
+export const SystemPrefs = () => (
+  <>
+    <ShipPrefs />
+    <P2PServicePrefs />
+    <StoragePrefs />
+  </>
+);
 
 export const ShipPrefs = () => {
   const { block, isLoading, isStale, forceUpdate } = useAzimuthBlock();
@@ -113,57 +118,132 @@ const CopyButton = ({
 };
 
 const P2PServicePrefs = () => {
+  const { peerDiscoveryShips, isLoading: isLoadingPeerDiscoveryShips } =
+    usePeerDiscoveryShips();
+
   return (
-    <div className="inner-section mt-4 space-y-8">
+    <div className="inner-section mt-4 space-y-8 leading-5">
       <h2 className="h4">P2P Services</h2>
 
-      <div className="leading-5">
-        <h3 className="font-semibold">System Update Provider</h3>
-        <p className="text-gray-400">Urbit ID of your kernel update source</p>
-        <ShipInput verifyConnection={true} />
-
-        <UpdatePreferences />
+      <div className="space-y-3">
+        <div>
+          <h3 className="font-semibold">Peer Discovery</h3>
+          <p className="text-gray-400">Ships your Urbit uses to find peers</p>
+        </div>
+        <div className="mt-4 flex flex-col space-y-2">
+          {peerDiscoveryShips?.map((ship) => (
+            <ConnectivityTester shipName={ship} />
+          ))}
+        </div>
       </div>
     </div>
   );
 };
 
-const ShipInput = ({ verifyConnection }: { verifyConnection: boolean }) => {
-  const [shipName, setShipName] = useState('');
-  const { isChecking, availabilityStatus, checkAvailability } =
+const AvailabilityIndicator = ({
+  isChecking,
+  status,
+  className,
+}: {
+  isChecking: boolean;
+  status: AvailabilityStatus;
+  className?: string;
+}) => {
+  return (
+    <div className={classNames('flex space-x-0.5', className)}>
+      {isChecking ? (
+        <Spinner className="h-4 w-4 text-blue-500" />
+      ) : (
+        <div className="flex flex-1 flex-row items-center">
+          {status === 'available' && (
+            <>
+              <span className="font-semibold text-blue-400">Available</span>
+              <Bullet className="h-5 w-5 text-blue-500" />
+            </>
+          )}
+          {status === 'unavailable' && (
+            <>
+              <span className="font-semibold text-orange-400">Unavailable</span>
+              <Cross className="h-5 w-5 p-1 text-orange-400" />
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const ConnectivityTester = ({ shipName }: { shipName: string }) => {
+  const { isChecking, availabilityStatus, refresh } =
     useShipAvailability(shipName);
 
   return (
     <div className="flex w-full flex-row items-center">
-      <div className="flex flex-1 flex-row items-center">
-        <input
-          type="text"
-          className="mr-2 w-32 flex-1 rounded border border-solid border-gray-400 px-2 py-1"
-          placeholder="~zod"
-          value={shipName}
-          onChange={(e) => setShipName(e.target.value)}
+      <div className="flex flex-1 flex-row items-center space-x-2">
+        <Avatar size="small" shipName={shipName}></Avatar>
+        <h3 className="font-semibold">{shipName}</h3>
+        <AvailabilityIndicator
+          status={availabilityStatus}
+          isChecking={isChecking}
+          className="flex-1"
         />
-        {verifyConnection && (
-          <Button
-            type="submit"
-            className="py-1 px-3 text-sm"
-            disabled={isChecking || !shipName}
-            onClick={checkAvailability}
-          >
-            Save
-          </Button>
-        )}
+        <Button
+          type="submit"
+          className="py-1 px-3 text-sm"
+          variant="secondary"
+          disabled={isChecking}
+          onClick={refresh}
+        >
+          Test Connection
+        </Button>
       </div>
-      {verifyConnection && (
-        <div className="ml-2">
-          {availabilityStatus === 'available' && (
-            <span className="text-green-400">Available</span>
-          )}
-          {availabilityStatus === 'unavailable' && (
-            <span className="text-red-400">Unavailable</span>
-          )}
+    </div>
+  );
+};
+
+const useStorage = () => {
+  return {
+    free: 3000000,
+    total: 4096000,
+  };
+};
+
+const StoragePrefs = () => {
+  const { free, total } = useStorage();
+
+  return (
+    <div className="inner-section mt-4 space-y-8 leading-5">
+      <h2 className="h4">Loom</h2>
+      <div className="space-y-3">
+        <div className="overflow-hidden rounded-full rounded bg-green-200 ">
+          <div
+            className="h-2 bg-green-300"
+            style={{ width: (free / total) * 100 + '%' }}
+          ></div>
         </div>
-      )}
+        <div className="flex flex-row items-center justify-between">
+          <div className="text-sm font-semibold">
+            {Math.round(free / 1000)}/{Math.round(total / 1000)}mb free
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="font-semibold">Optimize Your Urbit's Loom</h3>
+        <p className="text-gray-400">
+          Deduplicate objects in storage to free up space using |pack.{' '}
+          <a
+            href="https://operators.urbit.org/manual/running/vere#pack"
+            target="_blank"
+            className="underline"
+          >
+            Learn more
+          </a>
+        </p>
+        <Button variant="primary" className="mt-4">
+          Pack Loom
+        </Button>
+      </div>
     </div>
   );
 };

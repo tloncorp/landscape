@@ -3,6 +3,17 @@ import { fakeRequest } from './util';
 
 export type AvailabilityStatus = 'initial' | 'available' | 'unavailable';
 
+const api = {
+  checkShipAvailability(shipName: string) {
+    return fakeRequest({
+      status: 'available',
+    });
+  },
+  getPeerDiscoveryShips() {
+    return fakeRequest(['~zod', '~nus', '~bus'], 1000);
+  },
+};
+
 const checkShipAvailability = async (
   shipName: string
 ): Promise<{ status: AvailabilityStatus }> => {
@@ -27,5 +38,25 @@ export const useShipAvailability = (shipName: string) => {
     checkAvailability();
   }, []);
 
-  return { isChecking, availabilityStatus, checkAvailability };
+  return { isChecking, availabilityStatus, refresh: checkAvailability };
+};
+
+export const usePeerDiscoveryShips = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [peerDiscoveryShips, setPeerDiscoverShips] = useState<string[] | null>(
+    null
+  );
+
+  const getShips = useCallback(async () => {
+    setIsLoading(true);
+    const ships = await api.getPeerDiscoveryShips();
+    setPeerDiscoverShips(ships);
+    setIsLoading(false);
+  }, []);
+
+  useEffect(() => {
+    getShips();
+  }, []);
+
+  return { isLoading, peerDiscoveryShips, getShips };
 };
