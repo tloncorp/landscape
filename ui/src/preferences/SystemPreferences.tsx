@@ -39,7 +39,7 @@ import SearchSystemPreferences from './SearchSystemPrefences';
 import { ShortcutPrefs } from './ShortcutPrefs';
 import { AttentionAndPrivacy } from './AttentionAndPrivacy';
 import { Avatar } from '../components/Avatar';
-import { SystemPrefs } from './ShipPrefs';
+import { SystemResourcePrefs } from './system-resources/SystemResourcePrefs';
 
 interface SystemPreferencesSectionProps {
   url: string;
@@ -248,7 +248,10 @@ export const SystemPreferences = (
             <Switch>
               <Route path={`${match.url}/apps/:desk`} component={AppPrefs} />
               <Route path={`${match.url}/help`} component={Help} />
-              <Route path={`${match.url}/system`} component={SystemPrefs} />
+              <Route
+                path={`${match.url}/system`}
+                component={SystemResourcePrefs}
+              />
               <Route
                 path={`${match.url}/interface`}
                 component={InterfacePrefs}
