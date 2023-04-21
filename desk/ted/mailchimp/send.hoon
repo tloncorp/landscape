@@ -20,14 +20,14 @@
     %-  en-json:html
     %-  pairs:enjs:format
       :~  ['key' s+(crip api-key)]
-          :-  'to'
-          %-  pairs:enjs:format
-          :~  ['email' s+(crip to-email)]
-          ==
           :-  'message'
           %-  pairs:enjs:format
           :~  ['subject' s+(crip subject)]
               ['html' s+(crip body)]
+              ['from_email' s+'no-reply@tlon.io']
+              ['from_name' s+'Tlon Local']
+              :-  'to'
+                [%a ~[(pairs:enjs:format ~[['email' s+(crip to-email)] ['type' s+'to']])]]
           ==
       ==
   ==
