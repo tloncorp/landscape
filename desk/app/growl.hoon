@@ -1,3 +1,4 @@
+/-  hark
 /+  default-agent, verb, dbug
 ::
 |%
@@ -5,7 +6,7 @@
 +$  versioned-state
   $%  state-0
   ==
-+$  state-0  [%0 enabled=?]
++$  state-0  [%0 enabled=? bark-host=ship]
 --
 ::
 ::  This agent should eventually go into landscape
@@ -25,28 +26,30 @@
   |=  [=mark =vase]
   ^-  (quip card _this)
   ?+  mark  (on-poke:def mark vase)
+      %set-host
+    ?>  =(src.bowl our.bowl)
+    `this(bark-host !<(ship vase))
+      ::
       %enable
-    `this(enabled %.y)
+    :_  this(enabled %.y)
+    ~[[%pass /add-recipient %agent [bark-host %bark] %poke %bark-add-recipient !>(our.bowl)]]
+      ::
       %disable
-    `this(enabled %.n)
+    :_  this(enabled %.n)
+    ~[[%pass /remove-recipient %agent [bark-host %bark] %poke %bark-remove-recipient !>(our.bowl)]]
+      ::
+      %growl-summarize
+    ?.  enabled
+      :_  this
+      ~[[%pass /bark-summary %agent [bark-host %bark] %poke %bark-receive-summary !>(~)]]
+    =/  requested  !<(time vase)
+    =/  scry-path  [(scot %p our.bowl) %hark (scot %da now.bowl) %all %latest %hark-carpet ~]
+    =/  =carpet:hark  .^(carpet:hark %gx scry-path)
+    :_  this
+    ~[[%pass /bark-summary %agent [bark-host %bark] %poke %bark-receive-summary !>(`[requested carpet])]]
   ==
 ++  on-watch  on-watch:def
-++  on-agent
-  |=  [=wire =sign:agent:gall]
-  ^-  (quip card _this)
-  ?+  wire  (on-agent:def wire sign)
-      [%hark ~]
-    ?-  -.sign
-        %poke-ack   `this
-        %watch-ack  `this
-        %kick
-      :_  this
-      ~[[%pass /hark %agent [our.bowl %hark] %watch /ui]]
-        %fact
-      ::  TODO
-      `this
-    ==
-  ==
+++  on-agent  on-agent:def
 ++  on-fail
   |=  [=term =tang]
   (mean ':sub +on-fail' term tang)
