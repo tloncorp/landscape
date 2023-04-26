@@ -44,6 +44,7 @@
         body=tape
     ==
   =/  args  !<((unit arg-mold) arg)
+  ~&  args
   ?~  args
     (pure:m !>(~))
   ;<  ~  bind:m  (api-post api-key.u.args to-email.u.args subject.u.args body.u.args)
@@ -52,6 +53,7 @@
   ?>  ?=(%finished -.rep)
   ?~  full-file.rep  !!
   =/  body=cord  q.data.u.full-file.rep
+  ~&  rep
   %-  pure:m
   !>  [body ~]
 --
