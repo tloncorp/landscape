@@ -58,6 +58,8 @@
   =/  parsed=(unit json)  (de-json:html body)
   ?~  parsed
     (pure:m !>(~))
+  ?~  u.parsed
+    (pure:m !>(~))
   =/  mined  (mine-json u.parsed)
   (pure:m !>(+.mined))
 --
