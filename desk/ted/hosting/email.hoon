@@ -1,7 +1,7 @@
 ::  Hosting/Email
 ::  Query the Hosting backend for a customer's email address
 ::
-::  > -bark!hosting-email "[API_KEY]" "~sampel-palnet" 
+::  > -bark!hosting-email "[API_KEY]" ~dovmer-davmet
 ::
 :: API Response:
 :: {
@@ -46,20 +46,16 @@
         ship=@p
     ==
   =/  args  !<((unit arg-mold) arg)
-  ?~  args
-    (pure:m !>(~))
+  ?~  args  (pure:m !>(~))
   ;<  ~  bind:m  (api-get api-key.u.args ship.u.args)
   ;<  rep=client-response:iris  bind:m
     take-client-response
   ?>  ?=(%finished -.rep)
-  ?~  full-file.rep  
-    (pure:m !>(~))
+  ?~  full-file.rep  (pure:m !>(~))
   =/  body=cord  q.data.u.full-file.rep
   =/  parsed=(unit json)  (de-json:html body)
-  ?~  parsed
-    (pure:m !>(~))
-  ?~  u.parsed
-    (pure:m !>(~))
+  ?~  parsed  (pure:m !>(~))
+  ?~  u.parsed  (pure:m !>(~))
   =/  mined  (mine-json u.parsed)
   (pure:m !>(+.mined))
 --
