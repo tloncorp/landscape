@@ -57,5 +57,5 @@
   ?~  parsed  (pure:m !>(~))
   ?~  u.parsed  (pure:m !>(~))
   =/  mined  (mine-json u.parsed)
-  (pure:m !>(+.mined))
+  (pure:m !>([~ +.mined]))
 --
