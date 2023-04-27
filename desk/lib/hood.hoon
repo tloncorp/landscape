@@ -4,5 +4,5 @@
   |=  [our=ship =desk now=@da]
   ^-  (list [=dude live=?])
   %~  tap  in
-  .^((set [=dude live=?]) ge+/(scot %p our)/[desk]/(scot %da now))
+  .^((set [=dude live=?]) ge+/(scot %p our)/[desk]/(scot %da now)/$)
 --
