@@ -140,7 +140,10 @@
   ?+  path  [~ ~]
     [%x %service ~]  ``noun+!>(vic)
     [%x %bait ~]  ``reel-bait+!>([vic civ])
-::
+    ::
+      [%x %outstanding-poke @ @ ~]
+    ``json+!>([%b (~(has in outstanding-pokes) [(slav %p i.t.t.path) i.t.t.t.path])])
+    ::
       [%x %metadata @ ~]
     =/  =metadata:reel  (fall (~(get by our-metadata) i.t.t.path) *metadata:reel)
     ``reel-metadata+!>(metadata)
