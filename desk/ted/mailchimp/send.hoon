@@ -16,7 +16,8 @@
     url=url
     header-list=['Content-Type'^'application/json' ~]
     ^=  body
-    %-  some  %-  as-octt:mimes:html
+    %-  some
+    %-  as-octt:mimes:html
     %-  en-json:html
     %-  pairs:enjs:format
       :~  ['key' s+(crip api-key)]
