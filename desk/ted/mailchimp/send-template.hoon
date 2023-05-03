@@ -1,7 +1,7 @@
 ::  Mailchimp/Send Template
 ::  send an email template via the Mailchimp Transactional API
 ::
-::  > -bark!mailchimp-send-template "[API_KEY]" "someone@example.com" "message subject" "message body"  TODO
+::  > -bark!mailchimp-send-template "[API_KEY]" "someone@example.com" "template-name" :: TODO: how to pass in vars map?
 ::
 /-  spider
 /+  *strandio
@@ -9,31 +9,37 @@
 =,  dejs:format
 =/  m  (strand ,vase)
 |^  ted
+++  vars-json
+  |=  vars=(map cord cord)
+  %-  ~(rut by vars)
+  |=  [k=cord v=cord]
+  [s+k s+v]
 ++  api-post
-  :: TODO: the template_content argument should be a list of k:v pairs, which
-  :: can then be mapped over to create the template_content body item below
-  |=  [api-key=tape to-email=tape subject=tape body=tape template-name=tape template-content=tape]
+  |=  [api-key=tape to-email=tape template-name=tape vars=(map cord cord)]
   %:  send-request
     method=%'POST'
     url=url
     header-list=['Content-Type'^'application/json' ~]
     ^=  body
-    %-  some  %-  as-octt:mimes:html
+    %-  some
+    %-  as-octt:mimes:html
     %-  en-json:html
     %-  pairs:enjs:format
       :~  ['key' s+(crip api-key)]
           ['template_name' s+(crip template-name)]
+          :: null template_content is fine for now; but in the future, if we
+          :: need to inject complex HTML, this thread should be updated to
+          :: support it
+          ['template_content' ~]
           :-  'message'
           %-  pairs:enjs:format
-          :~  ['subject' s+(crip subject)]
-              ['html' s+(crip body)]
-              ['from_email' s+'no-reply@tlon.io']
-              ['from_name' s+'Tlon Local']
+          :~  
+              ['merge_language' s+'handlebars']
               :-  'to'
                 [%a ~[(pairs:enjs:format ~[['email' s+(crip to-email)] ['type' s+'to']])]]
-          ==
-          :-  'template_content'
-            [%a ~[(pairs:enjs:format ~[['name' s+'main'] ['content' s+(crip body)]])]]
+              :-  'merge_vars'
+                :: TODO: handle passed vars
+                [%a ~[(pairs:enjs:format ~[['rcpt' s+(crip to-email)] ['vars' ~]])]]
           ==
       ==
   ==
@@ -46,15 +52,14 @@
   =/  arg-mold
     $:  api-key=tape
         to-email=tape
-        subject=tape
-        body=tape
+        template-name=tape
+        vars=(map cord cord)
     ==
   =/  args  !<((unit arg-mold) arg)
   ~&  args
   ?~  args
     (pure:m !>(~))
-  ;<  ~  bind:m  (api-post api-key.u.args to-email.u.args subject.u.args body.u.args template-name.u.args)
-    take-response
+  ;<  ~  bind:m  (api-post api-key.u.args to-email.u.args template-name.u.args vars.u.args)
   ;<  rep=client-response:iris  bind:m
     take-client-response
   ?>  ?=(%finished -.rep)
