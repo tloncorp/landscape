@@ -1,7 +1,7 @@
 ::  Mailchimp/Send Template
 ::  send an email template via the Mailchimp Transactional API
 ::
-::  > -bark!mailchimp-send-template "[API_KEY]" "someone@example.com" "template-name" :: TODO: how to pass in vars map?
+::  > -bark!mailchimp-send-template "[API_KEY]" "someone@example.com" "template-name" vars :: vars is a (map cord cord)
 ::
 /-  spider
 /+  *strandio
@@ -9,11 +9,12 @@
 =,  dejs:format
 =/  m  (strand ,vase)
 |^  ted
+++  var-json
+  |=  [k=cord v=cord]
+  (pairs:enjs:format ~[['name' s+k] ['content' s+v]])
 ++  vars-json
   |=  vars=(map cord cord)
-  %-  ~(rut by vars)
-  |=  [k=cord v=cord]
-  [s+k s+v]
+  [%a (turn ~(tap by vars) |=([p=cord q=cord] (var-json p q)))]
 ++  api-post
   |=  [api-key=tape to-email=tape template-name=tape vars=(map cord cord)]
   %:  send-request
@@ -38,8 +39,7 @@
               :-  'to'
                 [%a ~[(pairs:enjs:format ~[['email' s+(crip to-email)] ['type' s+'to']])]]
               :-  'merge_vars'
-                :: TODO: handle passed vars
-                [%a ~[(pairs:enjs:format ~[['rcpt' s+(crip to-email)] ['vars' ~]])]]
+                [%a ~[(pairs:enjs:format ~[['rcpt' s+(crip to-email)] ['vars' (vars-json vars)]])]]
           ==
       ==
   ==
