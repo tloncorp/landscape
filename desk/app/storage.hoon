@@ -27,8 +27,18 @@
 +*  this       .
     def        ~(. (default-agent this %|) bowl)
 ::
-++  on-init   on-init:def
-++  on-save   !>(state)
+++  on-init
+  ::  XX: deprecated; migration code
+  ^-  (quip card _this)
+  :_  this
+  :~  :*  %pass
+          /migrate
+          %agent
+          [our dap]:bowl
+          %poke
+          noun+!>(%migrate)
+  ==  ==
+++  on-save  !>(state)
 ++  on-load
   |=  =vase
   =/  old  !<(versioned-state vase)
@@ -60,8 +70,30 @@
   |^
   ?>  (team:title our.bowl src.bowl)
   =^  cards  state
-    ?+  mark        (on-poke:def mark vase)
-        %storage-action  (poke-action !<(action vase))
+    ?+  mark  (on-poke:def mark vase)
+        %storage-action
+      (poke-action !<(action vase))
+    ::
+      ::  XX: deprecated; migration code
+        %noun
+      ?>  ?=(%migrate !<(%migrate vase))
+      =/  bas  /(scot %p our.bowl)/s3-store/(scot %da now.bowl)
+      :-  ~
+      ?.  .^(? %gu bas)
+        state
+      =:
+          credentials
+        =/  ful  .^(update %gx (weld bas /credentials/noun))
+        ?+  -.ful  (on-poke:def mark vase)
+          %credentials  +.ful
+        ==
+      ::
+          configuration
+        =/  ful  .^(update %gx (weld bas /configuration/noun))
+        ?+  -.ful  (on-poke:def mark vase)
+          %configuration  +.ful
+        ==  ==
+      state
     ==
   [cards this]
   ::

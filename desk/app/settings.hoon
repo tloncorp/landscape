@@ -18,13 +18,23 @@
 %+  verb  |
 ^-  agent:gall
 =<
-  |_  bol=bowl:gall
+  |_  =bowl:gall
   +*  this  .
-      do    ~(. +> bol)
-      def   ~(. (default-agent this %|) bol)
-      io    ~(. agentio bol)
+      do    ~(. +> bowl)
+      def   ~(. (default-agent this %|) bowl)
+      io    ~(. agentio bowl)
   ::
-  ++  on-init  on-init:def
+  ++  on-init
+    ::  XX: deprecated; migration code
+    ^-  (quip card _this)
+    :_  this
+    :~  :*  %pass
+            /migrate
+            %agent
+            [our dap]:bowl
+            %poke
+            noun+!>(%migrate)
+    ==  ==
   ::
   ++  on-save  !>(state)
   ::
@@ -42,23 +52,36 @@
   ++  on-poke
     |=  [mar=mark vas=vase]
     ^-  (quip card _this)
-    ?>  (team:title our.bol src.bol)
-    ?.  ?=(%settings-event mar)
-      (on-poke:def mar vas)
-    =/  evt=event  !<(event vas)
+    ?>  (team:title our.bowl src.bowl)
     =^  cards  state
-      ?-  -.evt
-        %put-bucket  (put-bucket:do [desk key bucket]:evt)
-        %del-bucket  (del-bucket:do [desk key]:evt)
-        %put-entry   (put-entry:do [desk buc key val]:evt)
-        %del-entry   (del-entry:do [desk buc key]:evt)
+      ?+  mar  (on-poke:def mar vas)
+          %settings-event
+        =/  evt=event  !<(event vas)
+        ?-  -.evt
+          %put-bucket  (put-bucket:do [desk key bucket]:evt)
+          %del-bucket  (del-bucket:do [desk key]:evt)
+          %put-entry   (put-entry:do [desk buc key val]:evt)
+          %del-entry   (del-entry:do [desk buc key]:evt)
+        ==
+      ::
+        ::  XX: deprecated; migration code
+          %noun
+        ?>  ?=(%migrate !<(%migrate vas))
+        =/  bas  /(scot %p our.bowl)/settings-store/(scot %da now.bowl)
+        :-  ~
+        ?.  .^(? %gu bas)
+          state
+        =/  ful  .^(data %gx (weld bas /all/noun))
+        ?+  -.ful  (on-poke:def mar vas)
+            %all  state(settings +.ful)
+        ==
       ==
     [cards this]
   ::
   ++  on-watch
     |=  pax=path
     ^-  (quip card _this)
-    ?>  (team:title our.bol src.bol)
+    ?>  (team:title our.bowl src.bowl)
     ?+  pax  (on-watch:def pax)
         [%all ~]
       [~ this]
