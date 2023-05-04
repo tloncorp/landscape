@@ -2,7 +2,9 @@
     %treaty
     %hark-store
     %hark-system-hook
+    %settings
     %settings-store
+    %storage
     %reel
     %bait
 ==
