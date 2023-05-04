@@ -79,7 +79,7 @@
       ?>  ?=(%migrate !<(%migrate vase))
       =/  bas  /(scot %p our.bowl)/s3-store/(scot %da now.bowl)
       :-  ~
-      ?.  .^(? %gu bas)
+      ?.  .^(? %gu (weld bas /$))
         state
       =:
           credentials

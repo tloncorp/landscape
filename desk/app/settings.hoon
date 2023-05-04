@@ -69,7 +69,7 @@
         ?>  ?=(%migrate !<(%migrate vas))
         =/  bas  /(scot %p our.bowl)/settings-store/(scot %da now.bowl)
         :-  ~
-        ?.  .^(? %gu bas)
+        ?.  .^(? %gu (weld bas /$))
           state
         =/  ful  .^(data %gx (weld bas /all/noun))
         ?+  -.ful  (on-poke:def mar vas)
