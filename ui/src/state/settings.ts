@@ -1,11 +1,5 @@
 /* eslint-disable no-param-reassign */
-import {
-  SettingsUpdate,
-  Value,
-  putEntry as doPutEntry,
-  getDeskSettings,
-  DeskData,
-} from '@urbit/api';
+import { SettingsUpdate, Value, DeskData } from '@urbit/api';
 import _ from 'lodash';
 import {
   BaseState,
@@ -109,12 +103,27 @@ export const useSettingsState = createState<BaseSettingsState>(
     },
     loaded: false,
     putEntry: async (bucket, key, val) => {
-      const poke = doPutEntry(window.desk, bucket, key, val);
+      const poke = {
+        app: 'settings',
+        mark: 'settings-update',
+        json: {
+          'put-entry': {
+            desk: window.desk,
+            'bucket-key': bucket,
+            'entry-key': key,
+            value: val,
+          },
+        },
+      };
       await pokeOptimisticallyN(useSettingsState, poke, reduceUpdate);
     },
     fetchAll: async () => {
-      const result = (await api.scry<DeskData>(getDeskSettings(window.desk)))
-        .desk;
+      const result = (
+        await api.scry<DeskData>({
+          app: 'settings',
+          path: `/desk/${window.desk}`,
+        })
+      ).desk;
       const newState = {
         ..._.mergeWith(get(), result, (obj, src) =>
           _.isArray(src) ? src : undefined
@@ -127,7 +136,7 @@ export const useSettingsState = createState<BaseSettingsState>(
   [],
   [
     (set, get) =>
-      createSubscription('settings-store', `/desk/${window.desk}`, (e) => {
+      createSubscription('settings', `/desk/${window.desk}`, (e) => {
         const data = _.get(e, 'settings-event', false);
         if (data) {
           reduceStateN(get(), data, reduceUpdate);

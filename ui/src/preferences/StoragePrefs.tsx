@@ -1,11 +1,5 @@
 import React, { useCallback, useState, FormEvent, useEffect } from 'react';
 import api from '../state/api';
-import {
-  setAccessKeyId,
-  setCurrentBucket,
-  setEndpoint,
-  setSecretAccessKey,
-} from '@urbit/api';
 import { useForm } from 'react-hook-form';
 import cn from 'classnames';
 import { useAsyncCall } from '../logic/useAsyncCall';
@@ -19,6 +13,23 @@ interface CredentialsSubmit {
   accessSecret: string;
   region: string;
   bucket: string;
+}
+
+type S3Update =
+  | { 'set-region': string }
+  | { 'set-endpoint': string }
+  | { 'set-access-key-id': string }
+  | { 'set-secret-access-key': string }
+  | { 'set-current-bucket': string }
+  | { 'add-bucket': string }
+  | { 'remove-bucket': string };
+
+function storagePoke(data: S3Update | { 'set-region': string }) {
+  return {
+    app: 'storage',
+    mark: 'storage-action',
+    json: data,
+  };
 }
 
 export const StoragePrefs = () => {
@@ -35,15 +46,11 @@ export const StoragePrefs = () => {
 
   const { call: addS3Credentials, status } = useAsyncCall(
     useCallback(async (data: CredentialsSubmit) => {
-      api.poke(setEndpoint(data.endpoint));
-      api.poke(setAccessKeyId(data.accessId));
-      api.poke(setSecretAccessKey(data.accessSecret));
-      api.poke(setCurrentBucket(data.bucket));
-      api.poke({
-        app: 's3-store',
-        mark: 's3-action',
-        json: { 'set-region': data.region },
-      });
+      api.poke(storagePoke({ 'set-endpoint': data.endpoint }));
+      api.poke(storagePoke({ 'set-access-key-id': data.accessId }));
+      api.poke(storagePoke({ 'set-secret-access-key': data.accessSecret }));
+      api.poke(storagePoke({ 'set-current-bucket': data.bucket }));
+      api.poke(storagePoke({ 'set-region': data.region }));
     }, [])
   );
 
