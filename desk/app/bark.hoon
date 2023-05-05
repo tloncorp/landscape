@@ -6,7 +6,7 @@
 +$  versioned-state
   $%  state-0
   ==
-+$  state-0  [%0 mailchimp-api-key=cord hosting-api-key=cord recipients=(set ship)]
++$  state-0  [%0 tlon-api-key=tape mailchimp-api-key=tape recipients=(set ship)]
 --
 ::
 =|  state-0
@@ -22,8 +22,11 @@
   |=  [=mark =vase]
   ^-  (quip card _this)
   ?+  mark  (on-poke:def mark vase)
-      %set-api-key
-    `this(mailchimp-api-key !<(cord vase))
+      %set-tlon-api-key
+    `this(tlon-api-key !<(tape vase))
+    ::
+      %set-mailchimp-api-key
+    `this(mailchimp-api-key !<(tape vase))
     ::
       %bark-add-recipient
     =+  !<(=ship vase)
@@ -49,10 +52,13 @@
     =/  result  !<((unit [requested=time =carpet:hark]) vase)
     ?~  result
       `this(recipients (~(del in recipients) src.bowl))
-    ~&  >>>  carpet.u.result
-    ::  TODO create thread that calls the "get email address" thread (to be written)
-    ::  and the "send email" thread and call it here
-    `this
+    :_  this
+    :~  :*  %pass  /mail-hosted-users/(scot %p src.bowl)/(scot %da requested.u.result)
+        %arvo  %k  %fard
+        %bark  %mail-hosted-user  %noun
+        !>(`[tlon-api-key mailchimp-api-key src.bowl carpet.u.result])
+      ==
+    ==
   ==
 ++  on-watch  on-watch:def
 ++  on-agent  on-agent:def

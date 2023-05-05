@@ -65,5 +65,5 @@
   ?~  full-file.rep  !!
   =/  body=cord  q.data.u.full-file.rep
   %-  pure:m
-  !>  [body ~]
+  !>  `body
 --
