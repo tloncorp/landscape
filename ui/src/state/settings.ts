@@ -105,7 +105,7 @@ export const useSettingsState = createState<BaseSettingsState>(
     putEntry: async (bucket, key, val) => {
       const poke = {
         app: 'settings',
-        mark: 'settings-update',
+        mark: 'settings-event',
         json: {
           'put-entry': {
             desk: window.desk,
