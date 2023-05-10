@@ -48,6 +48,15 @@
       ^-  card
       [%pass /request-summary %agent [ship %growl] %poke %growl-summarize !>(now.bowl)]
     ::
+      %bark-target-summaries
+    ?>  =(src.bowl our.bowl)
+    :_  this
+    %+  turn
+      (skim !<((list ship) vase) ~(has in recipients))
+    |=  =ship
+    ^-  card
+    [%pass /request-summary %agent [ship %growl] %poke %growl-summarize !>(now.bowl)]
+    ::
       %bark-receive-summary
     =/  result  !<((unit [requested=time =carpet:hark]) vase)
     ?~  result
