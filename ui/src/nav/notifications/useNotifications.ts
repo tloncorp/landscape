@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useSkeins } from '@/state/hark';
 import _ from 'lodash';
-import { Flag, Skein, Yarn } from '@/types/hark';
+import { Skein, Yarn } from '@/types/hark';
 import { makePrettyDay } from '@/logic/utils';
 
 export interface DayGrouping {
@@ -31,8 +31,8 @@ export const isComment = (yarn: Yarn) =>
 export const isReply = (yarn: Yarn) =>
   yarn.con.some((con) => con === ' replied to your message “');
 
-export const useNotifications = (flag?: Flag, mentionsOnly = false) => {
-  const { data: skeins, status: skeinsStatus } = useSkeins(flag);
+export const useNotifications = (mentionsOnly = false) => {
+  const { data: skeins, status: skeinsStatus } = useSkeins();
 
   return useMemo(() => {
     if (skeinsStatus !== 'success') {
