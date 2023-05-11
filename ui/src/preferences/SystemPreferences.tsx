@@ -21,7 +21,7 @@ import { DocketImage } from '../components/DocketImage';
 import { ErrorAlert } from '../components/ErrorAlert';
 import { useMedia } from '../logic/useMedia';
 import { LeftArrow } from '../components/icons/LeftArrow';
-import { getAppName } from '../state/util';
+import { getAppName } from '@/logic/utils';
 import { Help } from '../nav/Help';
 import TlonIcon from '../components/icons/TlonIcon';
 import HelpIcon from '../components/icons/HelpIcon';
@@ -49,7 +49,7 @@ function SystemPreferencesSection({
   url,
   active,
   children,
-  visible=true,
+  visible = true,
 }: PropsWithChildren<SystemPreferencesSectionProps>) {
   return (
     <li>
@@ -76,8 +76,9 @@ export const SystemPreferences = (
   );
   const { systemBlocked } = useSystemUpdate();
   const charges = useCharges();
-  const filteredCharges = Object.values(charges)
-    .filter((charge) => charge.desk !== 'landscape');
+  const filteredCharges = Object.values(charges).filter(
+    (charge) => charge.desk !== 'landscape'
+  );
   const isMobile = useMedia('(max-width: 639px)');
   const settingsPath = isMobile ? `${match.url}/:submenu` : '/';
 
@@ -217,7 +218,7 @@ export const SystemPreferences = (
                       <DocketImage size="small" className="mr-3" {...charge} />
                       {getAppName(charge)}
                     </SystemPreferencesSection>
-                ))}
+                  ))}
               </ul>
             </nav>
           </aside>

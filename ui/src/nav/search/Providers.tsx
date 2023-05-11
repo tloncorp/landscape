@@ -6,9 +6,9 @@ import * as ob from 'urbit-ob';
 import { MatchItem, useAppSearchStore } from '../Nav';
 import { useAllies, useCharges } from '../../state/docket';
 import { ProviderList } from '../../components/ProviderList';
-import useContactState from '../../state/contact';
+import useContactState, { emptyContact } from '../../state/contact';
 import { AppList } from '../../components/AppList';
-import { getAppHref } from '../../state/util';
+import { getAppHref } from '@/logic/utils';
 
 type ProvidersProps = RouteComponentProps<{ ship: string }>;
 
@@ -20,12 +20,15 @@ export function providerMatch(provider: Provider | string): MatchItem {
     value,
     display,
     url: `/search/${value}/apps`,
-    openInNewTab: false
+    openInNewTab: false,
   };
 }
 
 function fuzzySort(search: string) {
-  return (a: fuzzy.FilterResult<string>, b: fuzzy.FilterResult<string>): number => {
+  return (
+    a: fuzzy.FilterResult<string>,
+    b: fuzzy.FilterResult<string>
+  ): number => {
     const left = a.string.startsWith(search) ? a.score + 1 : a.score;
     const right = b.string.startsWith(search) ? b.score + 1 : b.score;
 
@@ -67,8 +70,8 @@ export const Providers = ({ match }: ProvidersProps) => {
         ? [
             {
               shipName: patp,
-              ...contacts[patp]
-            }
+              ...(contacts[patp] || emptyContact),
+            },
           ]
         : [];
     return [
@@ -79,7 +82,10 @@ export const Providers = ({ match }: ProvidersProps) => {
           Object.entries(allies).map(([ship]) => ship)
         )
         .sort(fuzzySort(search))
-        .map((el) => ({ shipName: el.original, ...contacts[el.original] }))
+        .map((el) => ({
+          shipName: el.original,
+          ...(contacts[el.original] || emptyContact),
+        })),
     ];
   }, [allies, search, contacts]);
 
@@ -99,7 +105,7 @@ export const Providers = ({ match }: ProvidersProps) => {
             url: getAppHref(app.href),
             openInNewTab: true,
             value: app.desk,
-            display: app.title
+            display: app.title,
           }))
         : [];
 
@@ -109,20 +115,24 @@ export const Providers = ({ match }: ProvidersProps) => {
               url: `/search/${patp}/apps`,
               value: patp,
               display: patp,
-              openInNewTab: false
-            }
+              openInNewTab: false,
+            },
           ]
         : [];
 
       useAppSearchStore.setState({
-        matches: ([] as MatchItem[]).concat(appMatches, providerMatches, newProviderMatches)
+        matches: ([] as MatchItem[]).concat(
+          appMatches,
+          providerMatches,
+          newProviderMatches
+        ),
       });
     }
   }, [results, patp, isValidPatp]);
 
   return (
     <div
-      className="dialog-inner-container md:px-6 md:py-8 space-y-0 h4 text-gray-400"
+      className="dialog-inner-container h4 space-y-0 text-gray-400 md:px-6 md:py-8"
       aria-live="polite"
     >
       {appResults && !(results?.length > 0 && appResults.length === 0) && (

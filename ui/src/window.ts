@@ -6,6 +6,7 @@ declare global {
   interface Window {
     ship: string;
     desk: string;
+    our: string;
     recents: typeof useRecentsStore.getState;
     docket: typeof useDocketState.getState;
     appSearch: typeof useAppSearchStore.getState;

@@ -21,11 +21,11 @@ export interface YarnButton {
   handler: string;
 }
 
-export interface YarnContentShip {
+interface YarnContentShip {
   ship: string;
 }
 
-export interface YarnContentEmphasis {
+interface YarnContentEmphasis {
   emph: string;
 }
 
@@ -94,4 +94,12 @@ export interface HarkUpdate {
   yarns: Yarns;
   seam: Seam;
   threads: Threads;
+}
+
+export interface Skein {
+  time: number;
+  count: number;
+  shipCount: number;
+  top: Yarn;
+  unread: boolean;
 }

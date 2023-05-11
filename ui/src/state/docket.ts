@@ -22,9 +22,9 @@ import {
   kilnSuspend,
   allyShip,
 } from '@urbit/api';
-import api from './api';
-import { normalizeUrbitColor } from './util';
-import { Status } from '../logic/useAsyncCall';
+import api from '@/api';
+import { normalizeUrbitColor } from '@/logic/utils';
+import { Status } from '@/logic/useAsyncCall';
 
 export interface ChargeWithDesk extends Charge {
   desk: string;
@@ -96,7 +96,11 @@ const useDocketState = create<DocketState>((set, get) => ({
       return treaties[key];
     }
 
-    const result = await api.subscribeOnce('treaty', `/treaty/${key}`, 20000);
+    const result = await api.subscribeOnce<Treaty>(
+      'treaty',
+      `/treaty/${key}`,
+      20000
+    );
     const treaty = { ...normalizeDocket(result, desk), ship };
     set((state) => ({
       treaties: { ...state.treaties, [key]: treaty },

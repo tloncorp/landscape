@@ -1,11 +1,12 @@
 import classNames from 'classnames';
 import React, { useMemo } from 'react';
 import { sigil, reactRenderer } from '@tlon/sigil-js';
-import { deSig, Contact } from '@urbit/api';
+import { deSig } from '@urbit/api';
 import { darken, lighten, parseToHsla } from 'color2k';
 import { useCurrentTheme } from '../state/local';
-import { normalizeUrbitColor } from '../state/util';
+import { normalizeUrbitColor } from '@/logic/utils';
 import { useContact } from '../state/contact';
+import { Contact } from '@/types/contact';
 
 export type AvatarSizes = 'xs' | 'small' | 'nav' | 'default';
 
@@ -50,7 +51,6 @@ const emptyContact: Contact = {
   avatar: null,
   cover: null,
   groups: [],
-  'last-updated': 0,
 };
 
 function themeAdjustColor(color: string, theme: 'light' | 'dark'): string {

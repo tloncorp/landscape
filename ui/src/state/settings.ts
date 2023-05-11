@@ -8,7 +8,7 @@ import {
   pokeOptimisticallyN,
   reduceStateN,
 } from './base';
-import api from './api';
+import api from '../api';
 
 interface BrowserSetting {
   browserId: string;
@@ -133,7 +133,7 @@ export const useSettingsState = createState<BaseSettingsState>(
       set(newState);
     },
   }),
-  [],
+  {},
   [
     (set, get) =>
       createSubscription('settings', `/desk/${window.desk}`, (e) => {

@@ -1,7 +1,7 @@
 import { S3Update } from '@urbit/api';
 import _ from 'lodash';
-import { BaseState } from './base';
-import { StorageState as State } from './storage';
+import { BaseState } from '../base';
+import { StorageState as State } from '.';
 
 type StorageState = State & BaseState<State>;
 
@@ -44,8 +44,7 @@ const region = (json: S3Update, state: StorageState): StorageState => {
 const addBucket = (json: S3Update, state: StorageState): StorageState => {
   const data = _.get(json, 'addBucket', false);
   if (data) {
-    state.s3.configuration.buckets =
-      state.s3.configuration.buckets.add(data);
+    state.s3.configuration.buckets = state.s3.configuration.buckets.add(data);
   }
   return state;
 };
@@ -66,7 +65,7 @@ const endpoint = (json: S3Update, state: StorageState): StorageState => {
   return state;
 };
 
-const accessKeyId = (json: S3Update , state: StorageState): StorageState => {
+const accessKeyId = (json: S3Update, state: StorageState): StorageState => {
   const data = _.get(json, 'setAccessKeyId', false);
   if (data && state.s3.credentials) {
     state.s3.credentials.accessKeyId = data;
@@ -91,5 +90,5 @@ export const reduce = [
   endpoint,
   accessKeyId,
   secretAccessKey,
-  region
+  region,
 ];

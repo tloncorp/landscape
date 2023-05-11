@@ -9,7 +9,7 @@ import { DocketHeader } from './DocketHeader';
 import { Spinner } from './Spinner';
 import { PikeMeta } from './PikeMeta';
 import useDocketState, { ChargeWithDesk, useTreaty } from '../state/docket';
-import { getAppHref, getAppName } from '../state/util';
+import { getAppHref, getAppName } from '@/logic/utils';
 import { addRecentApp } from '../nav/search/Home';
 import { TreatyMeta } from './TreatyMeta';
 

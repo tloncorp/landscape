@@ -16,18 +16,13 @@ import useDocketState from './state/docket';
 import { PermalinkRoutes } from './pages/PermalinkRoutes';
 import useKilnState from './state/kiln';
 import useContactState from './state/contact';
-import api from './state/api';
+import api from './api';
 import { useMedia } from './logic/useMedia';
 import { useSettingsState, useTheme } from './state/settings';
 import { useBrowserId, useLocalState } from './state/local';
 import { ErrorAlert } from './components/ErrorAlert';
 import { useErrorHandler } from './logic/useErrorHandler';
-import useHarkState from './state/hark';
-import { useNotifications } from './nav/notifications/useNotifications';
-import {
-  isNewNotificationSupported,
-  makeBrowserNotification,
-} from './logic/utils';
+import Urbit from '@urbit/http-api';
 
 const getNoteRedirect = (path: string) => {
   if (path.startsWith('/desk/')) {
@@ -63,25 +58,6 @@ const AppRoutes = () => {
   const { search } = useLocation();
   const handleError = useErrorHandler();
   const browserId = useBrowserId();
-  const {
-    display: { doNotDisturb },
-  } = useSettingsState.getState();
-  const { count, unreadNotifications } = useNotifications();
-
-  useEffect(() => {
-    if (!isNewNotificationSupported() || doNotDisturb) {
-      return;
-    }
-
-    if (count > 0 && Notification.permission === 'granted') {
-      unreadNotifications.forEach((bin) => {
-        makeBrowserNotification(bin);
-      });
-    }
-    if (count > 0 && Notification.permission === 'default') {
-      Notification.requestPermission();
-    }
-  }, [count, unreadNotifications]);
 
   useEffect(() => {
     getId().then((value) => {
@@ -116,7 +92,7 @@ const AppRoutes = () => {
 
       const { initialize: settingsInitialize, fetchAll } =
         useSettingsState.getState();
-      settingsInitialize(api);
+      settingsInitialize(api as unknown as Urbit);
       fetchAll();
 
       const { fetchDefaultAlly, fetchAllies, fetchCharges } =
@@ -128,8 +104,7 @@ const AppRoutes = () => {
       const { initializeKiln } = useKilnState.getState();
       initializeKiln();
 
-      useContactState.getState().initialize(api);
-      useHarkState.getState().start();
+      useContactState.getState().initialize(api as unknown as Urbit);
 
       Mousetrap.bind(['command+/', 'ctrl+/'], () => {
         push('/search');

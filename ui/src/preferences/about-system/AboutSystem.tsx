@@ -11,7 +11,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { FullTlon16Icon } from '../../components/icons/FullTlon16Icon';
 import { useSystemUpdate } from '../../logic/useSystemUpdate';
 import { usePike, useLag } from '../../state/kiln';
-import { disableDefault, pluralize } from '../../state/util';
+import { disableDefault, pluralize } from '@/logic/utils';
 import { UpdatePreferences } from './UpdatePreferences';
 
 function getHash(pike: Pike): string {
