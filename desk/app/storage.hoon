@@ -41,7 +41,9 @@
 ++  on-save  !>(state)
 ++  on-load
   |=  =vase
-  =/  old  !<(versioned-state vase)
+  =/  old  ((soft versioned-state) q.vase)
+  ?~  old  on-init
+  =/  old  u.old
   |^
   ?-  -.old
     %1  `this(state old)

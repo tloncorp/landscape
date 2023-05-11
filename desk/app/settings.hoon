@@ -41,7 +41,9 @@
   ++  on-load
     |=  =old=vase
     ^-  (quip card _this)
-    =/  old  !<(versioned-state old-vase)
+    =/  old  ((soft versioned-state) q.old-vase)
+    ?~  old  on-init
+    =/  old  u.old
     |-
     ?-  -.old
       %0  $(old [%1 +.old])
