@@ -1,11 +1,12 @@
 import React, { useCallback, useState, FormEvent, useEffect } from 'react';
-import api from '../state/api';
+import api from '../api';
 import { useForm } from 'react-hook-form';
 import cn from 'classnames';
 import { useAsyncCall } from '../logic/useAsyncCall';
-import { useStorageState } from '../state/storage';
+import { useStorage } from '../state/storage';
 import { Button } from '../components/Button';
 import { Spinner } from '../components/Spinner';
+import { Urbit } from '@urbit/http-api';
 
 interface CredentialsSubmit {
   endpoint: string;
@@ -33,7 +34,7 @@ function storagePoke(data: S3Update | { 'set-region': string }) {
 }
 
 export const StoragePrefs = () => {
-  const { s3, loaded, ...storageState } = useStorageState();
+  const { s3, loaded, ...storageState } = useStorage();
 
   const {
     register,
@@ -55,7 +56,7 @@ export const StoragePrefs = () => {
   );
 
   useEffect(() => {
-    useStorageState.getState().initialize(api);
+    useStorage.getState().initialize(api as unknown as Urbit);
   }, []);
 
   useEffect(() => {

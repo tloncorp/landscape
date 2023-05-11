@@ -6,13 +6,13 @@ import {
   kilnUnsync,
   kilnSync,
   kilnUninstall,
-  kilnInstall
+  kilnInstall,
 } from '@urbit/api';
 import create from 'zustand';
 import produce from 'immer';
 import { useCallback } from 'react';
-import api from './api';
-import { fakeRequest, useMockData } from './util';
+import api from '@/api';
+import { fakeRequest, useMockData } from '@/logic/utils';
 import { mockPikes } from './mock-data';
 
 interface KilnState {
@@ -47,7 +47,9 @@ const useKilnState = create<KilnState>((set, get) => ({
     const synced = !!get().pikes[desk].sync;
     await (useMockData
       ? fakeRequest('')
-      : api.poke(synced ? kilnUninstall(desk) : kilnInstall(ship, 'kids', desk)));
+      : api.poke(
+          synced ? kilnUninstall(desk) : kilnInstall(ship, 'kids', desk)
+        ));
     await get().fetchPikes();
   },
   toggleSync: async (desk: string, ship: string) => {
@@ -56,12 +58,12 @@ const useKilnState = create<KilnState>((set, get) => ({
       ? fakeRequest('')
       : api.poke(synced ? kilnUnsync(ship, desk) : kilnSync(ship, desk)));
     await get().fetchPikes();
-  },    
+  },
   set: produce(set),
   initializeKiln: async () => {
-      await get().fetchLag();
-      await get().fetchPikes();
-  }
+    await get().fetchLag();
+    await get().fetchPikes();
+  },
 }));
 
 const selPikes = (s: KilnState) => s.pikes;

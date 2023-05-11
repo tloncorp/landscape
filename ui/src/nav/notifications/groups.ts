@@ -1,5 +1,5 @@
 import create from 'zustand';
-import api from '../../state/api';
+import api from '../../api';
 
 export interface GroupMeta {
   title: string;
@@ -27,9 +27,9 @@ export const groupStore = create<GroupStore>((set) => ({
   retrieve: async () => {
     const groups = await api.scry<Groups>({
       app: 'groups',
-      path: '/groups'
+      path: '/groups',
     });
 
     set({ groups });
-  }
+  },
 }));

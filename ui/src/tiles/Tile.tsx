@@ -4,7 +4,7 @@ import { useDrag } from 'react-dnd';
 import { chadIsRunning } from '@urbit/api';
 import { TileMenu } from './TileMenu';
 import { Spinner } from '../components/Spinner';
-import { getAppHref } from '../state/util';
+import { getAppHref } from '@/logic/utils';
 import { useRecentsStore } from '../nav/search/Home';
 import { ChargeWithDesk } from '../state/docket';
 import { useTileColor } from './useTileColor';
@@ -18,25 +18,34 @@ type TileProps = {
   disabled?: boolean;
 };
 
-export const Tile: FunctionComponent<TileProps> = ({ charge, desk, disabled = false }) => {
+export const Tile: FunctionComponent<TileProps> = ({
+  charge,
+  desk,
+  disabled = false,
+}) => {
   const addRecentApp = useRecentsStore((state) => state.addRecentApp);
   const { title, image, color, chad, href } = charge;
   const pike = usePike(desk);
-  const { lightText, tileColor, menuColor, suspendColor, suspendMenuColor } = useTileColor(color);
+  const { lightText, tileColor, menuColor, suspendColor, suspendMenuColor } =
+    useTileColor(color);
   const loading = !disabled && 'install' in chad;
   const suspended = disabled || 'suspend' in chad;
   const hung = 'hung' in chad;
   // TODO should held zest be considered inactive? suspended? also, null sync?
   const active = !disabled && chadIsRunning(chad);
   const link = getAppHref(href);
-  const backgroundColor = suspended ? suspendColor : active ? tileColor || 'purple' : suspendColor;
+  const backgroundColor = suspended
+    ? suspendColor
+    : active
+    ? tileColor || 'purple'
+    : suspendColor;
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: dragTypes.TILE,
     item: { desk },
     collect: (monitor) => ({
-      isDragging: !!monitor.isDragging()
-    })
+      isDragging: !!monitor.isDragging(),
+    }),
   }));
 
   return (

@@ -5,9 +5,13 @@ import { Spinner } from '../components/Spinner';
 import { useQuery } from '../logic/useQuery';
 import { useCharge } from '../state/docket';
 import { useKilnLoaded, usePikes } from '../state/kiln';
-import { getAppHref } from '../state/util';
+import { getAppHref } from '@/logic/utils';
 
-function getDeskByForeignRef(pikes: Pikes, ship: string, desk: string): string | undefined {
+function getDeskByForeignRef(
+  pikes: Pikes,
+  ship: string,
+  desk: string
+): string | undefined {
   const found = Object.entries(pikes).find(
     ([, pike]) => pike.sync?.ship === ship && pike.sync?.desk === desk
   );
@@ -28,7 +32,9 @@ function AppLink({ match, history, location }: AppLinkProps) {
   if (ourDesk) {
     return <AppLinkRedirect desk={ourDesk} link={link} />;
   }
-  return <AppLinkNotFound match={match} history={history} location={location} />;
+  return (
+    <AppLinkNotFound match={match} history={history} location={location} />
+  );
 }
 
 function AppLinkNotFound({ match }: AppLinkProps) {
@@ -53,7 +59,7 @@ function AppLinkRedirect({ desk, link }: { desk: string; link: string }) {
     }
 
     const query = new URLSearchParams({
-      'grid-link': encodeURIComponent(`/${link}`)
+      'grid-link': encodeURIComponent(`/${link}`),
     });
 
     const url = `${getAppHref(charge.href)}?${query.toString()}`;
@@ -69,7 +75,9 @@ const LANDSCAPE_HOST = '~lander-dister-dozzod-dozzod';
 function LandscapeLink({ match }: RouteComponentProps<{ link: string }>) {
   const { link } = match.params;
 
-  return <Redirect to={`/perma/${LANDSCAPE_HOST}/${LANDSCAPE_DESK}/group/${link}`} />;
+  return (
+    <Redirect to={`/perma/${LANDSCAPE_HOST}/${LANDSCAPE_DESK}/group/${link}`} />
+  );
 }
 
 export function PermalinkRoutes() {

@@ -6,7 +6,7 @@ import { Link, Route, useHistory } from 'react-router-dom';
 import { Pike } from '@urbit/api';
 import { Adjust } from '../components/icons/Adjust';
 import { usePike } from '../state/kiln';
-import { disableDefault, handleDropdownLink } from '../state/util';
+import { disableDefault, handleDropdownLink } from '@/logic/utils';
 import { useMedia } from '../logic/useMedia';
 import { Cross } from '../components/icons/Cross';
 import { useAppSearchStore } from './Nav';

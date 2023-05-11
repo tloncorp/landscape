@@ -1,4 +1,4 @@
-import { createStorageKey } from './state/util';
+import { createStorageKey } from '@/logic/utils';
 
 const key = createStorageKey(`storage-wipe-${import.meta.env.VITE_LAST_WIPE}`);
 const wiped = localStorage.getItem(key);

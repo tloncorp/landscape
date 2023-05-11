@@ -4,7 +4,7 @@ import { AppInfo } from '../../components/AppInfo';
 import { Spinner } from '../../components/Spinner';
 import useDocketState, { useCharge, useTreaty } from '../../state/docket';
 import { usePike } from '../../state/kiln';
-import { getAppName } from '../../state/util';
+import { getAppName } from '@/logic/utils';
 import { useAppSearchStore } from '../Nav';
 
 export const TreatyInfo = () => {

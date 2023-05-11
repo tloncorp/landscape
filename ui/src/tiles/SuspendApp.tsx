@@ -4,7 +4,7 @@ import { Button } from '../components/Button';
 import { Dialog, DialogClose, DialogContent } from '../components/Dialog';
 import { useRecentsStore } from '../nav/search/Home';
 import useDocketState, { useCharges } from '../state/docket';
-import { getAppName } from '../state/util';
+import { getAppName } from '@/logic/utils';
 
 export const SuspendApp = () => {
   const history = useHistory();
