@@ -92,7 +92,7 @@ export const StoragePrefs = () => {
             disabled={!loaded}
             required
             id="endpoint"
-            type="text"
+            type="url"
             defaultValue={s3.credentials?.endpoint}
             {...register('endpoint', { required: true })}
             className="input default-ring bg-gray-50"
