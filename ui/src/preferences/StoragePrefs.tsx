@@ -109,6 +109,7 @@ export const StoragePrefs = () => {
             id="key"
             type="text"
             autoCorrect="off"
+            spellCheck="false"
             defaultValue={s3.credentials?.accessKeyId}
             {...register('accessId', { required: true })}
             className="input default-ring bg-gray-50"
@@ -124,6 +125,7 @@ export const StoragePrefs = () => {
             id="secretAccessKey"
             type="text"
             autoCorrect="off"
+            spellCheck="false"
             defaultValue={s3.credentials?.secretAccessKey}
             {...register('accessSecret', { required: true })}
             className="input default-ring bg-gray-50"
