@@ -104,7 +104,7 @@ const AppRoutes = () => {
       const { initializeKiln } = useKilnState.getState();
       initializeKiln();
 
-      useContactState.getState().initialize(api as unknown as Urbit);
+      useContactState.getState().start();
 
       Mousetrap.bind(['command+/', 'ctrl+/'], () => {
         push('/search');
