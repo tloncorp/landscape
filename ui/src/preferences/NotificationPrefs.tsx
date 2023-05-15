@@ -1,19 +1,17 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Setting } from '../components/Setting';
-import {
-  useSettingsState,
-  SettingsState,
-} from '../state/settings';
-
-const selDnd = (s: SettingsState) => s.display.doNotDisturb;
-async function toggleDnd() {
-  const state = useSettingsState.getState();
-  const curr = selDnd(state);
-  await state.putEntry('display', 'doNotDisturb', !curr);
-}
+import { useDisplay, usePutEntryMutation } from '../state/settings';
 
 export const NotificationPrefs = () => {
-  const doNotDisturb = useSettingsState(selDnd);
+  const { doNotDisturb } = useDisplay();
+  const { mutate } = usePutEntryMutation({
+    bucket: 'display',
+    key: 'doNotDisturb',
+  });
+
+  const toggleDnd = useCallback(async (val: boolean) => {
+    mutate({ val });
+  }, []);
 
   return (
     <>
@@ -25,9 +23,6 @@ export const NotificationPrefs = () => {
             prevents browser notifications if enabled.
           </p>
         </Setting>
-        {/* <Setting on={mentions} toggle={toggleMentions} name="Mentions">
-          <p>Notify me if someone mentions my @p in a channel I&apos;ve joined</p>
-        </Setting> */}
       </div>
     </>
   );

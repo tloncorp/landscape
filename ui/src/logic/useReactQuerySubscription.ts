@@ -24,7 +24,7 @@ export default function useReactQuerySubscription<Data, Event>({
   scryApp?: string;
   onEvent?: (event: Event) => void;
   options?: UseQueryOptions<Data>;
-}): ReturnType<typeof useQuery> {
+}) {
   const queryClient = useQueryClient();
   const invalidate = useRef(
     _.debounce(

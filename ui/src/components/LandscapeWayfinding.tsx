@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import * as Dropdown from '@radix-ui/react-dropdown-menu';
-import { setCalmSetting } from '../state/settings';
 import { Dialog, DialogContent } from './Dialog';
 import { useCharges } from '../state/docket';
 import { GroupLink } from './GroupLink';
 import WayfindingAppLink from './WayfindingAppLink';
+import { usePutEntryMutation } from '@/state/settings';
 
 interface Group {
   title: string;
@@ -124,9 +124,13 @@ export default function LandscapeWayfinding({
   className?: string;
 }) {
   const [showModal, setShowModal] = useState(false);
+  const { mutate } = usePutEntryMutation({
+    bucket: 'calmEngine',
+    key: 'disableWayfinding',
+  });
 
   const handleHide = () => {
-    setCalmSetting('disableWayfinding', true);
+    mutate({ val: true });
   };
 
   return (
