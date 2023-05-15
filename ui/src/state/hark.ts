@@ -1,8 +1,8 @@
 import _ from 'lodash';
-import { Flag, HarkAction, Rope, Seam, Skein } from '../types/hark';
+import { HarkAction, Rope, Seam, Skein } from '../types/hark';
 import useReactQuerySubscription from '@/logic/useReactQuerySubscription';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useSettingsState } from './settings';
+import { SettingsState } from './settings';
 import {
   isNewNotificationSupported,
   makeBrowserNotification,
@@ -18,6 +18,7 @@ function harkAction(action: HarkAction) {
 }
 
 export function useSkeins() {
+  const queryClient = useQueryClient();
   const { data, ...rest } = useReactQuerySubscription<Skein[], HarkAction>({
     queryKey: ['skeins'],
     app: 'hark',
@@ -32,9 +33,11 @@ export function useSkeins() {
         return;
       }
 
-      const {
-        display: { doNotDisturb },
-      } = useSettingsState.getState();
+      const settings = queryClient.getQueryData<SettingsState>([
+        'settings',
+        window.desk,
+      ]);
+      const doNotDisturb = settings?.display?.doNotDisturb || false;
       if (!isNewNotificationSupported() || doNotDisturb) {
         return;
       }

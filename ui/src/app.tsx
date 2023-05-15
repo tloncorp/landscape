@@ -16,13 +16,11 @@ import useDocketState from './state/docket';
 import { PermalinkRoutes } from './pages/PermalinkRoutes';
 import useKilnState from './state/kiln';
 import useContactState from './state/contact';
-import api from './api';
 import { useMedia } from './logic/useMedia';
-import { useSettingsState, useTheme } from './state/settings';
+import { useDisplay } from './state/settings';
 import { useBrowserId, useLocalState } from './state/local';
 import { ErrorAlert } from './components/ErrorAlert';
 import { useErrorHandler } from './logic/useErrorHandler';
-import Urbit from '@urbit/http-api';
 
 const getNoteRedirect = (path: string) => {
   if (path.startsWith('/desk/')) {
@@ -73,7 +71,7 @@ const AppRoutes = () => {
     }
   }, [search]);
 
-  const theme = useTheme();
+  const { theme } = useDisplay();
   const isDarkMode = useMedia('(prefers-color-scheme: dark)');
 
   useEffect(() => {
@@ -89,11 +87,6 @@ const AppRoutes = () => {
   useEffect(
     handleError(() => {
       window.name = 'grid';
-
-      const { initialize: settingsInitialize, fetchAll } =
-        useSettingsState.getState();
-      settingsInitialize(api as unknown as Urbit);
-      fetchAll();
 
       const { fetchDefaultAlly, fetchAllies, fetchCharges } =
         useDocketState.getState();

@@ -6,7 +6,7 @@ import { uniq } from 'lodash';
 import { ChargeWithDesk, useCharges } from '../state/docket';
 import { Tile } from './Tile';
 import { MenuState } from '../nav/Nav';
-import { SettingsState, useSettingsState } from '../state/settings';
+import { usePutEntryMutation, useTiles } from '../state/settings';
 import { TileContainer } from './TileContainer';
 import { useMedia } from '../logic/useMedia';
 
@@ -25,16 +25,12 @@ export const dragTypes = {
   TILE: 'tile',
 };
 
-export const selTiles = (s: SettingsState) => ({
-  order: s.tiles.order,
-  loaded: s.loaded,
-});
-
 export const TileGrid = ({ menu }: TileGridProps) => {
   const charges = useCharges();
   const chargesLoaded = Object.keys(charges).length > 0;
-  const { order, loaded } = useSettingsState(selTiles);
+  const { order, loaded } = useTiles();
   const isMobile = useMedia('(pointer: coarse)');
+  const { mutate } = usePutEntryMutation({ bucket: 'tiles', key: 'order' });
 
   useEffect(() => {
     const hasKeys = order && !!order.length;
@@ -48,19 +44,13 @@ export const TileGrid = ({ menu }: TileGridProps) => {
     // Correct order state, fill if none, remove duplicates, and remove
     // old uninstalled app keys
     if (!hasKeys && hasChargeKeys) {
-      useSettingsState.getState().putEntry('tiles', 'order', chargeKeys);
+      mutate({ val: chargeKeys });
     } else if (order.length < chargeKeys.length) {
-      useSettingsState
-        .getState()
-        .putEntry('tiles', 'order', uniq(order.concat(chargeKeys)));
+      mutate({ val: uniq(order.concat(chargeKeys)) });
     } else if (order.length > chargeKeys.length && hasChargeKeys) {
-      useSettingsState
-        .getState()
-        .putEntry(
-          'tiles',
-          'order',
-          uniq(order.filter((key) => key in charges).concat(chargeKeys))
-        );
+      mutate({
+        val: uniq(order.filter((key) => key in charges).concat(chargeKeys)),
+      });
     }
   }, [charges, order, loaded]);
 
@@ -86,7 +76,7 @@ export const TileGrid = ({ menu }: TileGridProps) => {
       <div
         // This version of tailwind does not have h-fit
         style={{ height: 'fit-content' }}
-        className="grid w-full max-w-6xl grid-cols-2 justify-center gap-4 pb-4 px-4 sm:grid-cols-[repeat(auto-fit,minmax(auto,250px))] md:pb-10 md:px-8"
+        className="grid w-full max-w-6xl grid-cols-2 justify-center gap-4 px-4 pb-4 sm:grid-cols-[repeat(auto-fit,minmax(auto,250px))] md:px-8 md:pb-10"
       >
         {order
           .filter((d) => d !== window.desk && d in charges)

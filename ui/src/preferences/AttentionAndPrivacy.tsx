@@ -1,13 +1,6 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Setting } from '../components/Setting';
-import { SettingsState, useSettingsState } from '../state/settings';
-
-async function toggle(property: keyof SettingsState['calmEngine']) {
-  const selProp = (s: SettingsState) => s.calmEngine[property];
-  const state = useSettingsState.getState();
-  const curr = selProp(state);
-  await state.putEntry('calmEngine', property, !curr);
-}
+import { useCalm, usePutEntryMutation } from '../state/settings';
 
 export const AttentionAndPrivacy = () => {
   const {
@@ -17,7 +10,35 @@ export const AttentionAndPrivacy = () => {
     disableSpellcheck,
     disableRemoteContent,
     disableWayfinding,
-  } = useSettingsState().calmEngine;
+  } = useCalm();
+  const { mutate: tileUnreads } = usePutEntryMutation({
+    bucket: 'calmEngine',
+    key: 'disableAppTileUnreads',
+  });
+  const { mutate: avatars } = usePutEntryMutation({
+    bucket: 'calmEngine',
+    key: 'disableAvatars',
+  });
+  const { mutate: nicknames } = usePutEntryMutation({
+    bucket: 'calmEngine',
+    key: 'disableNicknames',
+  });
+  const { mutate: spellcheck } = usePutEntryMutation({
+    bucket: 'calmEngine',
+    key: 'disableSpellcheck',
+  });
+  const { mutate: remote } = usePutEntryMutation({
+    bucket: 'calmEngine',
+    key: 'disableRemoteContent',
+  });
+  const { mutate: wayfinding } = usePutEntryMutation({
+    bucket: 'calmEngine',
+    key: 'disableWayfinding',
+  });
+
+  const toggle = useCallback((fn: typeof tileUnreads) => {
+    return async (val: boolean) => fn({ val });
+  }, []);
 
   return (
     <div className="flex flex-col space-y-4">
@@ -28,7 +49,7 @@ export const AttentionAndPrivacy = () => {
         </span>
         <Setting
           on={disableAppTileUnreads}
-          toggle={() => toggle('disableAppTileUnreads')}
+          toggle={toggle(tileUnreads)}
           name="Hide unread counts on Landscape app tiles"
           className="text-gray-400"
           disabled
@@ -39,7 +60,7 @@ export const AttentionAndPrivacy = () => {
         </Setting>
         <Setting
           on={disableAvatars}
-          toggle={() => toggle('disableAvatars')}
+          toggle={toggle(avatars)}
           name="Disable avatars"
         >
           <p className="leading-5 text-gray-600">
@@ -49,7 +70,7 @@ export const AttentionAndPrivacy = () => {
         </Setting>
         <Setting
           on={disableNicknames}
-          toggle={() => toggle('disableNicknames')}
+          toggle={toggle(nicknames)}
           name="Disable nicknames"
         >
           <p className="leading-5 text-gray-600">
@@ -59,7 +80,7 @@ export const AttentionAndPrivacy = () => {
         </Setting>
         <Setting
           on={disableWayfinding}
-          toggle={() => toggle('disableWayfinding')}
+          toggle={toggle(wayfinding)}
           name="Disable wayfinding"
         >
           <p className="leading-5 text-gray-600">
@@ -74,7 +95,7 @@ export const AttentionAndPrivacy = () => {
         </span>
         <Setting
           on={disableSpellcheck}
-          toggle={() => toggle('disableSpellcheck')}
+          toggle={toggle(spellcheck)}
           name="Disable spell-check"
         >
           <p className="leading-5 text-gray-600">
@@ -85,7 +106,7 @@ export const AttentionAndPrivacy = () => {
         </Setting>
         <Setting
           on={disableRemoteContent}
-          toggle={() => toggle('disableRemoteContent')}
+          toggle={toggle(remote)}
           name="Disable remote content"
         >
           <p className="leading-5 text-gray-600">
