@@ -50,13 +50,26 @@ export interface SettingsState {
 }
 
 export const useSettings = () => {
-  return useReactQuerySubscription<SettingsState, SettingsEvent>({
+  const { data, ...rest } = useReactQuerySubscription<
+    { desk: SettingsState },
+    SettingsEvent
+  >({
     scry: `/desk/${window.desk}`,
     scryApp: 'settings',
     app: 'settings',
     path: `/desk/${window.desk}`,
     queryKey: ['settings', window.desk],
   });
+
+  return useMemo(() => {
+    if (!data) {
+      return { data: undefined, ...rest };
+    }
+
+    const { desk } = data;
+
+    return { data: desk, ...rest };
+  }, [rest, data]);
 };
 
 export function useDisplay(): SettingsState['display'] {
@@ -74,19 +87,12 @@ export function useDisplay(): SettingsState['display'] {
   }, [isLoading, data]);
 }
 
+const emptyOrder: string[] = [];
 export function useTiles(): SettingsState['tiles'] & { loaded: boolean } {
   const { data, isSuccess, isError } = useSettings();
 
-  const order = useMemo(() => {
-    if (data === undefined || data.tiles === undefined) {
-      return [];
-    }
-
-    return data.tiles.order;
-  }, [data]);
-
   return {
-    order,
+    order: data?.tiles?.order || emptyOrder,
     loaded: isSuccess || isError,
   };
 }
@@ -139,7 +145,7 @@ export function usePutEntryMutation({
     const { val } = variables;
     await api.trackedPoke<PutEntry, SettingsEvent>(
       {
-        app: 'settings-store',
+        app: 'settings',
         mark: 'settings-event',
         json: {
           'put-entry': {
@@ -151,7 +157,7 @@ export function usePutEntryMutation({
         },
       },
       {
-        app: 'settings-store',
+        app: 'settings',
         path: `/desk/${window.desk}`,
       },
       (event) => {
@@ -178,21 +184,20 @@ export function usePutEntryMutation({
 
   return useMutation(['put-entry', bucket, key], mutationFn, {
     onMutate: ({ val }) => {
-      const previousSettings = queryClient.getQueryData<SettingsState>([
-        'settings',
-        window.desk,
-      ]);
-      queryClient.setQueryData<SettingsState>(
+      const previousSettings = queryClient.getQueryData<{
+        desk: SettingsState;
+      }>(['settings', window.desk]);
+      queryClient.setQueryData<{ desk: SettingsState }>(
         ['settings', window.desk],
         produce((draft) => {
           if (!draft) {
-            return { [bucket]: { [key]: val } };
+            return { desk: { [bucket]: { [key]: val } } };
           }
 
-          if (!(draft as any)[bucket]) {
-            (draft as any)[bucket] = { [key]: val };
+          if (!(draft.desk as any)[bucket]) {
+            (draft.desk as any)[bucket] = { [key]: val };
           } else {
-            (draft as any)[bucket][key] = val;
+            (draft.desk as any)[bucket][key] = val;
           }
         })
       );
@@ -200,7 +205,7 @@ export function usePutEntryMutation({
       return { previousSettings };
     },
     onError: (err, variables, rollback) => {
-      queryClient.setQueryData<SettingsState>(
+      queryClient.setQueryData<{ desk: SettingsState }>(
         ['settings', window.desk],
         rollback?.previousSettings
       );
