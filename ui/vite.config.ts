@@ -1,9 +1,10 @@
 import { loadEnv, defineConfig } from 'vite';
 import analyze from 'rollup-plugin-analyzer';
 import { visualizer } from 'rollup-plugin-visualizer';
-import reactRefresh from '@vitejs/plugin-react-refresh';
+import react from '@vitejs/plugin-react';
 import { urbitPlugin } from '@urbit/vite-plugin-urbit';
 import { fileURLToPath } from 'url';
+import basicSsl from '@vitejs/plugin-basic-ssl';
 
 // https://vitejs.dev/config/
 export default ({ mode }) => {
@@ -43,15 +44,16 @@ export default ({ mode }) => {
     },
     plugins:
       mode === 'mock'
-        ? []
+        ? [basicSsl(), react()]
         : [
+            basicSsl(),
             urbitPlugin({
               base: 'grid',
               target: SHIP_URL,
               changeOrigin: true,
               secure: false,
             }),
-            reactRefresh(),
+            react(),
           ],
   });
 };
