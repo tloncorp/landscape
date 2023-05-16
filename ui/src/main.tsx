@@ -8,6 +8,8 @@ import './styles/index.css';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import queryClient, { indexedDBPersistor } from './query-client';
 
+window.our = `~${window.ship}`;
+
 function authRedirect() {
   document.location.href = `${document.location.protocol}//${document.location.host}`;
 }

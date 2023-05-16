@@ -53,9 +53,5 @@ export default function useReactQuerySubscription<Data, Event>({
     });
   }, [app, path, queryClient, queryKey]);
 
-  return useQuery<Data>(queryKey, fetchData, {
-    retryOnMount: false,
-    refetchOnMount: false,
-    ...options,
-  });
+  return useQuery<Data>(queryKey, fetchData, options);
 }

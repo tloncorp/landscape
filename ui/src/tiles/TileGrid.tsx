@@ -9,6 +9,7 @@ import { MenuState } from '../nav/Nav';
 import { usePutEntryMutation, useTiles } from '../state/settings';
 import { TileContainer } from './TileContainer';
 import { useMedia } from '../logic/useMedia';
+import { Spinner } from '@/components/Spinner';
 
 export interface TileData {
   desk: string;
@@ -37,7 +38,7 @@ export const TileGrid = ({ menu }: TileGridProps) => {
     const chargeKeys = Object.keys(charges);
     const hasChargeKeys = chargeKeys.length > 0;
 
-    if (!loaded) {
+    if (!loaded || !hasChargeKeys) {
       return;
     }
 
@@ -55,7 +56,11 @@ export const TileGrid = ({ menu }: TileGridProps) => {
   }, [charges, order, loaded]);
 
   if (!chargesLoaded) {
-    return <span>Loading...</span>;
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <Spinner aria-label="Loading..." />
+      </div>
+    );
   }
 
   return (
