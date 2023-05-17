@@ -9,6 +9,7 @@ import Urbit, {
 } from '@urbit/http-api';
 import _ from 'lodash';
 import { useLocalState } from '@/state/local';
+import useSchedulerStore from './state/scheduler';
 
 export const IS_MOCK =
   import.meta.env.MODE === 'mock' || import.meta.env.MODE === 'staging';
@@ -207,17 +208,21 @@ class API {
         }
       };
 
-    const id = await this.withErrorHandling((client) =>
-      client.subscribe({
-        ...params,
-        event: eventListener(params.event),
-        quit: () => {
-          this.client!.subscribe({
+    const id = await useSchedulerStore.getState().wait(
+      () =>
+        this.withErrorHandling((client) =>
+          client.subscribe({
             ...params,
             event: eventListener(params.event),
-          });
-        },
-      })
+            quit: () => {
+              this.client!.subscribe({
+                ...params,
+                event: eventListener(params.event),
+              });
+            },
+          })
+        ),
+      priority
     );
 
     this.subscriptionMap.set(id, subId);
