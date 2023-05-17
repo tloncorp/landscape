@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import * as RadioGroup from '@radix-ui/react-radio-group';
-import { useSettingsState, useTheme } from '../state/settings';
+import { useDisplay, usePutEntryMutation } from '@/state/settings';
 
 type prefType = 'auto' | 'dark' | 'light';
 
@@ -19,19 +19,22 @@ interface AppearanceOption {
 const appearanceOptions: AppearanceOption[] = [
   { value: 'auto', label: 'System Theme' },
   { value: 'light', label: 'Light' },
-  { value: 'dark', label: 'Dark' }
+  { value: 'dark', label: 'Dark' },
 ];
 
 const RadioOption = ({ value, label, selected }: RadioOptionProps) => (
   <div className="flex space-x-3 ">
     <RadioGroup.Item
-      className={classNames('flex items-center border-gray-200 w-4 h-4 rounded-full', {
-        'border-2': !selected
-      })}
+      className={classNames(
+        'flex h-4 w-4 items-center rounded-full border-gray-200',
+        {
+          'border-2': !selected,
+        }
+      )}
       value={value}
       id={value}
     >
-      <RadioGroup.Indicator className="flex items-center border-4 rounded-full border-gray-800 w-full h-full" />
+      <RadioGroup.Indicator className="flex h-full w-full items-center rounded-full border-4 border-gray-800" />
     </RadioGroup.Item>
     <label className="font-semibold" htmlFor={value}>
       {label}
@@ -40,15 +43,15 @@ const RadioOption = ({ value, label, selected }: RadioOptionProps) => (
 );
 
 export const AppearancePrefs = () => {
-  const theme = useTheme();
-  const state = useSettingsState.getState();
+  const { theme } = useDisplay();
   const [pref, setPref] = useState<prefType>(theme || 'auto');
+  const { mutate } = usePutEntryMutation({ bucket: 'display', key: 'theme' });
 
   useEffect(() => {
-    useSettingsState.getState().set((draft) => {
-      draft.display.theme = pref;
-    });
-    state.putEntry('display', 'theme', pref);
+    // useSettingsState.getState().set((draft) => {
+    //   draft.display.theme = pref;
+    // });
+    mutate({ val: pref });
   }, [pref]);
 
   const handleChange = (value: string) => {

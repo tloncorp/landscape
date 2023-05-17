@@ -4,7 +4,7 @@ import { MatchItem } from '../nav/Nav';
 import { useRecentsStore } from '../nav/search/Home';
 import { AppLink, AppLinkProps } from './AppLink';
 import { DocketWithDesk } from '../state/docket';
-import { getAppName } from '../state/util';
+import { getAppName } from '@/logic/utils';
 
 type AppListProps<T extends DocketWithDesk> = {
   apps: T[];
@@ -33,7 +33,10 @@ export const AppList = <T extends DocketWithDesk>({
   ...props
 }: AppListProps<T>) => {
   const addRecentApp = useRecentsStore((state) => state.addRecentApp);
-  const selected = useCallback((app: T) => appMatches(app, matchAgainst), [matchAgainst]);
+  const selected = useCallback(
+    (app: T) => appMatches(app, matchAgainst),
+    [matchAgainst]
+  );
 
   return (
     <ul
@@ -46,7 +49,12 @@ export const AppList = <T extends DocketWithDesk>({
       aria-labelledby={labelledBy}
     >
       {apps.map((app) => (
-        <li key={getAppName(app)} id={getAppName(app)} role="option" aria-selected={selected(app)}>
+        <li
+          key={getAppName(app)}
+          id={getAppName(app)}
+          role="option"
+          aria-selected={selected(app)}
+        >
           <AppLink
             {...props}
             app={app}

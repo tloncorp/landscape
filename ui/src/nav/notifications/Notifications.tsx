@@ -2,20 +2,21 @@ import React, { useEffect, useCallback } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { RouteComponentProps } from 'react-router-dom';
 import { ErrorAlert } from '../../components/ErrorAlert';
-import useHarkState from '../../state/hark';
 import { groupStore } from './groups';
 import Notification from './Notification';
 import { useNotifications } from './useNotifications';
+import { useSawSeamMutation } from '@/state/hark';
 
 export const Notifications = ({ history }: RouteComponentProps) => {
   const { notifications, count } = useNotifications();
   const { groups, retrieve } = groupStore();
+  const { mutate: sawSeam } = useSawSeamMutation();
 
   let timeout = 0 as unknown as NodeJS.Timeout;
   function visibilitychange() {
     if (document.visibilityState === 'visible') {
       timeout = setTimeout(() => {
-        useHarkState.getState().sawSeam({ all: null });
+        sawSeam({ seam: { all: null } });
       }, 3000);
     } else {
       clearTimeout(timeout);
@@ -37,7 +38,7 @@ export const Notifications = ({ history }: RouteComponentProps) => {
   }, []);
 
   const markAllRead = useCallback(() => {
-    useHarkState.getState().sawSeam({ all: null });
+    sawSeam({ seam: { all: null } });
   }, []);
 
   return (
@@ -64,7 +65,7 @@ export const Notifications = ({ history }: RouteComponentProps) => {
                 {grouping.date}
               </h2>
               <ul className="space-y-2">
-                {grouping.bins.map((b) => (
+                {grouping.skeins.map((b) => (
                   <li key={b.time}>
                     <Notification bin={b} groups={groups} />
                   </li>

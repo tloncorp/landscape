@@ -4,7 +4,7 @@ import {
   setBrowserSetting,
   useBrowserSettings,
   useProtocolHandling,
-  useSettingsState
+  usePutEntryMutation,
 } from '../state/settings';
 import { useBrowserId } from '../state/local';
 
@@ -12,13 +12,23 @@ export function InterfacePrefs() {
   const settings = useBrowserSettings();
   const browserId = useBrowserId();
   const protocolHandling = useProtocolHandling(browserId);
-  const secure = window.location.protocol === 'https:' || window.location.hostname === 'localhost';
-  const linkHandlingAllowed = secure && 'registerProtocolHandler' in window.navigator;
+  const secure =
+    window.location.protocol === 'https:' ||
+    window.location.hostname === 'localhost';
+  const linkHandlingAllowed =
+    secure && 'registerProtocolHandler' in window.navigator;
+  const { mutate } = usePutEntryMutation({
+    bucket: 'browserSettings',
+    key: 'settings',
+  });
+
   const setProtocolHandling = (setting: boolean) => {
-    const newSettings = setBrowserSetting(settings, { protocolHandling: setting }, browserId);
-    useSettingsState
-      .getState()
-      .putEntry('browserSettings', 'settings', JSON.stringify(newSettings));
+    const newSettings = setBrowserSetting(
+      settings,
+      { protocolHandling: setting },
+      browserId
+    );
+    mutate({ val: JSON.stringify(newSettings) });
   };
 
   const toggleProtoHandling = async () => {
@@ -34,11 +44,17 @@ export function InterfacePrefs() {
       } catch (e) {
         console.error(e);
       }
+    } else if (
+      protocolHandling &&
       // @ts-expect-error ts has the wrong types for protocolhandler
-    } else if (protocolHandling && window.navigator?.unregisterProtocolHandler) {
+      window.navigator?.unregisterProtocolHandler
+    ) {
       try {
         // @ts-expect-error ts has the wrong types for protocolhandler
-        window.navigator.unregisterProtocolHandler('web+urbitgraph', '/apps/grid/perma?ext=%s');
+        window.navigator.unregisterProtocolHandler(
+          'web+urbitgraph',
+          '/apps/grid/perma?ext=%s'
+        );
         setProtocolHandling(false);
       } catch (e) {
         console.error(e);

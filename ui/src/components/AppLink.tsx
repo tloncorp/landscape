@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import React, { HTMLProps, ReactNode } from 'react';
 import { Link, LinkProps } from 'react-router-dom';
 import { DocketWithDesk } from '../state/docket';
-import { getAppHref, getAppName } from '../state/util';
+import { getAppHref, getAppName } from '@/logic/utils';
 import { DocketImage } from './DocketImage';
 
 type Sizes = 'xs' | 'small' | 'default';
@@ -13,7 +13,10 @@ type LinkOrAnchorProps = {
     : never;
 };
 
-export type AppLinkProps<T extends DocketWithDesk> = Omit<LinkOrAnchorProps, 'to'> & {
+export type AppLinkProps<T extends DocketWithDesk> = Omit<
+  LinkOrAnchorProps,
+  'to'
+> & {
   app: T;
   size?: Sizes;
   selected?: boolean;
@@ -58,7 +61,9 @@ export const AppLink = <T extends DocketWithDesk>({
       <DocketImage color={app.color} image={app.image} size={size} />
       <div className="flex-1 text-black">
         <p>{getAppName(app)}</p>
-        {app.info && size === 'default' && <p className="font-normal">{app.info}</p>}
+        {app.info && size === 'default' && (
+          <p className="font-normal">{app.info}</p>
+        )}
       </div>
     </>
   );

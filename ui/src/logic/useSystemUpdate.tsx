@@ -2,12 +2,15 @@ import { kilnBump, Pike } from '@urbit/api';
 import { partition, pick } from 'lodash';
 import { useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
-import api from '../state/api';
+import api from '../api';
 import { useCharges } from '../state/docket';
 import useKilnState, { usePike } from '../state/kiln';
 
 function pikeIsBlocked(newKelvin: number, pike: Pike) {
-  return pike.zest === 'live' && !pike.wefts?.find(({ kelvin }) => kelvin === newKelvin);
+  return (
+    pike.zest === 'live' &&
+    !pike.wefts?.find(({ kelvin }) => kelvin === newKelvin)
+  );
 }
 
 export function useSystemUpdate() {
@@ -17,7 +20,9 @@ export function useSystemUpdate() {
   const newKelvin = base?.wefts[0]?.kelvin ?? 417;
   const charges = useCharges();
   const [blocked] = useKilnState((s) => {
-    const [b, u] = partition(Object.entries(s.pikes), ([, pike]) => pikeIsBlocked(newKelvin, pike));
+    const [b, u] = partition(Object.entries(s.pikes), ([, pike]) =>
+      pikeIsBlocked(newKelvin, pike)
+    );
     return [b.map(([d]) => d), u.map(([d]) => d)] as const;
   });
 
@@ -35,6 +40,6 @@ export function useSystemUpdate() {
     systemBlocked,
     blockedCharges,
     blockedCount,
-    freezeApps
+    freezeApps,
   };
 }
