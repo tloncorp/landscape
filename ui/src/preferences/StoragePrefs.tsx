@@ -92,7 +92,8 @@ export const StoragePrefs = () => {
             disabled={!loaded}
             required
             id="endpoint"
-            type="text"
+            type="url"
+            autoCorrect="off"
             defaultValue={s3.credentials?.endpoint}
             {...register('endpoint', { required: true })}
             className="input default-ring bg-gray-50"
@@ -107,6 +108,8 @@ export const StoragePrefs = () => {
             required
             id="key"
             type="text"
+            autoCorrect="off"
+            spellCheck="false"
             defaultValue={s3.credentials?.accessKeyId}
             {...register('accessId', { required: true })}
             className="input default-ring bg-gray-50"
@@ -121,6 +124,8 @@ export const StoragePrefs = () => {
             required
             id="secretAccessKey"
             type="text"
+            autoCorrect="off"
+            spellCheck="false"
             defaultValue={s3.credentials?.secretAccessKey}
             {...register('accessSecret', { required: true })}
             className="input default-ring bg-gray-50"
@@ -135,6 +140,7 @@ export const StoragePrefs = () => {
             required
             id="region"
             type="text"
+            autoCorrect="off"
             defaultValue={s3.configuration?.region}
             {...register('region', { required: true })}
             className="input default-ring bg-gray-50"
@@ -149,6 +155,7 @@ export const StoragePrefs = () => {
             required
             id="bucket"
             type="text"
+            autoCorrect="off"
             defaultValue={s3.configuration.currentBucket}
             {...register('bucket', { required: true })}
             className="input default-ring bg-gray-50"
