@@ -21,6 +21,7 @@ import { useDisplay } from './state/settings';
 import { useBrowserId, useLocalState } from './state/local';
 import { ErrorAlert } from './components/ErrorAlert';
 import { useErrorHandler } from './logic/useErrorHandler';
+import useSchedulerStore, { useScheduler } from './state/scheduler';
 
 const getNoteRedirect = (path: string) => {
   if (path.startsWith('/desk/')) {
@@ -97,7 +98,9 @@ const AppRoutes = () => {
       const { initializeKiln } = useKilnState.getState();
       initializeKiln();
 
-      useContactState.getState().start();
+      useSchedulerStore
+        .getState()
+        .wait(() => useContactState.getState().start(), 5);
 
       Mousetrap.bind(['command+/', 'ctrl+/'], () => {
         push('/search');
@@ -115,6 +118,11 @@ const AppRoutes = () => {
   );
 };
 
+function Scheduler() {
+  useScheduler();
+  return null;
+}
+
 export function App() {
   const base = import.meta.env.MODE === 'mock' ? undefined : '/apps/grid';
 
@@ -125,6 +133,7 @@ export function App() {
     >
       <BrowserRouter basename={base}>
         <AppRoutes />
+        <Scheduler />
       </BrowserRouter>
     </ErrorBoundary>
   );
