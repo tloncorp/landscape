@@ -1,5 +1,4 @@
-import create from 'zustand';
-import api from '../../api';
+import useReactQueryScry from '@/logic/useReactQueryScry';
 
 export interface GroupMeta {
   title: string;
@@ -17,19 +16,16 @@ export interface Groups {
   [flag: string]: Group;
 }
 
-interface GroupStore {
-  groups: Groups;
-  retrieve: () => Promise<void>;
+export function useGroups() {
+  const { data, ...rest } = useReactQueryScry<Groups>({
+    queryKey: ['groups'],
+    app: 'groups',
+    path: `/groups/light`,
+  });
+
+  if (rest.isLoading || rest.isError) {
+    return {} as Groups;
+  }
+
+  return data;
 }
-
-export const groupStore = create<GroupStore>((set) => ({
-  groups: {},
-  retrieve: async () => {
-    const groups = await api.scry<Groups>({
-      app: 'groups',
-      path: '/groups',
-    });
-
-    set({ groups });
-  },
-}));

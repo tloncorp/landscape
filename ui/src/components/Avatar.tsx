@@ -26,7 +26,7 @@ const sizeMap: Record<AvatarSizes, AvatarMeta> = {
   xs: { classes: 'w-6 h-6 rounded', size: 12 },
   small: { classes: 'w-8 h-8 rounded-lg', size: 16 },
   nav: { classes: 'w-9 h-9 rounded-lg', size: 18 },
-  default: { classes: 'w-12 h-12 rounded-lg', size: 24 },
+  default: { classes: 'w-12 h-12 rounded-lg', size: 32 },
 };
 
 export const foregroundFromBackground = (
@@ -91,10 +91,11 @@ export const Avatar = ({
       patp: deSig(shipName) || 'zod',
       renderer: reactRenderer,
       size: sigilSize,
-      icon: true,
+      icon: size !== 'default',
       colors: [adjustedColor, foregroundColor],
+      margin: true,
     });
-  }, [shipName, adjustedColor, foregroundColor]);
+  }, [shipName, size, adjustedColor, foregroundColor]);
 
   if (avatar) {
     return (
@@ -109,12 +110,12 @@ export const Avatar = ({
   return (
     <div
       className={classNames(
-        'relative flex-none rounded-lg bg-black',
+        'relative flex flex-none items-center justify-center rounded-lg bg-black',
         classes,
         size === 'xs' && 'p-1.5',
         size === 'small' && 'p-2',
         size === 'nav' && 'p-[9px]',
-        size === 'default' && 'p-3',
+        // size === 'default' && 'p-3',
         className
       )}
       style={{ backgroundColor: adjustedColor }}

@@ -23,16 +23,23 @@ const variants: Record<ButtonVariant, string> = {
   caution: 'text-white bg-orange-400',
   destructive: 'text-white bg-red-500',
   'alt-primary': 'text-white bg-blue-400 ring-blue-300',
-  'alt-secondary': 'text-blue-400 bg-blue-50'
+  'alt-secondary': 'text-blue-400 bg-blue-50',
 };
 
 export const Button = React.forwardRef(
-  ({ as: Comp = 'button', variant = 'primary', children, className, ...props }, ref) => {
+  (
+    { as: Comp = 'button', variant = 'primary', children, className, ...props },
+    ref
+  ) => {
     return (
       <Comp
         ref={ref}
         {...props}
-        className={classNames('button default-ring', variants[variant], className)}
+        className={classNames(
+          'old-button default-ring',
+          variants[variant],
+          className
+        )}
       >
         {children}
       </Comp>
@@ -40,12 +47,17 @@ export const Button = React.forwardRef(
   }
 ) as PolymorphicButton;
 
-export const PillButton = React.forwardRef(({ className, children, ...props }, ref) => (
-  <Button
-    ref={ref}
-    {...props}
-    className={classNames('px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base rounded-full', className)}
-  >
-    {children}
-  </Button>
-)) as PolymorphicButton;
+export const PillButton = React.forwardRef(
+  ({ className, children, ...props }, ref) => (
+    <Button
+      ref={ref}
+      {...props}
+      className={classNames(
+        'rounded-full px-4 py-2 text-sm sm:px-6 sm:py-3 sm:text-base',
+        className
+      )}
+    >
+      {children}
+    </Button>
+  )
+) as PolymorphicButton;

@@ -132,3 +132,11 @@ export function makePrettyDay(date: Date) {
       return `${format(date, 'LLLL')} ${format(date, 'do')}`;
   }
 }
+
+export function randomElement<T>(a: T[]) {
+  return a[Math.floor(Math.random() * a.length)];
+}
+
+export function randomIntInRange(min: number, max: number) {
+  return Math.round(Math.random() * (max - min) + min);
+}
