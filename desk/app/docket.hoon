@@ -673,9 +673,13 @@
   ::
   ++  fip
     =,  de-purl:html
-    %+  cook
+    ;:  cook
       |=(pork (weld q (drop p)))
-    (cook deft (more fas smeg))
+      deft
+      |=(a=cord (rash a (more fas smeg))) 
+      crip 
+      (star ;~(pose (cold '%20' (just ' ')) next))
+    ==
   ::
   ++  inline-js-response
     |=  js=cord
