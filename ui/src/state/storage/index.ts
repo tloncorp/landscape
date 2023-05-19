@@ -7,7 +7,7 @@ import {
   reduceStateN,
   BaseState,
 } from '../base';
-import { S3Credentials } from '@urbit/api';
+import { StorageCredentials } from '../../../';
 
 enableMapSet();
 
@@ -22,7 +22,7 @@ export interface BaseStorageState {
       currentBucket: string;
       region: string;
     };
-    credentials: S3Credentials | null;
+    credentials: StorageCredentials | null;
   };
   [ref: string]: unknown;
 }
