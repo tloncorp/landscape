@@ -35,7 +35,6 @@
     "@tlon/sigil-js": "^1.4.4",
     "@tloncorp/mock-http-api": "^1.2.0",
     "@types/lodash": "^4.14.172",
-    "@urbit/api": "^2.2.0",
     "@urbit/http-api": "^2.4.5-debug",
     "big-integer": "^1.6.48",
     "browser-cookies": "^1.2.0",
