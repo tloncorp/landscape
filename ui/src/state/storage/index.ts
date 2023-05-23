@@ -7,7 +7,7 @@ import {
   reduceStateN,
   BaseState,
 } from '../base';
-import { StorageCredentials } from '../../../';
+import { StorageCredentials } from '@/gear';
 
 enableMapSet();
 
