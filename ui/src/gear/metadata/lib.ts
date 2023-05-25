@@ -1,4 +1,5 @@
-import { Path, Poke, uxToHex, PatpNoSig } from '../lib';
+import { parseUx } from '@urbit/aura';
+import { Path, Poke, PatpNoSig } from '@urbit/js-http-api';
 import { MdAppName, Association, Metadata, MetadataUpdate, MetadataUpdateAdd, MetadataUpdateRemove, MetadataEditField, MetadataUpdateEdit } from './types';
 
 export const METADATA_UPDATE_VERSION = 2;
@@ -83,7 +84,7 @@ export const update = (
   newMetadata: Partial<Metadata>
 ): Poke<MetadataUpdateAdd> => {
   const metadata = { ...association.metadata, ...newMetadata };
-    metadata.color = uxToHex(metadata.color);
+    metadata.color = parseUx(metadata.color);
     return metadataAction<MetadataUpdateAdd>({
       add: {
         group: association.group,

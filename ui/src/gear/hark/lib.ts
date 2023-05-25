@@ -1,6 +1,6 @@
 import { BigInteger } from 'big-integer';
 
-import { Poke } from '../lib/types';
+import { Poke } from '@urbit/js-http-api';
 import {
   HarkBin,
   HarkBinId,
@@ -8,7 +8,7 @@ import {
   HarkLid,
   HarkPlace
 } from './types';
-import { decToUd } from '../lib';
+import { parseUd } from '@urbit/aura';
 
 export const harkAction = <T>(data: T): Poke<T> => ({
   app: 'hark-store',
@@ -39,7 +39,7 @@ export const actOnNotification = (
 ): Poke<unknown> =>
   harkAction({
     [frond]: {
-      time: decToUd(intTime.toString()),
+      time: parseUd(intTime.toString()),
       bin
     }
   });

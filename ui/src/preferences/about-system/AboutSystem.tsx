@@ -1,4 +1,4 @@
-import { Pike } from '@urbit/api';
+import { Pike } from '@/gear';
 import React from 'react';
 import { AppList } from '../../components/AppList';
 import { Button } from '../../components/Button';

@@ -35,7 +35,8 @@
     "@tlon/sigil-js": "^1.4.4",
     "@tloncorp/mock-http-api": "^1.2.0",
     "@types/lodash": "^4.14.172",
-    "@urbit/http-api": "^2.4.5-debug",
+    "@urbit/aura": "^1.0.0",
+    "@urbit/js-http-api": "git+https://github.com/urbit/js-http-api",
     "big-integer": "^1.6.48",
     "browser-cookies": "^1.2.0",
     "classnames": "^2.3.1",
@@ -60,7 +61,6 @@
     "react-hook-form": "^7.38.0",
     "react-router-dom": "^5.2.0",
     "slugify": "^1.6.0",
-    "urbit-ob": "^5.0.1",
     "zustand": "^3.7.2"
   },
   "devDependencies": {

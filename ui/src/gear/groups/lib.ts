@@ -1,5 +1,6 @@
-import { deSig } from '../index';
-import { Enc, Path, Patp, PatpNoSig, Poke, Thread } from '../lib/types';
+import { deSig } from '@urbit/aura';
+import { Path, Patp, PatpNoSig, Poke, Thread } from '@urbit/js-http-api';
+import { Enc } from '@/gear';
 import { Group, GroupPolicy, GroupPolicyDiff, GroupUpdateAddMembers, GroupUpdateAddTag, GroupUpdateChangePolicy, GroupUpdateRemoveGroup, GroupUpdateRemoveMembers, GroupUpdateRemoveTag, Resource, RoleTags, Tag } from './types';
 import { GroupUpdate } from './update';
 

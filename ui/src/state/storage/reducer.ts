@@ -1,11 +1,11 @@
-import { S3Update } from '@urbit/api';
+import { StorageUpdate } from '@/gear';
 import _ from 'lodash';
 import { BaseState } from '../base';
 import { StorageState as State } from '.';
 
 type StorageState = State & BaseState<State>;
 
-const credentials = (json: S3Update, state: StorageState): StorageState => {
+const credentials = (json: StorageUpdate, state: StorageState): StorageState => {
   const data = _.get(json, 'credentials', false);
   if (data) {
     state.s3.credentials = data;
@@ -13,7 +13,7 @@ const credentials = (json: S3Update, state: StorageState): StorageState => {
   return state;
 };
 
-const configuration = (json: S3Update, state: StorageState): StorageState => {
+const configuration = (json: StorageUpdate, state: StorageState): StorageState => {
   const data = _.get(json, 'configuration', false);
   if (data) {
     state.s3.configuration = {
@@ -25,7 +25,7 @@ const configuration = (json: S3Update, state: StorageState): StorageState => {
   return state;
 };
 
-const currentBucket = (json: S3Update, state: StorageState): StorageState => {
+const currentBucket = (json: StorageUpdate, state: StorageState): StorageState => {
   const data = _.get(json, 'setCurrentBucket', false);
   if (data && state.s3) {
     state.s3.configuration.currentBucket = data;
@@ -33,7 +33,7 @@ const currentBucket = (json: S3Update, state: StorageState): StorageState => {
   return state;
 };
 
-const region = (json: S3Update, state: StorageState): StorageState => {
+const region = (json: StorageUpdate, state: StorageState): StorageState => {
   const data = _.get(json, 'setRegion', false);
   if (data && state.s3) {
     state.s3.configuration.region = data;
@@ -41,7 +41,7 @@ const region = (json: S3Update, state: StorageState): StorageState => {
   return state;
 };
 
-const addBucket = (json: S3Update, state: StorageState): StorageState => {
+const addBucket = (json: StorageUpdate, state: StorageState): StorageState => {
   const data = _.get(json, 'addBucket', false);
   if (data) {
     state.s3.configuration.buckets = state.s3.configuration.buckets.add(data);
@@ -49,7 +49,7 @@ const addBucket = (json: S3Update, state: StorageState): StorageState => {
   return state;
 };
 
-const removeBucket = (json: S3Update, state: StorageState): StorageState => {
+const removeBucket = (json: StorageUpdate, state: StorageState): StorageState => {
   const data = _.get(json, 'removeBucket', false);
   if (data) {
     state.s3.configuration.buckets.delete(data);
@@ -57,7 +57,7 @@ const removeBucket = (json: S3Update, state: StorageState): StorageState => {
   return state;
 };
 
-const endpoint = (json: S3Update, state: StorageState): StorageState => {
+const endpoint = (json: StorageUpdate, state: StorageState): StorageState => {
   const data = _.get(json, 'setEndpoint', false);
   if (data && state.s3.credentials) {
     state.s3.credentials.endpoint = data;
@@ -65,7 +65,7 @@ const endpoint = (json: S3Update, state: StorageState): StorageState => {
   return state;
 };
 
-const accessKeyId = (json: S3Update, state: StorageState): StorageState => {
+const accessKeyId = (json: StorageUpdate, state: StorageState): StorageState => {
   const data = _.get(json, 'setAccessKeyId', false);
   if (data && state.s3.credentials) {
     state.s3.credentials.accessKeyId = data;
@@ -73,7 +73,7 @@ const accessKeyId = (json: S3Update, state: StorageState): StorageState => {
   return state;
 };
 
-const secretAccessKey = (json: S3Update, state: StorageState): StorageState => {
+const secretAccessKey = (json: StorageUpdate, state: StorageState): StorageState => {
   const data = _.get(json, 'setSecretAccessKey', false);
   if (data && state.s3.credentials) {
     state.s3.credentials.secretAccessKey = data;

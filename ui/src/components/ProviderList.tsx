@@ -1,5 +1,5 @@
 import React, { MouseEvent, useCallback } from 'react';
-import { Provider } from '@urbit/api';
+import { Provider } from '@/gear';
 import classNames from 'classnames';
 import { MatchItem } from '../nav/Nav';
 import { useRecentsStore } from '../nav/search/Home';

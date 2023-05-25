@@ -1,5 +1,5 @@
 import { joinError, joinProgress, joinResult } from ".";
-import {Patp} from "../lib";
+import { Patp } from '@urbit/js-http-api';
 
 export type JoinError = typeof joinError[number];
 

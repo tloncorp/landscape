@@ -1,7 +1,3 @@
-declare module 'urbit-ob' {
-  export function isValidPatp(patp: string): boolean;
-}
-
 type Stringified<T> = string &
   {
     [P in keyof T]: { '_ value': T[P] };

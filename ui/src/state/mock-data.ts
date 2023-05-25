@@ -1,3 +1,4 @@
+import { unixToDa } from '@urbit/aura';
 import {
   Allies,
   Charges,
@@ -7,13 +8,12 @@ import {
   Notification,
   HarkContent,
   HarkBody,
-  unixToDa,
   Contact,
   Contacts,
   Timebox,
   harkBinToId,
   Pikes
-} from '@urbit/api';
+} from '@/gear';
 import _ from 'lodash';
 import systemUrl from '../assets/system.png';
 
