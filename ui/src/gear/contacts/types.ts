@@ -1,4 +1,4 @@
-import { Path, Patp } from '../lib';
+import { Path, Patp } from '@urbit/js-http-api';
 import { Resource } from '../groups';
 
 export type ContactUpdate =

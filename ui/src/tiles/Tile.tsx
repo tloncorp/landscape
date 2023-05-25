@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React, { FunctionComponent } from 'react';
 import { useDrag } from 'react-dnd';
-import { chadIsRunning } from '@urbit/api';
+import { chadIsRunning } from '@/gear';
 import { TileMenu } from './TileMenu';
 import { Spinner } from '../components/Spinner';
 import { getAppHref } from '@/logic/utils';

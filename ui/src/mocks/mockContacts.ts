@@ -1,4 +1,4 @@
-import { Rolodex } from '@urbit/api';
+import { Rolodex } from '@/gear';
 
 const mockContacts: Rolodex = {
   '~finned-palmer': {

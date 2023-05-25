@@ -1,4 +1,5 @@
-import { Poke, Serial } from "../lib";
+import { Poke } from '@urbit/js-http-api';
+import { Serial } from '@/gear';
 import { InviteUpdate, InviteUpdateAccept, InviteUpdateDecline } from "./types";
 
 export const inviteAction = <T extends InviteUpdate>(data: T): Poke<T> => ({

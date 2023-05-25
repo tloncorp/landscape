@@ -12,7 +12,7 @@ import { ShipName } from '../../components/ShipName';
 import { DeskLink } from '../../components/DeskLink';
 import { DocketImage } from '../../components/DocketImage';
 import GroupAvatar from '../../components/GroupAvatar';
-import { Charge } from '@urbit/api';
+import { Charge } from '@/gear';
 import { useSawRopeMutation } from '@/state/hark';
 
 interface NotificationProps {

@@ -1,4 +1,4 @@
-import { chadIsRunning, Pike, Treaty } from '@urbit/api';
+import { chadIsRunning, Pike, Treaty } from '@/gear';
 import clipboardCopy from 'clipboard-copy';
 import React, { FC, useCallback, useState } from 'react';
 import cn from 'classnames';

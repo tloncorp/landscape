@@ -1,4 +1,5 @@
-import { PatpNoSig, Path, ShipRank, Enc } from '../lib';
+import { PatpNoSig, Path } from '@urbit/js-http-api';
+import { ShipRank, Enc } from '@/gear';
 import { roleTags } from './index';
 
 export type RoleTags = typeof roleTags[number];

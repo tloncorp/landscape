@@ -7,7 +7,7 @@ import {
   kilnSync,
   kilnUninstall,
   kilnInstall,
-} from '@urbit/api';
+} from '@/gear';
 import create from 'zustand';
 import produce from 'immer';
 import { useCallback } from 'react';

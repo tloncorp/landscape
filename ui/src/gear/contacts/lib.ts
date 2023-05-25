@@ -1,5 +1,5 @@
 
-import { Patp, Poke, Scry } from '../lib';
+import { Patp, Poke, Scry } from '@urbit/js-http-api';
 import {
   Contact,
   ContactUpdateAdd,

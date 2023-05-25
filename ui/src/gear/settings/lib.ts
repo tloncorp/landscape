@@ -1,4 +1,4 @@
-import { Poke, Scry } from '../lib';
+import { Poke, Scry } from '@urbit/js-http-api';
 import { PutBucket, Key, Bucket, DelBucket, Value, PutEntry, DelEntry, SettingsUpdate } from './types';
 
 export const action = <T extends SettingsUpdate>(data: T): Poke<T> => ({

@@ -1,4 +1,5 @@
-import { Serial, PatpNoSig, Path } from '../lib';
+import { PatpNoSig, Path } from '@urbit/js-http-api';
+import { Serial } from '@/gear';
 import { Resource } from "../groups";
 
 export type InviteUpdate =

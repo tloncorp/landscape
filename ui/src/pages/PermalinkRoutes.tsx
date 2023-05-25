@@ -1,4 +1,4 @@
-import { Pikes } from '@urbit/api';
+import { Pikes } from '@/gear';
 import React, { useEffect } from 'react';
 import { Switch, Route, Redirect, RouteComponentProps } from 'react-router-dom';
 import { Spinner } from '../components/Spinner';

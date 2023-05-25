@@ -1,4 +1,4 @@
-import { Poke, Scry } from '../lib';
+import { Poke, Scry } from '@urbit/js-http-api';
 import { Chad } from './types';
 
 export function chadIsRunning(chad: Chad) {

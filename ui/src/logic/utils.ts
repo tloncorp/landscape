@@ -1,6 +1,6 @@
 import { Yarn, isYarnEmph, isYarnShip } from '@/types/hark';
 import { findLast } from 'lodash';
-import { Docket, DocketHref, Treaty } from '@urbit/api';
+import { Docket, DocketHref, Treaty } from '@/gear';
 import { hsla, parseToHsla, parseToRgba } from 'color2k';
 import _ from 'lodash';
 import { differenceInDays, endOfToday, format } from 'date-fns';
@@ -42,13 +42,6 @@ export function handleDropdownLink(
     e.preventDefault();
     setTimeout(() => setOpen?.(false), 15);
   };
-}
-
-export function deSig(ship: string): string {
-  if (!ship) {
-    return '';
-  }
-  return ship.replace('~', '');
 }
 
 export function normalizeUrbitColor(color: string): string {
