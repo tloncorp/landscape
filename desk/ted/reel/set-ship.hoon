@@ -8,7 +8,11 @@
 ^-  form:m
 =+  !<(vic=cord arg)
 ;<  our=@p   bind:m  get-our
-;<  =json  bind:m  (fetch-json "{(trip vic)}bait/who")
+=/  url
+  ?:  =(vic 'https://tlon.network/lure/')
+    "https://tlon.network/v1/lure/bait/who"
+  "{(trip vic)}/bait/who"
+;<  =json  bind:m  (fetch-json url)
 =/  =ship  (slav %p (so:dejs:format json))
 ;<  ~  bind:m  (poke [our %reel] reel-command+!>([%set-ship ship]))
 (pure:m !>(~))
