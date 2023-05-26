@@ -164,7 +164,7 @@ export interface Vats {
 }
 
 /**
- * TODO: crisp one-liner describing a Pike
+ * Update config & status for desk
  */
 export interface Pike {
   /**

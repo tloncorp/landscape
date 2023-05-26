@@ -9,7 +9,7 @@ type Dude = string;
 type Spur = string;
 
 /**
- * TODO
+ * specific or any desk, at or under spur prefix
  */
 interface Burr {
   desk: string | null;
@@ -17,7 +17,7 @@ interface Burr {
 }
 
 /**
- * TODO
+ * burr with specific or any care
  */
 interface Spar {
   care: string | null;
