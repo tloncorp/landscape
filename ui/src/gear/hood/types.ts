@@ -1,3 +1,4 @@
+import { Perm } from "../permissions";
 
 /**
  * A pending commit, awaiting a future kelvin version
@@ -161,20 +162,15 @@ export interface Vat {
 export interface Vats {
   [desk: string]: Vat;
 }
+
 /**
  * TODO: crisp one-liner describing a Pike
  */
 export interface Pike {
   /**
-   * Hash of the desk, rendered as `@uv`
-   *
-   * @remarks
-   * Equivalent to
-   * ```hoon
-   * .^(@uv %cz /=desk=)
-   * ```
+   * The sync source ship and desk for this Pike
+   * 
    */
-  hash: string;
   sync: {
     /**
      * Source desk for this Pike
@@ -186,9 +182,15 @@ export interface Pike {
     ship: string;
   } | null;
   /**
-   *  {@link Weft}s associated with this Pike
+   * Hash of the desk, rendered as `@uv`
+   *
+   * @remarks
+   * Equivalent to
+   * ```hoon
+   * .^(@uv %cz /=desk=)
+   * ```
    */
-  wefts: Weft[];
+  hash: string;
   /**
    * how live is this pike?
    * 
@@ -201,6 +203,18 @@ export interface Pike {
    * dead - app is not running
    */
   zest: "live" | "dead" | "held";
+  /**
+   *  {@link Weft}s associated with this Pike
+   */
+  wefts: Weft[];
+  /**
+   *  {@link Perm}s granted to this Pike
+   */
+  perms: Perm[];
+  /**
+   * {@link Perm}s that this Pike lacks; required to run
+   */
+  lacks: Perm[];
 }
 
 export interface Pikes {
