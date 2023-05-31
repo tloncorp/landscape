@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import Mousetrap from 'mousetrap';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import {
   BrowserRouter,
   Switch,
@@ -132,6 +133,7 @@ export function App() {
       onReset={() => window.location.reload()}
     >
       <BrowserRouter basename={base}>
+        <ReactQueryDevtools initialIsOpen={false} />
         <AppRoutes />
         <Scheduler />
       </BrowserRouter>
