@@ -95,3 +95,17 @@ export function useSawSeamMutation() {
     },
   });
 }
+
+export function useHasInviteToGroup(): Skein | undefined {
+  const skeins = useSkeins();
+  if (!skeins.data) {
+    return undefined;
+  }
+
+  return skeins.data.find(
+    (skein) =>
+      skein.top.rope.desk === 'groups' &&
+      skein.top.con.some((con) => con === ' sent you an invite to ') &&
+      skein.unread
+  );
+}
