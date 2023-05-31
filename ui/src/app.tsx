@@ -10,6 +10,7 @@ import {
   RouteComponentProps,
   Redirect,
 } from 'react-router-dom';
+import { TooltipProvider } from '@radix-ui/react-tooltip';
 import { ErrorBoundary } from 'react-error-boundary';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import { Grid } from './pages/Grid';
@@ -134,8 +135,10 @@ export function App() {
     >
       <BrowserRouter basename={base}>
         <ReactQueryDevtools initialIsOpen={false} />
-        <AppRoutes />
-        <Scheduler />
+        <TooltipProvider>
+          <AppRoutes />
+          <Scheduler />
+        </TooltipProvider>
       </BrowserRouter>
     </ErrorBoundary>
   );

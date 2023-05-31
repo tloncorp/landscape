@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React, { FunctionComponent, useState } from 'react';
 import { useDrag } from 'react-dnd';
-import * as Popover from '@radix-ui/react-popover';
+import * as Tooltip from '@radix-ui/react-tooltip';
 import { chadIsRunning } from '@urbit/api';
 import { TileMenu } from './TileMenu';
 import { Spinner } from '../components/Spinner';
@@ -26,7 +26,7 @@ export const Tile: FunctionComponent<TileProps> = ({
   desk,
   disabled = false,
 }) => {
-  const [showGroupsPopover, setShowGroupsPopover] = useState(false);
+  const [showGroupsTooltip, setShowGroupsTooltip] = useState(false);
   const groups = useGroups(desk === 'groups');
   const hasGroups = groups && Object.entries(groups).length > 0;
   const invite = useHasInviteToGroup();
@@ -80,28 +80,26 @@ export const Tile: FunctionComponent<TileProps> = ({
     >
       <div>
         {desk === 'groups' && !hasGroups && (
-          <Popover.Root
-            open={showGroupsPopover}
-            onOpenChange={(o) => setShowGroupsPopover(o)}
+          <Tooltip.Root
+            open={showGroupsTooltip}
+            onOpenChange={(o) => setShowGroupsTooltip(o)}
           >
             <div
               className="absolute top-4 right-4 z-10 sm:top-6 sm:right-6"
-              onMouseOver={() => setShowGroupsPopover(true)}
-              onMouseOut={() => setShowGroupsPopover(false)}
+              onMouseOver={() => setShowGroupsTooltip(true)}
+              onMouseOut={() => setShowGroupsTooltip(false)}
             >
-              <Popover.Trigger>
+              <Tooltip.Trigger>
                 <>
                   <div className="absolute h-[42px] w-[42px] animate-pulse rounded-full bg-indigo opacity-10 sm:top-0 sm:right-0" />
                   <Bullet className="h-[42px] w-[42px] text-indigo" />
                 </>
-              </Popover.Trigger>
-              <Popover.Portal>
-                <Popover.Content
+              </Tooltip.Trigger>
+              <Tooltip.Portal>
+                <Tooltip.Content
                   side="right"
                   sideOffset={16}
                   className="z-40 w-[216px] rounded-lg bg-indigo p-4"
-                  onOpenAutoFocus={(e) => e.preventDefault()}
-                  onCloseAutoFocus={(e) => e.preventDefault()}
                 >
                   <p className="text-white">
                     {invite ? (
@@ -113,10 +111,10 @@ export const Tile: FunctionComponent<TileProps> = ({
                       </>
                     )}
                   </p>
-                </Popover.Content>
-              </Popover.Portal>
+                </Tooltip.Content>
+              </Tooltip.Portal>
             </div>
-          </Popover.Root>
+          </Tooltip.Root>
         )}
         <div className="absolute top-4 left-4 z-10 flex items-center sm:top-6 sm:left-6">
           {pike?.zest === 'held' && !disabled && (
