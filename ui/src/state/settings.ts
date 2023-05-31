@@ -49,12 +49,6 @@ export interface SettingsState {
   };
 }
 
-interface GroupsSettingsState extends SettingsState {
-  groups: {
-    hasBeenUsed: boolean;
-  };
-}
-
 export const useSettings = () => {
   const { data, ...rest } = useReactQuerySubscription<
     { desk: SettingsState },
@@ -78,28 +72,6 @@ export const useSettings = () => {
   }, [rest, data]);
 };
 
-export const useGroupsSettings = () => {
-  const { data, ...rest } = useReactQuerySubscription<
-    { desk: GroupsSettingsState },
-    SettingsEvent
-  >({
-    scry: `/desk/groups`,
-    scryApp: 'settings',
-    app: 'settings',
-    path: `/desk/groups`,
-    queryKey: ['settings', 'groups'],
-  });
-
-  return useMemo(() => {
-    if (!data) {
-      return { data: undefined, ...rest };
-    }
-
-    const { desk } = data;
-
-    return { data: desk, ...rest };
-  }, [rest, data]);
-};
 
 export function useDisplay(): SettingsState['display'] {
   const { data, isLoading } = useSettings();
@@ -319,17 +291,4 @@ export function useBrowserNotifications(browserId: string): boolean {
   const settings = useBrowserSettings();
   const browserSetting = getBrowserSetting(settings, browserId);
   return browserSetting?.browserNotifications ?? false;
-}
-
-export function useGroupsHasBeenUsed() {
-  const { data, isLoading } = useGroupsSettings();
-
-  return useMemo(() => {
-    if (isLoading || data === undefined) {
-      return false;
-    }
-
-    const setting = data.groups.hasBeenUsed;
-    return setting;
-  }, [isLoading, data]);
 }

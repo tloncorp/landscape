@@ -12,8 +12,8 @@ import { useTileColor } from './useTileColor';
 import { usePike } from '../state/kiln';
 import { Bullet } from '../components/icons/Bullet';
 import { dragTypes } from './TileGrid';
-import { useGroupsHasBeenUsed } from '@/state/settings';
 import { useHasInviteToGroup } from '@/state/hark';
+import { useGroups } from '@/nav/notifications/groups';
 
 type TileProps = {
   charge: ChargeWithDesk;
@@ -27,7 +27,8 @@ export const Tile: FunctionComponent<TileProps> = ({
   disabled = false,
 }) => {
   const [showGroupsPopover, setShowGroupsPopover] = useState(false);
-  const hasOpenedGroups = useGroupsHasBeenUsed();
+  const groups = useGroups(desk === 'groups');
+  const hasGroups = groups && Object.entries(groups).length > 0;
   const invite = useHasInviteToGroup();
   const inviteGroupName =
     invite &&
@@ -78,7 +79,7 @@ export const Tile: FunctionComponent<TileProps> = ({
       onAuxClick={() => addRecentApp(desk)}
     >
       <div>
-        {desk === 'groups' && !hasOpenedGroups && (
+        {desk === 'groups' && !hasGroups && (
           <Popover.Root
             open={showGroupsPopover}
             onOpenChange={(o) => setShowGroupsPopover(o)}
@@ -136,7 +137,7 @@ export const Tile: FunctionComponent<TileProps> = ({
             </>
           )}
         </div>
-        {desk === 'groups' && !hasOpenedGroups ? null : (
+        {desk === 'groups' && !hasGroups ? null : (
           <TileMenu
             desk={desk}
             chad={chad}
