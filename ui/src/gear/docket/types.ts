@@ -49,11 +49,36 @@ export interface SuspendChad {
   suspend: null;
 }
 
+// desk/lib/treaty.hoon
+type Vane = 'ames' | 'behn' | 'clay' | 'dill' | 'eyre' | 'gall' | 'iris' | 'jael' | 'khan';
+
+type Tail = {
+  jump?: boolean;
+  care?: string | null;
+  desk?: string | null;
+  dude?: string | null;
+  path?: string | null;
+  ship?: string | null;
+  spur?: string | null;
+  vane?: string | null;
+} | null;
+
+interface SealPerm {
+  vane: Vane | null;
+  name: string;
+  hoon: string;
+  tail: Tail;
+}
+
+export type Seal = SealPerm[];
+
 export interface Treaty extends Docket {
   ship: string;
   desk: string;
   cass: Cass;
   hash: string;
+  bill: string[];
+  seal: Seal;
 }
 
 export interface Charges {

@@ -12,12 +12,42 @@ import {
   Contacts,
   Timebox,
   harkBinToId,
-  Pikes
+  Pikes,
+  Seal
 } from '@/gear';
 import _ from 'lodash';
 import systemUrl from '../assets/system.png';
 
-export const appMetaData: Pick<Treaty, 'cass' | 'hash' | 'website' | 'license' | 'version'> = {
+const coinFlip = () => Math.random() > 0.5;
+
+const makeSeal: () => Seal = () => {
+  return [
+    // write perm
+    {
+      vane: null,
+      name: 'write',
+      hoon: '[%write & %some-agent]',
+      tail: {
+        dude: null,
+        jump: coinFlip()
+      }
+    },
+    // reads perm
+    {
+      vane: null,
+      name: 'reads',
+      hoon: '[%reads %g `%u `%settings-store /]',
+      tail: {
+        vane: 'gall',
+        care: 'u',
+        desk: 'landscape',
+        spur: '/',
+      }
+    }
+  ]
+}
+
+export const appMetaData: Pick<Treaty, 'cass' | 'hash' | 'website' | 'license' | 'version' | 'bill' | 'seal'> = {
   cass: {
     da: '~2021.9.13..05.41.04..ae65',
     ud: 1
@@ -25,7 +55,9 @@ export const appMetaData: Pick<Treaty, 'cass' | 'hash' | 'website' | 'license' |
   hash: '0v6.nj6ls.l7unh.l9bhk.d839n.n8nlq.m2dmc.fj80i.pvqun.uhg6g.1kk0h',
   website: 'https://tlon.io',
   license: 'MIT',
-  version: '2.0.1'
+  version: '2.0.1',
+  bill: [],
+  seal: coinFlip() ? makeSeal() : [],
 };
 
 const makeHref = (base: string): DocketHrefGlob => ({ glob: { base } });
@@ -345,7 +377,9 @@ export const mockPikes: Pikes = {
     sync: null,
     zest: 'dead',
     wefts: [],
-    hash: '0v19.q7u27.omps3.fbhf4.53rai.co157.pben7.pu94n.63v4p.3kcb7.iafj0'
+    hash: '0v19.q7u27.omps3.fbhf4.53rai.co157.pben7.pu94n.63v4p.3kcb7.iafj0',
+    perms: [],
+    lacks: [],
   },
   garden: {
     sync: {
@@ -354,7 +388,9 @@ export const mockPikes: Pikes = {
     },
     zest: 'live',
     wefts: [],
-    hash: '0v18.hbbs6.onu15.skjkv.qrfgl.vf4oo.0igo5.2q0d3.6r3r8.2dkmo.oa04m'
+    hash: '0v18.hbbs6.onu15.skjkv.qrfgl.vf4oo.0igo5.2q0d3.6r3r8.2dkmo.oa04m',
+    perms: [],
+    lacks: [],
   },
   landscape: {
     sync: {
@@ -363,12 +399,16 @@ export const mockPikes: Pikes = {
     },
     zest: 'live',
     wefts: [],
-    hash: '0v1t.qln8k.cskmt.cn6lv.gu335.jfba6.kte90.iqqn3.aj67b.t389a.8imuo'
+    hash: '0v1t.qln8k.cskmt.cn6lv.gu335.jfba6.kte90.iqqn3.aj67b.t389a.8imuo',
+    perms: [],
+    lacks: [],
   },
   base: {
     sync: null,
     zest: 'live',
     wefts: [],
-    hash: '0v1e.b5auh.6u82i.hqk1r.22kli.4ubef.a1cbo.3g532.6l49k.g0i8e.t6eid'
+    hash: '0v1e.b5auh.6u82i.hqk1r.22kli.4ubef.a1cbo.3g532.6l49k.g0i8e.t6eid',
+    perms: [],
+    lacks: [],
   }
 };

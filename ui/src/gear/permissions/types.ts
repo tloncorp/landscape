@@ -56,3 +56,33 @@ interface PressPerm {
  * A system permission
  */
 export type Perm = PokePerm | SubscribePerm | ScryPerm | PressPerm;
+
+/**
+  * Per lib/perms.hoon, Passport is intended for consumption by permission
+  * management frontends.
+  */
+export interface Passport {
+  /**
+   * Categorized perms
+   */
+  rad: Perm[];
+  /**
+   * Dangerous perms
+   */
+  sys: Perm[];
+  /**
+   * All apps perms
+   */
+  any: Perm[];
+  /**
+   * Unknown app perms
+   */
+  new: Perm[];
+  /**
+   * Specific app perms
+   */
+  app: {
+    app: string;
+    pes: Perm[];
+  }[];
+}
