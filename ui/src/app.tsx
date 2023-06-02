@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import Mousetrap from 'mousetrap';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import {
   BrowserRouter,
   Switch,
@@ -9,6 +10,7 @@ import {
   RouteComponentProps,
   Redirect,
 } from 'react-router-dom';
+import { TooltipProvider } from '@radix-ui/react-tooltip';
 import { ErrorBoundary } from 'react-error-boundary';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import { Grid } from './pages/Grid';
@@ -132,8 +134,11 @@ export function App() {
       onReset={() => window.location.reload()}
     >
       <BrowserRouter basename={base}>
-        <AppRoutes />
-        <Scheduler />
+        <ReactQueryDevtools initialIsOpen={false} />
+        <TooltipProvider>
+          <AppRoutes />
+          <Scheduler />
+        </TooltipProvider>
       </BrowserRouter>
     </ErrorBoundary>
   );

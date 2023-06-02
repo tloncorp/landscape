@@ -72,6 +72,7 @@ export const useSettings = () => {
   }, [rest, data]);
 };
 
+
 export function useDisplay(): SettingsState['display'] {
   const { data, isLoading } = useSettings();
 

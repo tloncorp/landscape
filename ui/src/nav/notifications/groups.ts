@@ -16,11 +16,14 @@ export interface Groups {
   [flag: string]: Group;
 }
 
-export function useGroups() {
+export function useGroups(enabled: boolean = true) {
   const { data, ...rest } = useReactQueryScry<Groups>({
     queryKey: ['groups'],
     app: 'groups',
     path: `/groups/light`,
+    options: {
+      enabled,
+    },
   });
 
   if (rest.isLoading || rest.isError) {
