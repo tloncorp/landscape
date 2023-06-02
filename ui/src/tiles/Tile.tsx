@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent } from 'react';
 import { useDrag } from 'react-dnd';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { chadIsRunning } from '@urbit/api';
@@ -26,7 +26,6 @@ export const Tile: FunctionComponent<TileProps> = ({
   desk,
   disabled = false,
 }) => {
-  const [showGroupsTooltip, setShowGroupsTooltip] = useState(false);
   const groups = useGroups(desk === 'groups');
   const hasGroups = groups && Object.entries(groups).length > 0;
   const invite = useHasInviteToGroup();
@@ -80,40 +79,29 @@ export const Tile: FunctionComponent<TileProps> = ({
     >
       <div>
         {desk === 'groups' && !hasGroups && (
-          <Tooltip.Root
-            open={showGroupsTooltip}
-            onOpenChange={(o) => setShowGroupsTooltip(o)}
-          >
-            <div
-              className="absolute top-4 right-4 z-10 sm:top-6 sm:right-6"
-              onMouseOver={() => setShowGroupsTooltip(true)}
-              onMouseOut={() => setShowGroupsTooltip(false)}
-            >
-              <Tooltip.Trigger>
-                <>
-                  <div className="absolute h-[42px] w-[42px] animate-pulse rounded-full bg-indigo opacity-10 sm:top-0 sm:right-0" />
-                  <Bullet className="h-[42px] w-[42px] text-indigo" />
-                </>
-              </Tooltip.Trigger>
-              <Tooltip.Portal>
-                <Tooltip.Content
-                  side="right"
-                  sideOffset={16}
-                  className="z-40 w-[216px] rounded-lg bg-indigo p-4"
-                >
-                  <p className="text-white">
-                    {invite ? (
-                      <>You have an invitation to join {inviteGroupName}.</>
-                    ) : (
-                      <>
-                        Open Groups to create, join, and accept invitations to
-                        communities.
-                      </>
-                    )}
-                  </p>
-                </Tooltip.Content>
-              </Tooltip.Portal>
-            </div>
+          <Tooltip.Root>
+            <Tooltip.Trigger className="absolute top-4 right-4 z-10 sm:top-6 sm:right-6">
+              <div className="absolute h-[42px] w-[42px] animate-pulse rounded-full bg-indigo opacity-10 sm:top-0 sm:right-0" />
+              <Bullet className="h-[42px] w-[42px] text-indigo" />
+            </Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content
+                side="right"
+                sideOffset={16}
+                className="z-40 w-[216px] rounded-lg bg-indigo p-4"
+              >
+                <p className="text-white">
+                  {invite ? (
+                    <>You have an invitation to join {inviteGroupName}.</>
+                  ) : (
+                    <>
+                      Open Groups to create, join, and accept invitations to
+                      communities.
+                    </>
+                  )}
+                </p>
+              </Tooltip.Content>
+            </Tooltip.Portal>
           </Tooltip.Root>
         )}
         <div className="absolute top-4 left-4 z-10 flex items-center sm:top-6 sm:left-6">
