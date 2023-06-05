@@ -43,7 +43,6 @@ export const TileMenu = ({
   className,
 }: TileMenuProps) => {
   const [open, setOpen] = useState(false);
-  // const toggleDocket = useDocketState((s) => s.toggleDocket);
   const { mutate: toggleDocket } = useToggleDocketMutation();
   const menuBg = { backgroundColor: menuColor };
   const linkOnSelect = useCallback(handleDropdownLink(setOpen), []);
