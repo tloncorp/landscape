@@ -3,7 +3,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { Dialog, DialogClose, DialogContent } from '../components/Dialog';
 import { useRecentsStore } from '../nav/search/Home';
-import useDocketState, { useCharges } from '../state/docket';
+import {
+  useCharges,
+  useToggleDocketMutation,
+} from '../state/docket';
 import { getAppName } from '@/logic/utils';
 
 export const SuspendApp = () => {
@@ -11,10 +14,11 @@ export const SuspendApp = () => {
   const { desk = '' } = useParams<{ desk: string }>();
   const charges = useCharges();
   const charge = charges[desk];
+  const { mutate: toggleDocket } = useToggleDocketMutation();
 
   // TODO: add optimistic updates
   const handleSuspendApp = useCallback(() => {
-    useDocketState.getState().toggleDocket(desk);
+    toggleDocket({ desk });
     useRecentsStore.getState().removeRecentApp(desk);
   }, [desk]);
 

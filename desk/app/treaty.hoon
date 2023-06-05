@@ -130,6 +130,7 @@
     [%x %alliance ~]      ``(alliance-update:cg:ca %ini entente)
     [%x %default-ally ~]  ``ship+!>(default-ally)
     [%x %allies ~]        ``(ally-update:cg:ca %ini allies)
+    [%x %treaties ~]      ``(treaty-update:cg:ca:cc %ini treaties)
   ::
      [%x %treaties @ ~]
     =/  =ship  (slav %p i.t.t.path)

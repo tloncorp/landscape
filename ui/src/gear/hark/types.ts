@@ -96,6 +96,11 @@ export interface HarkUpdate {
   threads: Threads;
 }
 
+export interface NewYarn extends Omit<Yarn, 'id' | 'time'> {
+  all: boolean;
+  desk: boolean;
+}
+
 export interface Skein {
   time: number;
   count: number;

@@ -11,9 +11,10 @@ import { ProviderList } from '../../components/ProviderList';
 import { AppLink } from '../../components/AppLink';
 import { ShipName } from '../../components/ShipName';
 import { ProviderLink } from '../../components/ProviderLink';
-import useDocketState, {
+import {
   ChargesWithDesks,
   useCharges,
+  useDefaultAlly,
 } from '../../state/docket';
 import {
   clearStorageMigration,
@@ -98,14 +99,11 @@ export const Home = () => {
   const charges = useCharges();
   const groups = charges?.landscape;
   const contacts = useContactState((s) => s.contacts);
-  const defaultAlly = useDocketState((s) =>
-    s.defaultAlly
-      ? {
-          shipName: s.defaultAlly,
-          ...(contacts[s.defaultAlly] || emptyContact),
-        }
-      : null
-  );
+  const defAlly = useDefaultAlly();
+  const defaultAlly = {
+    shipName: defAlly,
+    ...(contacts[defAlly] || emptyContact),
+  };
   const providerList = recentDevs.map((d) => ({
     shipName: d,
     ...(contacts[d] || emptyContact),

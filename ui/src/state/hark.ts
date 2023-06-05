@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { HarkAction, Rope, Seam, Skein } from '@/gear';
+import { HarkAction, NewYarn, Rope, Seam, Skein, Yarn } from '@/gear';
 import useReactQuerySubscription from '@/logic/useReactQuerySubscription';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { SettingsState } from './settings';
@@ -104,8 +104,41 @@ export function useHasInviteToGroup(): Skein | undefined {
 
   return skeins.data.find(
     (skein) =>
-      skein.top.rope.desk === 'groups' &&
+      skein.top?.rope?.desk === 'groups' &&
       skein.top.con.some((con) => con === ' sent you an invite to ') &&
       skein.unread
   );
+}
+
+interface NewYarnData extends Omit<NewYarn, 'all' | 'desk' | 'rope'> {
+  rope?: Rope;
+}
+
+export function useAddYarnMutation() {
+  const queryClient = useQueryClient();
+  const mutationFn = async (variables: { newYarn: NewYarnData }) => {
+    return api.poke<NewYarn>({
+      app: 'hark',
+      mark: 'hark-new-yarn',
+      json: {
+        all: true,
+        desk: true,
+        rope: {
+          desk: window.desk,
+          group: null,
+          channel: null,
+          thread: '/apps',
+        },
+        ...variables.newYarn,
+      },
+    });
+  };
+  return useMutation(mutationFn, {
+    onMutate: async () => {
+      await queryClient.cancelQueries(['skeins']);
+    },
+    onSettled: async (_data, _error) => {
+      await queryClient.invalidateQueries(['skeins']);
+    },
+  });
 }
