@@ -151,7 +151,35 @@ const NotificationContent: React.FC<NotificationContent> = ({
 
   function renderContent(c: YarnContent) {
     if (typeof c === 'string') {
-      return <span key={c}>{c}</span>;
+      const PATP_REGEX = /(~[a-z0-9-]+)/i;
+      const URL_REGEX = /(http(s?):\/\/[^\s]+)/i;
+      const COMBO_REGEX = /(~[a-z0-9-]+|https?:\/\/[^\s]+)/i;
+      const parts = c.split(COMBO_REGEX);
+      return (
+        <>
+          {parts.map((part, index) => {
+            if (part.match(URL_REGEX)) {
+              return (
+                <span className="break-all" key={index}>
+                  {part}
+                </span>
+              );
+            }
+            if (part.match(PATP_REGEX)) {
+              return (
+                <ShipName
+                  key={index}
+                  name={part}
+                  className="font-semibold text-gray-800"
+                  showAlias={true}
+                />
+              );
+            } else {
+              return <span key={index}>{part}</span>;
+            }
+          })}
+        </>
+      );
     }
 
     if ('ship' in c) {
@@ -184,7 +212,7 @@ const NotificationContent: React.FC<NotificationContent> = ({
   if (isReply) {
     return (
       <>
-        <p className="mb-2 leading-5 text-gray-400 line-clamp-2">
+        <p className="mb-2 leading-5 text-gray-400 line-clamp-1">
           {_.map(_.slice(content, 0, 4), (c: YarnContent) => renderContent(c))}
         </p>
         <p className="leading-5 text-gray-800 line-clamp-2">
