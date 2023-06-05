@@ -1,7 +1,7 @@
 :~  title+'Landscape'
     info+'An app launcher for Urbit.'
     color+0xee.5432
-    glob-http+['https://bootstrap.urbit.org/glob-0v6.0l9qm.3rrpq.s68se.mtnih.msdr4.glob' 0v6.0l9qm.3rrpq.s68se.mtnih.msdr4]
+    glob-http+['https://bootstrap.urbit.org/glob-0v5.co48u.5kv3g.gf269.k5hc7.mnv27.glob' 0v5.co48u.5kv3g.gf269.k5hc7.mnv27]
     ::glob-ames+~zod^0v0
     base+'grid'
     version+[1 11 0]
