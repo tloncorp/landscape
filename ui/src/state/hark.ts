@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { HarkAction, Rope, Seam, Skein } from '../types/hark';
+import { HarkAction, Rope, Seam, Skein, Yarn } from '../types/hark';
 import useReactQuerySubscription from '@/logic/useReactQuerySubscription';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { SettingsState } from './settings';
@@ -104,8 +104,43 @@ export function useHasInviteToGroup(): Skein | undefined {
 
   return skeins.data.find(
     (skein) =>
-      skein.top.rope.desk === 'groups' &&
+      skein.top?.rope?.desk === 'groups' &&
       skein.top.con.some((con) => con === ' sent you an invite to ') &&
       skein.unread
   );
+}
+
+
+export function useAddYarnMutation() {
+  const queryClient = useQueryClient();
+  const mutationFn = async (variables: { yarn: Yarn }) => {
+
+    return api.poke({
+      ...harkAction({
+        'add-yarn': {
+          all: true,
+          desk: true,
+          yarn: {
+            id: null,
+            time: null,
+            rope: {
+              desk: window.desk,
+              group: null,
+              channel: null,
+              thread: '/apps',
+            },
+            ...variables.yarn,
+          }
+        },
+      }),
+    });
+  };
+  return useMutation(mutationFn, {
+    onMutate: async () => {
+      await queryClient.cancelQueries(['skeins']);
+    },
+    onSettled: async (_data, _error) => {
+      await queryClient.invalidateQueries(['skeins']);
+    },
+  });
 }

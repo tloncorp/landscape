@@ -204,11 +204,16 @@ const NotificationContent: React.FC<NotificationContent> = ({
 export default function Notification({ bin, groups }: NotificationProps) {
   const moreCount = bin.count;
   const { rope, con, wer, but } = bin.top;
-  const charge = useCharge(rope.desk);
+  const charge = useCharge(rope?.desk ?? '');
   const app = getAppName(charge);
+  const { mutate: sawRope } = useSawRopeMutation();
+
+  if (!rope) {
+    return null;
+  }
+
   const type = getNotificationType(rope);
   const ship = con.find(isYarnShip)?.ship;
-  const { mutate: sawRope } = useSawRopeMutation();
 
   const onClick = useCallback(() => {
     console.log('clearing notification', rope);

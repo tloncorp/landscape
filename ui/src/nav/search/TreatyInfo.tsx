@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { AppInfo } from '../../components/AppInfo';
 import { Spinner } from '../../components/Spinner';
-import useDocketState, { useCharge, useTreaty } from '../../state/docket';
+import { useCharge, useTreaty } from '../../state/docket';
 import { usePike } from '../../state/kiln';
 import { getAppName } from '@/logic/utils';
 import { useAppSearchStore } from '../Nav';
@@ -14,12 +14,6 @@ export const TreatyInfo = () => {
   const pike = usePike(desk);
   const charge = useCharge(desk);
   const name = getAppName(treaty);
-
-  useEffect(() => {
-    if (!charge) {
-      useDocketState.getState().requestTreaty(host, desk);
-    }
-  }, [host, desk]);
 
   useEffect(() => {
     select(<>{name}</>);

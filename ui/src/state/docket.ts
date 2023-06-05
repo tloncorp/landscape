@@ -1,14 +1,8 @@
-import create, { SetState } from 'zustand';
-import { useCallback, useEffect, useState } from 'react';
-import { omit, pick } from 'lodash';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Allies,
   Charge,
   ChargeUpdateInitial,
-  scryAllies,
-  scryAllyTreaties,
-  scryCharges,
-  scryDefaultAlly,
   Treaty,
   Docket,
   Treaties,
@@ -25,6 +19,13 @@ import {
 import api from '@/api';
 import { normalizeUrbitColor } from '@/logic/utils';
 import { Status } from '@/logic/useAsyncCall';
+import useReactQuerySubscription from '@/logic/useReactQuerySubscription';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import useReactQueryScry from '@/logic/useReactQueryScry';
+import { useAddYarnMutation } from './hark';
+import { useWatcherStore } from './watcher';
+
+const NOTIFICATION_TIMEOUT = 60 * 1000; // if an action hasn't completed in 60 seconds, show a notification when it does.
 
 export interface ChargeWithDesk extends Charge {
   desk: string;
@@ -38,121 +39,7 @@ export interface DocketWithDesk extends Docket {
   desk: string;
 }
 
-interface DocketState {
-  charges: ChargesWithDesks;
-  treaties: Treaties;
-  allies: Allies;
-  defaultAlly: string | null;
-  fetchCharges: () => Promise<void>;
-  fetchDefaultAlly: () => Promise<void>;
-  requestTreaty: (ship: string, desk: string) => Promise<Treaty>;
-  fetchAllies: () => Promise<Allies>;
-  fetchAllyTreaties: (ally: string) => Promise<Treaties>;
-  toggleDocket: (desk: string) => Promise<void>;
-  installDocket: (ship: string, desk: string) => Promise<number | void>;
-  uninstallDocket: (desk: string) => Promise<number | void>;
-  //
-  addAlly: (ship: string) => Promise<number>;
-  set: SetState<DocketState>;
-}
-
-const useDocketState = create<DocketState>((set, get) => ({
-  defaultAlly: null,
-  fetchDefaultAlly: async () => {
-    const defaultAlly = await api.scry<string>(scryDefaultAlly);
-    set({ defaultAlly });
-  },
-  fetchCharges: async () => {
-    const charg = (await api.scry<ChargeUpdateInitial>(scryCharges)).initial;
-
-    const charges = Object.entries(charg).reduce(
-      (obj: ChargesWithDesks, [key, value]) => {
-        // eslint-disable-next-line no-param-reassign
-        obj[key] = normalizeDocket(value as ChargeWithDesk, key);
-        return obj;
-      },
-      {}
-    );
-
-    set({ charges });
-  },
-  fetchAllies: async () => {
-    const allies = (await api.scry<AllyUpdateIni>(scryAllies)).ini;
-    set({ allies });
-    return allies;
-  },
-  fetchAllyTreaties: async (ally: string) => {
-    let treaties = (await api.scry<TreatyUpdateIni>(scryAllyTreaties(ally)))
-      .ini;
-    treaties = normalizeDockets(treaties);
-    set((s) => ({ treaties: { ...s.treaties, ...treaties } }));
-    return treaties;
-  },
-  requestTreaty: async (ship: string, desk: string) => {
-    const { treaties } = get();
-
-    const key = `${ship}/${desk}`;
-    if (key in treaties) {
-      return treaties[key];
-    }
-
-    const result = await api.subscribeOnce<Treaty>(
-      'treaty',
-      `/treaty/${key}`,
-      20000
-    );
-    const treaty = { ...normalizeDocket(result, desk), ship };
-    set((state) => ({
-      treaties: { ...state.treaties, [key]: treaty },
-    }));
-    return treaty;
-  },
-  installDocket: async (ship: string, desk: string) => {
-    const treaty = get().treaties[`${ship}/${desk}`];
-    if (!treaty) {
-      throw new Error('Bad install');
-    }
-    set((state) =>
-      addCharge(state, desk, { ...treaty, chad: { install: null } })
-    );
-
-    await api.poke(docketInstall(ship, desk));
-  },
-  uninstallDocket: async (desk: string) => {
-    set((state) => delCharge(state, desk));
-    await api.poke({
-      app: 'docket',
-      mark: 'docket-uninstall',
-      json: desk,
-    });
-  },
-  toggleDocket: async (desk: string) => {
-    const { charges } = get();
-    const charge = charges[desk];
-    if (!charge) {
-      return;
-    }
-    const suspended = 'suspend' in charge.chad;
-    if (suspended) {
-      await api.poke(kilnRevive(desk));
-    } else {
-      await api.poke(kilnSuspend(desk));
-    }
-  },
-  treaties: {},
-  charges: {},
-  allies: {},
-  addAlly: async (ship) => {
-    set((draft) => {
-      draft.allies[ship] = [];
-    });
-
-    return api.poke(allyShip(ship));
-  },
-  set,
-}));
-
-function normalizeDocket<T extends Docket>(docket: T, desk: string): T {
+export function normalizeDocket<T extends Docket>(docket: T, desk: string): T {
   return {
     ...docket,
     desk,
@@ -160,7 +47,7 @@ function normalizeDocket<T extends Docket>(docket: T, desk: string): T {
   };
 }
 
-function normalizeDockets<T extends Docket>(
+export function normalizeDockets<T extends Docket>(
   dockets: Record<string, T>
 ): Record<string, T> {
   return Object.entries(dockets).reduce(
@@ -174,153 +61,181 @@ function normalizeDockets<T extends Docket>(
   );
 }
 
-function addCharge(state: DocketState, desk: string, charge: Charge) {
-  return {
-    charges: {
-      ...state.charges,
-      [desk]: normalizeDocket(charge as ChargeWithDesk, desk),
-    },
-  };
-}
-
-function delCharge(state: DocketState, desk: string) {
-  return { charges: omit(state.charges, desk) };
-}
-
-api.subscribe({
-  app: 'docket',
-  path: '/charges',
-  event: (data: ChargeUpdate) => {
-    useDocketState.setState((state) => {
+export function useCharges(): ChargesWithDesks {
+  const { mutate } = useAddYarnMutation();
+  const { data, ...rest } = useReactQuerySubscription<
+    ChargeUpdateInitial,
+    ChargeUpdate
+  >({
+    queryKey: ['docket', 'charges'],
+    app: 'docket',
+    path: '/charges',
+    scry: '/charges',
+    onEvent: (data) => {
       if ('add-charge' in data) {
-        const { desk, charge } = data['add-charge'];
-        return addCharge(state, desk, charge);
+        const { charge, desk } = data['add-charge'];
+        const watcher = useWatcherStore.getState().watchers[`install-${desk}`];
+
+        if ('suspend' in charge.chad) {
+          return;
+        }
+        if (watcher && Date.now() - watcher.time > NOTIFICATION_TIMEOUT) {
+          mutate({
+            yarn: {
+              con: [
+                'App ',
+                { emph: data['add-charge'].desk },
+                ' has been installed',
+              ],
+              wer: `/grid/app/${desk}`,
+              but: null,
+            },
+          });
+          useWatcherStore.getState().removeWatcher(`install-${desk}`);
+        }
       }
+    },
+  });
 
-      if ('del-charge' in data) {
-        const desk = data['del-charge'];
-        return delCharge(state, desk);
-      }
+  const charges = useMemo(() => {
+    if (!data) {
+      return {};
+    }
+    const normalized = Object.entries(data.initial).reduce(
+      (obj: ChargesWithDesks, [key, value]) => {
+        // eslint-disable-next-line no-param-reassign
+        obj[key] = normalizeDocket(value as ChargeWithDesk, key);
+        return obj;
+      },
+      {}
+    );
+    return normalized;
+  }, [data]);
 
-      return { charges: state.charges };
-    });
-  },
-});
-
-api.subscribe({
-  app: 'treaty',
-  path: '/treaties',
-  event: (data: TreatyUpdate) => {
-    useDocketState.getState().set((draft) => {
-      if ('add' in data) {
-        const { ship, desk } = data.add;
-        const treaty = normalizeDocket(data.add, desk);
-        draft.treaties[`${ship}/${desk}`] = treaty;
-      }
-
-      if ('ini' in data) {
-        const treaties = normalizeDockets(data.ini);
-        draft.treaties = { ...draft.treaties, ...treaties };
-      }
-    });
-  },
-});
-
-api.subscribe({
-  app: 'treaty',
-  path: '/allies',
-  event: (data: AllyUpdateNew) => {
-    useDocketState.getState().set((draft) => {
-      if ('new' in data) {
-        const { ship, alliance } = data.new;
-        draft.allies[ship] = alliance;
-      }
-    });
-  },
-});
-
-const selCharges = (s: DocketState) => {
-  return s.charges;
-};
-
-export function useCharges() {
-  return useDocketState(selCharges);
+  return charges;
 }
 
 export function useCharge(desk: string) {
-  return useDocketState(useCallback((state) => state.charges[desk], [desk]));
+  const charges = useCharges();
+
+  return charges[desk];
 }
 
-const selRequest = (s: DocketState) => s.requestTreaty;
-export function useRequestDocket() {
-  return useDocketState(selRequest);
+export function useDefaultAlly(): string {
+  const { data, ...rest } = useReactQueryScry<string>({
+    queryKey: ['treaty', 'default-ally'],
+    app: 'treaty',
+    path: '/default-ally',
+  });
+
+  return data || '';
 }
 
-const selAllies = (s: DocketState) => s.allies;
-export function useAllies() {
-  return useDocketState(selAllies);
+export function useAllies(): Allies {
+  const { data, ...rest } = useReactQuerySubscription<
+    AllyUpdateIni,
+    AllyUpdateNew
+  >({
+    queryKey: ['treaty', 'allies'],
+    app: 'treaty',
+    path: '/allies',
+    scry: '/allies',
+  });
+
+  const allies = useMemo(() => {
+    if (!data) {
+      return {};
+    }
+    return data.ini;
+  }, [data]);
+
+  return allies;
+}
+
+export async function addAlly(ship: string) {
+  return api.poke(allyShip(ship));
+}
+
+export function useTreaties(): Treaties {
+  const { data, ...rest } = useReactQuerySubscription<
+    TreatyUpdateIni,
+    TreatyUpdate
+  >({
+    queryKey: ['treaty', 'treaties'],
+    app: 'treaty',
+    path: '/treaties',
+    scry: '/treaties',
+  });
+
+  const treaties = useMemo(() => {
+    if (!data || !data.ini) {
+      return {};
+    }
+
+    const normalized = normalizeDockets(data.ini);
+    return normalized;
+  }, [data]);
+
+  return treaties;
 }
 
 export function useAllyTreaties(ship: string) {
+  const queryClient = useQueryClient();
   const allies = useAllies();
   const isAllied = ship in allies;
   const [status, setStatus] = useState<Status>('initial');
-  const [treaties, setTreaties] = useState<Treaties>();
 
   useEffect(() => {
     if (Object.keys(allies).length > 0 && !isAllied) {
       setStatus('loading');
-      useDocketState.getState().addAlly(ship);
+      addAlly(ship);
     }
   }, [allies, isAllied, ship]);
 
-  useEffect(() => {
-    async function fetchTreaties() {
-      if (isAllied) {
-        setStatus('loading');
-        try {
-          const newTreaties = await useDocketState
-            .getState()
-            .fetchAllyTreaties(ship);
+  const { data, ...rest } = useReactQueryScry<TreatyUpdateIni>({
+    queryKey: ['treaty', 'treaties', ship],
+    app: 'treaty',
+    path: `/treaties/${ship}`,
+    options: {
+      enabled: isAllied,
+    },
+  });
 
-          if (Object.keys(newTreaties).length > 0) {
-            setTreaties(newTreaties);
-            setStatus('success');
-          }
-        } catch {
-          setStatus('error');
-        }
-      }
+  const treaties = useMemo(() => {
+    if (!data) {
+      return {};
     }
-
-    fetchTreaties();
-  }, [ship, isAllied]);
-
-  const storeTreaties = useDocketState(
-    useCallback(
-      (s) => {
-        const charter = s.allies[ship];
-        return pick(s.treaties, ...(charter || []));
-      },
-      [ship]
-    )
-  );
+    return normalizeDockets(data.ini);
+  }, [data]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
       setStatus('error');
     }, 30 * 1000); // wait 30 secs before timing out
 
-    if (Object.keys(storeTreaties).length > 0) {
-      setTreaties(storeTreaties);
+    if (Object.keys(treaties).length > 0) {
       setStatus('success');
       clearTimeout(timeout);
+      queryClient.setQueryData(
+        ['treaty', 'treaties'],
+        (old: Treaties | undefined) => {
+          if (old === undefined && treaties !== undefined) {
+            return treaties;
+          }
+
+          if (treaties === undefined) {
+            return old;
+          }
+
+          return { ...old, ...treaties };
+        }
+      );
     }
 
     return () => {
       clearTimeout(timeout);
     };
-  }, [storeTreaties]);
+  }, [treaties]);
 
   return {
     isAllied,
@@ -330,29 +245,140 @@ export function useAllyTreaties(ship: string) {
 }
 
 export function useTreaty(host: string, desk: string) {
-  return useDocketState(
-    useCallback(
-      (s) => {
-        const ref = `${host}/${desk}`;
-        return s.treaties[ref];
-      },
-      [host, desk]
-    )
+  const queryClient = useQueryClient();
+  const treaties = useTreaties();
+  const ref = `${host}/${desk}`;
+  const treaty = treaties[ref];
+  const getTreaty = useCallback(
+    async (host: string, desk: string) => {
+      const result = await api.subscribeOnce<Treaty>(
+        'treaty',
+        `/treaty/${ref}`,
+        20000
+      );
+
+      if (result) {
+        const newTreaty: Treaty = {
+          ...normalizeDocket(result, desk),
+          ship: host,
+        };
+        queryClient.setQueryData(
+          ['treaty', 'treaties'],
+          (old: Treaties | undefined) => {
+            if (old === undefined && result !== undefined) {
+              return { [ref]: newTreaty };
+            }
+
+            if (result === undefined) {
+              return old;
+            }
+
+            return { ...old, [ref]: newTreaty };
+          }
+        );
+        return newTreaty;
+      }
+      return undefined;
+    },
+    [queryClient, ref]
   );
+
+  if (!treaty) {
+    getTreaty(host, desk);
+  }
+
+  return treaty;
 }
 
-export function allyForTreaty(ship: string, desk: string) {
-  const ref = `${ship}/${desk}`;
-  const { allies } = useDocketState.getState();
-  const ally = Object.entries(allies).find(([, allied]) =>
-    allied.includes(ref)
-  )?.[0];
-  return ally;
+export function useInstallDocketMutation() {
+  const mutationFn = async (variables: { ship: string; desk: string }) => {
+    useWatcherStore
+      .getState()
+      .addWatcher(`install-${variables.desk}`, { time: Date.now() });
+    return api.poke(docketInstall(variables.ship, variables.desk));
+  };
+
+  return useMutation(mutationFn, {
+    onSuccess: (data, variables) => {},
+  });
+}
+
+export function useUninstallDocketMutation() {
+  const queryClient = useQueryClient();
+  const treaties = useTreaties();
+  const charges = useCharges();
+  const mutationFn = async (variables: { desk: string }) => {
+    return api.trackedPoke(
+      {
+        app: 'docket',
+        mark: 'docket-uninstall',
+        json: variables.desk,
+      },
+      {
+        app: 'docket',
+        path: '/charges',
+      }
+    );
+  };
+
+  return useMutation(mutationFn, {
+    onMutate: (variables) => {
+      const charge = charges[variables.desk];
+      if (charge) {
+        queryClient.setQueryData(
+          ['docket', 'charges'],
+          (old: ChargesWithDesks | undefined) => {
+            if (old === undefined) {
+              return old;
+            }
+
+            let newCharges = { ...old };
+
+            delete newCharges[variables.desk];
+
+            return newCharges;
+          }
+        );
+      }
+    },
+  });
+}
+
+export function useToggleDocketMutation() {
+  const queryClient = useQueryClient();
+  const charges = useCharges();
+  const mutationFn = async (variables: { desk: string }) => {
+    const charge = charges[variables.desk];
+
+    if (!charge) {
+      return;
+    }
+
+    const suspended = 'suspend' in charge.chad;
+    if (suspended) {
+      await api.poke(kilnRevive(variables.desk));
+    } else {
+      await api.poke(kilnSuspend(variables.desk));
+    }
+  };
+
+  return useMutation(mutationFn, {
+    onSuccess: (data, variables) => {
+      const charge = charges[variables.desk];
+      if (charge) {
+        queryClient.setQueryData(
+          ['charge', 'charges'],
+          (old: ChargesWithDesks | undefined) => {
+            if (old === undefined) {
+              return { [variables.desk]: charge };
+            }
+
+            return { ...old, [variables.desk]: charge };
+          }
+        );
+      }
+    },
+  });
 }
 
 export const landscapeTreatyHost = import.meta.env.LANDSCAPE_HOST as string;
-
-// xx useful for debugging
-window.docket = useDocketState.getState;
-
-export default useDocketState;
