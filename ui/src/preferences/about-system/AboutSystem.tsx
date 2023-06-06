@@ -30,7 +30,9 @@ export const AboutSystem = () => {
   const lag = useLag();
 
   const vere = useVereState.getState();
-  const {isLatest, vereVersion, latestVereVersion} = vere;
+  const {isLatest, vereVersion, latestVereVersion, loaded} = vere;
+
+  const runtimeUpToDate = (!loaded || isLatest)
 
   return (
     <>
@@ -144,7 +146,7 @@ export const AboutSystem = () => {
             </>
           ) : (
               <>
-                  {isLatest ?
+                  {runtimeUpToDate ?
                    <>
                        <p>Urbit Runtime Version {vereVersion}</p>
                        <p>Your urbit is up to date.</p>

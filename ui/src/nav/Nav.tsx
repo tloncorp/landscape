@@ -139,9 +139,11 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
   const dialogNavRef = useRef<HTMLDivElement>(null);
   const { disableWayfinding } = useCalm();
   const { systemBlocked } = useSystemUpdate();
-  const { isLatest } = useVereState();
+  const { isLatest, loaded } = useVereState();
   const [dialogContentOpen, setDialogContentOpen] = useState(false);
   const select = useAppSearchStore((state) => state.select);
+
+  const runtimeOutOfDate = (loaded && !(isLatest));
 
   const menuState = menu || 'closed';
   const isOpen =
@@ -190,7 +192,7 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
         containerRef={dialogContentOpen ? dialogNavRef : navRef}
         className="flex w-full items-center space-x-2 sm:justify-center"
       >
-        <SystemPrefsLink menuState={menuState} systemBlocked={systemBlocked || !(isLatest)} />
+        <SystemPrefsLink menuState={menuState} systemBlocked={systemBlocked || runtimeOutOfDate} />
         <NotificationsLink
           navOpen={isOpen}
           notificationsOpen={menu === 'notifications'}
