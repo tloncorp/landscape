@@ -11,7 +11,7 @@ import { SuspendApp } from '../tiles/SuspendApp';
 import { TileGrid } from '../tiles/TileGrid';
 import { TileInfo } from '../tiles/TileInfo';
 
-interface RouteProps {
+export interface RouteProps {
   menu?: MenuState;
 }
 
@@ -44,7 +44,7 @@ export const Grid: FunctionComponent = () => {
   return (
     <div className="flex h-screen w-full flex-col">
       <header className="fixed bottom-0 left-0 z-30 flex w-full justify-center px-4 sm:sticky sm:bottom-auto sm:top-0">
-        <Nav menu={menu} />
+        <Nav />
       </header>
 
       <main className="relative z-0 flex h-full w-full justify-center pt-4 pb-32 md:pt-16">

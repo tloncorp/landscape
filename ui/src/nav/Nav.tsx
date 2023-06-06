@@ -15,6 +15,7 @@ import {
   Route,
   Switch,
   useHistory,
+  useParams,
   useRouteMatch,
 } from 'react-router-dom';
 import create from 'zustand';
@@ -30,10 +31,10 @@ import { SystemPreferences } from '../preferences/SystemPreferences';
 import { useSystemUpdate } from '../logic/useSystemUpdate';
 import { Bullet } from '../components/icons/Bullet';
 import { Cross } from '../components/icons/Cross';
-import MagnifyingGlass16Icon from '../components/icons/MagnifyingGlass16Icon';
 import GetApps from './GetApps';
 import LandscapeWayfinding from '../components/LandscapeWayfinding';
 import { useCalm } from '../state/settings';
+import { RouteProps } from '@/pages/Grid';
 
 export interface MatchItem {
   url: string;
@@ -77,10 +78,6 @@ export type MenuState =
   | 'system-preferences'
   | 'upgrading';
 
-interface NavProps {
-  menu?: MenuState;
-}
-
 type PrefsLinkProps = Omit<LinkProps<HTMLAnchorElement>, 'to'> & {
   menuState: string;
   systemBlocked?: string[];
@@ -121,9 +118,8 @@ export const GetAppsLink = () => {
   return (
     <Link
       to="/get-apps"
-      className="flex h-9 w-[150px] items-center justify-center space-x-2 rounded-lg bg-blue-soft px-3 py-2.5"
+      className="flex h-9 w-[125px] items-center justify-center space-x-2 rounded-lg bg-blue-soft px-3 py-2.5"
     >
-      <MagnifyingGlass16Icon className="h-4 w-4 fill-current text-blue" />
       <span className="whitespace-nowrap font-semibold text-blue">
         Get Urbit Apps
       </span>
@@ -131,11 +127,11 @@ export const GetAppsLink = () => {
   );
 };
 
-export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
+export const Nav: FunctionComponent = () => {
   const { push } = useHistory();
+  const { menu } = useParams<RouteProps>();
   const inputRef = useRef<HTMLInputElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
-  const dialogNavRef = useRef<HTMLDivElement>(null);
   const { disableWayfinding } = useCalm();
   const { systemBlocked } = useSystemUpdate();
   const [dialogContentOpen, setDialogContentOpen] = useState(false);
@@ -172,20 +168,11 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
     }
   }, []);
 
-  const preventClose = useCallback((e) => {
-    const target = e.target as HTMLElement;
-    const hasNavAncestor = target.closest('#dialog-nav');
-
-    if (hasNavAncestor) {
-      e.preventDefault();
-    }
-  }, []);
-
   return (
     <ErrorBoundary FallbackComponent={ErrorAlert} onReset={() => push('/')}>
       {/* Using portal so that we can retain the same nav items both in the dialog and in the base header */}
       <Portal.Root
-        containerRef={dialogContentOpen ? dialogNavRef : navRef}
+        containerRef={navRef}
         className="flex w-full items-center space-x-2 sm:justify-center"
       >
         <SystemPrefsLink menuState={menuState} systemBlocked={systemBlocked} />
@@ -193,16 +180,7 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
           navOpen={isOpen}
           notificationsOpen={menu === 'notifications'}
         />
-        {menuState === 'search' || menuState === 'get-apps' ? (
-          <AppSearch
-            ref={inputRef}
-            menu={menuState}
-            dropdown="leap-items"
-            navOpen={isOpen}
-          />
-        ) : (
-          <GetAppsLink />
-        )}
+        <GetAppsLink />
         {!disableWayfinding && <LandscapeWayfinding className="sm:hidden" />}
       </Portal.Root>
 
@@ -219,22 +197,17 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
       />
       <Dialog open={isOpen} onOpenChange={onDialogClose}>
         <DialogContent
-          onInteractOutside={preventClose}
           onOpenAutoFocus={onOpen}
-          className="scroll-left-50 scroll-full-width outline-none fixed bottom-0 z-50 flex h-full max-h-full max-w-[882px] -translate-x-1/2 flex-col justify-end px-4 text-gray-400 sm:top-0 sm:bottom-auto sm:h-auto sm:justify-start sm:pb-4"
+          onInteractOutside={() => onDialogClose(false)}
+          className="scroll-left-50 scroll-full-width outline-none fixed top-0 z-50 mt-4 flex  max-w-[882px] -translate-x-1/2 flex-col justify-start  px-4 text-gray-400  sm:bottom-auto sm:mt-12 h-auto sm:pb-4"
           role="combobox"
           aria-controls="leap-items"
           aria-owns="leap-items"
           aria-expanded={isOpen}
         >
-          <header
-            id="dialog-nav"
-            ref={dialogNavRef}
-            className="order-last mx-auto my-6 w-full max-w-[712px] sm:order-none sm:mb-3"
-          />
           <div
             id="leap-items"
-            className="default-ring mt-4 grid grid-rows-[fit-content(calc(100vh-6.25rem))] overflow-hidden rounded-xl bg-white focus-visible:ring-2 sm:mt-0"
+            className="default-ring grid grid-rows-[fit-content(calc(100vh-6.25rem))] overflow-hidden rounded-xl bg-white focus-visible:ring-2"
             tabIndex={0}
             role="listbox"
           >
