@@ -1,4 +1,4 @@
-import { Yarn, isYarnEmph, isYarnShip } from '@/types/hark';
+import { Yarn, isYarnEmph, isYarnShip } from '@/gear';
 import { findLast } from 'lodash';
 import { Docket, DocketHref, Treaty } from '@/gear';
 import { hsla, parseToHsla, parseToRgba } from 'color2k';

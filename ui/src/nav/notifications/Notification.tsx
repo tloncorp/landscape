@@ -3,7 +3,7 @@ import cn from 'classnames';
 import { format } from 'date-fns';
 import _ from 'lodash';
 import { pluralize, getAppName } from '@/logic/utils';
-import { isYarnShip, Rope, Skein, YarnContent } from '@/types/hark';
+import { isYarnShip, Rope, Skein, YarnContent } from '@/gear';
 import { useCharge } from '../../state/docket';
 import { Groups } from './groups';
 import { Button } from '../../components/Button';

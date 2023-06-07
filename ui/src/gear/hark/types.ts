@@ -1,58 +1,105 @@
+export type Flag = string; // ~{ship}/{name}
+export type Id = string; // @uvH
 
-export interface HarkStats {
-  count: number;
-  each: string[];
-  last: number;
+export type Thread = Id[];
+
+export interface Threads {
+  [time: string]: Thread; // time is @da
 }
 
-export interface Timebox {
-  [binId: string]: Notification;
-}
-
-export type HarkContent = { ship: string; } | { text: string; };
-
-export interface HarkBody {
-  title: HarkContent[];
+export interface Yarn {
+  id: Id;
+  rope: Rope;
   time: number;
-  content: HarkContent[];
-  link: string;
-  binned: string;
+  con: YarnContent[];
+  wer: string;
+  but: YarnButton | null;
 }
 
-export interface HarkPlace {
+export interface YarnButton {
+  title: string;
+  handler: string;
+}
+
+interface YarnContentShip {
+  ship: string;
+}
+
+interface YarnContentEmphasis {
+  emph: string;
+}
+
+export type YarnContent = string | YarnContentShip | YarnContentEmphasis;
+
+export function isYarnShip(obj: YarnContent): obj is YarnContentShip {
+  return !!obj && typeof obj !== 'string' && 'ship' in obj;
+}
+
+export function isYarnEmph(obj: YarnContent): obj is YarnContentEmphasis {
+  return !!obj && typeof obj !== 'string' && 'emph' in obj;
+}
+
+export interface Rope {
+  group: Flag | null;
+  channel: Flag | null;
   desk: string;
-  path: string;
+  thread: string;
 }
 
-export interface HarkBin {
-  path: string;
-  place: HarkPlace;
+export type Seam = { group: Flag } | { desk: string } | { all: null };
+
+export interface Yarns {
+  [id: Id]: Yarn;
 }
 
-export type HarkLid =
-  { unseen: null; }
-| { seen: null; }
-| { time: string; };
+export interface Cable {
+  rope: Rope;
+  thread: Thread;
+}
 
-export type HarkBinId = string;
-export interface Notification {
-  bin: HarkBin;
+export interface Carpet {
+  seam: Seam;
+  yarns: Yarns;
+  cable: Cable[];
+  stitch: number;
+}
+
+export interface Blanket {
+  seam: Seam;
+  yarns: Yarns;
+  quilt: {
+    [key: number]: Thread;
+  };
+}
+
+export interface HarkAddYarn {
+  'add-yarn': {
+    all: boolean;
+    desk: boolean;
+    yarn: Yarn;
+  };
+}
+
+export interface HarkSawSeam {
+  'saw-seam': Seam;
+}
+
+export interface HarkSawRope {
+  'saw-rope': Rope;
+}
+
+export type HarkAction = HarkAddYarn | HarkSawSeam | HarkSawRope;
+
+export interface HarkUpdate {
+  yarns: Yarns;
+  seam: Seam;
+  threads: Threads;
+}
+
+export interface Skein {
   time: number;
-  body: HarkBody[];
+  count: number;
+  shipCount: number;
+  top: Yarn;
+  unread: boolean;
 }
-
-export interface NotificationGraphConfig {
-  watchOnSelf: boolean;
-  mentions: boolean;
-  watching: WatchedIndex[]
-}
-
-export interface Unreads {
-  [path: string]: HarkStats;
-}
-
-interface WatchedIndex {
-  graph: string;
-  index: string;
-}
-export type GroupNotificationsConfig = string[];
