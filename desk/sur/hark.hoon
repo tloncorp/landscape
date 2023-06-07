@@ -1,11 +1,11 @@
 /-  g=groups
 |%
 ::  $rope: notification origin
-::    
+::
 ::    Shows where a notification has come from. Used to group
 ::    notifications into threads
 +$  rope
-  $:  gop=(unit flag:g)               :: originating group
+  $:  gop=(unit flag)                 :: originating group
       can=(unit nest:g)               :: originating channel
       des=desk                        :: originating desk
       ted=path                        :: threading identifer
@@ -17,9 +17,9 @@
 +$  id   @uvH
 ::  $yarn: notification
 +$  yarn
-  $:  =id
+  $:  id=(unit id)                   :: optional identifier
       rop=rope                       :: origin
-      tim=time                       :: time sent
+      tim=(unit time)                :: time sent
       con=(list content)             :: content of notification
       wer=path                       :: where to link to in FE
       but=(unit button)              :: action, if any
@@ -29,7 +29,7 @@
   $:  title=cord
       handler=path
   ==
-::
++$  flag  (pair ship term)
 ::  $content: notification text to be rendered
 +$  content
   $@  @t
@@ -37,14 +37,14 @@
       [%emph p=cord]
   ==
 ::  $action: Actions for hark
-::  
+::
 ::    %add-yarn adds a notification to the relevant inboxes, indicated
 ::    by the loobs in the type
 ::    %saw-seam marks all notifications in an inbox as unread
 ::    %saw-rope marks a particular rope as read in all inboxes
 ::
 +$  action
-  $%  [%add-yarn all=? desk=? =yarn] 
+  $%  [%add-yarn all=? desk=? =yarn]
       [%saw-seam =seam]
       [%saw-rope =rope]
   ==
@@ -70,12 +70,11 @@
 ::
 ::    All notifications end up in one of these inboxes
 +$  seam
-  $%  [%group =flag:g]
+  $%  [%group =flag]
       [%desk =desk]
       [%all ~]
   ==
 ::  $rug: notifications inbox
-::  
 ::    .new contains all "unread" notifications, grouped by $rope
 ::    .qul is an archive
 ::
@@ -85,7 +84,6 @@
   =<  quilt
   |%
   ::  $quilt: inbox archive
-  ::  
   ::    Threads are keyed by an autoincrementing counter that starts at
   ::    0
   ::
@@ -100,5 +98,4 @@
       top=yarn
       unread=?
   ==
-::
 --
