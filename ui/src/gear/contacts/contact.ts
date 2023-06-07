@@ -1,4 +1,4 @@
-import { Flag } from './hark';
+import { Flag } from "@/types/hark";
 
 export interface Contact {
   nickname: string;

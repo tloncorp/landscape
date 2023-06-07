@@ -1,9 +1,8 @@
-import { Rolodex } from '@/gear';
+import { ContactRolodex } from '@/gear';
 
-const mockContacts: Rolodex = {
+const mockContacts: ContactRolodex = {
   '~finned-palmer': {
     status: '',
-    'last-updated': 1628685243041,
     avatar: null,
     cover: null,
     bio: '',
@@ -13,7 +12,6 @@ const mockContacts: Rolodex = {
   },
   '~nocsyx-lassul': {
     status: 'technomancing an electron wrapper for urbit',
-    'last-updated': 1652879509836,
     avatar: null,
     cover: 'https://i.pinimg.com/originals/20/62/59/2062590a440f717a2ae1065ad8e8a4c7.gif',
     bio: 'Technomancer. Gaining clarity on reality daily, building calm, maintainable, and resilient systems.',
@@ -27,7 +25,6 @@ const mockContacts: Rolodex = {
   },
   '~hastuc-dibtux': {
     status: 'Network Spirituality',
-    'last-updated': 1649439191889,
     avatar:
       'https://lh3.googleusercontent.com/M1kx277EWn0x1PR_kMb3hSJLj086mhasqkm3WkdUFLV4lhHJ6mZWFMaPBERn3A2iFubegTHe8dDDcx20iuJSK0o0bmu_UiwKXhNj=s0',
     cover:
@@ -39,7 +36,6 @@ const mockContacts: Rolodex = {
   },
   '~datder-sonnet': {
     status: 'in ~zod we trust',
-    'last-updated': 1647446196001,
     avatar: null,
     cover: 'https://pbs.twimg.com/profile_banners/922197314579697666/1508704898/1500x500',
     bio: 'High-Functioning Urbit Maximalist\n\nFrontend @ Tlon\n\nhttps://tholf.org',
@@ -49,7 +45,6 @@ const mockContacts: Rolodex = {
   },
   '~fallyn-balfus': {
     status: '',
-    'last-updated': 1635790731403,
     avatar: '',
     cover:
       'https://fallyn-balfus.sfo2.digitaloceanspaces.com/fallyn-balfus/2021.6.07..21.46.55-Screen%20Shot%202021-06-07%20at%202%2C46%2C32%20PM.png',
@@ -64,7 +59,6 @@ const mockContacts: Rolodex = {
   },
   '~fabled-faster': {
     status: 'Build-a-Bear',
-    'last-updated': 1652722355452,
     avatar: '',
     cover: '',
     bio: 'thaumaturge at tlon\n\ned@tlon.io\n\nbc1qa256ysm78ss0k66ul8fd0g68m2zdmg8m3rncy4',
@@ -79,7 +73,6 @@ const mockContacts: Rolodex = {
   },
   '~rilfun-lidlen': {
     status: '',
-    'last-updated': 1652915627705,
     avatar: '',
     cover:
       'http://inapcache.boston.com/universal/site_graphics/blogs/bigpicture/msh30_05_18/m19_mboe0016.jpg',
@@ -90,7 +83,6 @@ const mockContacts: Rolodex = {
   },
   '~riprud-tidmel': {
     status: '',
-    'last-updated': 1652722355452,
     avatar: '',
     cover: '',
     bio: '',

@@ -1,109 +1,124 @@
-
-import { Patp, Poke, Scry } from '@urbit/http-api';
+import { useCallback, useMemo } from 'react';
+import _ from 'lodash';
+import api from '@/api';
+import { BaseState, createState } from '@/state/base';
 import {
-  Contact,
-  ContactUpdateAdd,
-  ContactUpdateEdit,
-  ContactUpdateRemove,
+  ContactAnon,
+  ContactEdit,
   ContactEditField,
-  ContactShare,
-  ContactUpdate,
-  ContactUpdateAllowShips,
-  ContactUpdateAllowGroup,
-  ContactUpdateSetPublic
-} from './types';
+  ContactHeed,
+  ContactNews,
+  ContactRolodex,
+} from '@/gear';
+import { Patp } from '@urbit/http-api';
+import { preSig } from '@urbit/aura'; 
+import produce from 'immer';
 
-export const CONTACT_UPDATE_VERSION = 0;
+export interface BaseContactState {
+  contacts: ContactRolodex;
+  nackedContacts: Set<Patp>;
+  edit: (fields: ContactEditField[]) => Promise<void>;
+  /** removes our profile */
+  anon: () => Promise<void>;
+  /** subscribes to profile updates */
+  heed: (ships: string[]) => Promise<void>;
+  fetchAll: () => Promise<void>;
+  start: () => void;
+  [ref: string]: unknown;
+}
 
-const storeAction = <T extends ContactUpdate>(data: T, version: number = CONTACT_UPDATE_VERSION): Poke<T> => ({
-  app: 'contact-store',
-  mark: `contact-update-${version}`,
-  json: data
-});
+type ContactState = BaseContactState & BaseState<BaseContactState>;
 
-export { storeAction as contactStoreAction };
-
-export const addContact = (ship: Patp, contact: Contact): Poke<ContactUpdateAdd> => {
-  contact['last-updated'] = Date.now();
-
-  return storeAction({
-    add: { ship, contact }
-  });
-};
-
-export const removeContact = (ship: Patp): Poke<ContactUpdateRemove> =>
-  storeAction({
-    remove: { ship }
-  });
-
-export const share = (recipient: Patp, version: number = CONTACT_UPDATE_VERSION): Poke<ContactShare> => ({
-  app: 'contact-push-hook',
-  mark: 'contact-share',
-  json: { share: recipient }
-});
-
-export const editContact = (
-  ship: Patp,
-  editField: ContactEditField
-): Poke<ContactUpdateEdit> =>
-  storeAction({
-    edit: {
-      ship,
-      'edit-field': editField,
-      timestamp: Date.now()
-    }
-  });
-
-export const allowShips = (
-  ships: Patp[]
-): Poke<ContactUpdateAllowShips> => storeAction({
-  allow: {
-    ships
-  }
-});
-
-export const allowGroup = (
-  ship: string,
-  name: string
-): Poke<ContactUpdateAllowGroup> => storeAction({
-  allow: {
-    group: { ship, name }
-  }
-});
-
-export const setPublic = (
-  setPublic: any
-): Poke<ContactUpdateSetPublic> => {
-  return storeAction({
-    'set-public': setPublic
-  });
-};
-
-export const retrieve = (
-  ship: string
-) => {
-  const resource = { ship, name: '' };
+function contactAction<T>(data: T) {
   return {
-    app: 'contact-pull-hook',
-    mark: 'pull-hook-action',
-    json: {
-      add: {
-        resource,
-        ship
-      }
-    }
+    app: 'contacts',
+    mark: 'contact-action',
+    json: data,
   };
+}
+
+const useContactState = createState<BaseContactState>(
+  'Contact',
+  (set, get) => ({
+    contacts: {},
+    nackedContacts: new Set(),
+    fetchAll: async () => {
+      const contacts = await api.scry<ContactRolodex>({
+        app: 'contacts',
+        path: '/all',
+      });
+
+      set(
+        produce((draft: BaseContactState) => {
+          draft.contacts = {
+            ...draft.contacts,
+            ...contacts,
+          };
+        })
+      );
+    },
+    edit: async (contactFields) => {
+      await api.poke<ContactEdit>(contactAction({ edit: contactFields }));
+    },
+    anon: async () => {
+      await api.poke<ContactAnon>(contactAction({ anon: null }));
+    },
+    heed: async (ships) => {
+      await api.poke<ContactHeed>(contactAction({ heed: ships }));
+    },
+    start: () => {
+      get().fetchAll();
+
+      api.subscribe({
+        app: 'contacts',
+        path: '/news',
+        event: (event: ContactNews) => {
+          set(
+            produce((draft: ContactState) => {
+              if (event.con) {
+                draft.contacts[event.who] = event.con;
+              } else {
+                delete draft.contacts[event.who];
+              }
+            })
+          );
+        },
+      });
+    },
+  }),
+  {
+    partialize: ({ contacts }) => ({ contacts }),
+  },
+  []
+);
+
+export const emptyContact = {
+  nickname: '',
+  bio: '',
+  status: '',
+  color: '0x0',
+  avatar: null,
+  cover: null,
+  groups: [] as string[],
 };
 
-export const fetchIsAllowed = (
-  entity: string,
-  name: string,
-  ship: string,
-  personal: boolean
-): Scry => {
-  const isPersonal = personal ? 'true' : 'false';
-  return {
-    app: 'contact-store',
-    path: `/is-allowed/${entity}/${name}/${ship}/${isPersonal}`
-  };
-};
+const selContacts = (s: ContactState) => s.contacts;
+export function useContacts() {
+  return useContactState(selContacts);
+}
+
+export function useMemoizedContacts() {
+  return useMemo(() => useContactState.getState().contacts, []);
+}
+
+export function useContact(ship: string) {
+  return useContactState(
+    useCallback((s) => s.contacts[preSig(ship)] || emptyContact, [ship])
+  );
+}
+
+export function useOurContact() {
+  return useContact(window.our);
+}
+
+export default useContactState;

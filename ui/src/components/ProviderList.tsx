@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { MatchItem } from '../nav/Nav';
 import { useRecentsStore } from '../nav/search/Home';
 import { ProviderLink, ProviderLinkProps } from './ProviderLink';
-import { Contact } from '@/types/contact';
+import { Contact } from '@/gear';
 
 export type ProviderListProps = {
   providers: ({ shipName: string } & Contact)[];

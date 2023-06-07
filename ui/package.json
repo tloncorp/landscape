@@ -36,7 +36,7 @@
     "@tloncorp/mock-http-api": "^1.2.0",
     "@types/lodash": "^4.14.172",
     "@urbit/aura": "^1.0.0",
-    "@urbit/http-api": "^2.3.0",
+    "@urbit/http-api": "^2.4.5-debug",
     "big-integer": "^1.6.48",
     "browser-cookies": "^1.2.0",
     "classnames": "^2.3.1",

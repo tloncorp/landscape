@@ -4,7 +4,7 @@ import { Link, LinkProps } from 'react-router-dom';
 import { Provider } from '@/gear';
 import { ShipName } from './ShipName';
 import { Avatar, AvatarSizes } from './Avatar';
-import { Contact } from '@/types/contact';
+import { Contact } from '@/gear';
 
 export type ProviderLinkProps = Omit<LinkProps, 'to'> & {
   provider: { shipName: string } & Contact;

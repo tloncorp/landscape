@@ -11,7 +11,7 @@ import {
   ContactHeed,
   ContactNews,
   ContactRolodex,
-} from '@/types/contact';
+} from '@/gear';
 import { Patp } from '@urbit/http-api';
 import produce from 'immer';
 

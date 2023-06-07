@@ -1,65 +1,4 @@
-import { Path, Patp } from '@urbit/http-api';
-import { Resource } from '../groups';
-
-export type ContactUpdate =
-  | ContactUpdateAdd
-  | ContactUpdateRemove
-  | ContactUpdateEdit
-  | ContactUpdateInitial
-  | ContactUpdateAllowGroup
-  | ContactUpdateAllowShips
-  | ContactUpdateSetPublic;
-
-  export interface ContactUpdateAdd {
-  add: {
-    ship: Patp;
-    contact: Contact;
-  };
-}
-
-export interface ContactUpdateRemove {
-  remove: {
-    ship: Patp;
-  };
-}
-
-export interface ContactUpdateEdit {
-  edit: {
-    ship: Patp;
-    'edit-field': ContactEditField;
-    timestamp: number;
-  };
-}
-
-export interface ContactUpdateAllowShips {
-  allow: {
-    ships: Patp[];
-  }
-}
-
-export interface ContactUpdateAllowGroup {
-  allow: {
-    group: Resource;
-  }
-}
-
-export interface ContactUpdateSetPublic {
-  'set-public': boolean;
-}
-
-export interface ContactShare {
-  share: Patp;
-}
-
-export interface ContactUpdateInitial {
-  initial: Rolodex;
-}
-
-export type Rolodex = {
-  [p in Patp]: Contact;
-};
-
-export type Contacts = Rolodex;
+import { Flag } from "@/types/hark";
 
 export interface Contact {
   nickname: string;
@@ -68,15 +7,44 @@ export interface Contact {
   color: string;
   avatar: string | null;
   cover: string | null;
-  groups: Path[];
-  'last-updated': number;
+  groups: string[];
 }
 
-type ContactKeys = keyof Contact;
+export interface ContactAddGroup {
+  'add-group': Flag;
+}
 
-export type ContactEditFieldPrim = Exclude<ContactKeys, 'groups' | 'last-updated'>;
+export interface ContactDelGroup {
+  'del-group': Flag;
+}
 
-export type ContactEditField = Partial<Pick<Contact, ContactEditFieldPrim>> & {
-  'add-group'?: Resource;
-  'remove-group'?: Resource;
-};
+export type ContactEditField =
+  | Pick<Contact, 'nickname'>
+  | Pick<Contact, 'bio'>
+  | Pick<Contact, 'status'>
+  | Pick<Contact, 'color'>
+  | Pick<Contact, 'avatar'>
+  | Pick<Contact, 'cover'>
+  | ContactAddGroup
+  | ContactDelGroup;
+
+export type ContactsAction = ContactAnon | ContactEdit | ContactHeed;
+
+export interface ContactAnon {
+  anon: null;
+}
+
+export interface ContactEdit {
+  edit: ContactEditField[];
+}
+
+export interface ContactHeed {
+  heed: string[];
+}
+
+export type ContactRolodex = Record<string, Contact | null>;
+
+export interface ContactNews {
+  who: string;
+  con: Contact | null;
+}

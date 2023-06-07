@@ -1,7 +1,5 @@
 export * from './contacts';
 export * as contacts from './contacts';
-export * from './groups';
-export * as groups from './groups';
 export * from './hark';
 export * as hark from './hark';
 export * from './settings';

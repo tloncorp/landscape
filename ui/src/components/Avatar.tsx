@@ -6,7 +6,7 @@ import { darken, lighten, parseToHsla } from 'color2k';
 import { useCurrentTheme } from '../state/local';
 import { normalizeUrbitColor } from '@/logic/utils';
 import { useContact } from '../state/contact';
-import { Contact } from '@/types/contact';
+import { Contact } from '@/gear';
 
 export type AvatarSizes = 'xs' | 'small' | 'nav' | 'default';
 

@@ -9,7 +9,7 @@ import {
   HarkContent,
   HarkBody,
   Contact,
-  Contacts,
+  ContactRolodex,
   Timebox,
   harkBinToId,
   Pikes
@@ -301,10 +301,9 @@ const contact: Contact = {
   avatar: null,
   cover: null,
   groups: [],
-  'last-updated': 0
 };
 
-export const mockContacts: Contacts = {
+export const mockContactRolodex: ContactRolodex = {
   '~zod': {
     ...contact,
     nickname: 'Tlon Corporation'
