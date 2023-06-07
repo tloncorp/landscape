@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import { Route, useHistory, useParams } from 'react-router-dom';
+import { Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import { ErrorAlert } from '../components/ErrorAlert';
 import LandscapeWayfinding from '../components/LandscapeWayfinding';
 import { MenuState, Nav } from '../nav/Nav';
@@ -11,13 +11,9 @@ import { SuspendApp } from '../tiles/SuspendApp';
 import { TileGrid } from '../tiles/TileGrid';
 import { TileInfo } from '../tiles/TileInfo';
 
-export interface RouteProps {
-  menu?: MenuState;
-}
-
 export const Grid: FunctionComponent = () => {
-  const { push } = useHistory();
-  const { menu } = useParams<RouteProps>();
+  const navigate = useNavigate();
+  const { menu } = useParams<{ menu: MenuState }>();
   const { disableWayfinding } = useCalm();
 
   useEffect(() => {
@@ -33,7 +29,7 @@ export const Grid: FunctionComponent = () => {
       if (performance.now() - start > 5000) {
         attempt(count + 1);
       } else {
-        push('/');
+        navigate('/');
       }
     }
     if (menu === 'upgrading') {
@@ -49,16 +45,15 @@ export const Grid: FunctionComponent = () => {
 
       <main className="relative z-0 flex h-full w-full justify-center pt-4 pb-32 md:pt-16">
         <TileGrid menu={menu} />
-        <ErrorBoundary FallbackComponent={ErrorAlert} onReset={() => push('/')}>
-          <Route exact path="/app/:desk">
-            <TileInfo />
-          </Route>
-          <Route exact path="/app/:desk/suspend">
-            <SuspendApp />
-          </Route>
-          <Route exact path="/app/:desk/remove">
-            <RemoveApp />
-          </Route>
+        <ErrorBoundary
+          FallbackComponent={ErrorAlert}
+          onReset={() => navigate('/')}
+        >
+          <Routes>
+            <Route path="app/:desk" element={<TileInfo/>}/>
+            <Route path="app/:desk/suspend" element={<SuspendApp/>}/>
+            <Route path="app/:desk/remove" element={<RemoveApp/>}/>
+          </Routes>
         </ErrorBoundary>
         {!disableWayfinding && (
           <LandscapeWayfinding className="hidden sm:fixed sm:bottom-4 sm:left-4 sm:z-[100] sm:block" />

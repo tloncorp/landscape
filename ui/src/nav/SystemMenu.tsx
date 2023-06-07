@@ -2,7 +2,7 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import classNames from 'classnames';
 import clipboardCopy from 'clipboard-copy';
 import React, { HTMLAttributes, useCallback, useState } from 'react';
-import { Link, Route, useHistory } from 'react-router-dom';
+import { Link, Route, useNavigate } from 'react-router-dom';
 import { Pike } from '@urbit/api';
 import { Adjust } from '../components/icons/Adjust';
 import { usePike } from '../state/kiln';
@@ -28,7 +28,7 @@ export const SystemMenu = ({
   subMenuOpen,
   shouldDim,
 }: SystemMenuProps) => {
-  const { push } = useHistory();
+  const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
   const garden = usePike(window.desk);
   const hash = garden ? getHash(garden) : null;
@@ -67,7 +67,9 @@ export const SystemMenu = ({
         <DropdownMenu.Root
           modal={false}
           open={open}
-          onOpenChange={(isOpen) => setTimeout(() => !isOpen && push('/'), 15)}
+          onOpenChange={(isOpen) =>
+            setTimeout(() => !isOpen && navigate('/'), 15)
+          }
         >
           <Link
             to={open || subMenuOpen ? '/' : '/system-menu'}

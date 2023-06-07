@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { Checkbox } from '../components/Checkbox';
-import { Dialog, DialogContent } from '../components/Dialog';
 
 export const SecurityPrefs = () => {
   const [allSessions, setAllSessions] = useState(false);
-  const { push } = useHistory();
 
   return (
     <div className="inner-section space-y-8">

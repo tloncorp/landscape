@@ -13,17 +13,15 @@ import {
   Link,
   LinkProps,
   Route,
-  Switch,
-  useHistory,
+  Routes,
+  useNavigate,
   useParams,
-  useRouteMatch,
 } from 'react-router-dom';
 import create from 'zustand';
 import { Avatar } from '../components/Avatar';
 import { Dialog } from '../components/Dialog';
 import { ErrorAlert } from '../components/ErrorAlert';
 import { Help } from './Help';
-import { AppSearch } from './AppSearch';
 import { Notifications } from './notifications/Notifications';
 import { NotificationsLink } from './notifications/NotificationsLink';
 import { Search } from './Search';
@@ -34,7 +32,6 @@ import { Cross } from '../components/icons/Cross';
 import GetApps from './GetApps';
 import LandscapeWayfinding from '../components/LandscapeWayfinding';
 import { useCalm } from '../state/settings';
-import { RouteProps } from '@/pages/Grid';
 
 export interface MatchItem {
   url: string;
@@ -78,7 +75,7 @@ export type MenuState =
   | 'system-preferences'
   | 'upgrading';
 
-type PrefsLinkProps = Omit<LinkProps<HTMLAnchorElement>, 'to'> & {
+type PrefsLinkProps = Omit<LinkProps, 'to'> & {
   menuState: string;
   systemBlocked?: string[];
 };
@@ -128,8 +125,9 @@ export const GetAppsLink = () => {
 };
 
 export const Nav: FunctionComponent = () => {
-  const { push } = useHistory();
-  const { menu } = useParams<RouteProps>();
+  const navigate = useNavigate();
+  const { menu } = useParams<{ menu: MenuState }>();
+  console.log({ menu });
   const inputRef = useRef<HTMLInputElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
   const { disableWayfinding } = useCalm();
@@ -148,28 +146,28 @@ export const Nav: FunctionComponent = () => {
     }
   }, [isOpen]);
 
-  const onOpen = useCallback(
-    (event: Event) => {
-      event.preventDefault();
+  // const onOpen = useCallback(
+  // (event: Event) => {
+  // event.preventDefault();
 
-      setDialogContentOpen(true);
-      if (menu === 'search' && inputRef.current) {
-        setTimeout(() => {
-          inputRef.current?.focus();
-        }, 0);
-      }
-    },
-    [menu]
-  );
+  // setDialogContentOpen(true);
+  // if (menu === 'search' && inputRef.current) {
+  // setTimeout(() => {
+  // inputRef.current?.focus();
+  // }, 0);
+  // }
+  // },
+  // [menu]
+  // );
 
   const onDialogClose = useCallback((open: boolean) => {
     if (!open) {
-      push('/');
+      navigate('/');
     }
   }, []);
 
   return (
-    <ErrorBoundary FallbackComponent={ErrorAlert} onReset={() => push('/')}>
+    <ErrorBoundary FallbackComponent={ErrorAlert} onReset={() => navigate('/')}>
       {/* Using portal so that we can retain the same nav items both in the dialog and in the base header */}
       <Portal.Root
         containerRef={navRef}
@@ -197,9 +195,9 @@ export const Nav: FunctionComponent = () => {
       />
       <Dialog open={isOpen} onOpenChange={onDialogClose}>
         <DialogContent
-          onOpenAutoFocus={onOpen}
+          // onOpenAutoFocus={onOpen}
           onInteractOutside={() => onDialogClose(false)}
-          className="scroll-left-50 scroll-full-width outline-none fixed top-0 z-50 mt-4 flex  max-w-[882px] -translate-x-1/2 flex-col justify-start  px-4 text-gray-400  sm:bottom-auto sm:mt-12 h-auto sm:pb-4"
+          className="scroll-left-50 scroll-full-width outline-none fixed top-0 z-50 mt-4 flex  h-auto max-w-[882px] -translate-x-1/2 flex-col  justify-start px-4  text-gray-400 sm:bottom-auto sm:mt-12 sm:pb-4"
           role="combobox"
           aria-controls="leap-items"
           aria-owns="leap-items"
@@ -211,13 +209,18 @@ export const Nav: FunctionComponent = () => {
             tabIndex={0}
             role="listbox"
           >
-            <Switch>
-              <Route path="/notifications" component={Notifications} />
-              <Route path="/system-preferences" component={SystemPreferences} />
-              <Route path="/help-and-support" component={Help} />
-              <Route path="/get-apps" component={GetApps} />
-              <Route path={['/search']} component={Search} />
-            </Switch>
+            <Routes>
+              <Route path="notifications" element={<Notifications />} />
+              <Route
+                path="system-preferences/*"
+                element={<SystemPreferences />}
+              >
+                <Route path=":submenu/*" element={<SystemPreferences />} />
+              </Route>
+              <Route path="help-and-support" element={<Help />} />
+              <Route path="get-apps" element={<GetApps />} />
+              <Route path="search" element={<Search />} />
+            </Routes>
           </div>
         </DialogContent>
       </Dialog>

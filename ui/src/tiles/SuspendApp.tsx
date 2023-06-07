@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Redirect, useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { Dialog, DialogClose, DialogContent } from '../components/Dialog';
 import { useRecentsStore } from '../nav/search/Home';
@@ -7,8 +7,8 @@ import useDocketState, { useCharges } from '../state/docket';
 import { getAppName } from '@/logic/utils';
 
 export const SuspendApp = () => {
-  const history = useHistory();
-  const { desk } = useParams<{ desk: string }>();
+  const navigate = useNavigate();
+  const { desk = '' } = useParams<{ desk: string }>();
   const charges = useCharges();
   const charge = charges[desk];
 
@@ -19,11 +19,11 @@ export const SuspendApp = () => {
   }, [desk]);
 
   if ('suspend' in charge.chad) {
-    return <Redirect to="/" />;
+    navigate('/');
   }
 
   return (
-    <Dialog open onOpenChange={(open) => !open && history.push('/')}>
+    <Dialog open onOpenChange={(open) => !open && navigate('/')}>
       <DialogContent
         showClose={false}
         className="space-y-6"

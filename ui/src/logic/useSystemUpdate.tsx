@@ -1,7 +1,7 @@
 import { kilnBump, Pike } from '@urbit/api';
 import { partition, pick } from 'lodash';
 import { useCallback } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import { useCharges } from '../state/docket';
 import useKilnState, { usePike } from '../state/kiln';
@@ -14,7 +14,7 @@ function pikeIsBlocked(newKelvin: number, pike: Pike) {
 }
 
 export function useSystemUpdate() {
-  const { push } = useHistory();
+  const navigate = useNavigate();
   const base = usePike('base');
   const nextUpdate = base?.wefts[0];
   const newKelvin = base?.wefts[0]?.kelvin ?? 417;
@@ -32,7 +32,7 @@ export function useSystemUpdate() {
 
   const freezeApps = useCallback(async () => {
     await api.poke(kilnBump());
-    push('/leap/upgrading');
+    navigate('/leap/upgrading');
   }, []);
 
   return {

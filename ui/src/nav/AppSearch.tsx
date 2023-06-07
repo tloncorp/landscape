@@ -1,18 +1,15 @@
 import MagnifyingGlass16Icon from '@/components/icons/MagnifyingGlass16Icon';
-import { RouteProps } from '@/pages/Grid';
-import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import classNames from 'classnames';
 import React, {
   ChangeEvent,
   FocusEvent,
   FormEvent,
   KeyboardEvent,
-  HTMLAttributes,
   useCallback,
   useRef,
   useEffect,
 } from 'react';
-import { Link, useHistory, useParams, useRouteMatch } from 'react-router-dom';
+import { Link, useMatch, useNavigate, useParams } from 'react-router-dom';
 import { Cross } from '../components/icons/Cross';
 import { useDebounce } from '../logic/useDebounce';
 import { useErrorHandler } from '../logic/useErrorHandler';
@@ -45,26 +42,22 @@ function normalizeMatchString(match: string, keepAltChars: boolean): string {
 }
 
 export const AppSearch = () => {
-  const { menu } = useParams<RouteProps>();
+  const params = useParams<{ menu: MenuState }>();
+  const { menu } = params;
   const menuState = menu || 'closed';
   const isOpen =
     menuState !== 'upgrading' && menuState !== 'closed' && menuState !== 'app';
-  const { push } = useHistory();
-  const deskMatch = useRouteMatch<{
-    menu?: MenuState;
-    query?: string;
-    desk?: string;
-  }>(`/${menuState}/:query?/(apps)?/:desk?`);
-  const appsMatch = useRouteMatch(
-    `/${menuState}/${deskMatch?.params.query}/apps`
-  );
+  const navigate = useNavigate();
+  const deskMatch = useMatch(`/${menuState}/:query?/(apps)?/:desk?`);
+  console.log({ deskMatch, menuState, menu });
+  const appsMatch = useMatch(`/${menuState}/${deskMatch?.params.query}/apps`);
   const inputRef = useRef<HTMLInputElement>(null);
   const { rawInput, selectedMatch, matches, selection, select } =
     useAppSearchStore();
   const handleError = useErrorHandler();
 
   useEffect(() => {
-    const onTreaty = appsMatch && !appsMatch.isExact;
+    const onTreaty = appsMatch && !appsMatch.pattern.end;
     if (selection && rawInput === '' && !onTreaty) {
       inputRef.current?.focus();
     } else if (selection && onTreaty) {
@@ -92,7 +85,7 @@ export const AppSearch = () => {
       return;
     }
 
-    push('/search');
+    navigate('/search');
   }, [selection, menuState]);
 
   const onFocus = useCallback(
@@ -125,14 +118,16 @@ export const AppSearch = () => {
         .trim()
         .replace('%', '')
         .replace(/(~?[\w^_-]{3,56})\//, '$1/apps/$1/');
-      push(`/${menuState}/${normalizedValue}`);
+      navigate(`/${menuState}/${normalizedValue}`);
     },
     [menuState]
   );
 
   const debouncedSearch = useDebounce(
     (input: string) => {
+      console.log({ deskMatch, appsMatch });
       if (!deskMatch || appsMatch) {
+        console.log('no desk match');
         return;
       }
 
@@ -172,6 +167,7 @@ export const AppSearch = () => {
         });
       }
 
+      console.log({ value });
       handleSearch(value);
     }),
     [matches]
@@ -193,7 +189,7 @@ export const AppSearch = () => {
         return;
       }
 
-      push(currentMatch.url);
+      navigate(currentMatch.url);
       useAppSearchStore.setState({ rawInput: '' });
     }),
     [deskMatch, selectedMatch]
@@ -208,10 +204,12 @@ export const AppSearch = () => {
         e.preventDefault();
         select(
           null,
-          appsMatch && !appsMatch.isExact ? undefined : deskMatch?.params.query
+          appsMatch && !appsMatch.pattern.end
+            ? undefined
+            : deskMatch?.params.query
         );
-        const pathBack = createPreviousPath(deskMatch?.url || '');
-        push(pathBack);
+        const pathBack = createPreviousPath(deskMatch?.pathname || '');
+        navigate(pathBack);
       }
 
       if (arrow) {
