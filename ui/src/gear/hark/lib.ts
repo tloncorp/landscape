@@ -1,6 +1,6 @@
 import { BigInteger } from 'big-integer';
 
-import { Poke } from '@urbit/js-http-api';
+import { Poke } from '@urbit/http-api';
 import {
   HarkBin,
   HarkBinId,

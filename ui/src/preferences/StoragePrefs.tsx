@@ -6,7 +6,7 @@ import { useAsyncCall } from '../logic/useAsyncCall';
 import { useStorage } from '../state/storage';
 import { Button } from '../components/Button';
 import { Spinner } from '../components/Spinner';
-import { Urbit } from '@urbit/js-http-api';
+import { Urbit } from '@urbit/http-api';
 
 interface CredentialsSubmit {
   endpoint: string;

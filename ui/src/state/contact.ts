@@ -12,7 +12,7 @@ import {
   ContactNews,
   ContactRolodex,
 } from '@/types/contact';
-import { Patp } from '@urbit/js-http-api';
+import { Patp } from '@urbit/http-api';
 import produce from 'immer';
 
 export interface BaseContactState {

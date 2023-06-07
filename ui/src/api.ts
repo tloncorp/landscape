@@ -6,7 +6,7 @@ import Urbit, {
   Thread,
   UrbitHttpApiEvent,
   UrbitHttpApiEventType,
-} from '@urbit/js-http-api';
+} from '@urbit/http-api';
 import _ from 'lodash';
 import { useLocalState } from '@/state/local';
 import useSchedulerStore from './state/scheduler';

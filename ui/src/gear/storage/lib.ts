@@ -1,4 +1,4 @@
-import { Poke } from '@urbit/js-http-api';
+import { Poke } from '@urbit/http-api';
 import { StorageUpdate, StorageUpdateCurrentBucket, StorageUpdateAddBucket, StorageUpdateRemoveBucket, StorageUpdateEndpoint, StorageUpdateAccessKeyId, StorageUpdateSecretAccessKey } from './types';
 
 const s3Action = <T extends StorageUpdate>(

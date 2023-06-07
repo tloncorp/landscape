@@ -10,7 +10,7 @@ import { compose } from 'lodash/fp';
 import _ from 'lodash';
 import create, { GetState, SetState, UseStore } from 'zustand';
 import { PersistOptions, persist } from 'zustand/middleware';
-import Urbit, { Poke, SubscriptionRequestInterface } from '@urbit/js-http-api';
+import Urbit, { Poke, SubscriptionRequestInterface } from '@urbit/http-api';
 import UrbitMock from '@tloncorp/mock-http-api';
 import api from '../api';
 import {

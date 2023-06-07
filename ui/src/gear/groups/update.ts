@@ -1,4 +1,4 @@
-import { PatpNoSig, Path } from '@urbit/js-http-api';
+import { PatpNoSig, Path } from '@urbit/http-api';
 import { ShipRank, Enc } from '@/gear';
 import { roleTags } from './index';
 

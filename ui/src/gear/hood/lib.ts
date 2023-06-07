@@ -1,4 +1,4 @@
-import { Poke, Scry } from '@urbit/js-http-api';
+import { Poke, Scry } from '@urbit/http-api';
 import { Pike } from './types';
 
 export const getPikes: Scry = {
