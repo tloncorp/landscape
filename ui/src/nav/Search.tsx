@@ -18,8 +18,8 @@ export const Search = () => {
         <Routes>
           <Route path="direct/apps/:host/:desk" element={<TreatyInfo />} />
           <Route path=":ship/apps/:host/:desk" element={<TreatyInfo />} />
-          <Route path="ship/apps" element={<Apps />} />
-          <Route path="ship" element={<Providers />} />
+          <Route path=":ship/apps" element={<Apps />} />
+          <Route path=":ship" element={<Providers />} />
           <Route index element={<Home />} />
         </Routes>
       </div>

@@ -127,8 +127,6 @@ export const GetAppsLink = () => {
 export const Nav: FunctionComponent = () => {
   const navigate = useNavigate();
   const { menu } = useParams<{ menu: MenuState }>();
-  console.log({ menu });
-  const inputRef = useRef<HTMLInputElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
   const { disableWayfinding } = useCalm();
   const { systemBlocked } = useSystemUpdate();
@@ -145,20 +143,6 @@ export const Nav: FunctionComponent = () => {
       setDialogContentOpen(false);
     }
   }, [isOpen]);
-
-  // const onOpen = useCallback(
-  // (event: Event) => {
-  // event.preventDefault();
-
-  // setDialogContentOpen(true);
-  // if (menu === 'search' && inputRef.current) {
-  // setTimeout(() => {
-  // inputRef.current?.focus();
-  // }, 0);
-  // }
-  // },
-  // [menu]
-  // );
 
   const onDialogClose = useCallback((open: boolean) => {
     if (!open) {
@@ -219,7 +203,7 @@ export const Nav: FunctionComponent = () => {
               </Route>
               <Route path="help-and-support" element={<Help />} />
               <Route path="get-apps" element={<GetApps />} />
-              <Route path="search" element={<Search />} />
+              <Route path="search/*" element={<Search />} />
             </Routes>
           </div>
         </DialogContent>

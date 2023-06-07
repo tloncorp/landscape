@@ -42,28 +42,16 @@ function normalizeMatchString(match: string, keepAltChars: boolean): string {
 }
 
 export const AppSearch = () => {
-  const params = useParams<{ menu: MenuState }>();
-  const { menu } = params;
+  const { menu, query } = useParams<{ menu: MenuState; query: string }>();
   const menuState = menu || 'closed';
   const isOpen =
     menuState !== 'upgrading' && menuState !== 'closed' && menuState !== 'app';
   const navigate = useNavigate();
-  const deskMatch = useMatch(`/${menuState}/:query?/(apps)?/:desk?`);
-  console.log({ deskMatch, menuState, menu });
-  const appsMatch = useMatch(`/${menuState}/${deskMatch?.params.query}/apps`);
+  const appsMatch = useMatch(`${menuState}/${query}/apps/*`);
   const inputRef = useRef<HTMLInputElement>(null);
   const { rawInput, selectedMatch, matches, selection, select } =
     useAppSearchStore();
   const handleError = useErrorHandler();
-
-  useEffect(() => {
-    const onTreaty = appsMatch && !appsMatch.pattern.end;
-    if (selection && rawInput === '' && !onTreaty) {
-      inputRef.current?.focus();
-    } else if (selection && onTreaty) {
-      inputRef.current?.blur();
-    }
-  }, [selection, rawInput, appsMatch]);
 
   useEffect(() => {
     const newMatch = getMatch(rawInput);
@@ -125,12 +113,6 @@ export const AppSearch = () => {
 
   const debouncedSearch = useDebounce(
     (input: string) => {
-      console.log({ deskMatch, appsMatch });
-      if (!deskMatch || appsMatch) {
-        console.log('no desk match');
-        return;
-      }
-
       useAppSearchStore.setState({ searchInput: input });
       navigateByInput(input);
     },
@@ -138,7 +120,7 @@ export const AppSearch = () => {
     { leading: true }
   );
 
-  const handleSearch = useCallback(debouncedSearch, [deskMatch]);
+  const handleSearch = useCallback(debouncedSearch, []);
 
   const onChange = useCallback(
     handleError((e: ChangeEvent<HTMLInputElement>) => {
@@ -167,10 +149,9 @@ export const AppSearch = () => {
         });
       }
 
-      console.log({ value });
       handleSearch(value);
     }),
-    [matches]
+    [matches, menu]
   );
 
   const onSubmit = useCallback(
@@ -192,7 +173,7 @@ export const AppSearch = () => {
       navigate(currentMatch.url);
       useAppSearchStore.setState({ rawInput: '' });
     }),
-    [deskMatch, selectedMatch]
+    [selectedMatch]
   );
 
   const onKeyDown = useCallback(
@@ -202,14 +183,8 @@ export const AppSearch = () => {
 
       if (deletion && !rawInput && selection) {
         e.preventDefault();
-        select(
-          null,
-          appsMatch && !appsMatch.pattern.end
-            ? undefined
-            : deskMatch?.params.query
-        );
-        const pathBack = createPreviousPath(deskMatch?.pathname || '');
-        navigate(pathBack);
+        select(null, appsMatch && !appsMatch.pattern.end ? undefined : query);
+        navigate('..');
       }
 
       if (arrow) {
@@ -237,14 +212,14 @@ export const AppSearch = () => {
         });
       }
     }),
-    [selection, rawInput, deskMatch, matches, selectedMatch]
+    [selection, rawInput, query, matches, selectedMatch]
   );
 
   return (
-    <div className="relative z-50 w-full">
+    <div className="relative z-50 mb-4 w-full">
       <form
         className={classNames(
-          'default-ring flex h-9 w-full items-center rounded-lg bg-white px-2 focus-within:ring-2',
+          'default-ring flex h-9 w-full items-center rounded-lg bg-gray-50 px-2 focus-within:ring-2',
           !isOpen ? 'bg-gray-50' : '',
           menuState === 'upgrading' ? 'bg-orange-500' : ''
         )}
@@ -265,7 +240,7 @@ export const AppSearch = () => {
             ? 'Your Urbit is being updated, this page will update when ready'
             : selection || 'Search'}
         </label>
-        {menuState === 'search' ? (
+        {menuState !== 'upgrading' ? (
           <MagnifyingGlass16Icon className="ml-2 mt-1 h-4 w-4 text-gray-600" />
         ) : null}
         {menuState !== 'upgrading' ? (
@@ -282,7 +257,7 @@ export const AppSearch = () => {
             onFocus={onFocus}
             onChange={onChange}
             onKeyDown={onKeyDown}
-            autoFocus
+            autoFocus={menuState === 'search'}
             autoComplete="off"
             aria-autocomplete="both"
             aria-controls="search-items"
