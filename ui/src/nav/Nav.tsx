@@ -28,6 +28,7 @@ import { NotificationsLink } from './notifications/NotificationsLink';
 import { Search } from './Search';
 import { SystemPreferences } from '../preferences/SystemPreferences';
 import { useSystemUpdate } from '../logic/useSystemUpdate';
+import useVereState from '../state/vere';
 import { Bullet } from '../components/icons/Bullet';
 import { Cross } from '../components/icons/Cross';
 import MagnifyingGlass16Icon from '../components/icons/MagnifyingGlass16Icon';
@@ -138,8 +139,11 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
   const dialogNavRef = useRef<HTMLDivElement>(null);
   const { disableWayfinding } = useCalm();
   const { systemBlocked } = useSystemUpdate();
+  const { isLatest, loaded } = useVereState();
   const [dialogContentOpen, setDialogContentOpen] = useState(false);
   const select = useAppSearchStore((state) => state.select);
+
+  const runtimeOutOfDate = (loaded && !(isLatest));
 
   const menuState = menu || 'closed';
   const isOpen =
@@ -188,7 +192,7 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
         containerRef={dialogContentOpen ? dialogNavRef : navRef}
         className="flex w-full items-center space-x-2 sm:justify-center"
       >
-        <SystemPrefsLink menuState={menuState} systemBlocked={systemBlocked} />
+        <SystemPrefsLink menuState={menuState} systemBlocked={systemBlocked || runtimeOutOfDate} />
         <NotificationsLink
           navOpen={isOpen}
           notificationsOpen={menu === 'notifications'}

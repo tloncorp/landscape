@@ -11,6 +11,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { FullTlon16Icon } from '../../components/icons/FullTlon16Icon';
 import { useSystemUpdate } from '../../logic/useSystemUpdate';
 import { usePike, useLag } from '../../state/kiln';
+import useVereState from '../../state/vere';
 import { disableDefault, pluralize } from '@/logic/utils';
 import { UpdatePreferences } from './UpdatePreferences';
 
@@ -27,6 +28,11 @@ export const AboutSystem = () => {
     null != blockedCharges.find((charge) => charge.desk == 'garden');
   const hash = basePike && getHash(basePike);
   const lag = useLag();
+
+  const vere = useVereState.getState();
+  const {isLatest, vereVersion, latestVereVersion, loaded} = vere;
+
+  const runtimeUpToDate = (!loaded || isLatest)
 
   return (
     <>
@@ -51,6 +57,7 @@ export const AboutSystem = () => {
                   <p className="text-orange-500">
                     System update failed because your runtime was out of date.
                   </p>
+                  <p>Your runtime version is {vereVersion}, the latest runtime version is {latestVereVersion}.</p>
                   <p>Update your runtime or contact your hosting provider.</p>
                   <p>Once your runtime is up to date, click retry below.</p>
                   <Button variant="caution" onClick={freezeApps}>
@@ -138,7 +145,20 @@ export const AboutSystem = () => {
               )}
             </>
           ) : (
-            <p>Your urbit is up to date.</p>
+              <>
+                  {runtimeUpToDate ?
+                   <>
+                       <p>Urbit Runtime Version {vereVersion}</p>
+                       <p>Your urbit is up to date.</p>
+                   </> :
+                   <>
+                       <p className="text-orange-500">Your runtime version is {vereVersion}, the latest runtime version is {latestVereVersion}.</p>
+                       <p className="text-orange-500">
+                           <a className="text-blue-500 font-bold" href="https://operators.urbit.org/manual/os/updates#runtime-updates">Update your runtime </a>
+                           or contact your hosting provider.</p>
+                   </>
+                  }
+              </>
           )}
         </div>
       </div>
