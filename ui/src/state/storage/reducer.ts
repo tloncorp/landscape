@@ -1,9 +1,10 @@
+/* eslint-disable no-param-reassign */
 import { StorageUpdate } from '@/gear';
 import _ from 'lodash';
+import { BaseStorageState } from '@/gear';
 import { BaseState } from '../base';
-import { StorageState as State } from '.';
 
-type StorageState = State & BaseState<State>;
+export type StorageState = BaseStorageState & BaseState<BaseStorageState>;
 
 const credentials = (json: StorageUpdate, state: StorageState): StorageState => {
   const data = _.get(json, 'credentials', false);
@@ -29,14 +30,6 @@ const currentBucket = (json: StorageUpdate, state: StorageState): StorageState =
   const data = _.get(json, 'setCurrentBucket', false);
   if (data && state.s3) {
     state.s3.configuration.currentBucket = data;
-  }
-  return state;
-};
-
-const region = (json: StorageUpdate, state: StorageState): StorageState => {
-  const data = _.get(json, 'setRegion', false);
-  if (data && state.s3) {
-    state.s3.configuration.region = data;
   }
   return state;
 };
@@ -81,7 +74,15 @@ const secretAccessKey = (json: StorageUpdate, state: StorageState): StorageState
   return state;
 };
 
-export const reduce = [
+const region = (json: StorageUpdate, state: StorageState): StorageState => {
+  const data = _.get(json, 'setRegion', false);
+  if (data && state.s3.configuration) {
+    state.s3.configuration.region = data;
+  }
+  return state;
+};
+
+const reduce = [
   credentials,
   configuration,
   currentBucket,
@@ -92,3 +93,5 @@ export const reduce = [
   secretAccessKey,
   region,
 ];
+
+export default reduce;
