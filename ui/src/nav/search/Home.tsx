@@ -1,3 +1,4 @@
+import { storageVersion } from '@/constants';
 import produce from 'immer';
 import create from 'zustand';
 import _ from 'lodash';
@@ -18,7 +19,6 @@ import {
   clearStorageMigration,
   createStorageKey,
   getAppHref,
-  storageVersion,
 } from '@/logic/utils';
 import useContactState, { emptyContact } from '../../state/contact';
 

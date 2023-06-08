@@ -1,6 +1,5 @@
-import { Yarn, isYarnEmph, isYarnShip } from '@/gear';
+import { Yarn, isYarnEmph, isYarnShip, Docket, DocketHref, Treaty } from '@/gear';
 import { findLast } from 'lodash';
-import { Docket, DocketHref, Treaty } from '@/gear';
 import { hsla, parseToHsla, parseToRgba } from 'color2k';
 import _ from 'lodash';
 import { differenceInDays, endOfToday, format } from 'date-fns';
@@ -75,11 +74,6 @@ export function createStorageKey(name: string): string {
 export function clearStorageMigration<T>() {
   return {} as T;
 }
-
-export const storageVersion = parseInt(
-  import.meta.env.VITE_STORAGE_VERSION,
-  10
-);
 
 export function isColor(color: string): boolean {
   try {

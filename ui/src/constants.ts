@@ -1,3 +1,8 @@
+export const storageVersion = parseInt(
+  import.meta.env.VITE_STORAGE_VERSION,
+  10
+);
+
 export const SECTIONS = {
   SELECTS: 'Tlon Selects',
   PALS: 'Powered by Pals',

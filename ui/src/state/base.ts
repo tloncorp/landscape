@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+import { storageVersion } from '@/constants';
 import {
   applyPatches,
   Patch,
@@ -16,9 +17,7 @@ import api from '../api';
 import {
   clearStorageMigration,
   createStorageKey,
-  storageVersion,
 } from '../logic/utils';
-
 setAutoFreeze(false);
 enablePatches();
 

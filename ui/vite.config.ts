@@ -1,3 +1,4 @@
+import packageJson from './package.json';
 import { loadEnv, defineConfig } from 'vite';
 import analyze from 'rollup-plugin-analyzer';
 import { visualizer } from 'rollup-plugin-visualizer';
@@ -8,7 +9,8 @@ import basicSsl from '@vitejs/plugin-basic-ssl';
 
 // https://vitejs.dev/config/
 export default ({ mode }) => {
-  process.env.VITE_STORAGE_VERSION = Date.now().toString();
+  process.env.VITE_STORAGE_VERSION =
+    mode === 'development' ? Date.now().toString() : packageJson.version;
 
   Object.assign(process.env, loadEnv(mode, process.cwd()));
   const SHIP_URL =
