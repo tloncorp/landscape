@@ -2,7 +2,7 @@ import { Poke, Scry } from '@urbit/http-api';
 import { PutBucket, Key, Bucket, DelBucket, Value, PutEntry, DelEntry, SettingsUpdate } from './types';
 
 export const action = <T extends SettingsUpdate>(data: T): Poke<T> => ({
-  app: 'settings-store',
+  app: 'settings',
   mark: 'settings-event',
   json: data
 });
@@ -56,22 +56,22 @@ export const delEntry = (
 });
 
 export const getAll: Scry = {
-  app: 'settings-store',
+  app: 'settings',
   path: '/all'
 };
 
 export const getBucket = (desk: string, bucket: string) => ({
-  app: 'settings-store',
+  app: 'settings',
   path: `/bucket/${bucket}`
 });
 
 export const getEntry = (desk: string, bucket: string, entry: string) => ({
-  app: 'settings-store',
+  app: 'settings',
   path: `/entry/${desk}/${bucket}/${entry}`
 });
 
 export const getDeskSettings = (desk: string) => ({
-  app: 'settings-store',
+  app: 'settings',
   path: `/desk/${desk}`
 });
 

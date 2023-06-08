@@ -21,6 +21,7 @@ export interface DelBucket {
 
 export interface PutEntry {
   'put-entry': {
+    desk: string;
     'bucket-key': Key;
     'entry-key': Key;
     'value'?: Value;
