@@ -59,7 +59,7 @@ export class BigIntArrayOrderedMap<V> implements Iterable<[BigInteger[], V]> {
 
   constructor(items: [BigInteger[], V][] = [], reversed = false) {
     items.forEach(([key, val]) => {
-      this.set(key, val);
+      this.root[arrToString(key)] = val;
     });
     this.reversed = reversed;
   }
