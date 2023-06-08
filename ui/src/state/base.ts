@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+import { storageVersion } from '@/constants';
 import {
   applyPatches,
   Patch,
@@ -10,16 +11,13 @@ import { compose } from 'lodash/fp';
 import _ from 'lodash';
 import create, { GetState, SetState, UseStore } from 'zustand';
 import { PersistOptions, persist } from 'zustand/middleware';
-import Urbit, { SubscriptionRequestInterface } from '@urbit/http-api';
+import Urbit, { Poke, SubscriptionRequestInterface } from '@urbit/http-api';
 import UrbitMock from '@tloncorp/mock-http-api';
-import { Poke } from '@urbit/api';
 import api from '../api';
 import {
   clearStorageMigration,
   createStorageKey,
-  storageVersion,
 } from '../logic/utils';
-
 setAutoFreeze(false);
 enablePatches();
 

@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { HarkAction, Rope, Seam, Skein } from '../types/hark';
+import { HarkAction, Rope, Seam, Skein } from '@/gear';
 import useReactQuerySubscription from '@/logic/useReactQuerySubscription';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { SettingsState } from './settings';

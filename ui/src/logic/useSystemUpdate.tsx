@@ -1,4 +1,4 @@
-import { kilnBump, Pike } from '@urbit/api';
+import { kilnBump, Pike } from '@/gear';
 import { partition, pick } from 'lodash';
 import { useCallback } from 'react';
 import { useHistory } from 'react-router-dom';

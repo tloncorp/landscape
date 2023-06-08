@@ -1,6 +1,5 @@
-import { Yarn, isYarnEmph, isYarnShip } from '@/types/hark';
+import { Yarn, isYarnEmph, isYarnShip, Docket, DocketHref, Treaty } from '@/gear';
 import { findLast } from 'lodash';
-import { Docket, DocketHref, Treaty } from '@urbit/api';
 import { hsla, parseToHsla, parseToRgba } from 'color2k';
 import _ from 'lodash';
 import { differenceInDays, endOfToday, format } from 'date-fns';
@@ -44,13 +43,6 @@ export function handleDropdownLink(
   };
 }
 
-export function deSig(ship: string): string {
-  if (!ship) {
-    return '';
-  }
-  return ship.replace('~', '');
-}
-
 export function normalizeUrbitColor(color: string): string {
   if (color.startsWith('#')) {
     return color;
@@ -82,11 +74,6 @@ export function createStorageKey(name: string): string {
 export function clearStorageMigration<T>() {
   return {} as T;
 }
-
-export const storageVersion = parseInt(
-  import.meta.env.VITE_STORAGE_VERSION,
-  10
-);
 
 export function isColor(color: string): boolean {
   try {

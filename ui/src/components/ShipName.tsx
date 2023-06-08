@@ -1,4 +1,4 @@
-import { cite } from '@urbit/api';
+import { cite } from '@urbit/aura';
 import React, { HTMLAttributes } from 'react';
 import { useCalm } from '../state/settings';
 import { useContact } from '../state/contact';

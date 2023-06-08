@@ -1,19 +1,14 @@
+import { unixToDa } from '@urbit/aura';
 import {
   Allies,
   Charges,
   DocketHrefGlob,
   Treaties,
   Treaty,
-  Notification,
-  HarkContent,
-  HarkBody,
-  unixToDa,
   Contact,
-  Contacts,
-  Timebox,
-  harkBinToId,
+  ContactRolodex,
   Pikes
-} from '@urbit/api';
+} from '@/gear';
 import _ from 'lodash';
 import systemUrl from '../assets/system.png';
 
@@ -193,105 +188,109 @@ function text(t: string) {
   return { text: t };
 }
 
-function createDmNotification(...content: HarkContent[]): HarkBody {
-  return {
-    title: [ship('~hastuc-dibtux'), text(' messaged you')],
-    time: unixToDa(Date.now() - 3_600).toJSNumber(),
-    content,
-    binned: '/',
-    link: '/'
-  };
-}
+/**
+ * TODO: replace with Skeins
+ */
 
-function createBitcoinNotif(amount: string) {
-  return {
-    title: [ship('~silnem'), text(` sent you ${amount}`)],
-    time: unixToDa(Date.now() - 3_600).toJSNumber(),
-    content: [],
-    binned: '/',
-    link: '/'
-  };
-}
+// function createDmNotification(...content: HarkContent[]): HarkBody {
+//   return {
+//     title: [ship('~hastuc-dibtux'), text(' messaged you')],
+//     time: unixToDa(Date.now() - 3_600).toJSNumber(),
+//     content,
+//     binned: '/',
+//     link: '/'
+//   };
+// }
 
-function createGroupNotif(to: string): HarkBody {
-  return {
-    title: [ship('~ridlur-figbud'), text(` invited you to ${to}`)],
-    content: [],
-    time: unixToDa(Date.now() - 3_600).toJSNumber(),
-    binned: '/',
-    link: '/'
-  };
-}
+// function createBitcoinNotif(amount: string) {
+//   return {
+//     title: [ship('~silnem'), text(` sent you ${amount}`)],
+//     time: unixToDa(Date.now() - 3_600).toJSNumber(),
+//     content: [],
+//     binned: '/',
+//     link: '/'
+//   };
+// }
 
-window.desk = window.desk || 'garden';
+// function createGroupNotif(to: string): HarkBody {
+//   return {
+//     title: [ship('~ridlur-figbud'), text(` invited you to ${to}`)],
+//     content: [],
+//     time: unixToDa(Date.now() - 3_600).toJSNumber(),
+//     binned: '/',
+//     link: '/'
+//   };
+// }
 
-function createMockSysNotification(path: string, body: HarkBody[] = []) {
-  return {
-    bin: {
-      place: {
-        desk: window.desk,
-        path
-      },
-      path: '/'
-    },
-    time: Date.now() - 3_600,
-    body
-  };
-}
+// window.desk = window.desk || 'garden';
 
-const lag = createMockSysNotification('/lag');
-const blocked = {
-  bin: {
-    place: {
-      desk: window.desk,
-      path: '/desk/base'
-    },
-    path: '/blocked'
-  },
-  time: Date.now() - 3_600,
-  body: []
-};
-const onboard = createMockSysNotification('/onboard');
+// function createMockSysNotification(path: string, body: HarkBody[] = []) {
+//   return {
+//     bin: {
+//       place: {
+//         desk: window.desk,
+//         path
+//       },
+//       path: '/'
+//     },
+//     time: Date.now() - 3_600,
+//     body
+//   };
+// }
 
-const updateNotification = createMockSysNotification('/desk/bitcoin', [
-  {
-    title: [{ text: 'App "Bitcoin" updated to version 1.0.1' }],
-    time: 0,
-    content: [],
-    link: '/desk/bitcoin',
-    binned: '/'
-  }
-]);
+// const lag = createMockSysNotification('/lag');
+// const blocked = {
+//   bin: {
+//     place: {
+//       desk: window.desk,
+//       path: '/desk/base'
+//     },
+//     path: '/blocked'
+//   },
+//   time: Date.now() - 3_600,
+//   body: []
+// };
+// const onboard = createMockSysNotification('/onboard');
 
-export function createMockNotification(desk: string, body: HarkBody[]): Notification {
-  return {
-    bin: {
-      place: {
-        desk,
-        path: '/'
-      },
-      path: '/'
-    },
-    time: Date.now() - 3_600,
-    body
-  };
-}
+// const updateNotification = createMockSysNotification('/desk/bitcoin', [
+//   {
+//     title: [{ text: 'App "Bitcoin" updated to version 1.0.1' }],
+//     time: 0,
+//     content: [],
+//     link: '/desk/bitcoin',
+//     binned: '/'
+//   }
+// ]);
 
-export const mockNotifications: Timebox = _.keyBy(
-  [
-    lag,
-    blocked,
-    onboard,
-    updateNotification,
-    createMockNotification('groups', [
-      createDmNotification(text('ie the hook agent responsible for marking the notifications')),
-      createDmNotification(ship('~hastuc-dibtux'), text(' sent a link'))
-    ]),
-    createMockNotification('bitcoin-wallet', [createBitcoinNotif('0.025 BTC')]),
-    createMockNotification('groups', [createGroupNotif('a Group: Tlon Corporation')])
-  ],
-  (not) => harkBinToId(not.bin)
-);
+// export function createMockNotification(desk: string, body: HarkBody[]): Notification {
+//   return {
+//     bin: {
+//       place: {
+//         desk,
+//         path: '/'
+//       },
+//       path: '/'
+//     },
+//     time: Date.now() - 3_600,
+//     body
+//   };
+// }
+
+// export const mockNotifications: Timebox = _.keyBy(
+//   [
+//     lag,
+//     blocked,
+//     onboard,
+//     updateNotification,
+//     createMockNotification('groups', [
+//       createDmNotification(text('ie the hook agent responsible for marking the notifications')),
+//       createDmNotification(ship('~hastuc-dibtux'), text(' sent a link'))
+//     ]),
+//     createMockNotification('bitcoin-wallet', [createBitcoinNotif('0.025 BTC')]),
+//     createMockNotification('groups', [createGroupNotif('a Group: Tlon Corporation')])
+//   ],
+//   (not) => harkBinToId(not.bin)
+// );
 
 const contact: Contact = {
   nickname: '',
@@ -301,10 +300,9 @@ const contact: Contact = {
   avatar: null,
   cover: null,
   groups: [],
-  'last-updated': 0
 };
 
-export const mockContacts: Contacts = {
+export const mockContactRolodex: ContactRolodex = {
   '~zod': {
     ...contact,
     nickname: 'Tlon Corporation'

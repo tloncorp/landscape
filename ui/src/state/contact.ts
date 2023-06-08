@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { useCallback, useMemo } from 'react';
 import _ from 'lodash';
+import { preSig } from '@urbit/aura';
 import api from '@/api';
 import { BaseState, createState } from '@/state/base';
 import {
@@ -10,8 +11,8 @@ import {
   ContactHeed,
   ContactNews,
   ContactRolodex,
-} from '@/types/contact';
-import { Patp, preSig } from '@urbit/api';
+} from '@/gear';
+import { Patp } from '@urbit/http-api';
 import produce from 'immer';
 
 export interface BaseContactState {

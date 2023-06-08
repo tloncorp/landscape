@@ -1,4 +1,4 @@
-import { preSig } from '@urbit/api';
+import { preSig } from '@urbit/aura';
 import cookies from 'browser-cookies';
 import React from 'react';
 import ReactDOM from 'react-dom';

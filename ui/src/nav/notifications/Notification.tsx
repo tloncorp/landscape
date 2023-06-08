@@ -3,7 +3,7 @@ import cn from 'classnames';
 import { format } from 'date-fns';
 import _ from 'lodash';
 import { pluralize, getAppName } from '@/logic/utils';
-import { isYarnShip, Rope, Skein, YarnContent } from '@/types/hark';
+import { isYarnShip, Rope, Skein, YarnContent } from '@/gear';
 import { useCharge } from '../../state/docket';
 import { Groups } from './groups';
 import { Button } from '../../components/Button';
@@ -12,7 +12,7 @@ import { ShipName } from '../../components/ShipName';
 import { DeskLink } from '../../components/DeskLink';
 import { DocketImage } from '../../components/DocketImage';
 import GroupAvatar from '../../components/GroupAvatar';
-import { Charge } from '@urbit/api';
+import { Charge } from '@/gear';
 import { useSawRopeMutation } from '@/state/hark';
 
 interface NotificationProps {
