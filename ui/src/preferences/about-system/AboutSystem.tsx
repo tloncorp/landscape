@@ -154,7 +154,7 @@ export const AboutSystem = () => {
                    <>
                        <p className="text-orange-500">Your runtime version is {vereVersion}, the latest runtime version is {latestVereVersion}.</p>
                        <p className="text-orange-500">
-                           <a className="text-blue-500" href="https://operators.urbit.org/manual/os/updates#runtime-updates">Update your runtime </a>
+                           <a className="text-blue-500 font-bold" href="https://operators.urbit.org/manual/os/updates#runtime-updates">Update your runtime </a>
                            or contact your hosting provider.</p>
                    </>
                   }
