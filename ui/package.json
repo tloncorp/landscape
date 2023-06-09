@@ -15,7 +15,9 @@
     "lint": "eslint --cache \"**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "npm run lint -- --fix",
     "test": "tsc --noEmit",
-    "tsc": "tsc --noEmit"
+    "tsc": "tsc --noEmit",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.348.0",
@@ -67,6 +69,13 @@
     "zustand": "^3.7.2"
   },
   "devDependencies": {
+    "@storybook/addon-essentials": "^7.0.20",
+    "@storybook/addon-interactions": "^7.0.20",
+    "@storybook/addon-links": "^7.0.20",
+    "@storybook/blocks": "^7.0.20",
+    "@storybook/react": "^7.0.20",
+    "@storybook/react-vite": "^7.0.20",
+    "@storybook/testing-library": "^0.0.14-next.2",
     "@tailwindcss/aspect-ratio": "^0.2.1",
     "@tailwindcss/line-clamp": "^0.4.2",
     "@tloncorp/eslint-config": "^0.0.6",
@@ -92,13 +101,16 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-plugin-storybook": "^0.6.12",
     "eslint-plugin-tailwind": "^0.2.1",
     "husky": "^7.0.0",
     "lint-staged": "^11.1.2",
     "postcss": "^8.3.9",
     "prettier": "^2.3.2",
+    "prop-types": "^15.8.1",
     "rollup-plugin-analyzer": "^4.0.0",
     "rollup-plugin-visualizer": "^5.5.2",
+    "storybook": "^7.0.20",
     "tailwindcss": "^2.2.16",
     "tailwindcss-theming": "^3.0.0-beta.3",
     "tailwindcss-touch": "^1.0.1",
