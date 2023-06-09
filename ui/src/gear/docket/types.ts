@@ -1,4 +1,5 @@
 import { Cass } from '../hood';
+import { Seal } from '../permissions';
 export type DeskStatus = 'active' | 'suspended';
 
 export type DocketHref = DocketHrefSite | DocketHrefGlob;
@@ -54,6 +55,8 @@ export interface Treaty extends Docket {
   desk: string;
   cass: Cass;
   hash: string;
+  bill: string[];
+  seal: Seal;
 }
 
 export interface Charges {
