@@ -64,11 +64,10 @@
   }
 }
 
-
-@media (min-width: 640px){
+@media (min-width: 640px) {
   .system-preferences-grid {
     display: grid;
-    grid-template-columns: 20rem 1fr;
+    grid-template-columns: 15rem 1fr;
     grid-template-rows: auto;
   }
 }

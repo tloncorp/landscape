@@ -2,8 +2,11 @@ import { useCallback, useState } from 'react';
 
 export type Status = 'initial' | 'loading' | 'success' | 'error';
 
-export function useAsyncCall<ReturnValue>(cb: (...args: any[]) => Promise<ReturnValue>) {
+export function useAsyncCall<ReturnValue>(
+  cb: (...args: any[]) => Promise<ReturnValue>
+) {
   const [status, setStatus] = useState<Status>('initial');
+  const [result, setResult] = useState<ReturnValue | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
   const call = useCallback(
@@ -11,6 +14,7 @@ export function useAsyncCall<ReturnValue>(cb: (...args: any[]) => Promise<Return
       setStatus('loading');
       cb(...args)
         .then((result) => {
+          setResult(result);
           setStatus('success');
           return result;
         })
@@ -25,6 +29,7 @@ export function useAsyncCall<ReturnValue>(cb: (...args: any[]) => Promise<Return
   return {
     call,
     status,
-    error
+    error,
+    result,
   };
 }
