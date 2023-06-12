@@ -8,7 +8,8 @@ type ButtonVariant =
   | 'caution'
   | 'destructive'
   | 'alt-primary'
-  | 'alt-secondary';
+  | 'alt-secondary'
+  | 'light-secondary';
 
 type PolymorphicButton = Polymorphic.ForwardRefComponent<
   'button',
@@ -24,6 +25,7 @@ const variants: Record<ButtonVariant, string> = {
   destructive: 'text-white bg-red-500',
   'alt-primary': 'text-white bg-blue-400 ring-blue-300',
   'alt-secondary': 'text-blue-400 bg-blue-50',
+  'light-secondary': 'text-gray-800 bg-gray-50',
 };
 
 export const Button = React.forwardRef(
