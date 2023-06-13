@@ -21,6 +21,8 @@ import {
   kilnRevive,
   kilnSuspend,
   allyShip,
+  chadIsRunning,
+  Pike,
 } from '@/gear';
 import api from '@/api';
 import { normalizeUrbitColor } from '@/logic/utils';
@@ -348,6 +350,40 @@ export function allyForTreaty(ship: string, desk: string) {
     allied.includes(ref)
   )?.[0];
   return ally;
+}
+
+export type InstallStatus = 'uninstalled' | 'installing' | 'installed';
+
+export type App = ChargeWithDesk | Treaty;
+
+export function useInstallStatus(docket: App): InstallStatus {
+  if(!docket) {
+    return 'uninstalled';
+  }
+  if (!('chad' in docket)) {
+    return 'uninstalled';
+  }
+  if (chadIsRunning(docket.chad)) {
+    return 'installed';
+  }
+  if ('install' in docket.chad) {
+    return 'installing';
+  }
+  return 'uninstalled';
+}
+
+export function useRemoteDesk(docket: App, pike?: Pike, treatyInfoShip?: string) {
+  if (pike && pike.sync) {
+    return [pike.sync.ship, pike.sync.desk];
+  }
+  if (docket && 'chad' in docket) {
+    return [treatyInfoShip ?? '', docket.desk];
+  }
+  if(!docket) {
+    return ['', ''];
+  }
+  const { ship, desk } = docket;
+  return [ship, desk];
 }
 
 export const landscapeTreatyHost = import.meta.env.LANDSCAPE_HOST as string;
