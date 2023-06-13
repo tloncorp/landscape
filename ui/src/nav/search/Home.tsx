@@ -127,7 +127,7 @@ export const Home = () => {
   }, [recentApps, recentDevs]);
 
   return (
-    <div className="h-full overflow-y-auto p-4 font-semibold leading-tight text-black md:p-8">
+    <div className="h-full overflow-y-auto p-4 font-semibold leading-tight text-black md:px-6 md:py-8">
       <AppSearch />
       <h2 id="recent-apps" className="h4 mt-4 mb-4 text-gray-500">
         Recent Apps
