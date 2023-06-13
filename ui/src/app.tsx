@@ -23,14 +23,6 @@ import { useBrowserId, useLocalState } from './state/local';
 import { ErrorAlert } from './components/ErrorAlert';
 import { useErrorHandler } from './logic/useErrorHandler';
 import useSchedulerStore, { useScheduler } from './state/scheduler';
-import { TileInfo } from './tiles/TileInfo';
-import { SuspendApp } from './tiles/SuspendApp';
-import { RemoveApp } from './tiles/RemoveApp';
-import { Notifications } from './nav/notifications/Notifications';
-import { SystemPreferences } from './preferences/SystemPreferences';
-import { Help } from './nav/Help';
-import GetApps from './nav/GetApps';
-import { Search } from './nav/Search';
 
 const getNoteRedirect = (path: string) => {
   if (path.startsWith('/desk/')) {
