@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { DelBucket, DelEntry, PutBucket, Value } from '@urbit/api';
+import { DelBucket, DelEntry, PutBucket, Value } from '@/gear';
 import _ from 'lodash';
 import api from '../api';
 import useReactQuerySubscription from '@/logic/useReactQuerySubscription';
@@ -8,7 +8,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import produce from 'immer';
 
 interface PutEntry {
-  // this is defined here because the PutEntry type in @urbit/api is missing the desk field
+  // this is defined here because the PutEntry type in @/gear is missing the desk field
   'put-entry': {
     'bucket-key': string;
     'entry-key': string;

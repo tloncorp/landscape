@@ -4,7 +4,7 @@ import { mockAllies, mockCharges, mockTreaties } from '../state/mock-data';
 
 const settingsSub = {
   action: 'subscribe',
-  app: 'settings-store',
+  app: 'settings',
   path: '/desk/garden'
 } as SubscriptionHandler;
 
@@ -35,7 +35,7 @@ const mockHandlers: Handler[] = [
   treatySub,
   {
     action: 'scry',
-    app: 'settings-store',
+    app: 'settings',
     path: '/desk/garden',
     func: () => ({
       desk: {

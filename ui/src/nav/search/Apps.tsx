@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import fuzzy from 'fuzzy';
-import { Treaty } from '@urbit/api';
+import { Treaty } from '@/gear';
 import { ShipName } from '../../components/ShipName';
 import { useAllyTreaties } from '../../state/docket';
 import { useAppSearchStore } from '../Nav';

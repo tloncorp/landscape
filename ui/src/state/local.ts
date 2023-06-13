@@ -1,10 +1,10 @@
+import { storageVersion } from '@/constants';
 import create from 'zustand';
 import { persist } from 'zustand/middleware';
 import produce from 'immer';
 import {
   clearStorageMigration,
   createStorageKey,
-  storageVersion,
 } from '@/logic/utils';
 
 export type SubscriptionStatus = 'connected' | 'disconnected' | 'reconnecting';

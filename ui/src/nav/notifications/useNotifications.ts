@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useSkeins } from '@/state/hark';
 import _ from 'lodash';
-import { Skein, Yarn } from '@/types/hark';
+import { Skein, Yarn } from '@/gear';
 import { makePrettyDay } from '@/logic/utils';
 
 export interface DayGrouping {

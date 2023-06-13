@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import fuzzy from 'fuzzy';
-import { Provider, deSig } from '@urbit/api';
-import * as ob from 'urbit-ob';
+import { deSig, isValidPatp } from '@urbit/aura';
+import { Provider } from '@/gear';
 import { MatchItem, useAppSearchStore } from '../Nav';
 import { useAllies, useCharges } from '../../state/docket';
 import { ProviderList } from '../../components/ProviderList';
@@ -59,14 +59,14 @@ export const Providers = () => {
   );
 
   const patp = `~${deSig(search) || ''}`;
-  const isValidPatp = ob.isValidPatp(patp);
+  const isValid = isValidPatp(patp);
 
   const results = useMemo(() => {
     if (!allies) {
       return [];
     }
     const exact =
-      isValidPatp && !Object.keys(allies).includes(patp)
+      isValid && !Object.keys(allies).includes(patp)
         ? [
             {
               shipName: patp,
@@ -109,7 +109,7 @@ export const Providers = () => {
           }))
         : [];
 
-      const newProviderMatches = isValidPatp
+      const newProviderMatches = isValid
         ? [
             {
               url: `/search/${patp}/apps`,
@@ -128,7 +128,7 @@ export const Providers = () => {
         ),
       });
     }
-  }, [results, patp, isValidPatp]);
+  }, [results, patp, isValid]);
 
   return (
     <div

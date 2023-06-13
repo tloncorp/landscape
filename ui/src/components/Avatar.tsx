@@ -1,12 +1,12 @@
 import classNames from 'classnames';
 import React, { useMemo } from 'react';
 import { sigil, reactRenderer } from '@tlon/sigil-js';
-import { deSig } from '@urbit/api';
+import { deSig } from '@urbit/aura';
 import { darken, lighten, parseToHsla } from 'color2k';
 import { useCurrentTheme } from '../state/local';
 import { normalizeUrbitColor } from '@/logic/utils';
 import { useContact } from '../state/contact';
-import { Contact } from '@/types/contact';
+import { Contact } from '@/gear';
 
 export type AvatarSizes = 'xs' | 'small' | 'nav' | 'default';
 

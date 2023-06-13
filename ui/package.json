@@ -1,6 +1,6 @@
 {
   "name": "landscape",
-  "version": "0.0.0",
+  "version": "1.11.0",
   "private": true,
   "engines": {
     "node": "^16.0.0"
@@ -18,6 +18,8 @@
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.348.0",
+    "@aws-sdk/s3-request-presigner": "^3.348.0",
     "@fingerprintjs/fingerprintjs": "^3.3.3",
     "@radix-ui/react-checkbox": "^0.1.5",
     "@radix-ui/react-dialog": "^1.0.2",
@@ -35,7 +37,7 @@
     "@tlon/sigil-js": "^1.4.4",
     "@tloncorp/mock-http-api": "^1.2.0",
     "@types/lodash": "^4.14.172",
-    "@urbit/api": "^2.2.0",
+    "@urbit/aura": "^1.0.0",
     "@urbit/http-api": "^2.4.5-debug",
     "big-integer": "^1.6.48",
     "browser-cookies": "^1.2.0",
@@ -60,8 +62,8 @@
     "react-error-boundary": "^3.1.3",
     "react-hook-form": "^7.38.0",
     "react-router-dom": "^6.11.2",
+    "react-image-size": "^2.0.2",
     "slugify": "^1.6.0",
-    "urbit-ob": "^5.0.1",
     "zustand": "^3.7.2"
   },
   "devDependencies": {
