@@ -179,8 +179,6 @@ export const Nav: FunctionComponent = () => {
       />
       <Dialog open={isOpen} onOpenChange={onDialogClose}>
         <DialogContent
-          // onOpenAutoFocus={onOpen}
-          onInteractOutside={() => onDialogClose(false)}
           className="scroll-left-50 scroll-full-width outline-none fixed top-0 z-50 mt-4 flex  h-auto max-w-[882px] -translate-x-1/2 flex-col  justify-start px-4  text-gray-400 sm:bottom-auto sm:mt-12 sm:pb-4"
           role="combobox"
           aria-controls="leap-items"
