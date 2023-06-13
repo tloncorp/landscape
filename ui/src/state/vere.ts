@@ -23,31 +23,51 @@ interface VereState {
 }
 
 const useVereState = create<Vere>((set, get) => ({
+  cur: {
+    rev: '',
+  },
   loaded: false,
-  set
-}))
+  isLatest: true,
+  vereVersion: '',
+  latestVereVersion: '',
+  set,
+}));
 
 const fetchRuntimeVersion = () => {
-  api.thread({
-    inputMark: 'noun',
-    outputMark: 'vere-update',
-    desk: 'base',
-    threadName: 'runtime-version',
-    body: '',
-  }).then((data: Vere) => {
-    useVereState.setState((state) => {
-      const vereVersion = data.cur.rev.split('/vere/~.')[1];
-      const isLatest = data.next === undefined;
-      const latestVereVersion = !isLatest ? data.next.rev.split('/vere/~.')[1] : vereVersion
-        return Object.assign(data, {loaded: true, isLatest, vereVersion, latestVereVersion});
+  api
+    .thread({
+      inputMark: 'noun',
+      outputMark: 'vere-update',
+      desk: 'base',
+      threadName: 'runtime-version',
+      body: '',
     })
-  });
-}
+    .then((data) => {
+      useVereState.setState((state) => {
+        if (typeof data === 'object' && data !== null) {
+          const vereData = data as Vere;
+          const vereVersion = vereData.cur.rev.split('/vere/~.')[1];
+          const isLatest = vereData.next === undefined;
+          const latestVereVersion =
+            vereData.next !== undefined
+              ? vereData.next.rev.split('/vere/~.')[1]
+              : vereVersion;
+          return Object.assign(vereData, {
+            loaded: true,
+            isLatest,
+            vereVersion,
+            latestVereVersion,
+          });
+        }
+        return state;
+      });
+    });
+};
 
-fetchRuntimeVersion()
+fetchRuntimeVersion();
 
-setInterval(fetchRuntimeVersion, 1800000)
+setInterval(fetchRuntimeVersion, 1800000);
 
-export default useVereState;;
+export default useVereState;
 
 // window.vere = useVereState.getState;

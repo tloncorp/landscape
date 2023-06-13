@@ -78,7 +78,7 @@ export type MenuState =
 
 type PrefsLinkProps = Omit<LinkProps, 'to'> & {
   menuState: string;
-  systemBlocked?: string[];
+  systemBlocked?: boolean;
 };
 
 export const SystemPrefsLink = ({
@@ -135,7 +135,7 @@ export const Nav: FunctionComponent = () => {
   const [dialogContentOpen, setDialogContentOpen] = useState(false);
   const select = useAppSearchStore((state) => state.select);
 
-  const runtimeOutOfDate = (loaded && !(isLatest));
+  const runtimeOutOfDate = loaded && !isLatest;
 
   const menuState = menu || 'closed';
   const isOpen =
@@ -161,7 +161,10 @@ export const Nav: FunctionComponent = () => {
         containerRef={navRef}
         className="flex w-full items-center space-x-2 sm:justify-center"
       >
-        <SystemPrefsLink menuState={menuState} systemBlocked={systemBlocked || runtimeOutOfDate} />
+        <SystemPrefsLink
+          menuState={menuState}
+          systemBlocked={!!systemBlocked || runtimeOutOfDate}
+        />
         <NotificationsLink
           navOpen={isOpen}
           notificationsOpen={menu === 'notifications'}
