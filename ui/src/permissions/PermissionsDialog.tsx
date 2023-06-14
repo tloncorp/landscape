@@ -13,12 +13,14 @@ type ViewMode = 'Summary' | 'Source';
 interface PermissionsDialogInnerProps {
   appName: string;
   passport: Passport;
+  presentableSeal: string[] | null;
   onInstall: () => void;
 }
 
 export function PermissionsDialogInner({
   appName,
   passport,
+  presentableSeal,
   onInstall,
 }: PermissionsDialogInnerProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('Summary');
@@ -52,7 +54,6 @@ export function PermissionsDialogInner({
         {
           viewMode === 'Summary' ? (
             <div className="space-y-5">
-              {/* TODO: render app passport bucket */}
               {
                 [...passport.sys, ...passport.any, ...passport.new, ...passport.rad].map(p => {
                   return p.kind.pes.map((pe, i) => {
@@ -62,10 +63,9 @@ export function PermissionsDialogInner({
               }
             </div>
           ) : (
-            <div className="bg-gray-100 rounded-md p-4">
-              <pre className="text-xs font-mono text-gray-600">
-                {/* TODO: use real seal from scry; style to match wireframe */}
-                {fakeSeal}
+            <div className="bg-gray-50 rounded-md p-4">
+              <pre className="text-xs font-mono text-gray-800">
+                {presentableSeal?.map((s) => `${s}\n`)}
               </pre>
             </div>
           )

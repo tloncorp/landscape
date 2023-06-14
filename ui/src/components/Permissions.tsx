@@ -14,6 +14,7 @@ export const Permissions = () => {
     installStatus,
     passport,
     pike,
+    presentableSeal,
     ship,
   } = usePermissions();
 
@@ -40,6 +41,7 @@ export const Permissions = () => {
             <PermissionsDialogInner
               appName={appName}
               passport={passport}
+              presentableSeal={presentableSeal}
               onInstall={onInstall}
             />) : (
             <div className="dialog-inner-container flex justify-center text-black">

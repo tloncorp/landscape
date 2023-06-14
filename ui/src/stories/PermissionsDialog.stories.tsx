@@ -1,7 +1,7 @@
 import React from 'react';
 import { PermissionsDialogInner } from '@/permissions/PermissionsDialog';
 import { Dialog, DialogContent } from '@/components/Dialog';
-import { fakePassport } from '@/permissions/temp';
+import { fakePassport, fakeSeal } from '@/permissions/temp';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta: Meta<typeof PermissionsDialogInner> = {
@@ -32,6 +32,7 @@ export const Default: Story = {
   args: {
     appName: 'Some Cool App',
     passport: fakePassport,
+    presentableSeal: fakeSeal.split('\n'),
     onInstall: () => { },
   },
 };
