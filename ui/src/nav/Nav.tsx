@@ -13,16 +13,15 @@ import {
   Link,
   LinkProps,
   Route,
-  Switch,
-  useHistory,
-  useRouteMatch,
+  Routes,
+  useNavigate,
+  useParams,
 } from 'react-router-dom';
 import create from 'zustand';
 import { Avatar } from '../components/Avatar';
 import { Dialog } from '../components/Dialog';
 import { ErrorAlert } from '../components/ErrorAlert';
 import { Help } from './Help';
-import { AppSearch } from './AppSearch';
 import { Notifications } from './notifications/Notifications';
 import { NotificationsLink } from './notifications/NotificationsLink';
 import { Search } from './Search';
@@ -31,7 +30,6 @@ import { useSystemUpdate } from '../logic/useSystemUpdate';
 import useVereState from '../state/vere';
 import { Bullet } from '../components/icons/Bullet';
 import { Cross } from '../components/icons/Cross';
-import MagnifyingGlass16Icon from '../components/icons/MagnifyingGlass16Icon';
 import GetApps from './GetApps';
 import LandscapeWayfinding from '../components/LandscapeWayfinding';
 import { useCalm } from '../state/settings';
@@ -78,13 +76,9 @@ export type MenuState =
   | 'system-preferences'
   | 'upgrading';
 
-interface NavProps {
-  menu?: MenuState;
-}
-
-type PrefsLinkProps = Omit<LinkProps<HTMLAnchorElement>, 'to'> & {
+type PrefsLinkProps = Omit<LinkProps, 'to'> & {
   menuState: string;
-  systemBlocked?: string[];
+  systemBlocked?: boolean;
 };
 
 export const SystemPrefsLink = ({
@@ -122,9 +116,8 @@ export const GetAppsLink = () => {
   return (
     <Link
       to="/get-apps"
-      className="flex h-9 w-[150px] items-center justify-center space-x-2 rounded-lg bg-blue-soft px-3 py-2.5"
+      className="flex h-9 w-[125px] items-center justify-center space-x-2 rounded-lg bg-blue-soft px-3 py-2.5"
     >
-      <MagnifyingGlass16Icon className="h-4 w-4 fill-current text-blue" />
       <span className="whitespace-nowrap font-semibold text-blue">
         Get Urbit Apps
       </span>
@@ -132,18 +125,17 @@ export const GetAppsLink = () => {
   );
 };
 
-export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
-  const { push } = useHistory();
-  const inputRef = useRef<HTMLInputElement>(null);
+export const Nav: FunctionComponent = () => {
+  const navigate = useNavigate();
+  const { menu } = useParams<{ menu: MenuState }>();
   const navRef = useRef<HTMLDivElement>(null);
-  const dialogNavRef = useRef<HTMLDivElement>(null);
   const { disableWayfinding } = useCalm();
   const { systemBlocked } = useSystemUpdate();
   const { isLatest, loaded } = useVereState();
   const [dialogContentOpen, setDialogContentOpen] = useState(false);
   const select = useAppSearchStore((state) => state.select);
 
-  const runtimeOutOfDate = (loaded && !(isLatest));
+  const runtimeOutOfDate = loaded && !isLatest;
 
   const menuState = menu || 'closed';
   const isOpen =
@@ -156,57 +148,28 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
     }
   }, [isOpen]);
 
-  const onOpen = useCallback(
-    (event: Event) => {
-      event.preventDefault();
-
-      setDialogContentOpen(true);
-      if (menu === 'search' && inputRef.current) {
-        setTimeout(() => {
-          inputRef.current?.focus();
-        }, 0);
-      }
-    },
-    [menu]
-  );
-
   const onDialogClose = useCallback((open: boolean) => {
     if (!open) {
-      push('/');
-    }
-  }, []);
-
-  const preventClose = useCallback((e) => {
-    const target = e.target as HTMLElement;
-    const hasNavAncestor = target.closest('#dialog-nav');
-
-    if (hasNavAncestor) {
-      e.preventDefault();
+      navigate('/');
     }
   }, []);
 
   return (
-    <ErrorBoundary FallbackComponent={ErrorAlert} onReset={() => push('/')}>
+    <ErrorBoundary FallbackComponent={ErrorAlert} onReset={() => navigate('/')}>
       {/* Using portal so that we can retain the same nav items both in the dialog and in the base header */}
       <Portal.Root
-        containerRef={dialogContentOpen ? dialogNavRef : navRef}
+        containerRef={navRef}
         className="flex w-full items-center space-x-2 sm:justify-center"
       >
-        <SystemPrefsLink menuState={menuState} systemBlocked={systemBlocked || runtimeOutOfDate} />
+        <SystemPrefsLink
+          menuState={menuState}
+          systemBlocked={!!systemBlocked || runtimeOutOfDate}
+        />
         <NotificationsLink
           navOpen={isOpen}
           notificationsOpen={menu === 'notifications'}
         />
-        {menuState === 'search' || menuState === 'get-apps' ? (
-          <AppSearch
-            ref={inputRef}
-            menu={menuState}
-            dropdown="leap-items"
-            navOpen={isOpen}
-          />
-        ) : (
-          <GetAppsLink />
-        )}
+        <GetAppsLink />
         {!disableWayfinding && <LandscapeWayfinding className="sm:hidden" />}
       </Portal.Root>
 
@@ -223,32 +186,30 @@ export const Nav: FunctionComponent<NavProps> = ({ menu }) => {
       />
       <Dialog open={isOpen} onOpenChange={onDialogClose}>
         <DialogContent
-          onInteractOutside={preventClose}
-          onOpenAutoFocus={onOpen}
-          className="scroll-left-50 scroll-full-width outline-none fixed bottom-0 z-50 flex h-full max-h-full max-w-[882px] -translate-x-1/2 flex-col justify-end px-4 text-gray-400 sm:top-0 sm:bottom-auto sm:h-auto sm:justify-start sm:pb-4"
+          className="scroll-left-50 scroll-full-width outline-none fixed top-0 z-50 mt-4 flex  h-auto max-w-[882px] -translate-x-1/2 flex-col  justify-start px-4  text-gray-400 sm:bottom-auto sm:mt-12 sm:pb-4"
           role="combobox"
           aria-controls="leap-items"
           aria-owns="leap-items"
           aria-expanded={isOpen}
         >
-          <header
-            id="dialog-nav"
-            ref={dialogNavRef}
-            className="order-last mx-auto my-6 w-full max-w-[712px] sm:order-none sm:mb-3"
-          />
           <div
             id="leap-items"
-            className="default-ring mt-4 grid grid-rows-[fit-content(calc(100vh-6.25rem))] overflow-hidden rounded-xl bg-white focus-visible:ring-2 sm:mt-0"
+            className="default-ring grid grid-rows-[fit-content(calc(100vh-6.25rem))] overflow-hidden rounded-xl bg-white focus-visible:ring-2"
             tabIndex={0}
             role="listbox"
           >
-            <Switch>
-              <Route path="/notifications" component={Notifications} />
-              <Route path="/system-preferences" component={SystemPreferences} />
-              <Route path="/help-and-support" component={Help} />
-              <Route path="/get-apps" component={GetApps} />
-              <Route path={['/search']} component={Search} />
-            </Switch>
+            <Routes>
+              <Route path="notifications" element={<Notifications />} />
+              <Route
+                path="system-preferences/*"
+                element={<SystemPreferences />}
+              >
+                <Route path=":submenu/*" element={<SystemPreferences />} />
+              </Route>
+              <Route path="help-and-support" element={<Help />} />
+              <Route path="get-apps" element={<GetApps />} />
+              <Route path="search/*" element={<Search />} />
+            </Routes>
           </div>
         </DialogContent>
       </Dialog>

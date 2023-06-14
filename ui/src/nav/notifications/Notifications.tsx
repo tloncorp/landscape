@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import React, { useEffect, useCallback } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import { RouteComponentProps } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ErrorAlert } from '../../components/ErrorAlert';
 import { useGroups } from './groups';
 import Notification from './Notification';
@@ -59,14 +59,15 @@ function NotificationPlaceholder() {
   );
 }
 
-export const Notifications = ({ history }: RouteComponentProps) => {
+export const Notifications = () => {
+  const navigate = useNavigate();
   const { notifications, count, loaded } = useNotifications();
   const groups = useGroups();
 
   return (
     <ErrorBoundary
       FallbackComponent={ErrorAlert}
-      onReset={() => history.push('/leap/notifications')}
+      onReset={() => navigate('/leap/notifications')}
     >
       <div className="h-full overflow-y-scroll p-4 pr-2 md:p-9 md:pr-7">
         <div className="mb-4 flex w-full items-center justify-between">

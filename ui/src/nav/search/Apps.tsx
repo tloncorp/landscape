@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import fuzzy from 'fuzzy';
 import { Treaty } from '@/gear';
 import { ShipName } from '../../components/ShipName';
@@ -8,16 +8,17 @@ import { useAppSearchStore } from '../Nav';
 import { AppList } from '../../components/AppList';
 import { addRecentDev } from './Home';
 import { Spinner } from '../../components/Spinner';
+import { AppSearch } from '../AppSearch';
 
-type AppsProps = RouteComponentProps<{ ship: string }>;
-
-export const Apps = ({ match }: AppsProps) => {
+export const Apps = () => {
   const { searchInput, selectedMatch, select } = useAppSearchStore((state) => ({
     searchInput: state.searchInput,
     select: state.select,
-    selectedMatch: state.selectedMatch
+    selectedMatch: state.selectedMatch,
   }));
-  const provider = match?.params.ship;
+  const { ship = '' } = useParams<{ ship: string }>();
+  const { pathname } = useLocation();
+  const provider = ship;
   const { treaties, status } = useAllyTreaties(provider);
 
   useEffect(() => {
@@ -47,8 +48,9 @@ export const Apps = ({ match }: AppsProps) => {
   const count = results?.length;
 
   const getAppPath = useCallback(
-    (app: Treaty) => `${match?.path.replace(':ship', provider)}/${app.ship}/${app.desk}`,
-    [match]
+    (app: Treaty) =>
+      `${pathname.replace(':ship', provider)}/${app.ship}/${app.desk}`,
+    [pathname]
   );
 
   useEffect(() => {
@@ -66,27 +68,30 @@ export const Apps = ({ match }: AppsProps) => {
           url: getAppPath(r),
           openInNewTab: false,
           value: r.desk,
-          display: r.title
-        }))
+          display: r.title,
+        })),
       });
     }
   }, [results]);
 
   const showNone =
-    status === 'error' || ((status === 'success' || status === 'initial') && results?.length === 0);
+    status === 'error' ||
+    ((status === 'success' || status === 'initial') && results?.length === 0);
 
   return (
-    <div className="dialog-inner-container md:px-6 md:py-8 h4 text-gray-400">
+    <div className="dialog-inner-container h4 text-gray-400 md:px-6 md:py-8">
+      <AppSearch />
       {status === 'loading' && (
         <span className="mb-3">
-          <Spinner className="w-7 h-7 mr-3" /> Finding software...
+          <Spinner className="mr-3 h-7 w-7" /> Finding software...
         </span>
       )}
       {results && results.length > 0 && (
         <>
           <div id="developed-by">
             <h2 className="mb-3">
-              Software developed by <ShipName name={provider} className="font-mono" />
+              Software developed by{' '}
+              <ShipName name={provider} className="font-mono" />
             </h2>
             <p>
               {count} result{count === 1 ? '' : 's'}
@@ -103,7 +108,8 @@ export const Apps = ({ match }: AppsProps) => {
       )}
       {showNone && (
         <h2>
-          Unable to find software developed by <ShipName name={provider} className="font-mono" />
+          Unable to find software developed by{' '}
+          <ShipName name={provider} className="font-mono" />
         </h2>
       )}
     </div>

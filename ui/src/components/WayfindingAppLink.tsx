@@ -45,15 +45,15 @@ const WayfindingAppLink = ({
         </div>
       </div>
       {installed ? (
-        <Button variant="alt-primary" as="a" href={link} target="_blank">
-          Open App
+        <Button variant="primary" as="a" href={link} target="_blank">
+          Open
         </Button>
       ) : (
         <NavLink to={`/search/${source}/apps/${source}/${desk}`}>
           <Button
             variant="alt-primary"
           >
-            Install App
+            Get
           </Button>
         </NavLink>
       )}

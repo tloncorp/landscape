@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import fuzzy from 'fuzzy';
 import { deSig, isValidPatp } from '@urbit/aura';
 import { Provider } from '@/gear';
@@ -9,8 +9,7 @@ import { ProviderList } from '../../components/ProviderList';
 import useContactState, { emptyContact } from '../../state/contact';
 import { AppList } from '../../components/AppList';
 import { getAppHref } from '@/logic/utils';
-
-type ProvidersProps = RouteComponentProps<{ ship: string }>;
+import { AppSearch } from '../AppSearch';
 
 export function providerMatch(provider: Provider | string): MatchItem {
   const value = typeof provider === 'string' ? provider : provider.shipName;
@@ -36,9 +35,10 @@ function fuzzySort(search: string) {
   };
 }
 
-export const Providers = ({ match }: ProvidersProps) => {
+export const Providers = () => {
+  const { ship } = useParams<{ ship: string }>();
   const selectedMatch = useAppSearchStore((state) => state.selectedMatch);
-  const provider = match?.params.ship;
+  const provider = ship;
   const contacts = useContactState((s) => s.contacts);
   const charges = useCharges();
   const allies = useAllies();
@@ -135,6 +135,7 @@ export const Providers = ({ match }: ProvidersProps) => {
       className="dialog-inner-container h4 space-y-0 text-gray-400 md:px-6 md:py-8"
       aria-live="polite"
     >
+      <AppSearch />
       {appResults && !(results?.length > 0 && appResults.length === 0) && (
         <div>
           <h2 id="installed" className="mb-3">
