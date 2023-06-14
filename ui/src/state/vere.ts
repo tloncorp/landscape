@@ -61,6 +61,9 @@ const fetchRuntimeVersion = () => {
         }
         return state;
       });
+    })
+    .catch((err) => {
+      console.error(err);
     });
 };
 
