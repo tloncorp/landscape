@@ -34,20 +34,24 @@ export interface PermSummary {
 }
 
 /**
- * A passport-formatted permission
+ * Passport-formatted permissions
  */
-export interface PassportPerm {
+interface AppPerm {
+  pes: {
+    node: PermSummary[]
+  };
+  app: string;
+}
+
+interface KindPerm {
   kind: {
     nom: string;
     pes: PermSummary[]
   }
 }
 
-export interface AppPerm {
-  pes: {
-    node: PermSummary[]
-  };
-  app: string;
+interface NodePerm {
+  node: PermSummary;
 }
 
 /**
@@ -58,19 +62,19 @@ export interface Passport {
   /**
    * Categorized perms
    */
-  rad: PassportPerm[];
+  rad: KindPerm[];
   /**
    * Dangerous perms
    */
-  sys: PassportPerm[];
+  sys: (KindPerm | NodePerm )[];
   /**
    * All apps perms
    */
-  any: PassportPerm[];
+  any: KindPerm[];
   /**
    * Unknown app perms
    */
-  new: PassportPerm[];
+  new: KindPerm[];
   /**
    * Specific app perms
    */
