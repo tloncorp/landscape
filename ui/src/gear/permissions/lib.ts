@@ -1,5 +1,5 @@
 import { Poke } from "@urbit/http-api";
-import { ApprovePermsPoke, DenyPermsPoke, Passport, Perm, PokePerm, Seal } from "./types";
+import { ApprovePermsPoke, DenyPermsPoke, Passport, PokePerm, Seal } from "./types";
 import api from "@/api";
 
 export function approvePerms(desk: string, perms: PokePerm[]): Poke<ApprovePermsPoke> {

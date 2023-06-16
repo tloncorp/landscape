@@ -1,57 +1,50 @@
-
-type PermType = "super" | "watch" | "write" | "reads" | "press";
-
-type Vane = 'ames' | 'behn' | 'clay' | 'dill' | 'eyre' | 'fine' | 'gall' | 'iris' | 'jael' | 'khan';
-
-type Tail = {
-  jump?: boolean;
-  care?: string | null;
-  desk?: string | null;
-  dude?: string | null;
-  path?: string | null;
-  ship?: string | null;
-  spur?: string | null;
-  vane?: string | null;
-} | null;
-
-
-export interface Perm {
-  name: PermType;
-  vane: Vane | null;
-  tail: Tail;
-}
+/**
+ * A jammed noun representing a permission. base64 encoded. Not consumed by
+ * the frontend. Used when querying for passport or when approving / denying
+ * perms.
+ */
+type Perm = string;
 
 export type Seal = Perm[];
 
-export interface PermSummary {
+/**
+ * Passport-formatted permissions
+ */
+
+/**
+ * Permission summary
+ */
+interface Pes {
   desc: string;
   // TODO: per tinnus, "have" is meant to say whether the app already has all / 
   // any of / none of the perms in question but currently it doesn't, it just 
-  // always says nil.
-  have: "nil"
+  // always says "nil".
+  have: string;
   pers: Perm[];
   warn: string | null;
 }
 
 /**
- * Passport-formatted permissions
+ * Permission bucket
  */
-interface AppPerm {
-  pes: {
-    node: PermSummary[]
-  };
-  app: string;
+interface Kind {
+  nom: string;
+  pes: Pes[];
+  // TODO: add a field to indicate which icon to render in the modal
 }
 
 interface KindPerm {
-  kind: {
-    nom: string;
-    pes: PermSummary[]
-  }
+  kind: Kind;
 }
 
 interface NodePerm {
-  node: PermSummary;
+  node: Pes;
+}
+
+export type PassportPerm = KindPerm | NodePerm;
+export type AppPerm = {
+  app: string;
+  pes: Pes[];
 }
 
 /**
@@ -62,19 +55,19 @@ export interface Passport {
   /**
    * Categorized perms
    */
-  rad: KindPerm[];
+  rad: PassportPerm[];
   /**
    * Dangerous perms
    */
-  sys: (KindPerm | NodePerm )[];
+  sys: PassportPerm[];
   /**
    * All apps perms
    */
-  any: KindPerm[];
+  any: PassportPerm[];
   /**
    * Unknown app perms
    */
-  new: KindPerm[];
+  new: PassportPerm[];
   /**
    * Specific app perms
    */
