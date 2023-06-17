@@ -5,65 +5,48 @@ const fakePassport: Passport = {
   sys: [
     {
       kind: {
-        nom: 'write',
+        nom: 'Access your network keys',
         pes: [
           {
-            desc: 'Access network keys or passwords',
-            have: "nil",
-            warn: "This app can impersonate you on the network",
-            pers: [
-              {
-                name: 'write',
-                vane: 'jael',
-                tail: null,
-              }
-            ]
+            desc: 'Read or change your network keys',
+            warn: 'This permission is required for the app to work properly',
+            pers: [],
+            have: 'nil',
           }
         ]
       }
     },
-    {
-      kind: {
-        nom: 'write',
-        pes: [
-          {
-            desc: 'Manage system utilities and data',
-            have: "nil",
-            warn: "This app can execute commands on your computer",
-            pers: [
-              {
-                name: 'write',
-                vane: 'clay',
-                tail: null,
-              }
-            ]
-          }
-        ]
-      }
-    }
   ],
   any: [
     {
       kind: {
-        nom: 'write',
+        nom: 'Send Notifications',
         pes: [
           {
-            desc: 'Send notifications',
+            desc: 'Receive notifications via Hark',
             have: "nil",
             warn: null,
-            pers: [
-              {
-                name: 'write',
-                vane: null,
-                tail: null,
-              }
-            ]
+            pers: []
           }
         ]
       }
     }
   ],
-  new: [],
+  new: [
+    {
+      kind: {
+        nom: 'Manage system utilities and data',
+        pes: [
+          {
+            desc: 'Update your Landscape and Urbit settings',
+            have: "nil",
+            warn: null,
+            pers: []
+          }
+        ]
+      }
+    },
+  ],
   app: [],
 };
 

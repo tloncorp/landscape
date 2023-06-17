@@ -14,8 +14,8 @@ export default function usePermissions() {
   const treaty = useTreaty(host, desk);
   const docket = charge || treaty;
   const appName = getAppName(docket);
-  const { passport } = usePassport(); // TODO: pass in desk
   const [ship,] = useRemoteDesk(docket, pike, treaty?.ship);
+  const { passport } = usePassport({ desk, seal: treaty?.seal });
   const installStatus = useInstallStatus(docket);
   const [presentableSeal, setPresentableSeal] = useState<string[] | null>(null);
 

@@ -1,14 +1,16 @@
-import { Passport } from "@/gear";
+import { Passport, Seal, sealToPassport } from "@/gear";
 import { useEffect, useState } from "react";
-import { fakePassport } from './temp';
 
-export default function usePassport() {
+export default function usePassport({ desk, seal }: { desk: string, seal: Seal }) {
   const [passport, setPassport] = useState<Passport | null>(null);
 
+  const fetchPassport = async () => {
+    const response = await sealToPassport(desk, seal);
+    setPassport(response);
+  };
+
   useEffect(() => {
-    setTimeout(() => {
-      setPassport(fakePassport);
-    } , 2000);
+    fetchPassport();
   }, []);
 
   return { passport };

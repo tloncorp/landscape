@@ -24,11 +24,14 @@ export function denyPerms(desk: string, perms: PokePerm[]): Poke<DenyPermsPoke> 
   };
 }
 
-export async function sealToPassport(seal: Seal) {
-  return await api.thread<Passport, Seal>({
+export async function sealToPassport(desk: string, seal: Seal) {
+  return await api.thread<Passport, { desk: string, seal: Seal }>({
     inputMark: "json",
     outputMark: "json",
     threadName: "get-passport",
-    body: seal
+    body: {
+      desk,
+      seal
+    }
   });
 }

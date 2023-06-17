@@ -15,39 +15,40 @@ type Story = StoryObj<typeof SummaryRow>;
 
 export const HasWarning: Story = {
   args: {
-    summary: {
-      desc: 'Access your network keys',
-      warn: 'This permission is required for the app to work properly',
-      pers: [],
-      have: 'nil',
+    perm: {
+      kind: {
+        nom: 'Access your network keys',
+        pes: []
+      }
     },
   },
 };
 
 export const NoWarning: Story = {
   args: {
-    summary: {
-      desc: 'Send notifications',
-      warn: null,
-      pers: [],
-      have: 'nil',
+    perm: {
+      kind: {
+        nom: 'Access your network keys',
+        pes: []
+      }
     },
   },
 };
 
-export const Eyre: Story = {
+export const Expandable: Story = {
   args: {
-    summary: {
-      desc: 'Communicate with ships or clearweb sites',
-      warn: null,
-      pers: [
-        {
-          name: 'write',
-          vane: 'eyre',
-          tail: null,
-        }
-      ],
-      have: 'nil',
+    perm: {
+      kind: {
+        nom: 'Access your network keys',
+        pes: [
+          {
+            desc: 'Read or change your network keys',
+            warn: 'This permission is required for the app to work properly',
+            pers: [],
+            have: 'nil',
+          }
+        ]
+      }
     },
   },
 };

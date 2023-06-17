@@ -27,6 +27,8 @@ export function PermissionsDialogInner({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const showWarning = passport.sys.length > 0;
 
+  const passportPerms = [...passport.sys, ...passport.any, ...passport.new, ...passport.rad, ...passport.app];
+
   return (
     <div className="space-y-6">
       <section className='flex justify-between items-center'>
@@ -55,10 +57,10 @@ export function PermissionsDialogInner({
           viewMode === 'Summary' ? (
             <div className="space-y-5">
               {
-                [...passport.sys, ...passport.any, ...passport.new, ...passport.rad].map(p => {
-                  return p.kind.pes.map((pe, i) => {
-                    return <SummaryRow key={i} summary={pe} />
-                  })
+                passportPerms.map((p, i) => {
+                  return (
+                    <SummaryRow key={i} perm={p} />
+                  )
                 })
               }
             </div>
