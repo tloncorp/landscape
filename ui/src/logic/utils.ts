@@ -127,3 +127,7 @@ export function randomElement<T>(a: T[]) {
 export function randomIntInRange(min: number, max: number) {
   return Math.round(Math.random() * (max - min) + min);
 }
+
+export function capFirst(string: string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}

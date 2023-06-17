@@ -1,50 +1,22 @@
-import { chadIsRunning, Pike, Treaty } from '@/gear';
+import { Pike } from '@/gear';
 import clipboardCopy from 'clipboard-copy';
 import React, { FC, useCallback, useState } from 'react';
 import cn from 'classnames';
-import { Button, PillButton } from './Button';
-import * as Dialog from '@radix-ui/react-dialog';
-import { DialogClose, DialogContent, DialogTrigger } from './Dialog';
+import { PillButton } from './Button';
 import { DocketHeader } from './DocketHeader';
 import { Spinner } from './Spinner';
 import { PikeMeta } from './PikeMeta';
-import useDocketState, { ChargeWithDesk, useTreaty } from '../state/docket';
+import { App, useInstallStatus, useRemoteDesk, useTreaty } from '../state/docket';
 import { getAppHref, getAppName } from '@/logic/utils';
 import { addRecentApp } from '../nav/search/Home';
 import { TreatyMeta } from './TreatyMeta';
+import { useHistory, useParams } from 'react-router-dom';
 
-type InstallStatus = 'uninstalled' | 'installing' | 'installed';
-
-type App = ChargeWithDesk | Treaty;
 interface AppInfoProps {
   docket: App;
   pike?: Pike;
   treatyInfoShip?: string;
   className?: string;
-}
-
-function getInstallStatus(docket: App): InstallStatus {
-  if (!('chad' in docket)) {
-    return 'uninstalled';
-  }
-  if (chadIsRunning(docket.chad)) {
-    return 'installed';
-  }
-  if ('install' in docket.chad) {
-    return 'installing';
-  }
-  return 'uninstalled';
-}
-
-function getRemoteDesk(docket: App, pike?: Pike, treatyInfoShip?: string) {
-  if (pike && pike.sync) {
-    return [pike.sync.ship, pike.sync.desk];
-  }
-  if ('chad' in docket) {
-    return [treatyInfoShip ?? '', docket.desk];
-  }
-  const { ship, desk } = docket;
-  return [ship, desk];
 }
 
 export const AppInfo: FC<AppInfoProps> = ({
@@ -53,18 +25,13 @@ export const AppInfo: FC<AppInfoProps> = ({
   className,
   treatyInfoShip,
 }) => {
-  const installStatus = getInstallStatus(docket);
-  const [ship, desk] = getRemoteDesk(docket, pike, treatyInfoShip);
+  const [ship, desk] = useRemoteDesk(docket, pike, treatyInfoShip);
   const publisher = pike?.sync?.ship ?? ship;
   const [copied, setCopied] = useState(false);
   const treaty = useTreaty(ship, desk);
-
-  const installApp = async () => {
-    if (installStatus === 'installed') {
-      return;
-    }
-    await useDocketState.getState().installDocket(ship, desk);
-  };
+  const { push } = useHistory();
+  const installStatus = useInstallStatus(docket);
+  const { host } = useParams<{ host: string }>();
 
   const copyApp = useCallback(() => {
     setCopied(true);
@@ -103,47 +70,9 @@ export const AppInfo: FC<AppInfoProps> = ({
             </PillButton>
           )}
           {installStatus !== 'installed' && (
-            <Dialog.Root>
-              <DialogTrigger asChild>
-                <PillButton variant="alt-primary" disabled={installing}>
-                  {installing ? (
-                    <>
-                      <Spinner />
-                      <span className="sr-only">Installing...</span>
-                    </>
-                  ) : (
-                    'Get App'
-                  )}
-                </PillButton>
-              </DialogTrigger>
-              <Dialog.Portal>
-                <Dialog.Overlay className="fixed top-0 bottom-0 left-0 right-0 z-[60] transform-gpu bg-black opacity-30" />
-                <DialogContent
-                  showClose={false}
-                  className="space-y-6"
-                  containerClass="w-full max-w-md z-[70]"
-                >
-                  <h2 className="h4">
-                    Install &ldquo;{getAppName(docket)}&rdquo;
-                  </h2>
-                  <p className="pr-6 tracking-tight">
-                    This application will be able to view and interact with the
-                    contents of your Urbit. Only install if you trust the
-                    developer.
-                  </p>
-                  <div className="flex space-x-6">
-                    <DialogClose asChild>
-                      <Button variant="secondary">Cancel</Button>
-                    </DialogClose>
-                    <DialogClose asChild>
-                      <Button onClick={installApp}>
-                        Get &ldquo;{getAppName(docket)}&rdquo;
-                      </Button>
-                    </DialogClose>
-                  </div>
-                </DialogContent>
-              </Dialog.Portal>
-            </Dialog.Root>
+            <PillButton variant='alt-primary' onClick={() => push(`/search/${ship}/apps/${host}/${desk}/permissions`)}>
+              Get &ldquo;{getAppName(docket)}&rdquo;
+            </PillButton>
           )}
           <PillButton variant="alt-secondary" onClick={copyApp}>
             {!copied && 'Copy App Link'}

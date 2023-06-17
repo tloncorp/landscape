@@ -15,7 +15,6 @@ import {
   Route,
   Switch,
   useHistory,
-  useRouteMatch,
 } from 'react-router-dom';
 import create from 'zustand';
 import { Avatar } from '../components/Avatar';

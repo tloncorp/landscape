@@ -79,6 +79,7 @@ const base = new Theme().addColors({
     900: '#00133E',
   },
   red: {
+    danger: '#FF6240',
     50: '#FFF4F2',
     100: '#FFDED6',
     200: '#FFC8B9',
