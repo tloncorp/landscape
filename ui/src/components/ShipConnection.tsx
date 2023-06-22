@@ -52,8 +52,12 @@ function getPendingText(status: ConnectionPendingStatus, ship: string) {
 }
 
 function getConnectionColor(status?: ConnectionStatus) {
-  if (!status || 'pending' in status) {
+  if (!status) {
     return 'text-gray-400';
+  }
+
+  if ('pending' in status) {
+    return 'text-yellow-400';
   }
 
   return status.complete === 'yes' ? 'text-green-300' : 'text-red-400';

@@ -269,7 +269,6 @@ function getAllyTreatyStatus(
   status?: ConnectionStatus
 ): Status | 'awaiting' | 'partial' | 'finished' {
   const treatyCount = Object.keys(treaties).length;
-  console.log(treatyCount, alliance?.length, fetching, status);
   if (alliance && alliance.length !== 0 && treatyCount === alliance.length) {
     return 'finished';
   }
@@ -294,7 +293,7 @@ function getAllyTreatyStatus(
 }
 
 export function useAllyTreaties(ship: string) {
-  const { data } = useConnectivityCheck(ship);
+  const { data, showConnection } = useConnectivityCheck(ship);
   const allies = useAllies();
   const isAllied = ship in allies;
   const [fetching, setFetching] = useState(false);
@@ -307,7 +306,6 @@ export function useAllyTreaties(ship: string) {
       [ship]
     )
   );
-  debugger;
   const status = getAllyTreatyStatus(
     treaties,
     fetching,
@@ -342,6 +340,7 @@ export function useAllyTreaties(ship: string) {
     treaties,
     status,
     connection: data,
+    showConnection,
     awaiting: allies[ship]?.length || 0 - Object.keys(treaties).length,
   };
 }

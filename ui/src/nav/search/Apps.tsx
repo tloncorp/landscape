@@ -20,25 +20,14 @@ export const Apps = ({ match }: AppsProps) => {
     selectedMatch: state.selectedMatch,
   }));
   const provider = match?.params.ship;
-  const { treaties, status, connection, awaiting } = useAllyTreaties(provider);
-  console.log(status);
-  const [showConnection, setShowConnection] = React.useState(false);
+  const { treaties, status, connection, showConnection, awaiting } =
+    useAllyTreaties(provider);
 
   useEffect(() => {
     if (provider) {
       addRecentDev(provider);
     }
   }, [provider]);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setShowConnection(true);
-    }, 700);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, []);
 
   const results = useMemo(() => {
     if (!treaties) {

@@ -95,8 +95,25 @@ export interface ConnectionUpdate {
   timestamp: number;
 }
 
-export function useConnectivityCheck(ship: string, useStale = false) {
+interface ConnectivityCheckOptions {
+  useStale?: boolean;
+  enabled?: boolean;
+  staleTime?: number;
+  waitToDisplay?: number;
+}
+
+export function useConnectivityCheck(
+  ship: string,
+  options?: ConnectivityCheckOptions
+) {
+  const {
+    useStale = false,
+    enabled = true,
+    staleTime = 30 * 1000,
+    waitToDisplay = 700,
+  } = options || {};
   const [subbed, setSubbed] = useState(false);
+  const [showConnection, setShowConnection] = useState(false);
   const queryClient = useQueryClient();
   const query = useQuery(
     ['vitals', ship],
@@ -108,8 +125,8 @@ export function useConnectivityCheck(ship: string, useStale = false) {
       const now = Date.now();
       const diff = now - resp.timestamp;
 
-      // if status older than 30 seconds, re-run check
-      if (diff > 30 * 1000 || !useStale) {
+      // if status older than stale time, re-run check
+      if (diff > staleTime || !useStale) {
         api.poke({
           app: 'vitals',
           mark: 'run-check',
@@ -127,7 +144,7 @@ export function useConnectivityCheck(ship: string, useStale = false) {
       return resp;
     },
     {
-      enabled: subbed,
+      enabled: enabled && subbed,
       cacheTime: 0,
       initialData: {
         status: {
@@ -149,5 +166,18 @@ export function useConnectivityCheck(ship: string, useStale = false) {
     setSubbed(true);
   }, [ship]);
 
-  return query;
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setShowConnection(true);
+    }, waitToDisplay);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [waitToDisplay]);
+
+  return {
+    ...query,
+    showConnection,
+  };
 }
