@@ -156,7 +156,7 @@ export const Home = () => {
           size="small"
         />
       )}
-      <hr className="-mx-4 my-6 border-t-2 border-gray-50 md:-mx-8 md:my-9" />
+      <hr className="-mx-4 my-6 border-t-2 border-gray-50 md:my-9" />
       <h2 id="recent-devs" className="h4 mb-4 text-gray-500">
         Recent Developers
       </h2>

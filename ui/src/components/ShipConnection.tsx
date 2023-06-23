@@ -10,6 +10,7 @@ import Bullet16Icon from './icons/Bullet16Icon';
 interface ShipConnectionProps {
   ship: string;
   status?: ConnectionStatus;
+  showBullet?: boolean;
   className?: string;
 }
 
@@ -66,13 +67,16 @@ function getConnectionColor(status?: ConnectionStatus) {
 export function ShipConnection({
   status,
   ship,
+  showBullet = true,
   className,
 }: ShipConnectionProps) {
   return (
     <span className={cn('flex text-base font-semibold', className)}>
-      <Bullet16Icon
-        className={cn('-ml-1 h-4 w-4', getConnectionColor(status))}
-      />{' '}
+      {showBullet && (
+        <Bullet16Icon
+          className={cn('-ml-1 h-4 w-4', getConnectionColor(status))}
+        />
+      )}{' '}
       {!status
         ? 'No connection data'
         : 'pending' in status

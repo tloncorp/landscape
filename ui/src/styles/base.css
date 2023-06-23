@@ -1,58 +1,46 @@
+/* Works on Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #e5e5e5 transparent;
+  scrollbar-color: rgb(var(--colors-gray-200)) transparent;
 }
 
+/* Works on Chrome, Edge, and Safari */
 *::-webkit-scrollbar {
-  width: 14px;
-}
-
-*::-webkit-scrollbar-thumb {
-  background-color: #e5e5e5;
-  border: 4px solid #ffffff;
-  border-radius: 20px;
+  width: 10px;
 }
 
 *::-webkit-scrollbar-track {
   background: transparent;
-  border: 4px solid #ffffff;
+  border: solid 2px transparent;
 }
 
-@media (prefers-color-scheme: dark) {
-  * {
-    scrollbar-color: #333333 transparent;
-  }
-
-  *::-webkit-scrollbar-thumb {
-    background-color: #333333;
-    border: 4px solid #000000;
-  }
-
-  *::-webkit-scrollbar-track {
-    border: 4px solid #000000;
-  }
+*::-webkit-scrollbar-thumb {
+  background: rgb(var(--colors-gray-200));
+  border: solid 2px transparent;
+  border-radius: 20px;
+  background-clip: content-box;
 }
 
 .h1 {
-  @apply text-2xl sm:text-3xl font-bold leading-relaxed tracking-tighter;
+  @apply text-2xl font-bold leading-relaxed tracking-tighter sm:text-3xl;
 }
 
 .h2 {
-  @apply text-xl sm:text-2xl font-semibold leading-snug tracking-tight;
+  @apply text-xl font-semibold leading-snug tracking-tight sm:text-2xl;
 }
 
 .h3 {
-  @apply text-lg sm:text-xl font-semibold leading-relaxed tracking-tight;
+  @apply text-lg font-semibold leading-relaxed tracking-tight sm:text-xl;
 }
 
 .h4 {
-  @apply text-base sm:text-lg font-bold leading-normal tracking-tight;
+  @apply text-base font-bold leading-normal tracking-tight sm:text-lg;
 }
 
 .default-ring {
-  @apply focus-visible:ring-2 ring-blue-400 ring-opacity-80 focus-visible:outline-none focus:outline-none;
+  @apply focus-visible:outline-none focus:outline-none ring-blue-400 ring-opacity-80 focus-visible:ring-2;
 }
 
 .sb-show-main {
-  @apply text-base font-sans text-gray-800 bg-white antialiased
+  @apply bg-white font-sans text-base text-gray-800 antialiased;
 }

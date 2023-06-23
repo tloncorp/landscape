@@ -2,9 +2,7 @@ import classNames from 'classnames';
 import React, { FunctionComponent } from 'react';
 import { useDrag } from 'react-dnd';
 import * as Tooltip from '@radix-ui/react-tooltip';
-import { chadIsRunning } from '@/gear';
 import { TileMenu } from './TileMenu';
-import { Spinner } from '../components/Spinner';
 import { getAppHref } from '@/logic/utils';
 import { useRecentsStore } from '../nav/search/Home';
 import { ChargeWithDesk } from '../state/docket';
@@ -14,6 +12,7 @@ import { Bullet } from '../components/icons/Bullet';
 import { dragTypes } from './TileGrid';
 import { useHasInviteToGroup } from '@/state/hark';
 import { useGroups } from '@/nav/notifications/groups';
+import { TileStatusIndicator, getTileStatus } from './TileStatusIndicator';
 
 type TileProps = {
   charge: ChargeWithDesk;
@@ -40,11 +39,12 @@ export const Tile: FunctionComponent<TileProps> = ({
   const pike = usePike(desk);
   const { lightText, tileColor, menuColor, suspendColor, suspendMenuColor } =
     useTileColor(color);
-  const loading = !disabled && 'install' in chad;
-  const suspended = disabled || 'suspend' in chad;
-  const hung = 'hung' in chad;
-  // TODO should held zest be considered inactive? suspended? also, null sync?
-  const active = !disabled && chadIsRunning(chad);
+  if (desk === 'canvas') {
+    debugger;
+  }
+  const status = getTileStatus(chad, pike, disabled);
+  const suspended = status === 'inactive';
+  const active = status === 'active';
   const link = getAppHref(href);
   const backgroundColor = suspended
     ? suspendColor
@@ -70,7 +70,7 @@ export const Tile: FunctionComponent<TileProps> = ({
         'default-ring group absolute h-full w-full overflow-hidden rounded-3xl font-semibold focus-visible:ring-4',
         suspended && 'opacity-50 grayscale',
         isDragging && 'opacity-0',
-        lightText && active && !loading ? 'text-gray-200' : 'text-gray-800',
+        lightText && active ? 'text-gray-200' : 'text-gray-800',
         !active && 'cursor-default'
       )}
       style={{ backgroundColor }}
@@ -104,25 +104,11 @@ export const Tile: FunctionComponent<TileProps> = ({
             </Tooltip.Portal>
           </Tooltip.Root>
         )}
-        <div className="absolute top-4 left-4 z-10 flex items-center sm:top-6 sm:left-6">
-          {pike?.zest === 'held' && !disabled && (
-            <Bullet className="h-4 w-4 text-orange-500 dark:text-black" />
-          )}
-          {!active && (
-            <>
-              {loading && <Spinner className="mr-2 h-6 w-6" />}
-              <span className="text-gray-500">
-                {suspended
-                  ? 'Suspended'
-                  : loading
-                  ? 'Installing'
-                  : hung
-                  ? 'Errored'
-                  : null}
-              </span>
-            </>
-          )}
-        </div>
+        <TileStatusIndicator
+          status={status}
+          devShip={pike?.sync?.ship}
+          className="absolute top-4 left-4 z-10 sm:top-6 sm:left-6"
+        />
         {desk === 'groups' && !hasGroups ? null : (
           <TileMenu
             desk={desk}
@@ -140,7 +126,7 @@ export const Tile: FunctionComponent<TileProps> = ({
             <h3 className="mix-blend-hard-light">{title}</h3>
           </div>
         )}
-        {image && !loading && (
+        {image && status !== 'installing' && (
           <img
             className="absolute top-0 left-0 h-full w-full object-cover"
             src={image}
