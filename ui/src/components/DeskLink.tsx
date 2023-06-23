@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCharge } from '../state/docket';
 import { getAppHref } from '@/logic/utils';
 
@@ -17,7 +17,7 @@ export function DeskLink({
   to = '',
   ...rest
 }: DeskLinkProps) {
-  const { push } = useHistory();
+  const navigate = useNavigate();
   const charge = useCharge(desk);
 
   if (!charge) {
@@ -42,7 +42,7 @@ export function DeskLink({
         if (rest.onClick) {
           rest.onClick(event);
         }
-        push('/');
+        navigate('/');
       }}
     >
       {children}

@@ -1,28 +1,24 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import WayfindingAppLink from '../components/WayfindingAppLink';
 import { useCharges } from '../state/docket';
 import { APPS, SECTIONS } from '../constants';
-import { useMedia } from '../logic/useMedia';
+import { AppSearch } from './AppSearch';
 
 export default function GetApps() {
   const charges = useCharges();
-  const isMobile = useMedia('(max-width: 639px)');
 
   return (
     <div className="flex h-full flex-col space-y-8 overflow-y-scroll p-8">
       <h1 className="text-xl font-bold text-gray-800">Find Urbit Apps</h1>
-      <div className="flex flex-col space-y-3">
+      <div className="flex flex-col space-y-2">
         <h2 className="font-semibold text-gray-800">
-          Find Urbit App Developers
+          Browse by Developer ID or Shortcode
         </h2>
-        <span>
-          Use the search field {isMobile ? 'below' : 'above'} to find apps or
-          ships hosting apps.
-        </span>
+        <AppSearch />
       </div>
       {Object.entries(SECTIONS).map(([key, name]) => (
         <div key={key} className="flex flex-col space-y-2">
-          <h2 className="text-lg font-bold text-gray-800">{name}</h2>
+          <h2 className="text-lg font-bold text-gray-400">{name}</h2>
           <div className="flex flex-col space-y-2 px-2">
             {APPS.map((app) => {
               if (app.section === name) {
@@ -56,6 +52,18 @@ export default function GetApps() {
           </div>
         </div>
       ))}
+      <p className="text-sm">
+        You can find more software in the Urbit Foundation's{' '}
+        <a
+          className="underline"
+          target="_blank"
+          rel="noreferrer"
+          href="https://urbit.org/ecosystem?type=applications"
+        >
+          directory
+        </a>
+        .
+      </p>
     </div>
   );
 }

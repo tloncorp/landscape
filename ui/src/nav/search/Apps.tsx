@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import fuzzy from 'fuzzy';
 import { Treaty } from '@/gear';
 import { ShipName } from '../../components/ShipName';
@@ -10,16 +10,17 @@ import { addRecentDev } from './Home';
 import { Spinner } from '../../components/Spinner';
 import { ShipConnection } from '@/components/ShipConnection';
 import { pluralize } from '@/logic/utils';
+import { AppSearch } from '../AppSearch';
 
-type AppsProps = RouteComponentProps<{ ship: string }>;
-
-export const Apps = ({ match }: AppsProps) => {
+export const Apps = () => {
   const { searchInput, selectedMatch, select } = useAppSearchStore((state) => ({
     searchInput: state.searchInput,
     select: state.select,
     selectedMatch: state.selectedMatch,
   }));
-  const provider = match?.params.ship;
+  const { ship = '' } = useParams<{ ship: string }>();
+  const { pathname } = useLocation();
+  const provider = ship;
   const { treaties, status, connection, showConnection, awaiting } =
     useAllyTreaties(provider);
 
@@ -51,8 +52,8 @@ export const Apps = ({ match }: AppsProps) => {
 
   const getAppPath = useCallback(
     (app: Treaty) =>
-      `${match?.path.replace(':ship', provider)}/${app.ship}/${app.desk}`,
-    [match]
+      `${pathname.replace(':ship', provider)}/${app.ship}/${app.desk}`,
+    [pathname]
   );
 
   useEffect(() => {
@@ -81,6 +82,7 @@ export const Apps = ({ match }: AppsProps) => {
 
   return (
     <div className="dialog-inner-container h4 text-gray-400 md:px-6 md:py-8">
+      <AppSearch />
       {showLoader && (
         <div className="mb-3 flex items-start">
           <Spinner className="mr-3 h-7 w-7 flex-none" />

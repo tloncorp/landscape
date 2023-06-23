@@ -3,12 +3,11 @@ import Mousetrap from 'mousetrap';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import {
   BrowserRouter,
-  Switch,
   Route,
-  useHistory,
   useLocation,
-  RouteComponentProps,
-  Redirect,
+  Routes,
+  useNavigate,
+  Navigate,
 } from 'react-router-dom';
 import { TooltipProvider } from '@radix-ui/react-tooltip';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -49,13 +48,14 @@ const getId = async () => {
   return result.visitorId;
 };
 
-function OldLeapRedirect({ location }: RouteComponentProps) {
+function OldLeapRedirect() {
+  const location = useLocation();
   const path = location.pathname.replace('/leap', '');
-  return <Redirect to={path} />;
+  return <Navigate to={path} />;
 }
 
 const AppRoutes = () => {
-  const { push } = useHistory();
+  const navigate = useNavigate();
   const { search } = useLocation();
   const handleError = useErrorHandler();
   const browserId = useBrowserId();
@@ -70,7 +70,7 @@ const AppRoutes = () => {
     const query = new URLSearchParams(search);
     if (query.has('grid-note')) {
       const redir = getNoteRedirect(query.get('grid-note')!);
-      push(redir);
+      navigate(redir);
     }
   }, [search]);
 
@@ -105,18 +105,20 @@ const AppRoutes = () => {
         .wait(() => useContactState.getState().start(), 5);
 
       Mousetrap.bind(['command+/', 'ctrl+/'], () => {
-        push('/search');
+        navigate('/search');
       });
     }),
     []
   );
 
   return (
-    <Switch>
-      <Route path="/perma" component={PermalinkRoutes} />
-      <Route path="/leap/*" component={OldLeapRedirect} />
-      <Route path={['/:menu', '/']} component={Grid} />
-    </Switch>
+    <Routes>
+      <Route path="perma/*" element={<PermalinkRoutes />} />
+      <Route path="leap/*" element={<OldLeapRedirect />} />
+      <Route path="/" element={<Grid />}>
+        <Route path=":menu/*" element={<Grid />} />
+      </Route>
+    </Routes>
   );
 };
 

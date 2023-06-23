@@ -25,7 +25,7 @@ function getNotificationsState(
   return 'unread';
 }
 
-type NotificationsLinkProps = Omit<LinkProps<HTMLAnchorElement>, 'to'> & {
+type NotificationsLinkProps = Omit<LinkProps, 'to'> & {
   navOpen: boolean;
   notificationsOpen: boolean;
 };

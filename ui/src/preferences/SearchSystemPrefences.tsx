@@ -1,5 +1,5 @@
 import React, { ChangeEvent, KeyboardEvent, useEffect, useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import fuzzy from 'fuzzy';
 import classNames from 'classnames';
 import MagnifyingGlassIcon from '../components/icons/MagnifyingGlassIcon';
@@ -12,57 +12,59 @@ import LogoutIcon from '../components/icons/LogoutIcon';
 import PencilIcon from '../components/icons/PencilIcon';
 import ForwardSlashIcon from '../components/icons/ForwardSlashIcon';
 
-const navOptions: { route: string; title: string; icon: React.ReactElement }[] = [
+type NavOption = {
+  route: string;
+  title: string;
+  icon: React.ReactElement;
+};
+
+const navOptions: NavOption[] = [
   {
     route: 'help',
     title: 'Help and Support',
-    icon: <HelpIcon className="w-4 h-4 text-gray-600" />
+    icon: <HelpIcon className="h-4 w-4 text-gray-600" />,
   },
   {
     route: 'interface',
     title: 'Interface Settings',
-    icon: <Interface className="w-4 h-4 text-gray-600" />
+    icon: <Interface className="h-4 w-4 text-gray-600" />,
   },
   {
     route: 'notifications',
     title: 'Notifications',
-    icon: <BellIcon className="w-4 h-4 text-gray-600" />
+    icon: <BellIcon className="h-4 w-4 text-gray-600" />,
   },
   {
     route: 'appearance',
     title: 'Appearance',
-    icon: <PencilIcon className="w-4 h-4 text-gray-600" />
+    icon: <PencilIcon className="h-4 w-4 text-gray-600" />,
   },
   {
     route: 'shortcuts',
     title: 'Shortcuts',
-    icon: <ForwardSlashIcon className="w-4 h-4 text-gray-600" />
+    icon: <ForwardSlashIcon className="h-4 w-4 text-gray-600" />,
   },
   {
     route: 'privacy',
     title: 'Attention & Privacy',
-    icon: <BurstIcon className="w-4 h-4 text-gray-600" />
+    icon: <BurstIcon className="h-4 w-4 text-gray-600" />,
   },
   {
     route: 'security',
     title: 'Log Out...',
-    icon: <LogoutIcon className="w-4 h-4 text-gray-600" />
+    icon: <LogoutIcon className="h-4 w-4 text-gray-600" />,
   },
   {
     route: 'system-updates',
     title: 'About System',
-    icon: <TlonIcon className="w-4 h-4 text-gray-600" />
-  }
+    icon: <TlonIcon className="h-4 w-4 text-gray-600" />,
+  },
 ];
 
-interface SearchSystemPrefencesProps {
-  subUrl: (submenu: string) => string;
-}
-
-export default function SearchSystemPreferences({ subUrl }: SearchSystemPrefencesProps) {
-  const { push } = useHistory();
+export default function SearchSystemPreferences() {
+  const navigate = useNavigate();
   const [searchInput, setSearchInput] = useState('');
-  const [matchingNavOptions, setMatchingNavOptions] = useState<string[]>([]);
+  const [matchingNavOptions, setMatchingNavOptions] = useState<NavOption[]>([]);
   const [highlightNavOption, setHighlightNavOption] = useState<number>();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -74,7 +76,22 @@ export default function SearchSystemPreferences({ subUrl }: SearchSystemPrefence
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     const { key } = e;
-    if (key === 'ArrowDown' && searchInput !== '' && matchingNavOptions.length > 0) {
+
+    if (searchInput === '') {
+      setHighlightNavOption(undefined);
+    }
+
+    if (key === 'Escape') {
+      setSearchInput('');
+      setHighlightNavOption(undefined);
+    }
+
+    if (
+      key === 'ArrowDown' &&
+      searchInput !== '' &&
+      matchingNavOptions.length > 0 &&
+      highlightNavOption !== matchingNavOptions.length - 1
+    ) {
       if (highlightNavOption === undefined) {
         setHighlightNavOption(0);
       } else {
@@ -92,8 +109,13 @@ export default function SearchSystemPreferences({ subUrl }: SearchSystemPrefence
       setHighlightNavOption((prevState) => prevState! - 1);
     }
 
-    if (key === 'Enter' && searchInput !== '' && highlightNavOption !== undefined) {
-      push(subUrl(navOptions[highlightNavOption].route));
+    if (
+      key === 'Enter' &&
+      searchInput !== '' &&
+      highlightNavOption !== undefined
+    ) {
+      navigate(matchingNavOptions[highlightNavOption].route);
+      setHighlightNavOption(undefined);
     }
   };
 
@@ -102,20 +124,26 @@ export default function SearchSystemPreferences({ subUrl }: SearchSystemPrefence
   };
 
   useEffect(() => {
-    const results = fuzzy.filter(searchInput, navOptions, { extract: (obj) => obj.title });
+    const results = fuzzy.filter(searchInput, navOptions, {
+      extract: (obj) => obj.title,
+    });
     const matches = results.map((el) => el.string);
-    setMatchingNavOptions(matches);
+    const matchedNavOptions = navOptions.filter((navOpt) =>
+      matches.includes(navOpt.title)
+    );
+
+    setMatchingNavOptions(matchedNavOptions);
   }, [searchInput]);
 
   return (
     <>
       <label className="relative flex items-center">
         <span className="sr-only">Search Prefences</span>
-        <span className="absolute h-8 w-8 text-gray-400 flex items-center pl-2 inset-y-1 left-0">
+        <span className="absolute inset-y-1 left-0 flex h-8 w-8 items-center pl-2 text-gray-400">
           <MagnifyingGlassIcon />
         </span>
         <input
-          className="input bg-gray-50 pl-8 placeholder:font-semibold mb-5 h-10"
+          className="input mb-5 h-10 bg-gray-50 pl-8 placeholder:font-semibold"
           placeholder="Search Preferences"
           value={searchInput}
           onChange={handleChange}
@@ -125,22 +153,26 @@ export default function SearchSystemPreferences({ subUrl }: SearchSystemPrefence
       </label>
       <div className="relative">
         {matchingNavOptions.length > 0 && searchInput !== '' ? (
-          <div className="absolute -top-3 flex flex-col bg-white space-y-2 rounded-2xl shadow-md w-full py-3">
+          <div className="absolute -top-3 flex w-full flex-col space-y-2 rounded-2xl bg-white py-3 shadow-md">
             {matchingNavOptions.map((opt, index) => {
-              const matchingNavOption = navOptions.find((navOpt) => navOpt.title === opt);
+              const matchingNavOption = navOptions.find(
+                (navOpt) => navOpt.title === opt.title
+              );
               if (matchingNavOption !== undefined) {
                 return (
                   <Link
                     className={classNames(
-                      'flex px-2 py-3 items-center space-x-2 hover:text-black hover:bg-gray-50',
+                      'flex items-center space-x-2 px-2 py-3 hover:bg-gray-50 hover:text-black',
                       {
-                        'bg-gray-50': highlightNavOption === index
+                        'bg-gray-50': highlightNavOption === index,
                       }
                     )}
-                    to={subUrl(matchingNavOption.route)}
+                    to={matchingNavOption.route}
                   >
                     {matchingNavOption.icon}
-                    <span className="text-gray-900">{matchingNavOption?.title}</span>
+                    <span className="text-gray-900">
+                      {matchingNavOption?.title}
+                    </span>
                   </Link>
                 );
               }

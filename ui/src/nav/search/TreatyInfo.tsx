@@ -8,10 +8,11 @@ import { getAppName } from '@/logic/utils';
 import { useAppSearchStore } from '../Nav';
 import { useConnectivityCheck } from '@/state/vitals';
 import { ShipConnection } from '@/components/ShipConnection';
+import { AppSearch } from '../AppSearch';
 
 export const TreatyInfo = () => {
   const select = useAppSearchStore((state) => state.select);
-  const { host, desk } = useParams<{ host: string; desk: string }>();
+  const { host = '', desk = '' } = useParams<{ host: string; desk: string }>();
   const treaty = useTreaty(host, desk);
   const pike = usePike(desk);
   const charge = useCharge(desk);
@@ -39,11 +40,14 @@ export const TreatyInfo = () => {
     );
   }
   return (
-    <AppInfo
-      treatyInfoShip={treaty.ship}
-      className="dialog-inner-container"
-      docket={charge || treaty}
-      pike={pike}
-    />
+    <div className="flex h-full w-full flex-col p-4">
+      <AppSearch />
+      <AppInfo
+        treatyInfoShip={treaty.ship}
+        className="dialog-inner-container"
+        docket={charge || treaty}
+        pike={pike}
+      />
+    </div>
   );
 };

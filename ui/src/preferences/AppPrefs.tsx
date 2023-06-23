@@ -1,12 +1,12 @@
 import React from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useCharge } from '../state/docket';
 import useKilnState, { usePike } from '../state/kiln';
 import { getAppName } from '@/logic/utils';
 import SourceSetter from '../components/SourceSetter';
 
-export const AppPrefs = ({ match }: RouteComponentProps<{ desk: string }>) => {
-  const { desk } = match.params;
+export const AppPrefs = () => {
+  const { desk = '' } = useParams<{ desk: string }>();
   const charge = useCharge(desk);
   const appName = getAppName(charge);
   const pike = usePike(desk);
