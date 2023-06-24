@@ -23,7 +23,7 @@ import {
   allyShip,
 } from '@/gear';
 import api from '@/api';
-import { normalizeUrbitColor } from '@/logic/utils';
+import { asyncWithDefault, normalizeUrbitColor } from '@/logic/utils';
 import { Status } from '@/logic/useAsyncCall';
 import { ConnectionStatus, useConnectivityCheck } from './vitals';
 
@@ -46,7 +46,7 @@ interface DocketState {
   defaultAlly: string | null;
   fetchCharges: () => Promise<void>;
   fetchDefaultAlly: () => Promise<void>;
-  requestTreaty: (ship: string, desk: string) => Promise<Treaty>;
+  requestTreaty: (ship: string, desk: string) => Promise<void>;
   fetchAllies: () => Promise<Allies>;
   fetchAllyTreaties: (ally: string) => Promise<Treaties>;
   toggleDocket: (desk: string) => Promise<void>;
@@ -94,19 +94,18 @@ const useDocketState = create<DocketState>((set, get) => ({
 
     const key = `${ship}/${desk}`;
     if (key in treaties) {
-      return treaties[key];
+      return;
     }
 
-    const result = await api.subscribeOnce<Treaty>(
-      'treaty',
-      `/treaty/${key}`,
-      20000
+    const result = await asyncWithDefault(
+      () => api.subscribeOnce<Treaty>('treaty', `/treaty/${key}`, 20000),
+      null
     );
-    const treaty = { ...normalizeDocket(result, desk), ship };
+
+    const treaty = result ? { ...normalizeDocket(result, desk), ship } : null;
     set((state) => ({
       treaties: { ...state.treaties, [key]: treaty },
     }));
-    return treaty;
   },
   installDocket: async (ship: string, desk: string) => {
     const treaty = get().treaties[`${ship}/${desk}`];

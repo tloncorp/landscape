@@ -1,4 +1,11 @@
-import { Yarn, isYarnEmph, isYarnShip, Docket, DocketHref, Treaty } from '@/gear';
+import {
+  Yarn,
+  isYarnEmph,
+  isYarnShip,
+  Docket,
+  DocketHref,
+  Treaty,
+} from '@/gear';
 import { findLast } from 'lodash';
 import { hsla, parseToHsla, parseToRgba } from 'color2k';
 import _ from 'lodash';
@@ -126,4 +133,15 @@ export function randomElement<T>(a: T[]) {
 
 export function randomIntInRange(min: number, max: number) {
   return Math.round(Math.random() * (max - min) + min);
+}
+
+export async function asyncWithDefault<T>(
+  cb: () => Promise<T>,
+  def: T
+): Promise<T> {
+  try {
+    return await cb();
+  } catch (error) {
+    return def;
+  }
 }

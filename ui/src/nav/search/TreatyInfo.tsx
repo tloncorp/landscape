@@ -18,17 +18,7 @@ export const TreatyInfo = () => {
   const charge = useCharge(desk);
   const name = treaty ? getAppName(treaty) : `${host}/${desk}`;
   const { data, showConnection } = useConnectivityCheck(host);
-  // TODO replace with checking alliance to determine if still available
-  const [unavailable, setUnavailable] = React.useState(false);
-  const treatyNotFound =
-    !treaty && unavailable && data && 'complete' in data.status;
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setUnavailable(true);
-    }, 20 * 1000); // matches timeout in requestTreaty
-    return () => clearTimeout(timeout);
-  }, []);
+  const treatyNotFound = treaty === null && data && 'complete' in data.status;
 
   useEffect(() => {
     if (!charge) {
