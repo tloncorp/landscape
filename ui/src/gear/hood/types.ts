@@ -64,16 +64,18 @@ export interface Pike {
   wefts: Weft[];
   /**
    * how live is this pike?
-   * 
+   *
    * live - app is running
+   *
+   * dead - app is not running
+   *
    * held - app is not running, but is trying to run. this state can be entered
-   * in two main ways: 
-   *   - when installing an app but it hasn't finished downloading (or it did 
+   * in two main ways:
+   *   - when installing an app but it hasn't finished downloading (or it did
    *     but failed to install for some reason)
    *   - when user forced a kelvin upgrade by suspending desks.
-   * dead - app is not running
    */
-  zest: "live" | "dead" | "held";
+  zest: 'live' | 'dead' | 'held';
 }
 
 export interface Pikes {

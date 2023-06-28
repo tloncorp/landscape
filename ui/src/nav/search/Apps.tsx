@@ -8,6 +8,8 @@ import { useAppSearchStore } from '../Nav';
 import { AppList } from '../../components/AppList';
 import { addRecentDev } from './Home';
 import { Spinner } from '../../components/Spinner';
+import { ShipConnection } from '@/components/ShipConnection';
+import { pluralize } from '@/logic/utils';
 import { AppSearch } from '../AppSearch';
 
 export const Apps = () => {
@@ -19,7 +21,8 @@ export const Apps = () => {
   const { ship = '' } = useParams<{ ship: string }>();
   const { pathname } = useLocation();
   const provider = ship;
-  const { treaties, status } = useAllyTreaties(provider);
+  const { treaties, status, connection, showConnection, awaiting } =
+    useAllyTreaties(provider);
 
   useEffect(() => {
     if (provider) {
@@ -74,41 +77,67 @@ export const Apps = () => {
     }
   }, [results]);
 
-  const showNone =
-    status === 'error' ||
-    ((status === 'success' || status === 'initial') && results?.length === 0);
+  const showLoader =
+    status === 'loading' || status === 'initial' || status === 'awaiting';
 
   return (
     <div className="dialog-inner-container h4 text-gray-400 md:px-6 md:py-8">
       <AppSearch />
-      {status === 'loading' && (
-        <span className="mb-3">
-          <Spinner className="mr-3 h-7 w-7" /> Finding software...
-        </span>
+      {showLoader && (
+        <div className="mb-3 flex items-start">
+          <Spinner className="mr-3 h-7 w-7 flex-none" />
+          <div className="flex flex-1 flex-col">
+            <span>
+              {status === 'awaiting'
+                ? `${awaiting} ${pluralize(
+                    'app',
+                    awaiting
+                  )} found, waiting for entries...`
+                : 'Finding software...'}
+            </span>
+            {showConnection && (
+              <ShipConnection ship={provider} status={connection?.status} />
+            )}
+          </div>
+        </div>
       )}
-      {results && results.length > 0 && (
-        <>
+      {(status === 'partial' || status === 'finished') &&
+        results &&
+        (results.length > 0 ? (
+          <>
+            <div id="developed-by">
+              <h2 className="mb-3">
+                Software developed by{' '}
+                <ShipName name={provider} className="font-mono" />
+              </h2>
+              <p>
+                {count} result{count === 1 ? '' : 's'}
+              </p>
+            </div>
+            <AppList
+              apps={results}
+              labelledBy="developed-by"
+              matchAgainst={selectedMatch}
+              to={getAppPath}
+            />
+            {status === 'finished' ? (
+              <p>That&apos;s it!</p>
+            ) : (
+              <p>Awaiting {awaiting} more</p>
+            )}
+          </>
+        ) : (
           <div id="developed-by">
             <h2 className="mb-3">
               Software developed by{' '}
               <ShipName name={provider} className="font-mono" />
             </h2>
-            <p>
-              {count} result{count === 1 ? '' : 's'}
-            </p>
+            <p>No apps found</p>
           </div>
-          <AppList
-            apps={results}
-            labelledBy="developed-by"
-            matchAgainst={selectedMatch}
-            to={getAppPath}
-          />
-          <p>That&apos;s it!</p>
-        </>
-      )}
-      {showNone && (
+        ))}
+      {status === 'error' && (
         <h2>
-          Unable to find software developed by{' '}
+          Unable to connect to{' '}
           <ShipName name={provider} className="font-mono" />
         </h2>
       )}

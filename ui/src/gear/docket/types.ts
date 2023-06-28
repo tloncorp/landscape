@@ -6,8 +6,7 @@ export type DocketHref = DocketHrefSite | DocketHrefGlob;
 export interface DocketHrefGlob {
   glob: {
     base: string;
-
-  }
+  };
 }
 
 export interface DocketHrefSite {
@@ -43,7 +42,6 @@ export interface SiteChad {
 }
 export interface InstallChad {
   install: null;
-
 }
 export interface SuspendChad {
   suspend: null;
@@ -61,7 +59,7 @@ export interface Charges {
 }
 
 export interface Treaties {
-  [ref: string]: Treaty;
+  [ref: string]: Treaty | null;
 }
 
 export type Charter = string[];
@@ -76,31 +74,38 @@ export interface Provider {
   status?: string;
 }
 
-export type ChargeUpdate = ChargeUpdateInitial | ChargeUpdateAdd | ChargeUpdateDel;
+export type ChargeUpdate =
+  | ChargeUpdateInitial
+  | ChargeUpdateAdd
+  | ChargeUpdateDel;
 
 export interface ChargeUpdateInitial {
   initial: {
     [desk: string]: Charge;
-  }
+  };
 }
 
 export interface ChargeUpdateAdd {
   'add-charge': {
     desk: string;
     charge: Charge;
-  }
+  };
 }
 
 export interface ChargeUpdateDel {
   'del-charge': string;
 }
 
-export type AllyUpdate = AllyUpdateIni | AllyUpdateAdd | AllyUpdateDel | AllyUpdateNew;
+export type AllyUpdate =
+  | AllyUpdateIni
+  | AllyUpdateAdd
+  | AllyUpdateDel
+  | AllyUpdateNew;
 
 export interface AllyUpdateIni {
   ini: {
     [ship: string]: string[];
-  }
+  };
 }
 
 export interface AllyUpdateAdd {
@@ -115,7 +120,7 @@ export interface AllyUpdateNew {
   new: {
     ship: string;
     alliance: string[];
-  }
+  };
 }
 
 export type TreatyUpdate = TreatyUpdateIni | TreatyUpdateAdd | TreatyUpdateDel;
@@ -123,7 +128,7 @@ export type TreatyUpdate = TreatyUpdateIni | TreatyUpdateAdd | TreatyUpdateDel;
 export interface TreatyUpdateIni {
   ini: {
     [foreignDesk: string]: Treaty;
-  }
+  };
 }
 
 export interface TreatyUpdateAdd {
