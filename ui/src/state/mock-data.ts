@@ -7,20 +7,23 @@ import {
   Treaty,
   Contact,
   ContactRolodex,
-  Pikes
+  Pikes,
 } from '@/gear';
 import _ from 'lodash';
 import systemUrl from '../assets/system.png';
 
-export const appMetaData: Pick<Treaty, 'cass' | 'hash' | 'website' | 'license' | 'version'> = {
+export const appMetaData: Pick<
+  Treaty,
+  'cass' | 'hash' | 'website' | 'license' | 'version'
+> = {
   cass: {
     da: '~2021.9.13..05.41.04..ae65',
-    ud: 1
+    ud: 1,
   },
   hash: '0v6.nj6ls.l7unh.l9bhk.d839n.n8nlq.m2dmc.fj80i.pvqun.uhg6g.1kk0h',
   website: 'https://tlon.io',
   license: 'MIT',
-  version: '2.0.1'
+  version: '2.0.1',
 };
 
 const makeHref = (base: string): DocketHrefGlob => ({ glob: { base } });
@@ -33,7 +36,7 @@ export const mockTreaties: Treaties = {
     info: 'Your Urbit Home',
     href: makeHref('garden'),
     color: '#E2C050',
-    ...appMetaData
+    ...appMetaData,
   },
   '~zod/groups': {
     ship: '~zod',
@@ -42,7 +45,7 @@ export const mockTreaties: Treaties = {
     info: 'Simple Software for Community Assembly',
     href: makeHref('groups'),
     color: '#CDE7EF',
-    ...appMetaData
+    ...appMetaData,
   },
   '~zod/messages': {
     title: 'Messages',
@@ -51,7 +54,7 @@ export const mockTreaties: Treaties = {
     href: makeHref('messages'),
     info: 'A lengthier description of the app down here',
     color: '#8BE789',
-    ...appMetaData
+    ...appMetaData,
   },
   '~zod/calls': {
     title: 'Calls',
@@ -60,7 +63,7 @@ export const mockTreaties: Treaties = {
     href: makeHref('calls'),
     info: 'A lengthier description of the app down here',
     color: '#C2D6BE',
-    ...appMetaData
+    ...appMetaData,
   },
   '~zod/bitcoin-wallet': {
     title: 'Bitcoin Wallet',
@@ -69,7 +72,7 @@ export const mockTreaties: Treaties = {
     href: makeHref('bitcoin-wallet'),
     info: 'A lengthier description of the app down here',
     color: '#F0AE70',
-    ...appMetaData
+    ...appMetaData,
   },
   '~zod/system': {
     title: 'System',
@@ -79,7 +82,7 @@ export const mockTreaties: Treaties = {
     info: 'A lengthier description of the app down here',
     color: '#2D0118',
     image: systemUrl,
-    ...appMetaData
+    ...appMetaData,
   },
   '~zod/my-apps': {
     title: 'My Apps',
@@ -88,7 +91,7 @@ export const mockTreaties: Treaties = {
     href: makeHref('my-apps'),
     info: 'A lengthier description of the app down here',
     color: '#D8B14E',
-    ...appMetaData
+    ...appMetaData,
   },
   '~zod/go': {
     title: 'Go',
@@ -97,7 +100,7 @@ export const mockTreaties: Treaties = {
     href: makeHref('go'),
     info: 'A lengthier description of the app down here',
     color: '#A58E52',
-    ...appMetaData
+    ...appMetaData,
   },
   '~zod/terminal': {
     title: 'Terminal',
@@ -106,7 +109,7 @@ export const mockTreaties: Treaties = {
     href: makeHref('terminal'),
     info: 'A lengthier description of the app down here',
     color: '#2D382B',
-    ...appMetaData
+    ...appMetaData,
   },
   '~zod/pomodoro': {
     title: 'Pomodoro',
@@ -115,7 +118,7 @@ export const mockTreaties: Treaties = {
     href: makeHref('pomodoro'),
     info: 'A lengthier description of the app down here',
     color: '#EE5432',
-    ...appMetaData
+    ...appMetaData,
   },
   '~zod/clocks': {
     title: 'Clocks',
@@ -124,7 +127,7 @@ export const mockTreaties: Treaties = {
     href: makeHref('clocks'),
     info: 'A lengthier description of the app down here',
     color: '#DCDCDC',
-    ...appMetaData
+    ...appMetaData,
   },
   '~zod/uniswap': {
     title: 'Uniswap',
@@ -133,7 +136,7 @@ export const mockTreaties: Treaties = {
     href: makeHref('uniswap'),
     info: 'A lengthier description of the app down here',
     color: '#FDA1FF',
-    ...appMetaData
+    ...appMetaData,
   },
   '~zod/inbox': {
     title: 'Inbox',
@@ -141,13 +144,17 @@ export const mockTreaties: Treaties = {
     desk: 'inbox',
     href: makeHref('inbox'),
     color: '#FEFFBA',
-    ...appMetaData
-  }
+    ...appMetaData,
+  },
 };
 
 export const mockCharges: Charges = _.reduce(
   mockTreaties,
   (acc, val, key) => {
+    if (!val) {
+      return acc;
+    }
+
     const [, desk] = key.split('/');
     const chad = { glob: null };
     if (desk === 'inbox') {
@@ -177,7 +184,7 @@ export const mockAllies: Allies = [
   '~litmus^ritten',
   '~nalput_litzod',
   '~nalrex_bannus',
-  '~nalrys'
+  '~nalrys',
 ].reduce((acc, val) => ({ ...acc, [val]: charter }), {});
 
 function ship(s: string) {
@@ -305,37 +312,38 @@ const contact: Contact = {
 export const mockContactRolodex: ContactRolodex = {
   '~zod': {
     ...contact,
-    nickname: 'Tlon Corporation'
+    nickname: 'Tlon Corporation',
   },
   '~nocsyx-lassul': {
     ...contact,
     status: 'technomancing an electron wrapper for urbit',
-    color: '#4c00ff'
+    color: '#4c00ff',
   },
   '~nachus-hollyn': {
     ...contact,
-    avatar: 'https://i.pinimg.com/originals/20/62/59/2062590a440f717a2ae1065ad8e8a4c7.gif'
+    avatar:
+      'https://i.pinimg.com/originals/20/62/59/2062590a440f717a2ae1065ad8e8a4c7.gif',
   },
   '~nalbel_litzod': {
     ...contact,
     nickname: 'Queen',
-    color: '#0a1b0a'
+    color: '#0a1b0a',
   },
   '~litmus^ritten': {
-    ...contact
+    ...contact,
   },
   '~nalput_litzod': {
-    ...contact
+    ...contact,
   },
   '~nalrex_bannus': {
     ...contact,
-    status: 'Script, command and inspect your Urbit. Use TUI applications'
+    status: 'Script, command and inspect your Urbit. Use TUI applications',
   },
   '~nalrys': {
     ...contact,
     status: 'hosting coming soon',
-    color: '#130c06'
-  }
+    color: '#130c06',
+  },
 };
 
 export const mockPikes: Pikes = {
@@ -343,30 +351,30 @@ export const mockPikes: Pikes = {
     sync: null,
     zest: 'dead',
     wefts: [],
-    hash: '0v19.q7u27.omps3.fbhf4.53rai.co157.pben7.pu94n.63v4p.3kcb7.iafj0'
+    hash: '0v19.q7u27.omps3.fbhf4.53rai.co157.pben7.pu94n.63v4p.3kcb7.iafj0',
   },
   garden: {
     sync: {
       desk: 'garden',
-      ship: '~mister-dister-dozzod-dozzod'
+      ship: '~mister-dister-dozzod-dozzod',
     },
     zest: 'live',
     wefts: [],
-    hash: '0v18.hbbs6.onu15.skjkv.qrfgl.vf4oo.0igo5.2q0d3.6r3r8.2dkmo.oa04m'
+    hash: '0v18.hbbs6.onu15.skjkv.qrfgl.vf4oo.0igo5.2q0d3.6r3r8.2dkmo.oa04m',
   },
   landscape: {
     sync: {
       desk: 'landscape',
-      ship: '~lander-dister-dozzod-dozzod'
+      ship: '~lander-dister-dozzod-dozzod',
     },
     zest: 'live',
     wefts: [],
-    hash: '0v1t.qln8k.cskmt.cn6lv.gu335.jfba6.kte90.iqqn3.aj67b.t389a.8imuo'
+    hash: '0v1t.qln8k.cskmt.cn6lv.gu335.jfba6.kte90.iqqn3.aj67b.t389a.8imuo',
   },
   base: {
     sync: null,
     zest: 'live',
     wefts: [],
-    hash: '0v1e.b5auh.6u82i.hqk1r.22kli.4ubef.a1cbo.3g532.6l49k.g0i8e.t6eid'
-  }
+    hash: '0v1e.b5auh.6u82i.hqk1r.22kli.4ubef.a1cbo.3g532.6l49k.g0i8e.t6eid',
+  },
 };

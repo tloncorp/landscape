@@ -34,7 +34,7 @@ export const Apps = () => {
     if (!treaties) {
       return undefined;
     }
-    const values = Object.values(treaties);
+    const values = Object.values(treaties).filter((t) => !!t) as Treaty[];
     return fuzzy
       .filter(
         searchInput,
