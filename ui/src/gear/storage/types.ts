@@ -92,8 +92,8 @@ export interface StorageUpdateCredentials {
 
 export interface StorageUpdateConfiguration {
   configuration: {
-      buckets: string[];
-      currentBucket: string;
+    buckets: string[];
+    currentBucket: string;
   };
 }
 
@@ -125,4 +125,13 @@ export interface StorageUpdateRegion {
   setRegion: string;
 }
 
-export declare type StorageUpdate = StorageUpdateCredentials | StorageUpdateConfiguration | StorageUpdateCurrentBucket | StorageUpdateAddBucket | StorageUpdateRemoveBucket | StorageUpdateEndpoint | StorageUpdateAccessKeyId | StorageUpdateSecretAccessKey | StorageUpdateRegion;
+export declare type StorageUpdate =
+  | StorageUpdateCredentials
+  | StorageUpdateConfiguration
+  | StorageUpdateCurrentBucket
+  | StorageUpdateAddBucket
+  | StorageUpdateRemoveBucket
+  | StorageUpdateEndpoint
+  | StorageUpdateAccessKeyId
+  | StorageUpdateSecretAccessKey
+  | StorageUpdateRegion;

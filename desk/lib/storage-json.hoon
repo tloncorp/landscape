@@ -21,7 +21,7 @@
   |=  upd=update
   ^-  json
   =,  format
-  %+  frond:enjs  %s3-update
+  %+  frond:enjs  %storage-update
   %-  pairs:enjs
   :~  ?-  -.upd
           %set-current-bucket  [%'setCurrentBucket' s+bucket.upd]

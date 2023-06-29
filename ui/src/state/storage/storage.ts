@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { enableMapSet } from 'immer';
-import { BaseStorageState } from '@/gear';
+import { BaseStorageState, StorageUpdate } from '@/gear';
 import reduce from './reducer';
 import {
   createState,
@@ -32,15 +32,19 @@ export const useStorage = createState<BaseStorageState>(
   {},
   [
     (set, get) =>
-      createSubscription('storage', '/all', (e) => {
-        const data = _.get(e, 'storage-update', false);
-        if (data) {
-          reduceStateN(get(), data, reduce);
+      createSubscription(
+        'storage',
+        '/all',
+        (e: { 'storage-update': StorageUpdate }) => {
+          const data = _.get(e, 'storage-update', false);
+          if (data) {
+            reduceStateN(get(), data, reduce);
+          }
+          numLoads += 1;
+          if (numLoads === 2) {
+            set({ loaded: true });
+          }
         }
-        numLoads += 1;
-        if (numLoads === 2) {
-          set({ loaded: true });
-        }
-      }),
+      ),
   ]
 );
