@@ -33,7 +33,7 @@ function getCompletedText(status: ConnectionCompleteStatus, ship: string) {
     case 'no-sponsor-hit':
       return `${ship}'s sponsor can reach them, but we can't`;
     default:
-      return 'Unable to connect';
+      return `Unable to connect to ${ship}`;
   }
 }
 

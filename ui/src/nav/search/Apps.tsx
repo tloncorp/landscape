@@ -137,8 +137,7 @@ export const Apps = () => {
         ))}
       {status === 'error' && (
         <h2>
-          Unable to connect to{' '}
-          <ShipName name={provider} className="font-mono" />
+          <ShipConnection ship={provider} status={connection?.status} />
         </h2>
       )}
     </div>
