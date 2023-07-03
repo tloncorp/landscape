@@ -67,6 +67,15 @@ export const APPS = [
     desk: 'scooore',
   },
   {
+    title: "Trill",
+    description: "Twitter without limits, and much more",
+    color: '#FFD400',
+    link: '/apps/trill',
+    section: SECTIONS.PALS,
+    desk: 'trill',
+    source: '~dister-dozzod-sortug'
+  },
+  {
     title: 'Docs',
     description: 'User and developer documentation for Urbit apps',
     color: '#FFCF00',
