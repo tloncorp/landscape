@@ -1,4 +1,4 @@
-import { chadIsRunning, Pike, Treaty } from '@urbit/api';
+import { chadIsRunning, Pike, Treaty } from '@/gear';
 import clipboardCopy from 'clipboard-copy';
 import React, { FC, useCallback, useState } from 'react';
 import cn from 'classnames';
@@ -9,7 +9,7 @@ import { DocketHeader } from './DocketHeader';
 import { Spinner } from './Spinner';
 import { PikeMeta } from './PikeMeta';
 import useDocketState, { ChargeWithDesk, useTreaty } from '../state/docket';
-import { getAppHref, getAppName } from '../state/util';
+import { getAppHref, getAppName } from '@/logic/utils';
 import { addRecentApp } from '../nav/search/Home';
 import { TreatyMeta } from './TreatyMeta';
 

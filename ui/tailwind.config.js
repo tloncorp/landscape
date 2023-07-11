@@ -102,6 +102,9 @@ const base = new Theme().addColors({
     800: '#641E00',
     900: '#3E1100',
   },
+  indigo: {
+    DEFAULT: '#615FD3',
+  },
   green: {
     100: '#E6F5F0',
     200: '#B3E2D1',

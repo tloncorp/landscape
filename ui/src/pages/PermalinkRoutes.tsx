@@ -1,39 +1,41 @@
-import { Pikes } from '@urbit/api';
+import { Pikes } from '@/gear';
 import React, { useEffect } from 'react';
-import { Switch, Route, Redirect, RouteComponentProps } from 'react-router-dom';
+import { Route, Navigate, Routes, useParams } from 'react-router-dom';
 import { Spinner } from '../components/Spinner';
 import { useQuery } from '../logic/useQuery';
 import { useCharge } from '../state/docket';
 import { useKilnLoaded, usePikes } from '../state/kiln';
-import { getAppHref } from '../state/util';
+import { getAppHref } from '@/logic/utils';
 
-function getDeskByForeignRef(pikes: Pikes, ship: string, desk: string): string | undefined {
+function getDeskByForeignRef(
+  pikes: Pikes,
+  ship: string,
+  desk: string
+): string | undefined {
   const found = Object.entries(pikes).find(
     ([, pike]) => pike.sync?.ship === ship && pike.sync?.desk === desk
   );
   return found ? found[0] : undefined;
 }
 
-type AppLinkProps = RouteComponentProps<{
-  ship: string;
-  desk: string;
-  link: string;
-}>;
-
-function AppLink({ match, history, location }: AppLinkProps) {
-  const { ship, desk, link = '' } = match.params;
+function AppLink() {
+  const {
+    ship = '',
+    desk = '',
+    link = '',
+  } = useParams<{ ship: string; desk: string; link: string }>();
   const pikes = usePikes();
   const ourDesk = getDeskByForeignRef(pikes, ship, desk);
 
   if (ourDesk) {
-    return <AppLinkRedirect desk={ourDesk} link={link} />;
+    return <AppLinkNavigate desk={ourDesk} link={link} />;
   }
-  return <AppLinkNotFound match={match} history={history} location={location} />;
+  return <AppLinkNotFound />;
 }
 
-function AppLinkNotFound({ match }: AppLinkProps) {
-  const { ship, desk } = match.params;
-  return <Redirect to={`/leap/search/direct/apps/${ship}/${desk}`} />;
+function AppLinkNotFound() {
+  const { ship, desk } = useParams<{ ship: string; desk: string }>();
+  return <Navigate to={`/leap/search/direct/apps/${ship}/${desk}`} />;
 }
 
 function AppLinkInvalid() {
@@ -44,7 +46,7 @@ function AppLinkInvalid() {
     </div>
   );
 }
-function AppLinkRedirect({ desk, link }: { desk: string; link: string }) {
+function AppLinkNavigate({ desk, link }: { desk: string; link: string }) {
   const charge = useCharge(desk);
 
   useEffect(() => {
@@ -53,23 +55,25 @@ function AppLinkRedirect({ desk, link }: { desk: string; link: string }) {
     }
 
     const query = new URLSearchParams({
-      'grid-link': encodeURIComponent(`/${link}`)
+      'grid-link': encodeURIComponent(`/${link}`),
     });
 
     const url = `${getAppHref(charge.href)}?${query.toString()}`;
     window.open(url, desk);
   }, [charge]);
 
-  return <Redirect to="/" />;
+  return <Navigate to="/" />;
 }
 
 const LANDSCAPE_DESK = 'landscape';
 const LANDSCAPE_HOST = '~lander-dister-dozzod-dozzod';
 
-function LandscapeLink({ match }: RouteComponentProps<{ link: string }>) {
-  const { link } = match.params;
+function LandscapeLink() {
+  const { link } = useParams<{ link: string }>();
 
-  return <Redirect to={`/perma/${LANDSCAPE_HOST}/${LANDSCAPE_DESK}/group/${link}`} />;
+  return (
+    <Navigate to={`/perma/${LANDSCAPE_HOST}/${LANDSCAPE_DESK}/group/${link}`} />
+  );
 }
 
 export function PermalinkRoutes() {
@@ -80,7 +84,7 @@ export function PermalinkRoutes() {
   if (query.has('ext')) {
     const ext = query.get('ext')!;
     const url = `/perma${ext.slice(16)}`;
-    return <Redirect to={url} />;
+    return <Navigate to={url} />;
   }
 
   if (!loaded) {
@@ -88,10 +92,10 @@ export function PermalinkRoutes() {
   }
 
   return (
-    <Switch>
-      <Route path="/perma/group/:link+" component={LandscapeLink} />
-      <Route path="/perma/:ship/:desk/:link*" component={AppLink} />
-      <Route path="/" component={AppLinkInvalid} />
-    </Switch>
+    <Routes>
+      <Route path="perma/group/:link+" element={<LandscapeLink />} />
+      <Route path="perma/:ship/:desk/:link*" element={<AppLink />} />
+      <Route index element={<AppLinkInvalid />} />
+    </Routes>
   );
 }

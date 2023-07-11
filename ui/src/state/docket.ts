@@ -21,10 +21,11 @@ import {
   kilnRevive,
   kilnSuspend,
   allyShip,
-} from '@urbit/api';
-import api from './api';
-import { normalizeUrbitColor } from './util';
-import { Status } from '../logic/useAsyncCall';
+} from '@/gear';
+import api from '@/api';
+import { asyncWithDefault, normalizeUrbitColor } from '@/logic/utils';
+import { Status } from '@/logic/useAsyncCall';
+import { ConnectionStatus, useConnectivityCheck } from './vitals';
 
 export interface ChargeWithDesk extends Charge {
   desk: string;
@@ -45,7 +46,7 @@ interface DocketState {
   defaultAlly: string | null;
   fetchCharges: () => Promise<void>;
   fetchDefaultAlly: () => Promise<void>;
-  requestTreaty: (ship: string, desk: string) => Promise<Treaty>;
+  requestTreaty: (ship: string, desk: string) => Promise<void>;
   fetchAllies: () => Promise<Allies>;
   fetchAllyTreaties: (ally: string) => Promise<Treaties>;
   toggleDocket: (desk: string) => Promise<void>;
@@ -93,15 +94,18 @@ const useDocketState = create<DocketState>((set, get) => ({
 
     const key = `${ship}/${desk}`;
     if (key in treaties) {
-      return treaties[key];
+      return;
     }
 
-    const result = await api.subscribeOnce('treaty', `/treaty/${key}`, 20000);
-    const treaty = { ...normalizeDocket(result, desk), ship };
+    const result = await asyncWithDefault(
+      () => api.subscribeOnce<Treaty>('treaty', `/treaty/${key}`, 20000),
+      null
+    );
+
+    const treaty = result ? { ...normalizeDocket(result, desk), ship } : null;
     set((state) => ({
       treaties: { ...state.treaties, [key]: treaty },
     }));
-    return treaty;
   },
   installDocket: async (ship: string, desk: string) => {
     const treaty = get().treaties[`${ship}/${desk}`];
@@ -257,42 +261,42 @@ export function useAllies() {
   return useDocketState(selAllies);
 }
 
+function getAllyTreatyStatus(
+  treaties: Treaties,
+  fetching: boolean,
+  alliance?: string[],
+  status?: ConnectionStatus
+): Status | 'awaiting' | 'partial' | 'finished' {
+  const treatyCount = Object.keys(treaties).length;
+  if (alliance && alliance.length !== 0 && treatyCount === alliance.length) {
+    return 'finished';
+  }
+
+  if (treatyCount > 0) {
+    return 'partial';
+  }
+
+  if (!status || ('complete' in status && status.complete === 'no-data')) {
+    return 'initial';
+  }
+
+  if (fetching || 'pending' in status) {
+    return 'loading';
+  }
+
+  if ('complete' in status && status.complete === 'yes') {
+    return alliance && alliance.length > 0 ? 'awaiting' : 'finished';
+  }
+
+  return 'error';
+}
+
 export function useAllyTreaties(ship: string) {
+  const { data, showConnection } = useConnectivityCheck(ship);
   const allies = useAllies();
   const isAllied = ship in allies;
-  const [status, setStatus] = useState<Status>('initial');
-  const [treaties, setTreaties] = useState<Treaties>();
-
-  useEffect(() => {
-    if (Object.keys(allies).length > 0 && !isAllied) {
-      setStatus('loading');
-      useDocketState.getState().addAlly(ship);
-    }
-  }, [allies, isAllied, ship]);
-
-  useEffect(() => {
-    async function fetchTreaties() {
-      if (isAllied) {
-        setStatus('loading');
-        try {
-          const newTreaties = await useDocketState
-            .getState()
-            .fetchAllyTreaties(ship);
-
-          if (Object.keys(newTreaties).length > 0) {
-            setTreaties(newTreaties);
-            setStatus('success');
-          }
-        } catch {
-          setStatus('error');
-        }
-      }
-    }
-
-    fetchTreaties();
-  }, [ship, isAllied]);
-
-  const storeTreaties = useDocketState(
+  const [fetching, setFetching] = useState(false);
+  const treaties = useDocketState(
     useCallback(
       (s) => {
         const charter = s.allies[ship];
@@ -301,27 +305,42 @@ export function useAllyTreaties(ship: string) {
       [ship]
     )
   );
+  const status = getAllyTreatyStatus(
+    treaties,
+    fetching,
+    allies[ship],
+    data?.status
+  );
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setStatus('error');
-    }, 30 * 1000); // wait 30 secs before timing out
+    if (Object.keys(allies).length > 0 && !isAllied) {
+      useDocketState.getState().addAlly(ship);
+    }
+  }, [allies, isAllied, ship]);
 
-    if (Object.keys(storeTreaties).length > 0) {
-      setTreaties(storeTreaties);
-      setStatus('success');
-      clearTimeout(timeout);
+  useEffect(() => {
+    async function fetchTreaties() {
+      try {
+        setFetching(true);
+        await useDocketState.getState().fetchAllyTreaties(ship);
+        setFetching(false);
+      } catch {
+        console.log("couldn't fetch initial treaties");
+      }
     }
 
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [storeTreaties]);
+    if (isAllied) {
+      fetchTreaties();
+    }
+  }, [ship, isAllied]);
 
   return {
     isAllied,
     treaties,
     status,
+    connection: data,
+    showConnection,
+    awaiting: allies[ship]?.length || 0 - Object.keys(treaties).length,
   };
 }
 

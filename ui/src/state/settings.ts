@@ -1,14 +1,25 @@
 /* eslint-disable no-param-reassign */
-import { SettingsUpdate, Value, DeskData } from '@urbit/api';
+import { DelBucket, DelEntry, PutBucket, Value } from '@/gear';
 import _ from 'lodash';
-import {
-  BaseState,
-  createState,
-  createSubscription,
-  pokeOptimisticallyN,
-  reduceStateN,
-} from './base';
-import api from './api';
+import api from '../api';
+import useReactQuerySubscription from '@/logic/useReactQuerySubscription';
+import { useMemo } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import produce from 'immer';
+
+interface PutEntry {
+  // this is defined here because the PutEntry type in @/gear is missing the desk field
+  'put-entry': {
+    'bucket-key': string;
+    'entry-key': string;
+    value: Value;
+    desk: string;
+  };
+}
+
+interface SettingsEvent {
+  'settings-event': PutEntry | PutBucket | DelEntry | DelBucket;
+}
 
 interface BrowserSetting {
   browserId: string;
@@ -16,7 +27,7 @@ interface BrowserSetting {
   protocolHandling: boolean;
 }
 
-interface BaseSettingsState {
+export interface SettingsState {
   calmEngine: {
     disableAppTileUnreads: boolean;
     disableAvatars: boolean;
@@ -36,76 +47,107 @@ interface BaseSettingsState {
   browserSettings: {
     settings: Stringified<BrowserSetting[]>;
   };
-  putEntry: (bucket: string, key: string, value: Value) => Promise<void>;
-  fetchAll: () => Promise<void>;
-  [ref: string]: unknown;
 }
 
-export type SettingsState = BaseSettingsState & BaseState<BaseSettingsState>;
+export const useSettings = () => {
+  const { data, ...rest } = useReactQuerySubscription<
+    { desk: SettingsState },
+    SettingsEvent
+  >({
+    scry: `/desk/${window.desk}`,
+    scryApp: 'settings',
+    app: 'settings',
+    path: `/desk/${window.desk}`,
+    queryKey: ['settings', window.desk],
+  });
 
-function putBucket(json: SettingsUpdate, state: SettingsState): SettingsState {
-  const data = _.get(json, 'put-bucket', false);
-  if (data) {
-    state[data['bucket-key']] = data.bucket;
-  }
-  return state;
-}
-
-function delBucket(json: SettingsUpdate, state: SettingsState): SettingsState {
-  const data = _.get(json, 'del-bucket', false);
-  if (data) {
-    delete state[data['bucket-key']];
-  }
-  return state;
-}
-
-function putEntry(json: SettingsUpdate, state: any): SettingsState {
-  const data: Record<string, string> = _.get(json, 'put-entry', false);
-  if (data) {
-    if (!state[data['bucket-key']]) {
-      state[data['bucket-key']] = {};
+  return useMemo(() => {
+    if (!data) {
+      return { data: undefined, ...rest };
     }
-    state[data['bucket-key']][data['entry-key']] = data.value;
-  }
-  return state;
+
+    const { desk } = data;
+
+    return { data: desk, ...rest };
+  }, [rest, data]);
+};
+
+
+export function useDisplay(): SettingsState['display'] {
+  const { data, isLoading } = useSettings();
+
+  return useMemo(() => {
+    if (isLoading || data === undefined || data.display === undefined) {
+      return {
+        theme: 'auto',
+        doNotDisturb: false,
+      };
+    }
+
+    return data.display;
+  }, [isLoading, data]);
 }
 
-function delEntry(json: SettingsUpdate, state: any): SettingsState {
-  const data = _.get(json, 'del-entry', false);
-  if (data) {
-    delete state[data['bucket-key']][data['entry-key']];
-  }
-  return state;
+const emptyOrder: string[] = [];
+export function useTiles(): SettingsState['tiles'] & { loaded: boolean } {
+  const { data, isSuccess, isError } = useSettings();
+
+  return {
+    order: data?.tiles?.order || emptyOrder,
+    loaded: isSuccess || isError,
+  };
 }
 
-export const reduceUpdate = [putBucket, delBucket, putEntry, delEntry];
+const emptyCalm: SettingsState['calmEngine'] = {
+  disableAppTileUnreads: false,
+  disableAvatars: false,
+  disableRemoteContent: false,
+  disableSpellcheck: false,
+  disableNicknames: false,
+  disableWayfinding: false,
+};
 
-export const useSettingsState = createState<BaseSettingsState>(
-  'Settings',
-  (set, get) => ({
-    calmEngine: {
-      disableAppTileUnreads: false,
-      disableAvatars: false,
-      disableNicknames: false,
-      disableSpellcheck: false,
-      disableRemoteContent: false,
-      disableWayfinding: false,
-    },
-    display: {
-      theme: 'auto',
-      doNotDisturb: false,
-    },
-    tiles: {
-      order: [],
-    },
-    browserSettings: {
-      settings: '' as Stringified<BrowserSetting[]>,
-    },
-    loaded: false,
-    putEntry: async (bucket, key, val) => {
-      const poke = {
+const loadingCalm: SettingsState['calmEngine'] = {
+  disableAppTileUnreads: true,
+  disableAvatars: true,
+  disableRemoteContent: true,
+  disableSpellcheck: true,
+  disableNicknames: true,
+  disableWayfinding: true,
+};
+
+export function useCalm() {
+  const { data, isLoading } = useSettings();
+
+  return useMemo(() => {
+    if (isLoading) {
+      return loadingCalm;
+    }
+
+    if (!data || !data.calmEngine) {
+      return emptyCalm;
+    }
+
+    const { calmEngine } = data;
+
+    return calmEngine as SettingsState['calmEngine'];
+  }, [isLoading, data]);
+}
+
+export function usePutEntryMutation({
+  bucket,
+  key,
+}: {
+  bucket: string;
+  key: string;
+}) {
+  const queryClient = useQueryClient();
+  const mutationFn = async (variables: { val: Value }) => {
+    const { val } = variables;
+    await api.trackedPoke<PutEntry, SettingsEvent>(
+      {
         app: 'settings',
-        mark: 'settings-update',
+        mark: 'settings-event',
         json: {
           'put-entry': {
             desk: window.desk,
@@ -114,53 +156,77 @@ export const useSettingsState = createState<BaseSettingsState>(
             value: val,
           },
         },
-      };
-      await pokeOptimisticallyN(useSettingsState, poke, reduceUpdate);
-    },
-    fetchAll: async () => {
-      const result = (
-        await api.scry<DeskData>({
-          app: 'settings',
-          path: `/desk/${window.desk}`,
-        })
-      ).desk;
-      const newState = {
-        ..._.mergeWith(get(), result, (obj, src) =>
-          _.isArray(src) ? src : undefined
-        ),
-        loaded: true,
-      };
-      set(newState);
-    },
-  }),
-  [],
-  [
-    (set, get) =>
-      createSubscription('settings', `/desk/${window.desk}`, (e) => {
-        const data = _.get(e, 'settings-event', false);
-        if (data) {
-          reduceStateN(get(), data, reduceUpdate);
-          set({ loaded: true });
+      },
+      {
+        app: 'settings',
+        path: `/desk/${window.desk}`,
+      },
+      (event) => {
+        // default validator was not working
+        const { 'settings-event': data } = event;
+
+        if (data && 'put-entry' in data) {
+          const { 'put-entry': entry } = data;
+          if (entry) {
+            const { 'bucket-key': bk, 'entry-key': ek, value: v } = entry;
+
+            if (bk === bucket && ek === key) {
+              return v === val;
+            }
+
+            return false;
+          }
+          return false;
         }
-      }),
-  ]
-);
+        return false;
+      }
+    );
+  };
 
-const selTheme = (s: SettingsState) => s.display.theme;
-export function useTheme() {
-  return useSettingsState(selTheme);
+  return useMutation(['put-entry', bucket, key], mutationFn, {
+    onMutate: ({ val }) => {
+      const previousSettings = queryClient.getQueryData<{
+        desk: SettingsState;
+      }>(['settings', window.desk]);
+      queryClient.setQueryData<{ desk: SettingsState }>(
+        ['settings', window.desk],
+        produce((draft) => {
+          if (!draft) {
+            return { desk: { [bucket]: { [key]: val } } };
+          }
+
+          if (!(draft.desk as any)[bucket]) {
+            (draft.desk as any)[bucket] = { [key]: val };
+          } else {
+            (draft.desk as any)[bucket][key] = val;
+          }
+        })
+      );
+
+      return { previousSettings };
+    },
+    onError: (err, variables, rollback) => {
+      queryClient.setQueryData<{ desk: SettingsState }>(
+        ['settings', window.desk],
+        rollback?.previousSettings
+      );
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(['settings', window.desk]);
+    },
+  });
 }
 
-const selCalm = (s: SettingsState) => s.calmEngine;
-export function useCalm() {
-  return useSettingsState(selCalm);
-}
+export function useCalmSettingMutation(key: keyof SettingsState['calmEngine']) {
+  const { mutate, status } = usePutEntryMutation({
+    bucket: 'calmEngine',
+    key,
+  });
 
-export function setCalmSetting(
-  key: keyof SettingsState['calmEngine'],
-  val: boolean
-) {
-  useSettingsState.getState().putEntry('calmEngine', key, val);
+  return {
+    mutate: (val: boolean) => mutate({ val }),
+    status,
+  };
 }
 
 export function parseBrowserSettings(
@@ -198,10 +264,21 @@ export function setBrowserSetting(
   return [...oldSettings, setting];
 }
 
-const selBrowserSettings = (s: SettingsState) => s.browserSettings.settings;
-export function useBrowserSettings(): BrowserSetting[] {
-  const settings = useSettingsState(selBrowserSettings);
-  return parseBrowserSettings(settings);
+const emptyBrowserSettings: BrowserSetting[] = [];
+export function useBrowserSettings() {
+  const { data, isLoading } = useSettings();
+
+  return useMemo(() => {
+    if (isLoading) {
+      return emptyBrowserSettings;
+    }
+
+    if (!data || !data.browserSettings || !data.browserSettings.settings) {
+      return emptyBrowserSettings;
+    }
+
+    return parseBrowserSettings(data.browserSettings.settings);
+  }, [isLoading, data]);
 }
 
 export function useProtocolHandling(browserId: string): boolean {

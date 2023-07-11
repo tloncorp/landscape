@@ -1,15 +1,23 @@
 /* eslint-disable no-param-reassign */
-import { applyPatches, Patch, produceWithPatches, setAutoFreeze, enablePatches } from 'immer';
+import { storageVersion } from '@/constants';
+import {
+  applyPatches,
+  Patch,
+  produceWithPatches,
+  setAutoFreeze,
+  enablePatches,
+} from 'immer';
 import { compose } from 'lodash/fp';
 import _ from 'lodash';
 import create, { GetState, SetState, UseStore } from 'zustand';
-import { persist } from 'zustand/middleware';
-import Urbit, { FatalError, SubscriptionRequestInterface } from '@urbit/http-api';
-import { Poke } from '@urbit/api';
+import { PersistOptions, persist } from 'zustand/middleware';
+import Urbit, { Poke, SubscriptionRequestInterface } from '@urbit/http-api';
 import UrbitMock from '@tloncorp/mock-http-api';
-import api from './api';
-import { clearStorageMigration, createStorageKey, storageVersion } from './util';
-
+import api from '../api';
+import {
+  clearStorageMigration,
+  createStorageKey,
+} from '../logic/utils';
 setAutoFreeze(false);
 enablePatches();
 
@@ -19,7 +27,11 @@ export const stateSetter = <T extends Record<string, unknown>>(
   get: () => T & BaseState<T>
 ): void => {
   const old = get();
-  const [state] = produceWithPatches(old, fn) as readonly [T & BaseState<T>, any, Patch[]];
+  const [state] = produceWithPatches(old, fn) as readonly [
+    T & BaseState<T>,
+    any,
+    Patch[]
+  ];
   // console.log(patches);
   set(state);
 };
@@ -43,7 +55,7 @@ export const optStateSetter = <T extends Record<string, unknown>>(
 export const reduceState = <S extends Record<string, unknown>, U>(
   state: UseStore<S & BaseState<S>>,
   data: U,
-  reducers: ((data: U, state: S & BaseState<S>) => S & BaseState<S>)[]
+  reducers: ((payload: U, current: S & BaseState<S>) => S & BaseState<S>)[]
 ): void => {
   const reducer = compose(reducers.map((r) => (sta) => r(data, sta)));
   state.getState().set((s) => {
@@ -54,7 +66,7 @@ export const reduceState = <S extends Record<string, unknown>, U>(
 export const reduceStateN = <S extends Record<string, unknown>, U>(
   state: S & BaseState<S>,
   data: U,
-  reducers: ((data: U, state: S & BaseState<S>) => S & BaseState<S>)[]
+  reducers: ((payload: U, current: S & BaseState<S>) => S & BaseState<S>)[]
 ): void => {
   const reducer = compose(reducers.map((r) => (sta) => r(data, sta)));
   state.set(reducer);
@@ -63,7 +75,7 @@ export const reduceStateN = <S extends Record<string, unknown>, U>(
 export const optReduceState = <S extends Record<string, unknown>, U>(
   state: UseStore<S & BaseState<S>>,
   data: U,
-  reducers: ((data: U, state: S & BaseState<S>) => BaseState<S> & S)[]
+  reducers: ((payload: U, current: S & BaseState<S>) => BaseState<S> & S)[]
 ): string => {
   const reducer = compose(reducers.map((r) => (sta) => r(data, sta)));
   return state.getState().optSet((s) => {
@@ -107,10 +119,8 @@ export function createSubscription(
     app,
     path,
     event: e,
-    err: () => {},
-    quit: () => {
-      throw new FatalError('subscription clogged');
-    }
+    err: () => null,
+    quit: () => null,
   };
   // TODO: err, quit handling (resubscribe?)
   return request;
@@ -118,23 +128,32 @@ export function createSubscription(
 
 export const createState = <T extends Record<string, unknown>>(
   name: string,
-  properties: T | ((set: SetState<T & BaseState<T>>, get: GetState<T & BaseState<T>>) => T),
-  blacklist: (keyof BaseState<T> | keyof T)[] = [],
+  properties:
+    | T
+    | ((set: SetState<T & BaseState<T>>, get: GetState<T & BaseState<T>>) => T),
+  options: Partial<PersistOptions<T & BaseState<T>>>,
   subscriptions: ((
     set: SetState<T & BaseState<T>>,
     get: GetState<T & BaseState<T>>
   ) => SubscriptionRequestInterface)[] = []
-): UseStore<T & BaseState<T>> =>
-  create<T & BaseState<T>>(
+): UseStore<T & BaseState<T>> => {
+  const persistOptions = {
+    name: stateStorageKey(name),
+    version: storageVersion,
+    migrate: clearStorageMigration,
+    ...options,
+  };
+
+  return create<T & BaseState<T>>(
     persist<T & BaseState<T>>(
       (set, get) => ({
         initialize: async (airlock: Urbit) => {
-          await Promise.all(subscriptions.map((sub) => airlock.subscribe(sub(set, get))));
+          await Promise.all(
+            subscriptions.map((sub) => airlock.subscribe(sub(set, get)))
+          );
         },
         set: (fn) => stateSetter(fn, set, get),
-        optSet: (fn) => {
-          return optStateSetter(fn, set, get);
-        },
+        optSet: (fn) => optStateSetter(fn, set, get),
         patches: {},
         addPatch: (id: string, patch: Patch[]) => {
           set((s) => ({ ...s, patches: { ...s.patches, [id]: patch } }));
@@ -145,19 +164,20 @@ export const createState = <T extends Record<string, unknown>>(
         rollback: (id: string) => {
           set((state) => {
             const applying = state.patches[id];
-            return { ...applyPatches(state, applying), patches: _.omit(state.patches, id) };
+            return {
+              ...applyPatches(state, applying),
+              patches: _.omit(state.patches, id),
+            };
           });
         },
-        ...(typeof properties === 'function' ? (properties as any)(set, get) : properties)
+        ...(typeof properties === 'function'
+          ? (properties as any)(set, get)
+          : properties),
       }),
-      {
-        blacklist,
-        name: stateStorageKey(name),
-        version: storageVersion,
-        migrate: clearStorageMigration
-      }
+      persistOptions
     )
   );
+};
 
 export async function doOptimistically<A, S extends Record<string, unknown>>(
   state: UseStore<S & BaseState<S>>,
@@ -181,7 +201,8 @@ export async function doOptimistically<A, S extends Record<string, unknown>>(
 export async function pokeOptimisticallyN<A, S extends Record<string, unknown>>(
   state: UseStore<S & BaseState<S>>,
   poke: Poke<any>,
-  reduce: ((a: A, fn: S & BaseState<S>) => S & BaseState<S>)[]
+  reduce: ((a: A, fn: S & BaseState<S>) => S & BaseState<S>)[],
+  withRollback = true
 ) {
   let num: string | undefined;
   try {
@@ -189,6 +210,10 @@ export async function pokeOptimisticallyN<A, S extends Record<string, unknown>>(
     await api.poke(poke);
     state.getState().removePatch(num);
   } catch (e) {
+    if (!withRollback) {
+      throw e;
+    }
+
     console.error(e);
     if (num) {
       state.getState().rollback(num);

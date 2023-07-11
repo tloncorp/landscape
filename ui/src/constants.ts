@@ -1,3 +1,8 @@
+export const storageVersion = parseInt(
+  import.meta.env.VITE_STORAGE_VERSION,
+  10
+);
+
 export const SECTIONS = {
   SELECTS: 'Tlon Selects',
   PALS: 'Powered by Pals',
@@ -60,6 +65,15 @@ export const APPS = [
     source: '~paldev',
     section: SECTIONS.PALS,
     desk: 'scooore',
+  },
+  {
+    title: "Trill",
+    description: "Twitter without limits, and much more",
+    color: '#FFD400',
+    link: '/apps/trill',
+    section: SECTIONS.PALS,
+    desk: 'trill',
+    source: '~dister-dozzod-sortug'
   },
   {
     title: 'Docs',

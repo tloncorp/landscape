@@ -1,24 +1,28 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import fuzzy from 'fuzzy';
-import { Treaty } from '@urbit/api';
+import { Treaty } from '@/gear';
 import { ShipName } from '../../components/ShipName';
 import { useAllyTreaties } from '../../state/docket';
 import { useAppSearchStore } from '../Nav';
 import { AppList } from '../../components/AppList';
 import { addRecentDev } from './Home';
 import { Spinner } from '../../components/Spinner';
+import { ShipConnection } from '@/components/ShipConnection';
+import { pluralize } from '@/logic/utils';
+import { AppSearch } from '../AppSearch';
 
-type AppsProps = RouteComponentProps<{ ship: string }>;
-
-export const Apps = ({ match }: AppsProps) => {
+export const Apps = () => {
   const { searchInput, selectedMatch, select } = useAppSearchStore((state) => ({
     searchInput: state.searchInput,
     select: state.select,
-    selectedMatch: state.selectedMatch
+    selectedMatch: state.selectedMatch,
   }));
-  const provider = match?.params.ship;
-  const { treaties, status } = useAllyTreaties(provider);
+  const { ship = '' } = useParams<{ ship: string }>();
+  const { pathname } = useLocation();
+  const provider = ship;
+  const { treaties, status, connection, showConnection, awaiting } =
+    useAllyTreaties(provider);
 
   useEffect(() => {
     if (provider) {
@@ -30,7 +34,7 @@ export const Apps = ({ match }: AppsProps) => {
     if (!treaties) {
       return undefined;
     }
-    const values = Object.values(treaties);
+    const values = Object.values(treaties).filter((t) => !!t) as Treaty[];
     return fuzzy
       .filter(
         searchInput,
@@ -47,8 +51,9 @@ export const Apps = ({ match }: AppsProps) => {
   const count = results?.length;
 
   const getAppPath = useCallback(
-    (app: Treaty) => `${match?.path.replace(':ship', provider)}/${app.ship}/${app.desk}`,
-    [match]
+    (app: Treaty) =>
+      `${pathname.replace(':ship', provider)}/${app.ship}/${app.desk}`,
+    [pathname]
   );
 
   useEffect(() => {
@@ -66,44 +71,73 @@ export const Apps = ({ match }: AppsProps) => {
           url: getAppPath(r),
           openInNewTab: false,
           value: r.desk,
-          display: r.title
-        }))
+          display: r.title,
+        })),
       });
     }
   }, [results]);
 
-  const showNone =
-    status === 'error' || ((status === 'success' || status === 'initial') && results?.length === 0);
+  const showLoader =
+    status === 'loading' || status === 'initial' || status === 'awaiting';
 
   return (
-    <div className="dialog-inner-container md:px-6 md:py-8 h4 text-gray-400">
-      {status === 'loading' && (
-        <span className="mb-3">
-          <Spinner className="w-7 h-7 mr-3" /> Finding software...
-        </span>
+    <div className="dialog-inner-container h4 text-gray-400 md:px-6 md:py-8">
+      <AppSearch />
+      {showLoader && (
+        <div className="mb-3 flex items-start">
+          <Spinner className="mr-3 h-7 w-7 flex-none" />
+          <div className="flex flex-1 flex-col">
+            <span>
+              {status === 'awaiting'
+                ? `${awaiting} ${pluralize(
+                    'app',
+                    awaiting
+                  )} found, waiting for entries...`
+                : 'Finding software...'}
+            </span>
+            {showConnection && (
+              <ShipConnection ship={provider} status={connection?.status} />
+            )}
+          </div>
+        </div>
       )}
-      {results && results.length > 0 && (
-        <>
+      {(status === 'partial' || status === 'finished') &&
+        results &&
+        (results.length > 0 ? (
+          <>
+            <div id="developed-by">
+              <h2 className="mb-3">
+                Software developed by{' '}
+                <ShipName name={provider} className="font-mono" />
+              </h2>
+              <p>
+                {count} result{count === 1 ? '' : 's'}
+              </p>
+            </div>
+            <AppList
+              apps={results}
+              labelledBy="developed-by"
+              matchAgainst={selectedMatch}
+              to={getAppPath}
+            />
+            {status === 'finished' ? (
+              <p>That&apos;s it!</p>
+            ) : (
+              <p>Awaiting {awaiting} more</p>
+            )}
+          </>
+        ) : (
           <div id="developed-by">
             <h2 className="mb-3">
-              Software developed by <ShipName name={provider} className="font-mono" />
+              Software developed by{' '}
+              <ShipName name={provider} className="font-mono" />
             </h2>
-            <p>
-              {count} result{count === 1 ? '' : 's'}
-            </p>
+            <p>No apps found</p>
           </div>
-          <AppList
-            apps={results}
-            labelledBy="developed-by"
-            matchAgainst={selectedMatch}
-            to={getAppPath}
-          />
-          <p>That&apos;s it!</p>
-        </>
-      )}
-      {showNone && (
+        ))}
+      {status === 'error' && (
         <h2>
-          Unable to find software developed by <ShipName name={provider} className="font-mono" />
+          <ShipConnection ship={provider} status={connection?.status} />
         </h2>
       )}
     </div>

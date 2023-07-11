@@ -7,7 +7,8 @@ repo=$1
 desk=$2
 ship=$3
 zone=$4
-ref=${5:-master}
+project=$5
+ref=${6:-master}
 folder=$ship/$desk
 
 set -e
@@ -16,11 +17,11 @@ cmdfile=$(mktemp "${TMPDIR:-/tmp/}janeway.XXXXXXXXX")
 # mktemp only used for generating a random folder name below
 cmds='
 source_repo=$(mktemp --dry-run /tmp/repo.janeway.XXXXXXXXX)
-git clone --depth 1 --branch '$ref' git@github.com:'$repo'.git $source_repo
+git clone --depth 1 --branch '$ref' https://github.com/'$repo'.git $source_repo
 urbit_repo=$(mktemp --dry-run /tmp/repo.urbit.XXXXXXXXX)
-git clone --depth 1 git@github.com:urbit/urbit.git $urbit_repo -b '$URBIT_REPO_TAG' --single-branch
+git clone --depth 1 https://github.com/urbit/urbit.git $urbit_repo -b '$URBIT_REPO_TAG' --single-branch
 cd $source_repo
-cd /home/urb || return
+cd /urbit || return
 curl -s --data '\''{"source":{"dojo":"+hood/mount %'$desk'"},"sink":{"app":"hood"}}'\'' http://localhost:12321
 rsync -avL --delete $urbit_repo/pkg/base-dev/ '$folder'
 rsync -avL $source_repo/desk/ '$folder'
@@ -37,7 +38,7 @@ chmod 600 $sshpub
 chmod 600 $sshpriv
 
 gcloud compute \
-  --project mainnet \
+  --project "$project" \
   ssh \
   --tunnel-through-iap \
   --ssh-key-file "$sshpriv" \

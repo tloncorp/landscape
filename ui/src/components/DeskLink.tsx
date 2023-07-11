@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCharge } from '../state/docket';
-import { getAppHref } from '../state/util';
+import { getAppHref } from '@/logic/utils';
 
 interface DeskLinkProps extends React.AnchorHTMLAttributes<any> {
   desk: string;
@@ -10,8 +10,14 @@ interface DeskLinkProps extends React.AnchorHTMLAttributes<any> {
   className?: string;
 }
 
-export function DeskLink({ children, className, desk, to = '', ...rest }: DeskLinkProps) {
-  const { push } = useHistory();
+export function DeskLink({
+  children,
+  className,
+  desk,
+  to = '',
+  ...rest
+}: DeskLinkProps) {
+  const navigate = useNavigate();
   const charge = useCharge(desk);
 
   if (!charge) {
@@ -36,7 +42,7 @@ export function DeskLink({ children, className, desk, to = '', ...rest }: DeskLi
         if (rest.onClick) {
           rest.onClick(event);
         }
-        push('/');
+        navigate('/');
       }}
     >
       {children}

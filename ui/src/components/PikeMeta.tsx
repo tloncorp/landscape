@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pike } from '@urbit/api';
+import { Pike } from '@/gear';
 
 import { Attribute } from './Attribute';
 

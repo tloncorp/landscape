@@ -1,14 +1,15 @@
 import React, { useEffect } from 'react';
 import Mousetrap from 'mousetrap';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import {
   BrowserRouter,
-  Switch,
   Route,
-  useHistory,
   useLocation,
-  RouteComponentProps,
-  Redirect,
+  Routes,
+  useNavigate,
+  Navigate,
 } from 'react-router-dom';
+import { TooltipProvider } from '@radix-ui/react-tooltip';
 import { ErrorBoundary } from 'react-error-boundary';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import { Grid } from './pages/Grid';
@@ -16,18 +17,12 @@ import useDocketState from './state/docket';
 import { PermalinkRoutes } from './pages/PermalinkRoutes';
 import useKilnState from './state/kiln';
 import useContactState from './state/contact';
-import api from './state/api';
 import { useMedia } from './logic/useMedia';
-import { useSettingsState, useTheme } from './state/settings';
+import { useDisplay } from './state/settings';
 import { useBrowserId, useLocalState } from './state/local';
 import { ErrorAlert } from './components/ErrorAlert';
 import { useErrorHandler } from './logic/useErrorHandler';
-import useHarkState from './state/hark';
-import { useNotifications } from './nav/notifications/useNotifications';
-import {
-  isNewNotificationSupported,
-  makeBrowserNotification,
-} from './logic/utils';
+import useSchedulerStore, { useScheduler } from './state/scheduler';
 
 const getNoteRedirect = (path: string) => {
   if (path.startsWith('/desk/')) {
@@ -53,35 +48,17 @@ const getId = async () => {
   return result.visitorId;
 };
 
-function OldLeapRedirect({ location }: RouteComponentProps) {
+function OldLeapRedirect() {
+  const location = useLocation();
   const path = location.pathname.replace('/leap', '');
-  return <Redirect to={path} />;
+  return <Navigate to={path} />;
 }
 
 const AppRoutes = () => {
-  const { push } = useHistory();
+  const navigate = useNavigate();
   const { search } = useLocation();
   const handleError = useErrorHandler();
   const browserId = useBrowserId();
-  const {
-    display: { doNotDisturb },
-  } = useSettingsState.getState();
-  const { count, unreadNotifications } = useNotifications();
-
-  useEffect(() => {
-    if (!isNewNotificationSupported() || doNotDisturb) {
-      return;
-    }
-
-    if (count > 0 && Notification.permission === 'granted') {
-      unreadNotifications.forEach((bin) => {
-        makeBrowserNotification(bin);
-      });
-    }
-    if (count > 0 && Notification.permission === 'default') {
-      Notification.requestPermission();
-    }
-  }, [count, unreadNotifications]);
 
   useEffect(() => {
     getId().then((value) => {
@@ -93,11 +70,11 @@ const AppRoutes = () => {
     const query = new URLSearchParams(search);
     if (query.has('grid-note')) {
       const redir = getNoteRedirect(query.get('grid-note')!);
-      push(redir);
+      navigate(redir);
     }
   }, [search]);
 
-  const theme = useTheme();
+  const { theme } = useDisplay();
   const isDarkMode = useMedia('(prefers-color-scheme: dark)');
 
   useEffect(() => {
@@ -114,11 +91,6 @@ const AppRoutes = () => {
     handleError(() => {
       window.name = 'grid';
 
-      const { initialize: settingsInitialize, fetchAll } =
-        useSettingsState.getState();
-      settingsInitialize(api);
-      fetchAll();
-
       const { fetchDefaultAlly, fetchAllies, fetchCharges } =
         useDocketState.getState();
       fetchDefaultAlly();
@@ -128,24 +100,32 @@ const AppRoutes = () => {
       const { initializeKiln } = useKilnState.getState();
       initializeKiln();
 
-      useContactState.getState().initialize(api);
-      useHarkState.getState().start();
+      useSchedulerStore
+        .getState()
+        .wait(() => useContactState.getState().start(), 5);
 
       Mousetrap.bind(['command+/', 'ctrl+/'], () => {
-        push('/search');
+        navigate('/search');
       });
     }),
     []
   );
 
   return (
-    <Switch>
-      <Route path="/perma" component={PermalinkRoutes} />
-      <Route path="/leap/*" component={OldLeapRedirect} />
-      <Route path={['/:menu', '/']} component={Grid} />
-    </Switch>
+    <Routes>
+      <Route path="perma/*" element={<PermalinkRoutes />} />
+      <Route path="leap/*" element={<OldLeapRedirect />} />
+      <Route path="/" element={<Grid />}>
+        <Route path=":menu/*" element={<Grid />} />
+      </Route>
+    </Routes>
   );
 };
+
+function Scheduler() {
+  useScheduler();
+  return null;
+}
 
 export function App() {
   const base = import.meta.env.MODE === 'mock' ? undefined : '/apps/grid';
@@ -156,7 +136,11 @@ export function App() {
       onReset={() => window.location.reload()}
     >
       <BrowserRouter basename={base}>
-        <AppRoutes />
+        <ReactQueryDevtools initialIsOpen={false} />
+        <TooltipProvider>
+          <AppRoutes />
+          <Scheduler />
+        </TooltipProvider>
       </BrowserRouter>
     </ErrorBoundary>
   );

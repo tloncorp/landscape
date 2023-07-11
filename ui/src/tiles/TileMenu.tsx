@@ -2,9 +2,9 @@ import React, { ReactElement, useCallback, useState } from 'react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
-import { Chad, chadIsRunning } from '@urbit/api';
+import { Chad, chadIsRunning } from '@/gear';
 import useDocketState from '../state/docket';
-import { disableDefault, handleDropdownLink } from '../state/util';
+import { disableDefault, handleDropdownLink } from '@/logic/utils';
 import { useMedia } from '../logic/useMedia';
 
 export interface TileMenuProps {

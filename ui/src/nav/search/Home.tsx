@@ -1,3 +1,4 @@
+import { storageVersion } from '@/constants';
 import produce from 'immer';
 import create from 'zustand';
 import _ from 'lodash';
@@ -10,14 +11,17 @@ import { ProviderList } from '../../components/ProviderList';
 import { AppLink } from '../../components/AppLink';
 import { ShipName } from '../../components/ShipName';
 import { ProviderLink } from '../../components/ProviderLink';
-import useDocketState, { ChargesWithDesks, useCharges } from '../../state/docket';
+import useDocketState, {
+  ChargesWithDesks,
+  useCharges,
+} from '../../state/docket';
 import {
   clearStorageMigration,
   createStorageKey,
   getAppHref,
-  storageVersion
-} from '../../state/util';
-import useContactState from '../../state/contact';
+} from '@/logic/utils';
+import useContactState, { emptyContact } from '../../state/contact';
+import { AppSearch } from '../AppSearch';
 
 export interface RecentsStore {
   recentApps: string[];
@@ -28,14 +32,16 @@ export interface RecentsStore {
 }
 
 export const useRecentsStore = create<RecentsStore>(
-  persist(
+  persist<RecentsStore>(
     (set) => ({
       recentApps: [],
       recentDevs: [],
       addRecentApp: (desk: string) => {
         set(
           produce((draft: RecentsStore) => {
-            const hasApp = draft.recentApps.find((testDesk) => testDesk === desk);
+            const hasApp = draft.recentApps.find(
+              (testDesk) => testDesk === desk
+            );
             if (!hasApp) {
               draft.recentApps.unshift(desk);
             }
@@ -62,13 +68,12 @@ export const useRecentsStore = create<RecentsStore>(
             _.remove(draft.recentApps, (test) => test === desk);
           })
         );
-      }
+      },
     }),
     {
-      whitelist: ['recentApps', 'recentDevs'],
       name: createStorageKey('recents-store'),
       version: storageVersion,
-      migrate: clearStorageMigration
+      migrate: clearStorageMigration,
     }
   )
 );
@@ -94,9 +99,17 @@ export const Home = () => {
   const groups = charges?.landscape;
   const contacts = useContactState((s) => s.contacts);
   const defaultAlly = useDocketState((s) =>
-    s.defaultAlly ? { shipName: s.defaultAlly, ...contacts[s.defaultAlly] } : null
+    s.defaultAlly
+      ? {
+          shipName: s.defaultAlly,
+          ...(contacts[s.defaultAlly] || emptyContact),
+        }
+      : null
   );
-  const providerList = recentDevs.map((d) => ({ shipName: d, ...contacts[d] }));
+  const providerList = recentDevs.map((d) => ({
+    shipName: d,
+    ...(contacts[d] || emptyContact),
+  }));
   const apps = getApps(recentApps, charges);
 
   useEffect(() => {
@@ -104,24 +117,27 @@ export const Home = () => {
       url: getAppHref(app.href),
       openInNewTab: true,
       value: app.desk,
-      display: app.title
+      display: app.title,
     }));
     const devs = recentDevs.map(providerMatch);
 
     useAppSearchStore.setState({
-      matches: ([] as MatchItem[]).concat(appMatches, devs)
+      matches: ([] as MatchItem[]).concat(appMatches, devs),
     });
   }, [recentApps, recentDevs]);
 
   return (
-    <div className="h-full p-4 md:p-8 font-semibold leading-tight text-black overflow-y-auto">
-      <h2 id="recent-apps" className="mb-4 h4 text-gray-500">
+    <div className="h-full overflow-y-auto p-4 font-semibold leading-tight text-black md:px-6 md:py-8">
+      <AppSearch />
+      <h2 id="recent-apps" className="h4 mt-4 mb-4 text-gray-500">
         Recent Apps
       </h2>
       {apps.length === 0 && (
-        <div className="p-6 rounded-xl bg-gray-50">
+        <div className="rounded-xl bg-gray-50 p-6">
           <p>Apps you use will be listed here, in the order you used them.</p>
-          <p className="mt-4">You can click/tap/keyboard on a listed app to open it.</p>
+          <p className="mt-4">
+            You can click/tap/keyboard on a listed app to open it.
+          </p>
           {groups && (
             <AppLink
               app={groups}
@@ -133,19 +149,27 @@ export const Home = () => {
         </div>
       )}
       {apps.length > 0 && (
-        <AppList apps={apps} labelledBy="recent-apps" matchAgainst={selectedMatch} size="small" />
+        <AppList
+          apps={apps}
+          labelledBy="recent-apps"
+          matchAgainst={selectedMatch}
+          size="small"
+        />
       )}
-      <hr className="-mx-4 my-6 md:-mx-8 md:my-9 border-t-2 border-gray-50" />
-      <h2 id="recent-devs" className="mb-4 h4 text-gray-500">
+      <hr className="-mx-4 my-6 border-t-2 border-gray-50 md:my-9" />
+      <h2 id="recent-devs" className="h4 mb-4 text-gray-500">
         Recent Developers
       </h2>
       {recentDevs.length === 0 && (
-        <div className="p-6 rounded-xl bg-gray-50">
-          <p className="mb-4">Urbit app developers you search for will be listed here.</p>
+        <div className="rounded-xl bg-gray-50 p-6">
+          <p className="mb-4">
+            Urbit app developers you search for will be listed here.
+          </p>
           {defaultAlly && (
             <>
               <p className="mb-6">
-                Try out app discovery by visiting <ShipName name={defaultAlly.shipName} /> below.
+                Try out app discovery by visiting{' '}
+                <ShipName name={defaultAlly.shipName} /> below.
               </p>
               <ProviderLink
                 adjustBG={false}
