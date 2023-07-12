@@ -1,5 +1,13 @@
 import _ from 'lodash';
-import { HarkAction, NewYarn, Rope, Seam, Skein, Yarn } from '@/gear';
+import {
+  HarkAction,
+  HarkAction1,
+  NewYarn,
+  Rope,
+  Seam,
+  Skein,
+  Yarn,
+} from '@/gear';
 import useReactQuerySubscription from '@/logic/useReactQuerySubscription';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { SettingsState } from './settings';
@@ -117,19 +125,21 @@ interface NewYarnData extends Omit<NewYarn, 'all' | 'desk' | 'rope'> {
 export function useAddYarnMutation() {
   const queryClient = useQueryClient();
   const mutationFn = async (variables: { newYarn: NewYarnData }) => {
-    return api.poke<NewYarn>({
+    return api.poke<HarkAction1>({
       app: 'hark',
-      mark: 'hark-new-yarn',
+      mark: 'hark-action-1',
       json: {
-        all: true,
-        desk: true,
-        rope: {
-          desk: window.desk,
-          group: null,
-          channel: null,
-          thread: '/apps',
+        'new-yarn': {
+          all: true,
+          desk: true,
+          rope: {
+            desk: window.desk,
+            group: null,
+            channel: null,
+            thread: '/apps',
+          },
+          ...variables.newYarn,
         },
-        ...variables.newYarn,
       },
     });
   };
