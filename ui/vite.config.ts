@@ -20,7 +20,7 @@ export default ({ mode }) => {
   console.log(SHIP_URL);
 
   return defineConfig({
-    base: mode === 'mock' ? undefined : '/apps/grid/',
+    base: mode === 'mock' ? undefined : '/apps/landscape/',
     server: mode === 'mock' ? undefined : { https: true },
     build:
       mode !== 'profile'
@@ -50,7 +50,7 @@ export default ({ mode }) => {
         : [
             basicSsl(),
             urbitPlugin({
-              base: 'grid',
+              base: 'landscape',
               target: SHIP_URL,
               changeOrigin: true,
               secure: false,

@@ -36,7 +36,7 @@ export function InterfacePrefs() {
       try {
         window.navigator.registerProtocolHandler(
           'web+urbitgraph',
-          '/apps/grid/perma?ext=%s',
+          '/apps/landscape/perma?ext=%s',
           // @ts-expect-error ts has the wrong types for protocolhandler
           'Urbit Links'
         );
@@ -53,7 +53,7 @@ export function InterfacePrefs() {
         // @ts-expect-error ts has the wrong types for protocolhandler
         window.navigator.unregisterProtocolHandler(
           'web+urbitgraph',
-          '/apps/grid/perma?ext=%s'
+          '/apps/landscape/perma?ext=%s'
         );
         setProtocolHandling(false);
       } catch (e) {

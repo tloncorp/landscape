@@ -254,7 +254,7 @@ export default function Notification({ bin, groups }: NotificationProps) {
     >
       <DeskLink
         onClick={onClick}
-        to={`?grid-note=${encodeURIComponent(wer || '')}`}
+        to={`?landscape-note=${encodeURIComponent(wer || '')}`}
         desk={rope.desk || ''}
         className="flex flex-1 space-x-3"
       >

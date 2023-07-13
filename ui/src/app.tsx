@@ -30,11 +30,11 @@ const getNoteRedirect = (path: string) => {
     return `/apps/${desk}`;
   }
 
-  if (path.startsWith('/grid/')) {
+  if (path.startsWith('/landscape/')) {
     // Handle links to grid features (preferences, etc)
     const route = path
       .split('/')
-      .filter((el) => el !== 'grid')
+      .filter((el) => el !== 'landscape')
       .join('/');
     return route;
   }
@@ -68,8 +68,8 @@ const AppRoutes = () => {
 
   useEffect(() => {
     const query = new URLSearchParams(search);
-    if (query.has('grid-note')) {
-      const redir = getNoteRedirect(query.get('grid-note')!);
+    if (query.has('landscape-note')) {
+      const redir = getNoteRedirect(query.get('landscape-note')!);
       navigate(redir);
     }
   }, [search]);
@@ -89,7 +89,7 @@ const AppRoutes = () => {
 
   useEffect(
     handleError(() => {
-      window.name = 'grid';
+      window.name = 'landscape';
 
       const { fetchDefaultAlly, fetchAllies, fetchCharges } =
         useDocketState.getState();
@@ -128,7 +128,7 @@ function Scheduler() {
 }
 
 export function App() {
-  const base = import.meta.env.MODE === 'mock' ? undefined : '/apps/grid';
+  const base = import.meta.env.MODE === 'mock' ? undefined : '/apps/landscape';
 
   return (
     <ErrorBoundary
