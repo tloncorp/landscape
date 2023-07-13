@@ -1,19 +1,21 @@
+/-  g=groups
 |%
 ++  enjs
   =,  enjs:format
   |%
   ++  flag
-    |=  f=flag:h
+    |=  f=flag:g
     (rap 3 (scot %p p.f) '/' q.f ~)
   ::
   ++  nest
-    |=  n=nest:h
+    |=  n=nest:g
     (rap 3 p.n '/' (flag q.n) ~)
   --
 ++  dejs
   =,  dejs:format
   |%
-  ++  flag  (su ;~((glue fas) ;~(pfix sig fed:ag) ^sym))
-  ++  nest  (su ;~((glue fas) ^sym ;~(pfix sig fed:ag)
+  ++  ship  (se %p)
+  ++  flag  (su ;~((glue fas) ;~(pfix sig fed:ag) sym))
+  ++  nest  (su ;~((glue fas) sym ;~(pfix sig fed:ag)))
   --
 --

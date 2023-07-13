@@ -1,5 +1,5 @@
 /-  h=hark
-/+  gj=groups-json
+/+  groups-json
 |%
 ++  enjs
   =,  enjs:format
@@ -136,8 +136,8 @@
       %desk   s/desk.s
     ==
   ::
-  ++  flag  flag:enjs:gj
-  ++  nest  nest:enjs:gj
+  ++  flag  flag:enjs:groups-json
+  ++  nest  nest:enjs:groups-json
   ::
   ++  rope
     |=  r=rope:h
@@ -154,10 +154,17 @@
   =,  dejs:format
   |%
   ++  action
-    ^-  $-(json action:h)
     %-  of
     :~  saw-seam/seam
         saw-rope/rope
+        add-yarn/add-yarn
+    ==
+  ++  action-1
+    %-  of
+    :~  saw-seam/seam
+        saw-rope/rope
+        add-yarn/add-yarn
+        new-yarn/new-yarn
     ==
   ::
   ++  seam
@@ -167,9 +174,53 @@
         group/flag
     ==
   ::
-  ++  flag  flag:dejs:gj
-  ++  nest  nest:dejs:gj
+  ++  add-yarn
+    %-  ot
+    :~  all/bo
+        desk/bo
+        yarn/yarn
+    ==
   ::
+  ++  new-yarn
+    %-  ot
+    :~  all/bo
+        desk/bo
+        rope/rope
+        con/(ar content)
+        wer/pa
+        but/(mu button)
+    ==
+  ::
+  ++  button
+    %-  ot
+    :~  title/so
+        hanlder/pa
+    ==
+  ::
+  ++  content
+    |=  j=json
+    ^-  content:h
+    ?:  ?=([%s *] j)  p.j
+    =>  .(j `json`j)
+    %.  j
+    %-  of
+    :~  ship/ship
+        emph/so
+    ==
+  ::
+  ++  yarn
+    %-  ot
+    :~  id/(se %uvh)
+        rope/rope
+        time/(se %da)
+        con/(ar content)
+        wer/pa
+        but/(mu button)
+    ==
+  ::
+  ++  flag  flag:dejs:groups-json
+  ++  nest  nest:dejs:groups-json
+  ++  ship  ship:dejs:groups-json
   ++  rope
     %-  ot
     :~  group/(mu flag)
