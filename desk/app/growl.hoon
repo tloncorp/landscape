@@ -1,5 +1,5 @@
 /-  hark
-/+  default-agent, verb, dbug
+/+  summarize, default-agent, verb, dbug
 ::
 |%
 +$  card  card:agent:gall
@@ -43,10 +43,10 @@
       :_  this
       ~[[%pass /bark-summary %agent [bark-host %bark] %poke %bark-receive-summary !>(~)]]
     =/  requested  !<(time vase)
-    =/  scry-path  [(scot %p our.bowl) %hark (scot %da now.bowl) %all %latest %hark-carpet ~]
-    =/  =carpet:hark  .^(carpet:hark %gx scry-path)
+    =/  activity    ~(summarize-activity summarize [our now]:bowl)
+    =/  inactivity  ~(summarize-inactivity summarize [our now]:bowl)
     :_  this
-    ~[[%pass /bark-summary %agent [bark-host %bark] %poke %bark-receive-summary !>(`[requested carpet])]]
+    ~[[%pass /bark-summary %agent [bark-host %bark] %poke %bark-receive-summary !>(`[requested %life activity inactivity])]]
   ==
 ++  on-watch  on-watch:def
 ++  on-agent  on-agent:def
