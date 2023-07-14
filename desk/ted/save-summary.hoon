@@ -17,8 +17,7 @@
       =ship
     ::
       $=  summary
-      $%  [%hark =carpet:hark]
-          [%life [sen=@ud rec=@ud gro=@t] [dms=@ud etc=@ud group=@t chat=@t]]
+      $%  [%life [sen=@ud rec=@ud gro=@t] [dms=@ud etc=@ud group=@t chat=@t]]
       ==
   ==
 =/  args  !<([~ arg-mold] arg)

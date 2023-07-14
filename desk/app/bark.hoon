@@ -70,7 +70,6 @@
       !<  %-  unit
           $:  requested=time
           $=  summary
-          $^  carpet:hark
           ::NOTE  see also /lib/summarize
           $%  [%life active=[s=@ud r=@ud g=@t] inactive=[d=@ud c=@ud g=@t c=@t]]
           ==  ==
@@ -82,11 +81,7 @@
     :~  :*  %pass  /save-summary/(scot %p src.bowl)/(scot %da requested.u.result)
         %arvo  %k  %fard
         %bark  %save-summary  %noun
-        =;  summary
-          !>(`[tlon-api-key mailchimp-api-key src.bowl summary])
-        ?@  -.summary.u.result
-          summary.u.result
-        [%hark summary.u.result]
+        !>(`[tlon-api-key mailchimp-api-key src.bowl summary.u.result])
       ==
     ==
   ==
