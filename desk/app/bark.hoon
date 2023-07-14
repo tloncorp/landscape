@@ -1,3 +1,11 @@
+::  bark: gathers summaries from ships, sends emails to their owners
+::
+::    general flow is that bark gets configured with api keys and recipient
+::    ships. on-demand, bark asks either all or a subset of recipients for
+::    an activity summary (through the growl agent on their ships), and upon
+::    receiving responses, uses the mailchimp api to upload the received
+::    deets for that ship, and/or triggers an email send.
+::
 /-  hark
 /+  default-agent, verb, dbug
 ::
@@ -58,14 +66,27 @@
     [%pass /request-summary %agent [ship %growl] %poke %growl-summarize !>(now.bowl)]
     ::
       %bark-receive-summary
-    =/  result  !<((unit [requested=time =carpet:hark]) vase)
+    =/  result
+      !<  %-  unit
+          $:  requested=time
+          $=  summary
+          $^  carpet:hark
+          ::NOTE  see also /lib/summarize
+          $%  [%life active=[s=@ud r=@ud g=@t] inactive=[d=@ud c=@ud g=@t c=@t]]
+          ==  ==
+      vase
     ?~  result
       `this(recipients (~(del in recipients) src.bowl))
+    ::TODO  maybe drop the result (or re-request) if the timestamp is too old?
     :_  this
-    :~  :*  %pass  /mail-hosted-users/(scot %p src.bowl)/(scot %da requested.u.result)
+    :~  :*  %pass  /save-summary/(scot %p src.bowl)/(scot %da requested.u.result)
         %arvo  %k  %fard
-        %bark  %mail-hosted-user  %noun
-        !>(`[tlon-api-key mailchimp-api-key src.bowl carpet.u.result])
+        %bark  %save-summary  %noun
+        =;  summary
+          !>(`[tlon-api-key mailchimp-api-key src.bowl summary])
+        ?@  -.summary.u.result
+          summary.u.result
+        [%hark summary.u.result]
       ==
     ==
   ==
