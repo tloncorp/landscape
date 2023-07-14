@@ -15,6 +15,12 @@
   $%  state-0
   ==
 +$  state-0  [%0 tlon-api-key=tape mailchimp-api-key=tape recipients=(set ship)]
+::
+++  next-timer
+  |=  now=@da
+  ::  west-coast midnights for minimal ameri-centric disruption
+  %+  add  ~d1.h7
+  (sub now (mod now ~d1))
 --
 ::
 =|  state-0
@@ -25,7 +31,21 @@
 |_  =bowl:gall
 +*  this  .
     def   ~(. (default-agent this %.n) bowl)
-++  on-init  `this
+++  on-init
+  ^-  (quip card _this)
+  :_  this
+  [%pass /fetch %arvo %b %wait (next-timer now.bowl)]~
+::
+++  on-arvo
+  |=  [=wire sign=sign-arvo]
+  ^-  (quip card _this)
+  ?>  =(/fetch wire)
+  ?>  ?=(%wake +<.sign)
+  =^  caz  this  (on-poke %bark-generate-summaries !>(~))
+  :_  this
+  :_  caz
+  [%pass /fetch %arvo %b %wait (next-timer now.bowl)]
+::
 ++  on-poke
   |=  [=mark =vase]
   ^-  (quip card _this)
@@ -102,6 +122,5 @@
       %0
     `this(state old)
   ==
-++  on-arvo  on-arvo:def
 ++  on-peek  on-peek:def
 --
