@@ -35,6 +35,7 @@
 ::
 =/  [%khan %arow %.y %noun vs=vase]  mine
 =+  !<(mail=(unit cord) vs)
+~&  [%saving-summary ship mail summary.args]
 ?>  ?=(^ mail)
 ;<  ~  bind:m
   %-  send-raw-card
@@ -44,20 +45,15 @@
       =;  vars=(map @t json)
         !>(`[mailchimp-api-key.args u.mail vars])
       %-  ~(gas by *(map @t json))
-      ?-  -.summary.args
-        %hark  ~  ::TODO  add merge field for the notification count?
-      ::
-          %life
-        =,  summary.args
-        :~  ['MSGS_SENT' (numb:enjs:format sen)]
-            ['MSGS_RECD' (numb:enjs:format rec)]
-            ['GROUP_SENT' s+gro]
-          ::
-            ['UNREAD_DMS' (numb:enjs:format dms)]
-            ['UNREAD_MSG' (numb:enjs:format etc)]
-            ['GROUP_NAME' s+group]
-            ['CHNL_NAME' s+chat]
-        ==
+      =,  summary.args
+      :~  ['MSGS_SENT' (numb:enjs:format sen)]
+          ['MSGS_RECD' (numb:enjs:format rec)]
+          ['GROUP_SENT' s+gro]
+        ::
+          ['UNREAD_DMS' (numb:enjs:format dms)]
+          ['UNREAD_MSG' (numb:enjs:format etc)]
+          ['GROUP_NAME' s+group]
+          ['CHNL_NAME' s+chat]
       ==
   ==
 ;<  [wimp=wire simp=sign-arvo]  bind:m  take-sign-arvo
