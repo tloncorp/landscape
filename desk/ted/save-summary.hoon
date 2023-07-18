@@ -13,7 +13,7 @@
 ^-  form:m
 =/  arg-mold
   $:  tlon-api-key=cord
-      mailchimp-api-key=cord
+      mailchimp=[key=cord list-id=cord]
       =ship
     ::
       $=  summary
@@ -43,7 +43,7 @@
       %arvo  %k  %fard
       %bark  %mailchimp-update-merge-fields  %noun
       =;  vars=(map @t json)
-        !>(`[mailchimp-api-key.args u.mail vars])
+        !>(`[mailchimp.args u.mail vars])
       %-  ~(gas by *(map @t json))
       =,  summary.args
       :~  ['MSGS_SENT' (numb:enjs:format sen)]

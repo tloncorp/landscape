@@ -11,10 +11,11 @@
 ::
 |%
 +$  card  card:agent:gall
-+$  versioned-state
-  $%  state-0
++$  state-0
+  $:  %0
+      api=[tlon=@t mailchimp=[key=@t list-id=@t]]
+      recipients=(set ship)
   ==
-+$  state-0  [%0 tlon-api-key=tape mailchimp-api-key=tape recipients=(set ship)]
 ::
 ++  next-timer
   |=  now=@da
@@ -51,10 +52,10 @@
   ^-  (quip card _this)
   ?+  mark  (on-poke:def mark vase)
       %set-tlon-api-key
-    `this(tlon-api-key !<(tape vase))
+    `this(tlon.api !<(@t vase))
     ::
       %set-mailchimp-api-key
-    `this(mailchimp-api-key !<(tape vase))
+    `this(mailchimp.api !<([key=@t list=@t] vase))
     ::
       %bark-add-recipient
     =+  !<(=ship vase)
@@ -101,7 +102,7 @@
     :~  :*  %pass  /save-summary/(scot %p src.bowl)/(scot %da requested.u.result)
         %arvo  %k  %fard
         %bark  %save-summary  %noun
-        !>(`[tlon-api-key mailchimp-api-key src.bowl summary.u.result])
+        !>(`[tlon.api mailchimp.api src.bowl summary.u.result])
       ==
     ==
   ==
@@ -117,10 +118,7 @@
 ++  on-load
   |=  old-state=vase
   ^-  (quip card _this)
-  =/  old  !<(versioned-state old-state)
-  ?-  -.old
-      %0
-    `this(state old)
-  ==
+  =/  old  !<(state-0 old-state)
+  `this(state old)
 ++  on-peek  on-peek:def
 --

@@ -3,8 +3,9 @@
 ::    produces a success flag (whether response status was 200 or not) and
 ::    either the response body, or some error string in case of local failure.
 ::
-::  > -bark!mailchimp-update-merge-fields 'apikey' 'sampel@example.com' fields
+::  > -bark!mailchimp-update-merge-fields 'apikey' 'list-id' 'sampel@example.com' fields
 ::  where fields is a (map cord json)
+::  and the list-id is most easily discovered through the /lists api
 ::
 /-  spider
 /+  *strandio
@@ -13,10 +14,10 @@
 =/  m  (strand ,vase)
 |^  ted
 ++  api-post
-  |=  [apik=@t mail=@t vars=(map cord json)]
+  |=  [[apik=@t list-id=@t] mail=@t vars=(map cord json)]
   %:  send-request
     method=%'PATCH'
-    url=(url mail)
+    url=(url list-id mail)
   ::
     ^=  header-list
     :~  ['content-type' 'application/json']
@@ -32,7 +33,7 @@
   ==
 ::
 ++  url
-  |=  email=@t
+  |=  [list-id=@t email=@t]
   ^-  @t
   %+  rap  3
   ::NOTE  us14 is the datacenter for our account, hardcoded
@@ -42,10 +43,6 @@
       email  ::TODO  force lowercase?
       '?skip_merge_validation=false'
   ==
-::
-::NOTE  "hosting customers" audience id, as discovered through the /lists api
-::TODO  mb don't hardcode?
-++  list-id  'a71c1a0cc9'
 ::
 ++  basic-auth-header  ::TODO  into http auth library
   |=  [user=@t pass=@t]
@@ -61,7 +58,7 @@
   =/  m  (strand ,vase)  ::  [gud=? res=@t]
   ^-  form:m
   =/  arg-mold
-    $:  api-key=cord
+    $:  api=[key=cord list-id=cord]
         to-email=cord
         vars=(map cord json)
     ==
