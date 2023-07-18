@@ -3,6 +3,12 @@
 /-  chat, hark, groups
 ::
 |_  [our=@p now=@da]
+::  +range: period of time to summarize over
+::  +limit: max amount of msgs to count per channel
+::
+++  range  ~d7
+++  limit  9.999
+::
 ++  scry-path
   |=  [=term =spur]
   [(scot %p our) term (scot %da now) spur]
@@ -35,7 +41,7 @@
   =+  .^  log=((mop time writ:chat) lte)
         %gx
         %+  scry-path  %chat
-        /chat/(scot %p p.c)/[q.c]/writs/newer/(scot %ud (sub now ~d7))/(scot %ud 9.999)/chat-writs
+        /chat/(scot %p p.c)/[q.c]/writs/newer/(scot %ud (sub now range))/(scot %ud limit)/chat-writs
       ==
   :-  %+  ~(put by g)  group.perm
       (add (~(gut by g) group.perm 0) (wyt:onn log))
