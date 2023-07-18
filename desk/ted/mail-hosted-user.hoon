@@ -17,7 +17,7 @@
   ^-  form:m
   =/  arg-mold
     $:  tlon-api-key=tape
-        mailchimp-api-key=tape
+        mandrill-api-key=tape
         =ship
         =carpet:hark
     ==
@@ -44,7 +44,7 @@
     :*  %pass  /send-mailchimp-email/(scot %p ship.u.args)
         %arvo  %k  %fard
         %bark  %mailchimp-send-template  %noun
-        !>(`[mailchimp-api-key.u.args (trip email) "landscape-weekly-digest" (template-vars ship.u.args carpet.u.args)])
+        !>(`[mandrill-api-key.u.args (trip email) "landscape-weekly-digest" (template-vars ship.u.args carpet.u.args)])
     ==
   ;<  [wimp=wire simp=sign-arvo]  bind:m  take-sign-arvo
   ?>  ?=([%send-mailchimp-email @ *] wimp)

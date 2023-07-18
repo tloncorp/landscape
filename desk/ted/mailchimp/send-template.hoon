@@ -1,7 +1,7 @@
 ::  Mailchimp/Send Template
 ::  send an email template via the Mailchimp Transactional API
 ::
-::  > -bark!mailchimp-send-template "[API_KEY]" "someone@example.com" "template-name" vars :: vars is a (map cord cord)
+::  > -bark!mailchimp-send-template "[MANDRILL_API_KEY]" "someone@example.com" "template-name" vars :: vars is a (map cord cord)
 ::
 /-  spider
 /+  *strandio
