@@ -1,9 +1,17 @@
-/-  hark
-|_  result=(unit [requested=time =carpet:hark])
+=>  |%
+    +$  result
+      %-  unit
+      $:  requested=time
+      $=  summary
+      ::NOTE  see also /lib/summarize
+      $%  [%life active=[s=@ud r=@ud g=@t] inactive=[d=@ud c=@ud g=@t c=@t]]
+      ==  ==
+    --
+|_  =result
 ++  grad  %noun
 ++  grab
   |%
-  ++  noun  (unit (pair time carpet:hark))
+  ++  noun  ^result
   --
 ++  grow
   |%
