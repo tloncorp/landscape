@@ -51,6 +51,10 @@
   |=  [=mark =vase]
   ^-  (quip card _this)
   ?+  mark  (on-poke:def mark vase)
+      %noun
+    =+  !<([m=@ n=*] vase)
+    $(mark m, vase (need (slew 3 vase)))
+  ::
       %set-tlon-api-key
     `this(tlon.api !<(@t vase))
     ::

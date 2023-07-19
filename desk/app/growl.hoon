@@ -26,6 +26,10 @@
   |=  [=mark =vase]
   ^-  (quip card _this)
   ?+  mark  (on-poke:def mark vase)
+      %noun
+    =+  !<([m=@ n=*] vase)
+    $(mark m, vase (need (slew 3 vase)))
+  ::
       %set-host
     ?>  =(src.bowl our.bowl)
     `this(bark-host !<(ship vase))
