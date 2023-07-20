@@ -35,7 +35,6 @@
 ::
 =/  [%khan %arow %.y %noun vs=vase]  mine
 =+  !<(mail=(unit cord) vs)
-~&  [%saving-summary ship mail summary.args]
 ?>  ?=(^ mail)
 ;<  ~  bind:m
   %-  send-raw-card
