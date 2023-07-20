@@ -25,7 +25,7 @@
   %-  send-raw-card
   :*  %pass  /check-email/(scot %p ship.args)
       %arvo  %k  %fard
-      %bark  %hosting-email  %noun
+      %garden  %hosting-email  %noun
       !>(`[(trip tlon-api-key.args) ship.args])
   ==
 ;<  [mire=wire mine=sign-arvo]  bind:m  take-sign-arvo
@@ -41,7 +41,7 @@
   %-  send-raw-card
   :*  %pass  /update-merge-fields/(scot %p ship.args)
       %arvo  %k  %fard
-      %bark  %mailchimp-update-merge-fields  %noun
+      %garden  %mailchimp-update-merge-fields  %noun
       =;  vars=(map @t json)
         !>(`[mailchimp.args u.mail vars])
       %-  ~(gas by *(map @t json))

@@ -27,7 +27,7 @@
     %-  send-raw-card
     :*  %pass  /check-email/(scot %p ship.u.args)
         %arvo  %k  %fard
-        %bark  %hosting-email  %noun
+        %garden  %hosting-email  %noun
         !>(`[tlon-api-key.u.args ship.u.args])
     ==
   ;<  [mire=wire mine=sign-arvo]  bind:m  take-sign-arvo
@@ -43,7 +43,7 @@
     %-  send-raw-card
     :*  %pass  /send-mailchimp-email/(scot %p ship.u.args)
         %arvo  %k  %fard
-        %bark  %mailchimp-send-template  %noun
+        %garden  %mailchimp-send-template  %noun
         !>(`[mandrill-api-key.u.args (trip email) "landscape-weekly-digest" (template-vars ship.u.args carpet.u.args)])
     ==
   ;<  [wimp=wire simp=sign-arvo]  bind:m  take-sign-arvo
