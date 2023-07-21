@@ -41,7 +41,7 @@ const groups: Record<string, Group> = {
     link: '/apps/groups/groups/~bitpyx-dildus/tlon-support',
   },
   tlonPublic: {
-    title: 'Tlon Public',
+    title: 'Tlon Local',
     icon: 'https://sfo3.digitaloceanspaces.com/zurbit-images/dovsem-bornyl/2022.6.16..19.11.20-flooring.jpeg',
     color: 'bg-yellow-500',
     link: '/apps/groups/groups/~nibset-napwyn/tlon',
