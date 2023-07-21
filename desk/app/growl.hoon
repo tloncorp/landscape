@@ -6,7 +6,7 @@
 +$  versioned-state
   $%  state-0
   ==
-+$  state-0  [%0 enabled=? bark-host=ship]
++$  state-0  [%0 enabled=_| bark-host=_~rilfet-palsum]
 --
 ::
 ::  This agent should eventually go into landscape
