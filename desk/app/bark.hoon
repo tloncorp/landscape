@@ -1,12 +1,27 @@
+::  bark: gathers summaries from ships, sends emails to their owners
+::
+::    general flow is that bark gets configured with api keys and recipient
+::    ships. on-demand, bark asks either all or a subset of recipients for
+::    an activity summary (through the growl agent on their ships), and upon
+::    receiving responses, uses the mailchimp api to upload the received
+::    deets for that ship, and/or triggers an email send.
+::
 /-  hark
 /+  default-agent, verb, dbug
 ::
 |%
 +$  card  card:agent:gall
-+$  versioned-state
-  $%  state-0
++$  state-0
+  $:  %0
+      api=[tlon=@t mailchimp=[key=@t list-id=@t]]
+      recipients=(set ship)
   ==
-+$  state-0  [%0 tlon-api-key=tape mailchimp-api-key=tape recipients=(set ship)]
+::
+++  next-timer
+  |=  now=@da
+  ::  west-coast midnights for minimal ameri-centric disruption
+  %+  add  ~d1.h7
+  (sub now (mod now ~d1))
 --
 ::
 =|  state-0
@@ -17,16 +32,34 @@
 |_  =bowl:gall
 +*  this  .
     def   ~(. (default-agent this %.n) bowl)
-++  on-init  `this
+++  on-init
+  ^-  (quip card _this)
+  :_  this
+  [%pass /fetch %arvo %b %wait (next-timer now.bowl)]~
+::
+++  on-arvo
+  |=  [=wire sign=sign-arvo]
+  ^-  (quip card _this)
+  ?>  =(/fetch wire)
+  ?>  ?=(%wake +<.sign)
+  =^  caz  this  (on-poke %bark-generate-summaries !>(~))
+  :_  this
+  :_  caz
+  [%pass /fetch %arvo %b %wait (next-timer now.bowl)]
+::
 ++  on-poke
   |=  [=mark =vase]
   ^-  (quip card _this)
   ?+  mark  (on-poke:def mark vase)
+      %noun
+    =+  !<([m=@ n=*] vase)
+    $(mark m, vase (need (slew 3 vase)))
+  ::
       %set-tlon-api-key
-    `this(tlon-api-key !<(tape vase))
+    `this(tlon.api !<(@t vase))
     ::
       %set-mailchimp-api-key
-    `this(mailchimp-api-key !<(tape vase))
+    `this(mailchimp.api !<([key=@t list=@t] vase))
     ::
       %bark-add-recipient
     =+  !<(=ship vase)
@@ -58,14 +91,22 @@
     [%pass /request-summary %agent [ship %growl] %poke %growl-summarize !>(now.bowl)]
     ::
       %bark-receive-summary
-    =/  result  !<((unit [requested=time =carpet:hark]) vase)
+    =/  result
+      !<  %-  unit
+          $:  requested=time
+          $=  summary
+          ::NOTE  see also /lib/summarize
+          $%  [%life active=[s=@ud r=@ud g=@t] inactive=[d=@ud c=@ud g=@t c=@t]]
+          ==  ==
+      vase
     ?~  result
       `this(recipients (~(del in recipients) src.bowl))
+    ::TODO  maybe drop the result (or re-request) if the timestamp is too old?
     :_  this
-    :~  :*  %pass  /mail-hosted-users/(scot %p src.bowl)/(scot %da requested.u.result)
+    :~  :*  %pass  /save-summary/(scot %p src.bowl)/(scot %da requested.u.result)
         %arvo  %k  %fard
-        %bark  %mail-hosted-user  %noun
-        !>(`[tlon-api-key mailchimp-api-key src.bowl carpet.u.result])
+        %garden  %save-summary  %noun
+        !>(`[tlon.api mailchimp.api src.bowl summary.u.result])
       ==
     ==
   ==
@@ -81,11 +122,7 @@
 ++  on-load
   |=  old-state=vase
   ^-  (quip card _this)
-  =/  old  !<(versioned-state old-state)
-  ?-  -.old
-      %0
-    `this(state old)
-  ==
-++  on-arvo  on-arvo:def
+  =/  old  !<(state-0 old-state)
+  `this(state old)
 ++  on-peek  on-peek:def
 --
