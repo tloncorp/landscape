@@ -1,4 +1,4 @@
-/-  hark, settings
+/-  settings
 /+  summarize, default-agent, verb, dbug
 ::
 |%

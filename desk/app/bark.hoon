@@ -6,7 +6,6 @@
 ::    receiving responses, uses the mailchimp api to upload the received
 ::    deets for that ship, and/or triggers an email send.
 ::
-/-  hark
 /+  default-agent, verb, dbug
 ::
 |%

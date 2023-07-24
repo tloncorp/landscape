@@ -1,6 +1,6 @@
 ::  summarize: utilities for summarizing groups/chat state in various ways
 ::
-/-  chat, hark, groups
+/-  chat, groups
 ::
 |_  [our=@p now=@da]
 ::  +range: period of time to summarize over
