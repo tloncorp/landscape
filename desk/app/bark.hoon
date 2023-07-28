@@ -113,7 +113,8 @@
 ++  on-agent  on-agent:def
 ++  on-fail
   |=  [=term =tang]
-  (mean ':sub +on-fail' term tang)
+  %-  (slog 'bark: on-fail' term tang)
+  [~ this]
 ++  on-leave
   |=  =path
   `this
