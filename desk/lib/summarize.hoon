@@ -86,14 +86,15 @@
   ::      group. simply skip past it and try the next one...
   =+  .^  =groups:groups
         %gx
-        =-  ~&  [%scrying -]  -
         (scry-path %groups /groups/groups)
       ==
   |-
   ?~  faz  ['???' '???']  ::TODO  better copy
+  ~|  i.faz
   ?.  (~(has by groups) g.i.faz)
     $(faz t.faz)
   =/  =group:^groups  (~(got by groups) g.i.faz)
-  :-  title.meta.group
-  title.meta:(~(got by channels.group) %chat c.i.faz)
+  ?~  chat=(~(get by channels.group) %chat c.i.faz)
+    $(faz t.faz)
+  [title.meta.group title.meta.u.chat]
 --
