@@ -3,7 +3,7 @@
 ::    crashes on failure. on success, produces the result message from the
 ::    -mailchimp-update-merge-fields thread.
 ::
-/-  spider, hark
+/-  spider
 /+  *strandio
 =,  strand=strand:spider
 =,  dejs:format
