@@ -39,12 +39,20 @@
 ++  on-arvo
   |=  [=wire sign=sign-arvo]
   ^-  (quip card _this)
-  ?>  =(/fetch wire)
-  ?>  ?=(%wake +<.sign)
-  =^  caz  this  (on-poke %bark-generate-summaries !>(~))
-  :_  this
-  :_  caz
-  [%pass /fetch %arvo %b %wait (next-timer now.bowl)]
+  ?+  wire  ~|([%strange-wire wire] !!)
+      [%fetch ~]
+    ?>  ?=(%wake +<.sign)
+    =^  caz  this  (on-poke %bark-generate-summaries !>(~))
+    :_  this
+    :_  caz
+    [%pass /fetch %arvo %b %wait (next-timer now.bowl)]
+  ::
+      [%save-summary @ @ ~]
+    ?>  ?=(%arow +<.sign)
+    ?:  ?=(%& -.p.sign)  [~ this]
+    %-  (slog 'bark: failed to save summary' p.p.sign)
+    [~ this]
+  ==
 ::
 ++  on-poke
   |=  [=mark =vase]
