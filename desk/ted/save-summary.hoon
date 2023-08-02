@@ -35,7 +35,8 @@
 ::
 =/  [%khan %arow %.y %noun vs=vase]  mine
 =+  !<(mail=(unit cord) vs)
-?>  ?=(^ mail)
+?~  mail
+  (pure:m !>('no-mail'))
 ;<  ~  bind:m
   %-  send-raw-card
   :*  %pass  /update-merge-fields/(scot %p ship.args)
