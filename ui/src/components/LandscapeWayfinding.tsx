@@ -30,9 +30,9 @@ const groups: Record<string, Group> = {
     link: '/apps/groups/groups/~natnex-ronret/door-link',
   },
   tlonPublic: {
-    title: 'Tlon Public',
+    title: 'Tlon Local',
     description: 'A place to ask for help',
-    icon: 'https://sfo3.digitaloceanspaces.com/zurbit-images/dovsem-bornyl/2022.6.16..19.11.20-flooring.jpeg',
+    icon: 'https://nyc3.digitaloceanspaces.com/fabled-faster/fabled-faster/2023.4.06..02.45.31-bg.jpg',
     color: 'bg-yellow-500',
     link: '/apps/groups/groups/~nibset-napwyn/tlon',
   },

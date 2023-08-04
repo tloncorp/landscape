@@ -13,7 +13,6 @@ import { TooltipProvider } from '@radix-ui/react-tooltip';
 import { ErrorBoundary } from 'react-error-boundary';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import { Grid } from './pages/Grid';
-import useDocketState from './state/docket';
 import { PermalinkRoutes } from './pages/PermalinkRoutes';
 import useKilnState from './state/kiln';
 import useContactState from './state/contact';
@@ -23,6 +22,7 @@ import { useBrowserId, useLocalState } from './state/local';
 import { ErrorAlert } from './components/ErrorAlert';
 import { useErrorHandler } from './logic/useErrorHandler';
 import useSchedulerStore, { useScheduler } from './state/scheduler';
+import bootstrap from './state/bootstrap';
 
 const getNoteRedirect = (path: string) => {
   if (path.startsWith('/desk/')) {
@@ -91,11 +91,7 @@ const AppRoutes = () => {
     handleError(() => {
       window.name = 'landscape';
 
-      const { fetchDefaultAlly, fetchAllies, fetchCharges } =
-        useDocketState.getState();
-      fetchDefaultAlly();
-      fetchCharges();
-      fetchAllies();
+      bootstrap();
 
       const { initializeKiln } = useKilnState.getState();
       initializeKiln();

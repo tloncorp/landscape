@@ -94,7 +94,9 @@ export function isColor(color: string): boolean {
 export const makeBrowserNotification = (yarn: Yarn) => {
   const rope = yarn.rope;
   // need to capitalize desk name
-  const app = rope?.desk.slice(0, 1).toUpperCase() + rope?.desk.slice(1);
+  const app = rope
+    ? rope?.desk.slice(0, 1).toUpperCase() + rope?.desk.slice(1)
+    : '';
   const { con } = yarn;
   const ship = con.find(isYarnShip)?.ship || '';
   const emph = con.find(isYarnEmph)?.emph || '';

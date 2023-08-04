@@ -89,78 +89,93 @@ export const StoragePrefs = () => {
           <label className="font-semibold" htmlFor="endpoint">
             Endpoint<span title="Required field">*</span>
           </label>
-          <input
-            disabled={!loaded}
-            required
-            id="endpoint"
-            type="url"
-            autoCorrect="off"
-            defaultValue={s3.credentials?.endpoint}
-            {...register('endpoint', { required: true })}
-            className="input default-ring bg-gray-50"
-          />
+          <div className="relative">
+            <input
+              disabled={!loaded}
+              required
+              id="endpoint"
+              type="url"
+              autoCorrect="off"
+              defaultValue={s3.credentials?.endpoint}
+              {...register('endpoint', { required: true })}
+              className="input default-ring bg-gray-50"
+            />
+            {!loaded && <Spinner className="absolute top-1 right-2" />}
+          </div>
         </div>
         <div className="mb-8 flex flex-col space-y-2">
           <label className="font-semibold" htmlFor="key">
             Access Key ID<span title="Required field">*</span>
           </label>
-          <input
-            disabled={!loaded}
-            required
-            id="key"
-            type="text"
-            autoCorrect="off"
-            spellCheck="false"
-            defaultValue={s3.credentials?.accessKeyId}
-            {...register('accessId', { required: true })}
-            className="input default-ring bg-gray-50"
-          />
+          <div className="relative">
+            <input
+              disabled={!loaded}
+              required
+              id="key"
+              type="text"
+              autoCorrect="off"
+              spellCheck="false"
+              defaultValue={s3.credentials?.accessKeyId}
+              {...register('accessId', { required: true })}
+              className="input default-ring bg-gray-50"
+            />
+            {!loaded && <Spinner className="absolute top-1 right-2" />}
+          </div>
         </div>
         <div className="mb-8 flex flex-col space-y-2">
           <label className="font-semibold" htmlFor="secretAccessKey">
             Secret Access Key<span title="Required field">*</span>
           </label>
-          <input
-            disabled={!loaded}
-            required
-            id="secretAccessKey"
-            type="text"
-            autoCorrect="off"
-            spellCheck="false"
-            defaultValue={s3.credentials?.secretAccessKey}
-            {...register('accessSecret', { required: true })}
-            className="input default-ring bg-gray-50"
-          />
+          <div className="relative">
+            <input
+              disabled={!loaded}
+              required
+              id="secretAccessKey"
+              type="text"
+              autoCorrect="off"
+              spellCheck="false"
+              defaultValue={s3.credentials?.secretAccessKey}
+              {...register('accessSecret', { required: true })}
+              className="input default-ring bg-gray-50"
+            />
+            {!loaded && <Spinner className="absolute top-1 right-2" />}
+          </div>
         </div>
         <div className="mb-8 flex flex-col space-y-2">
           <label className="font-semibold" htmlFor="region">
             Region<span title="Required field">*</span>
           </label>
-          <input
-            disabled={!loaded}
-            required
-            id="region"
-            type="text"
-            autoCorrect="off"
-            defaultValue={s3.configuration?.region}
-            {...register('region', { required: true })}
-            className="input default-ring bg-gray-50"
-          />
+          <div className="relative">
+            <input
+              disabled={!loaded}
+              required
+              id="region"
+              type="text"
+              autoCorrect="off"
+              defaultValue={s3.configuration?.region}
+              {...register('region', { required: true })}
+              className="input default-ring bg-gray-50"
+            />
+            {!loaded && <Spinner className="absolute top-1 right-2" />}
+          </div>
         </div>
         <div className="mb-8 flex flex-col space-y-2">
           <label className="font-semibold" htmlFor="bucket">
             Bucket Name<span title="Required field">*</span>
           </label>
-          <input
-            disabled={!loaded}
-            required
-            id="bucket"
-            type="text"
-            autoCorrect="off"
-            defaultValue={s3.configuration.currentBucket}
-            {...register('bucket', { required: true })}
-            className="input default-ring bg-gray-50"
-          />
+          <div className="relative">
+            <input
+              disabled={!loaded}
+              required
+              id="bucket"
+              type="text"
+              autoCorrect="off"
+              defaultValue={s3.configuration.currentBucket}
+              {...register('bucket', { required: true })}
+              className="input default-ring bg-gray-50"
+            />
+            {!loaded && <Spinner className="absolute top-1 right-2" />}
+          </div>
         </div>
         <Button
           type="submit"
