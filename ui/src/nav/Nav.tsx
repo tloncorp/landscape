@@ -33,6 +33,8 @@ import { Cross } from '../components/icons/Cross';
 import GetApps from './GetApps';
 import LandscapeWayfinding from '../components/LandscapeWayfinding';
 import { useCalm } from '../state/settings';
+import { isHosted } from '@/logic/utils';
+import TlonIcon from '@/components/icons/TlonIcon';
 
 export interface MatchItem {
   url: string;
@@ -112,11 +114,25 @@ export const SystemPrefsLink = ({
   );
 };
 
+export const HostingLink = () => {
+  if (isHosted) {
+    return (
+      <Link
+        to="/system-preferences/hosting"
+        className="rounded-lg bg-gray-50 p-1.5"
+      >
+        <TlonIcon className="h-6 w-6 text-gray-400" />
+      </Link>
+    );
+  }
+  return <></>;
+};
+
 export const GetAppsLink = () => {
   return (
     <Link
       to="/get-apps"
-      className="flex h-9 w-[125px] items-center justify-center space-x-2 rounded-lg bg-blue-soft px-3 py-2.5"
+      className="flex h-9 w-[125px] items-center justify-center space-x-2 rounded-lg bg-blue-soft px-3 py-2.5 dark:bg-blue-100"
     >
       <span className="whitespace-nowrap font-semibold text-blue">
         Get Urbit Apps
@@ -169,6 +185,7 @@ export const Nav: FunctionComponent = () => {
           navOpen={isOpen}
           notificationsOpen={menu === 'notifications'}
         />
+        <HostingLink />
         <GetAppsLink />
         {!disableWayfinding && <LandscapeWayfinding className="sm:hidden" />}
       </Portal.Root>
