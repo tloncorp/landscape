@@ -13,6 +13,9 @@ import { differenceInDays, endOfToday, format } from 'date-fns';
 
 export const useMockData = import.meta.env.MODE === 'mock';
 
+export const isHosted =
+  import.meta.env.DEV || window.location.hostname.endsWith('.tlon.network');
+
 export async function fakeRequest<T>(data: T, time = 300): Promise<T> {
   return new Promise((resolve) => {
     setTimeout(() => {
