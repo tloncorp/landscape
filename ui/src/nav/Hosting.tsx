@@ -15,7 +15,7 @@ export const Hosting = () => {
         <Button
           variant="primary"
           as="a"
-          href="https://tlon.network/login"
+          href="https://tlon.network/dashboard"
           target="_blank"
         >
           Open Service Account Dashboard
