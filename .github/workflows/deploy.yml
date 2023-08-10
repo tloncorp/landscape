@@ -7,7 +7,7 @@ on:
         required: false
         default: master
         description: Enter the tag to deploy
-      target
+      target:
         type: string
         required: false
         default: wannec-dozzod-marnus
