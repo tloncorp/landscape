@@ -174,11 +174,9 @@
   =^  cards  state
     ?+  path  (on-watch:def path)
         [%http-response *]
-      ?>  (team:title [our src]:bowl)
       `state
     ::
         [%charges ~]
-      ?>  (team:title [our src]:bowl)
       `state
     ::
         [%glob @ @ ~]

@@ -18,7 +18,7 @@
     header-list=['Content-Type'^'application/json' ~]
     ^=  body
     %-  some  %-  as-octt:mimes:html
-    %-  en-json:html
+    %-  en:json:html
     %-  pairs:enjs:format
       :~  ['key' s+(crip api-key)]
     ==
