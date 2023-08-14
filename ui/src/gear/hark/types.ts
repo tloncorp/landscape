@@ -21,11 +21,11 @@ export interface YarnButton {
   handler: string;
 }
 
-export interface YarnContentShip {
+interface YarnContentShip {
   ship: string;
 }
 
-export interface YarnContentEmphasis {
+interface YarnContentEmphasis {
   emph: string;
 }
 
@@ -89,9 +89,27 @@ export interface HarkSawRope {
 }
 
 export type HarkAction = HarkAddYarn | HarkSawSeam | HarkSawRope;
+export type HarkAction1 = HarkAddNewYarn | HarkAction;
 
 export interface HarkUpdate {
   yarns: Yarns;
   seam: Seam;
   threads: Threads;
+}
+
+export interface NewYarn extends Omit<Yarn, 'id' | 'time'> {
+  all: boolean;
+  desk: boolean;
+}
+
+export interface HarkAddNewYarn {
+  'new-yarn': NewYarn;
+}
+
+export interface Skein {
+  time: number;
+  count: number;
+  shipCount: number;
+  top: Yarn;
+  unread: boolean;
 }

@@ -2,22 +2,21 @@ import React, { ReactComponentElement, useCallback } from 'react';
 import cn from 'classnames';
 import { format } from 'date-fns';
 import _ from 'lodash';
-import useHarkState from '../../state/hark';
-import { pluralize, getAppName } from '../../state/util';
-import { isYarnShip, Rope, YarnContent } from '../../state/hark-types';
+import { pluralize, getAppName } from '@/logic/utils';
+import { isYarnShip, Rope, Skein, YarnContent } from '@/gear';
 import { useCharge } from '../../state/docket';
 import { Groups } from './groups';
-import { Bin } from './useNotifications';
 import { Button } from '../../components/Button';
 import { Avatar } from '../../components/Avatar';
 import { ShipName } from '../../components/ShipName';
 import { DeskLink } from '../../components/DeskLink';
 import { DocketImage } from '../../components/DocketImage';
 import GroupAvatar from '../../components/GroupAvatar';
-import { Charge } from '@urbit/api';
+import { Charge } from '@/gear';
+import { useSawRopeMutation } from '@/state/hark';
 
 interface NotificationProps {
-  bin: Bin;
+  bin: Skein;
   groups?: Groups;
 }
 
@@ -152,7 +151,35 @@ const NotificationContent: React.FC<NotificationContent> = ({
 
   function renderContent(c: YarnContent) {
     if (typeof c === 'string') {
-      return <span key={c}>{c}</span>;
+      const PATP_REGEX = /(~[a-z0-9-]+)/i;
+      const URL_REGEX = /(http(s?):\/\/[^\s]+)/i;
+      const COMBO_REGEX = /(~[a-z0-9-]+|https?:\/\/[^\s]+)/i;
+      const parts = c.split(COMBO_REGEX);
+      return (
+        <>
+          {parts.map((part, index) => {
+            if (part.match(URL_REGEX)) {
+              return (
+                <span className="break-all" key={index}>
+                  {part}
+                </span>
+              );
+            }
+            if (part.match(PATP_REGEX)) {
+              return (
+                <ShipName
+                  key={index}
+                  name={part}
+                  className="font-semibold text-gray-800"
+                  showAlias={true}
+                />
+              );
+            } else {
+              return <span key={index}>{part}</span>;
+            }
+          })}
+        </>
+      );
     }
 
     if ('ship' in c) {
@@ -185,7 +212,7 @@ const NotificationContent: React.FC<NotificationContent> = ({
   if (isReply) {
     return (
       <>
-        <p className="mb-2 leading-5 text-gray-400 line-clamp-2">
+        <p className="mb-2 leading-5 text-gray-400 line-clamp-1">
           {_.map(_.slice(content, 0, 4), (c: YarnContent) => renderContent(c))}
         </p>
         <p className="leading-5 text-gray-800 line-clamp-2">
@@ -204,28 +231,36 @@ const NotificationContent: React.FC<NotificationContent> = ({
 
 export default function Notification({ bin, groups }: NotificationProps) {
   const moreCount = bin.count;
-  const rope = bin.topYarn?.rope;
-  const charge = useCharge(rope?.desk);
+  const { rope, con, wer, but } = bin.top;
+  const charge = useCharge(rope?.desk ?? '');
   const app = getAppName(charge);
+  const { mutate: sawRope } = useSawRopeMutation();
+
+  if (!rope) {
+    return null;
+  }
+
   const type = getNotificationType(rope);
-  const ship = bin.topYarn?.con.find(isYarnShip)?.ship;
+  const ship = con.find(isYarnShip)?.ship;
 
   const onClick = useCallback(() => {
     console.log('clearing notification', rope);
-    useHarkState.getState().sawRope(rope);
+    sawRope({ rope });
   }, [rope]);
 
   return (
     <div
       className={cn(
         'flex space-x-3 rounded-xl p-3 text-gray-600 transition-colors duration-1000',
-        bin.unread ? 'bg-blue-50 mix-blend-multiply dark:mix-blend-screen' : 'bg-white'
+        bin.unread
+          ? 'bg-blue-50 mix-blend-multiply dark:mix-blend-screen'
+          : 'bg-white'
       )}
     >
       <DeskLink
         onClick={onClick}
-        to={`?grid-note=${encodeURIComponent(bin.topYarn?.wer || '')}`}
-        desk={bin.topYarn?.rope.desk || ''}
+        to={`?grid-note=${encodeURIComponent(wer || '')}`}
+        desk={rope.desk || ''}
         className="flex flex-1 space-x-3"
       >
         <div className="relative flex-none self-start">
@@ -245,7 +280,7 @@ export default function Notification({ bin, groups }: NotificationProps) {
             app={app}
           />
           <div className="">
-            <NotificationContent type={type} content={bin.topYarn?.con} />
+            <NotificationContent type={type} content={con} />
           </div>
           {moreCount > 1 ? (
             <div>
@@ -254,9 +289,7 @@ export default function Notification({ bin, groups }: NotificationProps) {
               </p>
             </div>
           ) : null}
-          {bin.topYarn.but?.title && (
-            <Button variant="secondary">{bin.topYarn.but.title}</Button>
-          )}
+          {but?.title && <Button variant="secondary">{but.title}</Button>}
         </div>
       </DeskLink>
       <div className="flex-none">

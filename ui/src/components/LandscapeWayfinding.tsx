@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import * as Dropdown from '@radix-ui/react-dropdown-menu';
-import { setCalmSetting } from '../state/settings';
 import { Dialog, DialogContent } from './Dialog';
 import { useCharges } from '../state/docket';
 import { GroupLink } from './GroupLink';
 import WayfindingAppLink from './WayfindingAppLink';
+import { usePutEntryMutation } from '@/state/settings';
 
 interface Group {
   title: string;
@@ -30,9 +30,9 @@ const groups: Record<string, Group> = {
     link: '/apps/groups/groups/~natnex-ronret/door-link',
   },
   tlonPublic: {
-    title: 'Tlon Public',
+    title: 'Tlon Local',
     description: 'A place to ask for help',
-    icon: 'https://sfo3.digitaloceanspaces.com/zurbit-images/dovsem-bornyl/2022.6.16..19.11.20-flooring.jpeg',
+    icon: 'https://nyc3.digitaloceanspaces.com/fabled-faster/fabled-faster/2023.4.06..02.45.31-bg.jpg',
     color: 'bg-yellow-500',
     link: '/apps/groups/groups/~nibset-napwyn/tlon',
   },
@@ -124,9 +124,13 @@ export default function LandscapeWayfinding({
   className?: string;
 }) {
   const [showModal, setShowModal] = useState(false);
+  const { mutate } = usePutEntryMutation({
+    bucket: 'calmEngine',
+    key: 'disableWayfinding',
+  });
 
   const handleHide = () => {
-    setCalmSetting('disableWayfinding', true);
+    mutate({ val: true });
   };
 
   return (

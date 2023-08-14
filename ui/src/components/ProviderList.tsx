@@ -1,9 +1,10 @@
 import React, { MouseEvent, useCallback } from 'react';
-import { Contact, Provider } from '@urbit/api';
+import { Provider } from '@/gear';
 import classNames from 'classnames';
 import { MatchItem } from '../nav/Nav';
 import { useRecentsStore } from '../nav/search/Home';
 import { ProviderLink, ProviderLinkProps } from './ProviderLink';
+import { Contact } from '@/gear';
 
 export type ProviderListProps = {
   providers: ({ shipName: string } & Contact)[];
@@ -40,11 +41,20 @@ export const ProviderList = ({
 
   return (
     <ul
-      className={classNames('-mx-2', size !== 'default' ? 'space-y-4' : 'space-y-8', listClass)}
+      className={classNames(
+        '-mx-2',
+        size !== 'default' ? 'space-y-4' : 'space-y-8',
+        listClass
+      )}
       aria-labelledby={labelledBy}
     >
       {providers.map((p) => (
-        <li key={p.shipName} id={p.shipName} role="option" aria-selected={selected(p)}>
+        <li
+          key={p.shipName}
+          id={p.shipName}
+          role="option"
+          aria-selected={selected(p)}
+        >
           <ProviderLink
             {...props}
             size={size}

@@ -1,6 +1,12 @@
-import { darken, hsla, lighten, parseToHsla, readableColorIsBlack } from 'color2k';
+import {
+  darken,
+  hsla,
+  lighten,
+  parseToHsla,
+  readableColorIsBlack,
+} from 'color2k';
 import { useCurrentTheme } from '../state/local';
-import { getDarkColor } from '../state/util';
+import { getDarkColor } from '@/logic/utils';
 
 function bgAdjustedColor(color: string, darkBg: boolean): string {
   return darkBg ? lighten(color, 0.1) : darken(color, 0.1);
@@ -8,7 +14,12 @@ function bgAdjustedColor(color: string, darkBg: boolean): string {
 
 function getMenuColor(color: string, darkBg: boolean): string {
   const hslaColor = parseToHsla(color);
-  const satAdjustedColor = hsla(hslaColor[0], Math.max(0.2, hslaColor[1]), hslaColor[2], 1);
+  const satAdjustedColor = hsla(
+    hslaColor[0],
+    Math.max(0.2, hslaColor[1]),
+    hslaColor[2],
+    1
+  );
 
   return bgAdjustedColor(satAdjustedColor, darkBg);
 }
@@ -34,6 +45,6 @@ export const useTileColor = (color: string) => {
     menuColor: getMenuColor(tileColor, darkBg),
     suspendColor,
     suspendMenuColor: bgAdjustedColor(suspendColor, darkTheme),
-    lightText
+    lightText,
   };
 };

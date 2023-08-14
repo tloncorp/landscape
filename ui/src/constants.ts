@@ -1,3 +1,8 @@
+export const storageVersion = parseInt(
+  import.meta.env.VITE_STORAGE_VERSION,
+  10
+);
+
 export const SECTIONS = {
   SELECTS: 'Tlon Selects',
   PALS: 'Powered by Pals',
@@ -62,6 +67,15 @@ export const APPS = [
     desk: 'scooore',
   },
   {
+    title: "Trill",
+    description: "Twitter without limits, and much more",
+    color: '#FFD400',
+    link: '/apps/trill',
+    section: SECTIONS.PALS,
+    desk: 'trill',
+    source: '~dister-dozzod-sortug'
+  },
+  {
     title: 'Docs',
     description: 'User and developer documentation for Urbit apps',
     color: '#FFCF00',
@@ -78,7 +92,7 @@ export const APPS = [
     link: '/apps/quorom',
     section: SECTIONS.DEV,
     desk: 'quorum',
-    source: '~dister-dister-sidynm-ladrut',
+    source: '~dister-dister-sidnym-ladrut',
     image: 'https://ladrut.xyz/quorum/quorum-logo.png',
   },
   {

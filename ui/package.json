@@ -1,7 +1,10 @@
 {
   "name": "landscape",
-  "version": "0.0.0",
+  "version": "1.11.0",
   "private": true,
+  "engines": {
+    "node": "^16.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "mock": "vite --mode mock",
@@ -15,6 +18,8 @@
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.348.0",
+    "@aws-sdk/s3-request-presigner": "^3.348.0",
     "@fingerprintjs/fingerprintjs": "^3.3.3",
     "@radix-ui/react-checkbox": "^0.1.5",
     "@radix-ui/react-dialog": "^1.0.2",
@@ -25,11 +30,15 @@
     "@radix-ui/react-portal": "^0.0.15",
     "@radix-ui/react-radio-group": "^0.1.5",
     "@radix-ui/react-toggle": "^0.0.10",
+    "@radix-ui/react-tooltip": "^1.0.6",
+    "@tanstack/react-query": "^4.29.12",
+    "@tanstack/react-query-devtools": "^4.29.12",
+    "@tanstack/react-query-persist-client": "^4.29.12",
     "@tlon/sigil-js": "^1.4.4",
     "@tloncorp/mock-http-api": "^1.2.0",
     "@types/lodash": "^4.14.172",
-    "@urbit/api": "^2.2.0",
-    "@urbit/http-api": "^2.3.0",
+    "@urbit/aura": "^1.0.0",
+    "@urbit/http-api": "^2.4.5-debug",
     "big-integer": "^1.6.48",
     "browser-cookies": "^1.2.0",
     "classnames": "^2.3.1",
@@ -37,6 +46,7 @@
     "color2k": "^1.2.4",
     "date-fns": "^2.29.2",
     "fuzzy": "^0.1.3",
+    "idb-keyval": "^6.2.1",
     "immer": "^9.0.5",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
@@ -51,10 +61,10 @@
     "react-dom": "^17.0.2",
     "react-error-boundary": "^3.1.3",
     "react-hook-form": "^7.38.0",
-    "react-router-dom": "^5.2.0",
+    "react-router-dom": "^6.11.2",
+    "react-image-size": "^2.0.2",
     "slugify": "^1.6.0",
-    "urbit-ob": "^5.0.1",
-    "zustand": "^3.5.7"
+    "zustand": "^3.7.2"
   },
   "devDependencies": {
     "@tailwindcss/aspect-ratio": "^0.2.1",
@@ -65,10 +75,11 @@
     "@types/node": "^16.11.56",
     "@types/react": "^16.0.0",
     "@types/react-dom": "^16.0.0",
-    "@types/react-router-dom": "^5.1.8",
     "@typescript-eslint/eslint-plugin": "^4.26.1",
     "@typescript-eslint/parser": "^4.26.1",
-    "@urbit/vite-plugin-urbit": "^0.7.1",
+    "@urbit/vite-plugin-urbit": "^0.8.0",
+    "@vitejs/plugin-basic-ssl": "^1.0.1",
+    "@vitejs/plugin-react": "^2.2.0",
     "@vitejs/plugin-react-refresh": "^1.3.1",
     "autoprefixer": "^10.3.7",
     "eslint": "^7.28.0",
@@ -91,8 +102,7 @@
     "tailwindcss-theming": "^3.0.0-beta.3",
     "tailwindcss-touch": "^1.0.1",
     "typescript": "^4.7.4",
-    "vite": "^2.9.15",
-    "vite-plugin-html-config": "^1.0.5"
+    "vite": "^3.2.5"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [

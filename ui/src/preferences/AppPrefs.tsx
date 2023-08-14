@@ -1,12 +1,12 @@
 import React from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useCharge } from '../state/docket';
 import useKilnState, { usePike } from '../state/kiln';
-import { getAppName } from '../state/util';
+import { getAppName } from '@/logic/utils';
 import SourceSetter from '../components/SourceSetter';
 
-export const AppPrefs = ({ match }: RouteComponentProps<{ desk: string }>) => {
-  const { desk } = match.params;
+export const AppPrefs = () => {
+  const { desk = '' } = useParams<{ desk: string }>();
   const charge = useCharge(desk);
   const appName = getAppName(charge);
   const pike = usePike(desk);
@@ -14,7 +14,7 @@ export const AppPrefs = ({ match }: RouteComponentProps<{ desk: string }>) => {
   const { toggleSync } = useKilnState();
 
   return (
-    <div className="inner-section space-y-8 relative">
+    <div className="inner-section relative space-y-8">
       <SourceSetter
         appName={appName}
         title={`${appName} Settings`}

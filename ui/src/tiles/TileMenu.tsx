@@ -1,10 +1,10 @@
-import React, { ReactElement, useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
-import { Chad, chadIsRunning } from '@urbit/api';
-import useDocketState from '../state/docket';
-import { disableDefault, handleDropdownLink } from '../state/util';
+import { Chad, chadIsRunning } from '@/gear';
+import { useToggleDocketMutation } from '../state/docket';
+import { disableDefault, handleDropdownLink } from '@/logic/utils';
 import { useMedia } from '../logic/useMedia';
 
 export interface TileMenuProps {
@@ -43,7 +43,7 @@ export const TileMenu = ({
   className,
 }: TileMenuProps) => {
   const [open, setOpen] = useState(false);
-  const toggleDocket = useDocketState((s) => s.toggleDocket);
+  const { mutate: toggleDocket } = useToggleDocketMutation();
   const menuBg = { backgroundColor: menuColor };
   const linkOnSelect = useCallback(handleDropdownLink(setOpen), []);
   const active = chadIsRunning(chad);
@@ -105,7 +105,7 @@ export const TileMenu = ({
               </Item>
             )}
             {suspended && (
-              <Item onSelect={() => toggleDocket(desk)}>
+              <Item onSelect={() => toggleDocket({ desk })}>
                 <span className="block w-full px-4 py-3">Resume App</span>
               </Item>
             )}

@@ -1,4 +1,4 @@
-import { chadIsRunning, Pike, Treaty } from '@urbit/api';
+import { chadIsRunning, Pike, Treaty } from '@/gear';
 import clipboardCopy from 'clipboard-copy';
 import React, { FC, useCallback, useState } from 'react';
 import cn from 'classnames';
@@ -8,8 +8,12 @@ import { DialogClose, DialogContent, DialogTrigger } from './Dialog';
 import { DocketHeader } from './DocketHeader';
 import { Spinner } from './Spinner';
 import { PikeMeta } from './PikeMeta';
-import useDocketState, { ChargeWithDesk, useTreaty } from '../state/docket';
-import { getAppHref, getAppName } from '../state/util';
+import {
+  ChargeWithDesk,
+  useInstallDocketMutation,
+  useTreaty,
+} from '../state/docket';
+import { getAppHref, getAppName } from '@/logic/utils';
 import { addRecentApp } from '../nav/search/Home';
 import { TreatyMeta } from './TreatyMeta';
 
@@ -58,12 +62,14 @@ export const AppInfo: FC<AppInfoProps> = ({
   const publisher = pike?.sync?.ship ?? ship;
   const [copied, setCopied] = useState(false);
   const treaty = useTreaty(ship, desk);
+  const { mutate: installDocketMutation } = useInstallDocketMutation();
 
   const installApp = async () => {
     if (installStatus === 'installed') {
       return;
     }
-    await useDocketState.getState().installDocket(ship, desk);
+
+    installDocketMutation({ ship, desk });
   };
 
   const copyApp = useCallback(() => {
