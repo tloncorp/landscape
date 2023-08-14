@@ -23,7 +23,7 @@ rsync -avL $1 zod/work/glob
 hood "commit %work"
 dojo "-garden!make-glob %work /glob"
 
-gsutil cp zod/.urb/put/*.glob gs://bootstrap.urbit.org || true
+gsutil cp zod/.urb/put/*.glob gs://bootstrap.urbit.org
 hash=$(ls -1 -c zod/.urb/put | head -1 | sed "s/glob-\([a-z0-9\.]*\).glob/\1/")
 sed -i "s/glob\-[a-z0-9\.]*glob' *[a-z0-9\.]*\]/glob-$hash.glob' $hash]/g" $2
 
