@@ -78,6 +78,8 @@
       =/  =treaty  (treaty-from-docket:cc desk docket)
       =.  sovereign  (~(put by sovereign) desk treaty)
       :_  this
+      ?^  vips.treaty
+        [warp give]:so
       [publish warp give]:so
     ::
         %del
@@ -271,7 +273,21 @@
   |=  [=desk =docket:docket]
   =+  .^(=cass:clay %cw (scry:io desk /desk/docket))
   =+  .^(hash=@uv %cz (scry:io desk ~))
-  [our.bowl desk da+da.cass hash docket]
+  =-  [our.bowl desk - da+da.cass hash docket]
+  =,  clay
+  =/  perms  .^([r=dict w=dict] %cp (scry:io desk /))
+  =/  =_who:*real  who.rul.r.perms
+  =+   mod=mod.rul.r.perms
+  ?:  ?=(%black mod)  ~
+  =-  ?~  -  (sy ~[our.bowl])  -
+  ^-  crew
+  =;    crews
+    ?~  ships=p.who  crews
+    (~(uni in `crew`ships) crews)
+  ^-  crew
+  %+  roll  ~(val by q.who)
+  |=  [=crew all=crew]
+  (~(uni in all) crew)
 ::  +al: Side effects for allies
 ++  al
   |_  =ship

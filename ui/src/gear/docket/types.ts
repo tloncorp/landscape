@@ -50,6 +50,7 @@ export interface SuspendChad {
 export interface Treaty extends Docket {
   ship: string;
   desk: string;
+  vips: [ship: string];
   cass: Cass;
   hash: string;
 }

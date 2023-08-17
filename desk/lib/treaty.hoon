@@ -16,9 +16,17 @@
     %-  pairs
     :~  ship+s+(scot %p ship.t)
         desk+s+desk.t
+        vips+(vips `crew:clay`vips.t)
         cass+(case case.t)
         hash+s+(scot %uv hash.t)
     ==
+  ++  vips
+    |=  v=crew:clay
+    :-  %a
+    %+  turn  ~(tap in v)
+    |=  =^ship
+    ^-  json
+    s+(scot %p ship)
   ::
   ++  case
     |=  c=^case

@@ -82,6 +82,7 @@ export const AppInfo: FC<AppInfoProps> = ({
   }, [publisher, desk]);
 
   const installing = installStatus === 'installing';
+  const buttonText = treaty?.vips && treaty.vips.includes(window.ship) ? 'VIP' : 'Get App';
 
   if (!docket) {
     // TODO: maybe replace spinner with skeletons
@@ -103,12 +104,21 @@ export const AppInfo: FC<AppInfoProps> = ({
               href={getAppHref(docket.href)}
               target="_blank"
               rel="noreferrer"
-              onClick={() => addRecentApp(docket.desk)}
-            >
+              onClick={() => addRecentApp(docket.desk)}>
               Open App
             </PillButton>
           )}
-          {installStatus !== 'installed' && (
+          {(treaty?.vips && treaty?.vips.length > 0) && (
+            <PillButton
+              variant="secondary"
+              as="a"
+              href={getAppHref(docket.href)}
+              target="_blank"
+              rel="noreferrer">
+                Not Listed
+            </PillButton>
+          ) ||
+          installStatus !== 'installed' && (
             <Dialog.Root>
               <DialogTrigger asChild>
                 <PillButton variant="alt-primary" disabled={installing}>
@@ -117,9 +127,7 @@ export const AppInfo: FC<AppInfoProps> = ({
                       <Spinner />
                       <span className="sr-only">Installing...</span>
                     </>
-                  ) : (
-                    'Get App'
-                  )}
+                  ) : buttonText}
                 </PillButton>
               </DialogTrigger>
               <Dialog.Portal>
