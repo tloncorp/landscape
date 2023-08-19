@@ -82,7 +82,7 @@ export const AppInfo: FC<AppInfoProps> = ({
   }, [publisher, desk]);
 
   const installing = installStatus === 'installing';
-  const buttonText = treaty?.vips && treaty.vips.includes(window.ship) ? 'VIP' : 'Get App';
+  const buttonText = treaty?.signed ? 'Get Whitelisted App' : 'Get App';
 
   if (!docket) {
     // TODO: maybe replace spinner with skeletons
@@ -108,7 +108,7 @@ export const AppInfo: FC<AppInfoProps> = ({
               Open App
             </PillButton>
           )}
-          {(treaty?.vips && treaty?.vips.length > 0) && (
+          {!treaty?.signed && (
             <PillButton
               variant="secondary"
               as="a"

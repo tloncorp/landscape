@@ -6,7 +6,7 @@
 +$  card  card:agent:gall
 +$  state-0
   $:  treaties=(map [=ship =desk] treaty)
-      sovereign=(map desk treaty)
+      sovereign=(map desk pact)
       entente=alliance
       =allies:ally
       direct=(set [=ship =desk])
@@ -45,8 +45,8 @@
       %noun
     =+  ;;([%add =desk] q.vase)
     =/  =docket:docket  ~(get-docket so:cc desk)
-    =/  =treaty  (treaty-from-docket:cc desk docket)
-    =.  sovereign  (~(put by sovereign) desk treaty)
+    =/  =pact  (pact-from-docket:cc desk docket)
+    =.  sovereign  (~(put by sovereign) desk pact)
     `this
   ==
   ::
@@ -75,10 +75,10 @@
       ?.  =(our.bowl ship)  `this
       =*  so  ~(. so:cc desk)
       =/  =docket:docket  get-docket:so
-      =/  =treaty  (treaty-from-docket:cc desk docket)
-      =.  sovereign  (~(put by sovereign) desk treaty)
+      =/  =pact  (pact-from-docket:cc desk docket)
+      =.  sovereign  (~(put by sovereign) desk pact)
       :_  this
-      ?^  vips.treaty
+      ?^   crew.pact
         [warp give]:so
       [publish warp give]:so
     ::
@@ -100,7 +100,12 @@
     =/  =ship  (slav %p i.t.path)
     =*  desk   i.t.t.path
     ?:  =(our.bowl ship)
-      :_(this (fact-init:io (treaty:cg:cc (~(got by sovereign) desk)))^~)
+      =/  =pact  (~(got by sovereign) desk)
+      =.  signed.treaty.pact
+        ?~  crew.pact  %&
+        ?:  (~(has in crew.pact) our.bowl)  %|
+        (~(has in crew.pact) src.bowl)
+      :_(this (fact-init:io (treaty:cg:cc treaty.pact desk))^~)
     ?^  treat=(~(get by treaties) [ship desk])
       :_  this
       (fact-init:io (treaty:cg:cc u.treat))^~
@@ -140,8 +145,8 @@
     =/  allied
       %-  ~(gas by *(map [^ship desk] treaty))
       %+  skim  ~(tap by treaties)
-      |=  [ref=[^ship desk] =treaty]
-      (~(has in alliance) ref)
+      |=  [[=^ship =desk] =treaty]
+      (~(has in alliance) [ship desk])
     ``(treaty-update:cg:ca:cc %ini allied)
   ::
       [%x %treaty @ @ ~]
@@ -255,12 +260,11 @@
     =*  cage  r.u.riot
     ?.  =(%docket-0 p.cage)  `this
     =+  !<(=docket:docket q.cage)
-    =/  =treaty  (treaty-from-docket:cc desk docket)
+    =/  [=treaty =crew:clay]  (pact-from-docket:cc desk docket)
     =.  sovereign  (~(put by sovereign) desk treaty)
     =*  so  ~(. so:cc desk)
     :_(this [warp give]:so)
   --
-
 ::
 ++  on-fail  on-fail:def
 ++  on-leave  on-leave:def
@@ -269,17 +273,19 @@
 ++  io  ~(. agentio bowl)
 ++  pass  pass:io
 ::
-++  treaty-from-docket
+++  pact-from-docket
   |=  [=desk =docket:docket]
+  ^+  pact
   =+  .^(=cass:clay %cw (scry:io desk /desk/docket))
   =+  .^(hash=@uv %cz (scry:io desk ~))
-  =-  [our.bowl desk - da+da.cass hash docket]
+  =;    buds
+    :_  buds
+    [our.bowl desk %| da+da.cass hash docket]
   =,  clay
   =/  perms  .^([r=dict w=dict] %cp (scry:io desk /))
   =/  =_who:*real  who.rul.r.perms
   =+   mod=mod.rul.r.perms
-  ?:  ?=(%black mod)  ~
-  =-  ?~  -  (sy ~[our.bowl])  -
+  ?:  ?=(%black mod)  (sy ~[our.bowl])
   ^-  crew
   =;    crews
     ?~  ships=p.who  crews
