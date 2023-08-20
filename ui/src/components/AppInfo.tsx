@@ -16,6 +16,7 @@ import {
 import { getAppHref, getAppName } from '@/logic/utils';
 import { addRecentApp } from '../nav/search/Home';
 import { TreatyMeta } from './TreatyMeta';
+import { Attribute } from './Attribute';
 
 type InstallStatus = 'uninstalled' | 'installing' | 'installed';
 
@@ -40,6 +41,15 @@ function getInstallStatus(docket: App): InstallStatus {
   return 'uninstalled';
 }
 
+function PermissionStatus({ treaty }: { treaty: Treaty }) {
+  return (
+    <div className="mt-5 space-y-5 sm:mt-8 sm:space-y-8">
+      <Attribute title="Desk Permission Status" attr="signed" className="break-all">
+        {treaty?.signed ? 'Granted' : 'Not Granted'}
+      </Attribute>
+    </div>
+  );
+}
 function getRemoteDesk(docket: App, pike?: Pike, treatyInfoShip?: string) {
   if (pike && pike.sync) {
     return [pike.sync.ship, pike.sync.desk];
@@ -94,7 +104,7 @@ export const AppInfo: FC<AppInfoProps> = ({
   }
 
   return (
-    <div className={cn('text-black', className)}>
+    <div className={cn('text-black', className)} style={{ overflowY: 'auto', maxHeight: '100vh' }}>
       <DocketHeader docket={docket}>
         <div className="col-span-2 flex items-center space-x-4 md:col-span-1">
           {installStatus === 'installed' && (
@@ -111,10 +121,8 @@ export const AppInfo: FC<AppInfoProps> = ({
           {!treaty?.signed && (
             <PillButton
               variant="secondary"
-              as="a"
-              href={getAppHref(docket.href)}
-              target="_blank"
-              rel="noreferrer">
+              style={{ pointerEvents: 'none' }}
+              disabled>
                 Not Listed
             </PillButton>
           ) ||
@@ -150,7 +158,7 @@ export const AppInfo: FC<AppInfoProps> = ({
                       <Button variant="secondary">Cancel</Button>
                     </DialogClose>
                     <DialogClose asChild>
-                      <Button onClick={installApp}>
+                      <Button onClick={installApp} variant='alt-secondary'>
                         Get &ldquo;{getAppName(docket)}&rdquo;
                       </Button>
                     </DialogClose>
@@ -166,6 +174,12 @@ export const AppInfo: FC<AppInfoProps> = ({
         </div>
       </DocketHeader>
       <div className="space-y-6">
+      {treaty && (
+        <>
+          <hr className="-mx-5 border-gray-50 sm:-mx-8" />
+          <PermissionStatus treaty={treaty} />
+        </>
+      )}
         {pike ? (
           <>
             <hr className="-mx-5 border-gray-50 sm:-mx-8" />

@@ -103,9 +103,10 @@
       =/  =pact  (~(got by sovereign) desk)
       =.  signed.treaty.pact
         ?~  crew.pact  %&
-        ?:  (~(has in crew.pact) our.bowl)  %|
-        (~(has in crew.pact) src.bowl)
-      :_(this (fact-init:io (treaty:cg:cc treaty.pact desk))^~)
+        ?:  (~(has in `crew:clay`crew.pact) our.bowl)  %|
+        (~(has in `crew:clay`crew.pact) src.bowl)
+      :_  this
+      (fact-init:io (treaty:cg:cc treaty.pact))^~
     ?^  treat=(~(get by treaties) [ship desk])
       :_  this
       (fact-init:io (treaty:cg:cc u.treat))^~
@@ -218,9 +219,15 @@
         %kick
       :_  this
       ?:  =(our.bowl ship)  ~
+      :: XX this triggers a kick-rewatch loop if the 
+      :: treaty on the other side is a treaty-0
       ~[watch:tr]
     ::
         %watch-ack
+      :: XX this should not trigger a kick-rewatch loop
+      :: but it does - gall does not register the mark 
+      :: conversion attempt as a failure and does not send 
+      :: a nack
       ?~  p.sign  `this
       =:  treaties  (~(del by treaties) ship desk)
           direct    (~(del in direct) ship desk)
@@ -229,7 +236,7 @@
       [gone:tr this]
     ::
         %fact
-      ?.  =(%treaty-0 p.cage.sign)  `this
+      ?.  =(%treaty-1 p.cage.sign)  `this
       =+  !<(=treaty q.cage.sign)
       ?>  =([ship desk] [ship desk]:treaty)
       =.  treaties  (~(put by treaties) [ship desk]:treaty treaty)
@@ -261,7 +268,7 @@
     ?.  =(%docket-0 p.cage)  `this
     =+  !<(=docket:docket q.cage)
     =/  [=treaty =crew:clay]  (pact-from-docket:cc desk docket)
-    =.  sovereign  (~(put by sovereign) desk treaty)
+    =.  sovereign  (~(put by sovereign) desk [treaty crew])
     =*  so  ~(. so:cc desk)
     :_(this [warp give]:so)
   --
@@ -275,7 +282,7 @@
 ::
 ++  pact-from-docket
   |=  [=desk =docket:docket]
-  ^+  pact
+  ^-  pact
   =+  .^(=cass:clay %cw (scry:io desk /desk/docket))
   =+  .^(hash=@uv %cz (scry:io desk ~))
   =;    buds
@@ -306,7 +313,7 @@
   |%
   ++  ally-update      |=(=update:ally ally-update-0+!>(update))
   ++  alliance-update  |=(=update:alliance alliance-update-0+!>(update))
-  ++  treaty  |=(t=^treaty treaty-0+!>(t))
+  ++  treaty  |=(t=^treaty treaty-1+!>(t))
   ++  treaty-update  |=(u=update:^treaty treaty-update-0+!>(u))
   --
 ::  +ca: Card construction
@@ -323,7 +330,7 @@
   ++  pass  ~(. ^pass path)
   ++  path  /treaty/(scot %p ship)/[desk]
   ++  dock  [ship dap.bowl]
-  ++  watch  (watch:pass dock path)
+  ++  watch  [%pass path %agent dock %watch-as %treaty-1 path]
   ++  watching  (~(has by wex.bowl) [path dock])
   ++  safe-watch  `(unit card)`?:(|(watching =(our.bowl ship)) ~ `watch)
   ++  leave  (leave:pass dock)
@@ -356,9 +363,9 @@
     ::  are handled in this core, not as "normal"/foreign treaties.
     ::
     ^-  (list card)
-    =/  t=treaty  (~(got by sovereign) desk)
-    :~  (fact:io (treaty-update:cg %add t) /treaties ~)
-        (fact:io (treaty:cg t) path ~)
+    =/  =pact  (~(got by sovereign) desk)
+    :~  (fact:io (treaty-update:cg %add treaty.pact) /treaties ~)
+        (fact:io (treaty:cg treaty.pact) path ~)
     ==
   ++  publish
     (poke-our:pass %hood kiln-permission+!>([desk / &]))
