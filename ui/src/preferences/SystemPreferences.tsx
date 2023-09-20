@@ -23,8 +23,9 @@ import { DocketImage } from '../components/DocketImage';
 import { ErrorAlert } from '../components/ErrorAlert';
 import { useIsMobile, useMedia } from '../logic/useMedia';
 import { LeftArrow } from '../components/icons/LeftArrow';
-import { getAppName } from '@/logic/utils';
+import { getAppName, isHosted } from '@/logic/utils';
 import { Help } from '../nav/Help';
+import { Hosting } from '../nav/Hosting';
 import TlonIcon from '../components/icons/TlonIcon';
 import HelpIcon from '../components/icons/HelpIcon';
 import LogoutIcon from '../components/icons/LogoutIcon';
@@ -123,6 +124,15 @@ export const SystemPreferences = () => {
                     <Bullet className="ml-auto h-5 w-5 text-orange-500" />
                   )}
                 </SystemPreferencesSection>
+                {isHosted && (
+                  <SystemPreferencesSection
+                    to="hosting"
+                    active={matchSub('hosting')}
+                  >
+                    <TlonIcon className="mr-3 h-6 w-6 rounded-md text-gray-600" />
+                    Tlon Hosting
+                  </SystemPreferencesSection>
+                )}
                 <SystemPreferencesSection to="help" active={matchSub('help')}>
                   <HelpIcon className="mr-3 h-6 w-6 rounded-md text-gray-600" />
                   Help and Support
@@ -217,6 +227,7 @@ export const SystemPreferences = () => {
           <section className="system-preferences-content min-h-fit max-h-[calc(100vh-6.25rem)] flex-1 flex-col bg-gray-50 p-4 text-gray-800 sm:p-8">
             <Routes>
               <Route path="apps/:desk" element={<AppPrefs />} />
+              <Route path="hosting" element={<Hosting />} />
               <Route path="help" element={<Help />} />
               <Route path="interface" element={<InterfacePrefs />} />
               <Route path="appearance" element={<AppearancePrefs />} />
