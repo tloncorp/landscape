@@ -112,7 +112,7 @@
     :_  this
     :~  :*  %pass  /save-summary/(scot %p src.bowl)/(scot %da requested.u.result)
         %arvo  %k  %fard
-        %garden  %save-summary  %noun
+        %landscape  %save-summary  %noun
         !>(`[tlon.api mailchimp.api src.bowl summary.u.result])
       ==
     ==

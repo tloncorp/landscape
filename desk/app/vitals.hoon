@@ -135,7 +135,7 @@
           %arvo
           %k
           %fard
-          %garden                ::  XX: %landscape?
+          %landscape
           %vitals-connection-check
           %noun
           !>(ship)
@@ -150,7 +150,7 @@
         %arvo
         %k
         %fard
-        %garden                ::  XX: %landscape?
+        %landscape
         %vitals-connection-check
         %noun
         !>(ship)

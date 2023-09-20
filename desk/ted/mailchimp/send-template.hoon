@@ -24,7 +24,7 @@
     ^=  body
     %-  some
     %-  as-octt:mimes:html
-    %-  en-json:html
+    %-  en:json:html
     %-  pairs:enjs:format
       :~  ['key' s+(crip api-key)]
           ['template_name' s+(crip template-name)]

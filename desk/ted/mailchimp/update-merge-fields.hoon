@@ -27,7 +27,7 @@
     ^=  body
     %-  some
     %-  as-octt:mimes:html
-    %-  en-json:html
+    %-  en:json:html
     %-  pairs:enjs:format
     ['merge_fields' o+vars]~
   ==

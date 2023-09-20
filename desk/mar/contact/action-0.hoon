@@ -1,6 +1,6 @@
-/-  h=hark
-/+  j=hark-json
-|_  =action:h
+/-  c=contacts
+/+  j=contacts-json
+|_  =action:c
 ++  grad  %noun
 ++  grow
   |%
@@ -9,7 +9,7 @@
   --
 ++  grab
   |%
-  ++  noun  action:h
+  ++  noun  action:c
   ++  json  action:dejs:j
   --
 --

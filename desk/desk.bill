@@ -1,12 +1,11 @@
-:~  %docket
-    %treaty
-    %hark-store
-    %hark-system-hook
-    %settings
-    %settings-store
-    %storage
+:~  %bait
+    %contacts
+    %docket
+    %hark
     %reel
-    %bait
+    %settings
+    %storage
+    %treaty
     %vitals
     %growl
 ==

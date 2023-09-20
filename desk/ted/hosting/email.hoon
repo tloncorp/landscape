@@ -53,7 +53,7 @@
   ?>  ?=(%finished -.rep)
   ?~  full-file.rep  (pure:m !>(~))
   =/  body=cord  q.data.u.full-file.rep
-  =/  parsed=(unit json)  (de-json:html body)
+  =/  parsed=(unit json)  (de:json:html body)
   ?~  parsed  (pure:m !>(~))
   ?~  u.parsed  (pure:m !>(~))
   =/  mined  (mine-json u.parsed)

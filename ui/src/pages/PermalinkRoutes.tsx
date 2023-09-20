@@ -55,7 +55,7 @@ function AppLinkNavigate({ desk, link }: { desk: string; link: string }) {
     }
 
     const query = new URLSearchParams({
-      'grid-link': encodeURIComponent(`/${link}`),
+      'landscape-link': encodeURIComponent(`/${link}`),
     });
 
     const url = `${getAppHref(charge.href)}?${query.toString()}`;

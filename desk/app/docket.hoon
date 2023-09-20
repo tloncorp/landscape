@@ -174,11 +174,9 @@
   =^  cards  state
     ?+  path  (on-watch:def path)
         [%http-response *]
-      ?>  (team:title [our src]:bowl)
       `state
     ::
         [%charges ~]
-      ?>  (team:title [our src]:bowl)
       `state
     ::
         [%glob @ @ ~]
@@ -506,7 +504,7 @@
   ::
   ++  handle-get-request
     ^-  simple-payload:http
-    ?+  [site ext]:req-line  (redirect:gen '/apps/grid/')
+    ?+  [site ext]:req-line  (redirect:gen '/apps/landscape/')
         [[%session ~] [~ %js]]
       %-  inline-js-response
       (rap 3 'window.ship = "' (rsh 3 (scot %p our.bowl)) '";' ~)
