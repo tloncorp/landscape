@@ -36,6 +36,12 @@ function storagePoke(data: S3Update | { 'set-region': string }) {
 export const StoragePrefs = () => {
   const { s3, loaded, ...storageState } = useStorage();
 
+  // XXX: The initial value should be set from the urbit.
+  const [ storageType, setStorageType ] = useState<string>("s3");
+
+  const onStorageTypeChange = (event) =>
+    setStorageType(event.target.value);
+
   const {
     register,
     handleSubmit,
@@ -71,125 +77,154 @@ export const StoragePrefs = () => {
           Configure your urbit to enable uploading your own images or other
           files in Urbit applications.
         </p>
-        <p>
-          Read more about setting up S3 storage in the{' '}
-          <a
-            className="font-bold"
-            rel="external"
-            target="_blank"
-            href="https://operators.urbit.org/manual/os/s3"
-          >
-            Urbit Operator's Manual
-          </a>
-          .
-        </p>
+        <div>
+          <input
+            type="radio"
+            id="s3"
+            value="s3"
+            checked={storageType === "s3"}
+            onChange={onStorageTypeChange}
+          />
+          <label for="s3">S3</label><br/>
+          <input
+            type="radio"
+            id="tlon-hosting"
+            value="tlon-hosting"
+            checked={storageType === "tlon-hosting"}
+            onChange={onStorageTypeChange}
+          />
+          <label for="tlon-hosting">Tlon Hosting</label><br/>
+        </div>
       </div>
-      <form onSubmit={handleSubmit(addS3Credentials)}>
-        <div className="mb-8 flex flex-col space-y-2">
-          <label className="font-semibold" htmlFor="endpoint">
-            Endpoint<span title="Required field">*</span>
-          </label>
-          <div className="relative">
-            <input
-              disabled={!loaded}
-              required
-              id="endpoint"
-              type="url"
-              autoCorrect="off"
-              defaultValue={s3.credentials?.endpoint}
-              {...register('endpoint', { required: true })}
-              className="input default-ring bg-gray-50"
-            />
-            {!loaded && <Spinner className="absolute top-1 right-2" />}
-          </div>
+
+      {storageType === "s3" ?
+        <div>
+          <p>
+            Read more about setting up S3 storage in the{' '}
+            <a
+              className="font-bold"
+              rel="external"
+              target="_blank"
+              href="https://operators.urbit.org/manual/os/s3"
+            >
+              Urbit Operator's Manual
+            </a>
+            .
+          </p>
+
+          <br/>
+
+          <form onSubmit={handleSubmit(addS3Credentials)}>
+            <div className="mb-8 flex flex-col space-y-2">
+              <label className="font-semibold" htmlFor="endpoint">
+                Endpoint<span title="Required field">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  disabled={!loaded}
+                  required
+                  id="endpoint"
+                  type="url"
+                  autoCorrect="off"
+                  defaultValue={s3.credentials?.endpoint}
+                  {...register('endpoint', { required: true })}
+                  className="input default-ring bg-gray-50"
+                />
+                {!loaded && <Spinner className="absolute top-1 right-2" />}
+              </div>
+            </div>
+            <div className="mb-8 flex flex-col space-y-2">
+              <label className="font-semibold" htmlFor="key">
+                Access Key ID<span title="Required field">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  disabled={!loaded}
+                  required
+                  id="key"
+                  type="text"
+                  autoCorrect="off"
+                  spellCheck="false"
+                  defaultValue={s3.credentials?.accessKeyId}
+                  {...register('accessId', { required: true })}
+                  className="input default-ring bg-gray-50"
+                />
+                {!loaded && <Spinner className="absolute top-1 right-2" />}
+              </div>
+            </div>
+            <div className="mb-8 flex flex-col space-y-2">
+              <label className="font-semibold" htmlFor="secretAccessKey">
+                Secret Access Key<span title="Required field">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  disabled={!loaded}
+                  required
+                  id="secretAccessKey"
+                  type="text"
+                  autoCorrect="off"
+                  spellCheck="false"
+                  defaultValue={s3.credentials?.secretAccessKey}
+                  {...register('accessSecret', { required: true })}
+                  className="input default-ring bg-gray-50"
+                />
+                {!loaded && <Spinner className="absolute top-1 right-2" />}
+              </div>
+            </div>
+            <div className="mb-8 flex flex-col space-y-2">
+              <label className="font-semibold" htmlFor="region">
+                Region<span title="Required field">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  disabled={!loaded}
+                  required
+                  id="region"
+                  type="text"
+                  autoCorrect="off"
+                  defaultValue={s3.configuration?.region}
+                  {...register('region', { required: true })}
+                  className="input default-ring bg-gray-50"
+                />
+                {!loaded && <Spinner className="absolute top-1 right-2" />}
+              </div>
+            </div>
+            <div className="mb-8 flex flex-col space-y-2">
+              <label className="font-semibold" htmlFor="bucket">
+                Bucket Name<span title="Required field">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  disabled={!loaded}
+                  required
+                  id="bucket"
+                  type="text"
+                  autoCorrect="off"
+                  defaultValue={s3.configuration.currentBucket}
+                  {...register('bucket', { required: true })}
+                  className="input default-ring bg-gray-50"
+                />
+                {!loaded && <Spinner className="absolute top-1 right-2" />}
+              </div>
+            </div>
+            <Button
+              type="submit"
+              disabled={!isDirty || !isValid}
+              className={cn(
+                !isDirty || !isValid || isSubmitSuccessful
+                  ? 'cursor-not-allowed bg-gray-200 text-gray-100'
+                  : ''
+              )}
+            >
+              {isSubmitting ? <Spinner /> : 'Save'}
+              {isSubmitSuccessful && ' Successful'}
+            </Button>
+          </form>
+        </div> :
+        <div>
+          This configuration is handled by your hosting provider.
         </div>
-        <div className="mb-8 flex flex-col space-y-2">
-          <label className="font-semibold" htmlFor="key">
-            Access Key ID<span title="Required field">*</span>
-          </label>
-          <div className="relative">
-            <input
-              disabled={!loaded}
-              required
-              id="key"
-              type="text"
-              autoCorrect="off"
-              spellCheck="false"
-              defaultValue={s3.credentials?.accessKeyId}
-              {...register('accessId', { required: true })}
-              className="input default-ring bg-gray-50"
-            />
-            {!loaded && <Spinner className="absolute top-1 right-2" />}
-          </div>
-        </div>
-        <div className="mb-8 flex flex-col space-y-2">
-          <label className="font-semibold" htmlFor="secretAccessKey">
-            Secret Access Key<span title="Required field">*</span>
-          </label>
-          <div className="relative">
-            <input
-              disabled={!loaded}
-              required
-              id="secretAccessKey"
-              type="text"
-              autoCorrect="off"
-              spellCheck="false"
-              defaultValue={s3.credentials?.secretAccessKey}
-              {...register('accessSecret', { required: true })}
-              className="input default-ring bg-gray-50"
-            />
-            {!loaded && <Spinner className="absolute top-1 right-2" />}
-          </div>
-        </div>
-        <div className="mb-8 flex flex-col space-y-2">
-          <label className="font-semibold" htmlFor="region">
-            Region<span title="Required field">*</span>
-          </label>
-          <div className="relative">
-            <input
-              disabled={!loaded}
-              required
-              id="region"
-              type="text"
-              autoCorrect="off"
-              defaultValue={s3.configuration?.region}
-              {...register('region', { required: true })}
-              className="input default-ring bg-gray-50"
-            />
-            {!loaded && <Spinner className="absolute top-1 right-2" />}
-          </div>
-        </div>
-        <div className="mb-8 flex flex-col space-y-2">
-          <label className="font-semibold" htmlFor="bucket">
-            Bucket Name<span title="Required field">*</span>
-          </label>
-          <div className="relative">
-            <input
-              disabled={!loaded}
-              required
-              id="bucket"
-              type="text"
-              autoCorrect="off"
-              defaultValue={s3.configuration.currentBucket}
-              {...register('bucket', { required: true })}
-              className="input default-ring bg-gray-50"
-            />
-            {!loaded && <Spinner className="absolute top-1 right-2" />}
-          </div>
-        </div>
-        <Button
-          type="submit"
-          disabled={!isDirty || !isValid}
-          className={cn(
-            !isDirty || !isValid || isSubmitSuccessful
-              ? 'cursor-not-allowed bg-gray-200 text-gray-100'
-              : ''
-          )}
-        >
-          {isSubmitting ? <Spinner /> : 'Save'}
-          {isSubmitSuccessful && ' Successful'}
-        </Button>
-      </form>
+      }
     </div>
   );
 };
