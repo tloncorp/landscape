@@ -153,19 +153,18 @@
 ++  dejs
   =,  dejs:format
   |%
+  ++  action-tags
+    :~  saw-seam/seam
+        saw-rope/rope
+        add-yarn/add-yarn
+    ==
   ++  action
-    %-  of
-    :~  saw-seam/seam
-        saw-rope/rope
-        add-yarn/add-yarn
-    ==
+    ^-  $-(json action:h)
+    (of action-tags)
+  ::
   ++  action-1
-    %-  of
-    :~  saw-seam/seam
-        saw-rope/rope
-        add-yarn/add-yarn
-        new-yarn/new-yarn
-    ==
+    ^-  $-(json action-1:h)
+    (of new-yarn/new-yarn action-tags)
   ::
   ++  seam
     %-  of
