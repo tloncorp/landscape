@@ -39,7 +39,7 @@ export const StoragePrefs = () => {
   // XXX: The initial value should be set from the urbit.
   const [ storageType, setStorageType ] = useState<string>("s3");
 
-  const onStorageTypeChange = (event) =>
+  const onStorageTypeChange = (event: any) =>
     setStorageType(event.target.value);
 
   const {
@@ -85,7 +85,7 @@ export const StoragePrefs = () => {
             checked={storageType === "s3"}
             onChange={onStorageTypeChange}
           />
-          <label for="s3">S3</label><br/>
+          <label>S3</label><br/>
           <input
             type="radio"
             id="tlon-hosting"
@@ -93,7 +93,7 @@ export const StoragePrefs = () => {
             checked={storageType === "tlon-hosting"}
             onChange={onStorageTypeChange}
           />
-          <label for="tlon-hosting">Tlon Hosting</label><br/>
+          <label>Tlon Hosting</label><br/>
         </div>
       </div>
 
