@@ -26,7 +26,7 @@ export const AboutSystem = () => {
   const { systemBlocked, blockedCharges, blockedCount, freezeApps } =
     useSystemUpdate();
   const gardenBlocked =
-    null != blockedCharges.find((charge) => charge.desk == 'garden');
+    null != blockedCharges.find((charge) => charge.desk == 'landscape');
   const hash = basePike && getHash(basePike);
   const lag = useLag();
 
