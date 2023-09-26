@@ -1,0 +1,10 @@
+:~  title+'Landscape (deprecated)'
+    info+'This desk is the deprecated version of the desk called Landscape.'
+    color+0xef.f0f4
+    image+''
+    glob-http+['https://bootstrap.urbit.org/glob-0v4.e6fla.ue4u9.11h98.ksl72.ile1b.glob' 0v4.e6fla.ue4u9.11h98.ksl72.ile1b]
+    base+'grid'
+    version+[1 17 0]
+    website+'https://tlon.io'
+    license+'MIT'
+==
