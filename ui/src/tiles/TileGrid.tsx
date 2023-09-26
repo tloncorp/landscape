@@ -78,7 +78,6 @@ export const TileGrid = ({ menu }: TileGridProps) => {
           : undefined
       }
     >
-      {console.log({ order, charges })}
       <div
         // This version of tailwind does not have h-fit
         style={{ height: 'fit-content' }}
