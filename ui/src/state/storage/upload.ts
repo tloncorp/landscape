@@ -6,7 +6,7 @@ import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getImageSize } from 'react-image-size';
 import { useCallback, useEffect, useState } from 'react';
-import { FileStore, Status, StorageCredentials, Uploader } from '@/gear';
+import { FileStore, Status, StorageCredentialsS3, Uploader } from '@/gear';
 import { useStorage } from './storage';
 import { StorageState } from './reducer';
 
@@ -25,7 +25,7 @@ function imageSize(url: string) {
 export const useFileStore = create<FileStore>((set, get) => ({
   client: null,
   uploaders: {},
-  createClient: (credentials: StorageCredentials, region: string) => {
+  createClient: (credentials: StorageCredentialsS3, region: string) => {
     const endpoint = new URL(prefixEndpoint(credentials.endpoint));
     const client = new S3Client({
       endpoint: {

@@ -2,7 +2,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 
 export type Status = 'initial' | 'idle' | 'loading' | 'success' | 'error';
 
-export interface StorageCredentials {
+export interface StorageCredentialsS3 {
   endpoint: string;
   accessKeyId: string;
   secretAccessKey: string;
@@ -17,7 +17,7 @@ export interface BaseStorageState {
       currentBucket: string;
       region: string;
     };
-    credentials: StorageCredentials | null;
+    credentials: StorageCredentialsS3 | null;
   };
   [ref: string]: unknown;
 }
@@ -62,7 +62,7 @@ export interface FileStore {
   client: S3Client | null;
   uploaders: Record<string, Uploader>;
   getUploader: (key: string) => Uploader;
-  createClient: (s3: StorageCredentials, region: string) => void;
+  createClient: (s3: StorageCredentialsS3, region: string) => void;
   update: (key: string, updateFn: (uploader: Uploader) => void) => void;
   uploadFiles: (
     uploader: string,
@@ -86,8 +86,8 @@ export interface UploadInputProps {
   id: string;
 }
 
-export interface StorageUpdateCredentials {
-  credentials: StorageCredentials;
+export interface StorageUpdateCredentialsS3 {
+  credentials: StorageCredentialsS3;
 }
 
 export interface StorageUpdateConfiguration {
@@ -126,7 +126,7 @@ export interface StorageUpdateRegion {
 }
 
 export declare type StorageUpdate =
-  | StorageUpdateCredentials
+  | StorageUpdateCredentialsS3
   | StorageUpdateConfiguration
   | StorageUpdateCurrentBucket
   | StorageUpdateAddBucket
