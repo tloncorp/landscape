@@ -77,7 +77,7 @@ export const SystemPreferences = () => {
   const { systemBlocked } = useSystemUpdate();
   const charges = useCharges();
   const filteredCharges = Object.values(charges).filter(
-    (charge) => charge.desk !== 'landscape'
+    (charge) => charge.desk !== 'landscape' && charge.desk !== 'garden'
   );
   const isMobile = useMedia('(max-width: 639px)');
 
