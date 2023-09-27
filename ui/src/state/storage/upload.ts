@@ -10,7 +10,7 @@ import { FileStore, Status, StorageCredentialsS3, Uploader } from '@/gear';
 import { useStorage } from './storage';
 import { StorageState } from './reducer';
 
-export function prefixEndpoint(endpoint: string) {
+function prefixEndpoint(endpoint: string) {
   return endpoint.match(/https?:\/\//) ? endpoint : `https://${endpoint}`;
 }
 
@@ -173,7 +173,7 @@ const emptyUploader = (key: string, bucket: string): Uploader => ({
   },
 });
 
-export function useClient() {
+function useClient() {
   const {
     s3: { credentials, configuration },
   } = useStorage();
