@@ -3,8 +3,8 @@
     color+0xee.5432
     glob-http+['https://bootstrap.urbit.org/glob-0v1.5rpkr.nncp0.b2hok.ccm04.pe9b1.glob' 0v1.5rpkr.nncp0.b2hok.ccm04.pe9b1]
     ::glob-ames+~zod^0v0
-    base+'grid'
-    version+[1 17 1]
+    base+'landscape'
+    version+[1 17 2]
     website+'https://tlon.io'
     license+'MIT'
 ==
