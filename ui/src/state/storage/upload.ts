@@ -6,7 +6,13 @@ import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getImageSize } from 'react-image-size';
 import { useCallback, useEffect, useState } from 'react';
-import { FileStore, Status, StorageCredentialsS3, Uploader } from '@/gear';
+import {
+  FileStore,
+  Status,
+  StorageCredentialsS3,
+  StorageCredentialsTlonHosting,
+  Uploader
+} from '@/gear';
 import { useStorage } from './storage';
 import { StorageState } from './reducer';
 
@@ -23,11 +29,12 @@ function imageSize(url: string) {
 }
 
 export const useFileStore = create<FileStore>((set, get) => ({
-  client: null,
+  s3Client: null,
+  tlonHostingCredentials: null,
   uploaders: {},
-  createClient: (credentials: StorageCredentialsS3, region: string) => {
+  createS3Client: (credentials: StorageCredentialsS3, region: string) => {
     const endpoint = new URL(prefixEndpoint(credentials.endpoint));
-    const client = new S3Client({
+    const s3Client = new S3Client({
       endpoint: {
         protocol: endpoint.protocol.slice(0, -1),
         hostname: endpoint.host,
@@ -38,7 +45,10 @@ export const useFileStore = create<FileStore>((set, get) => ({
       credentials,
       forcePathStyle: true,
     });
-    set({ client });
+    set({ s3Client, tlonHostingCredentials: null });
+  },
+  setTlonHostingCredentials: (credentials: StorageCredentialsTlonHosting) => {
+    set({ s3Client: null, tlonHostingCredentials: credentials });
   },
   getUploader: (key) => {
     const { uploaders } = get();
@@ -70,46 +80,80 @@ export const useFileStore = create<FileStore>((set, get) => ({
     fileList.forEach((f) => upload(uploader, f, bucket));
   },
   upload: async (uploader, upload, bucket) => {
-    const { client, updateStatus, updateFile } = get();
-    if (!client) {
-      return;
-    }
+    const { s3Client, tlonHostingCredentials, updateStatus, updateFile } = get();
 
     const { key, file } = upload;
     updateStatus(uploader, key, 'loading');
 
-    const command = new PutObjectCommand({
-      Bucket: bucket,
-      Key: key,
-      Body: file,
-      ContentType: file.type,
-      ContentLength: file.size,
-      ACL: 'public-read',
-    });
+    // Logic for uploading with Tlon Hosting storage.
+    if (tlonHostingCredentials) {
+      const requestOptions = {
+          method: 'PUT',
+          headers: {
+            'Content-Type': file.type,
+          },
+          body: file
+      };
+      const { endpoint, token } = tlonHostingCredentials;
+      const url = `${endpoint}/${key}`;
+      const urlWithToken = `${url}?token=${token}`;
+      fetch(urlWithToken, requestOptions)
+        .then(() => {
+          const fileUrl = url.split('?')[0];
+          updateStatus(uploader, key, 'success');
+          imageSize(fileUrl).then((s) =>
+            updateFile(uploader, key, {
+              size: s,
+              url: fileUrl,
+            })
+          );
+        })
+        .catch((error: any) => {
+          updateStatus(
+            uploader,
+            key,
+            'error',
+            `Tlon Hosting upload error: ${error.message}, contact support if it persists.`
+          );
+          console.log({ error });
+        });
+    }
 
-    const url = await getSignedUrl(client, command);
-
-    client
-      .send(command)
-      .then(() => {
-        const fileUrl = url.split('?')[0];
-        updateStatus(uploader, key, 'success');
-        imageSize(fileUrl).then((s) =>
-          updateFile(uploader, key, {
-            size: s,
-            url: fileUrl,
-          })
-        );
-      })
-      .catch((error: any) => {
-        updateStatus(
-          uploader,
-          key,
-          'error',
-          `S3 upload error: ${error.message}, check your S3 configuration.`
-        );
-        console.log({ error });
+    // Logic for uploading with S3.
+    if (s3Client) {
+      const command = new PutObjectCommand({
+        Bucket: bucket,
+        Key: key,
+        Body: file,
+        ContentType: file.type,
+        ContentLength: file.size,
+        ACL: 'public-read',
       });
+
+      const url = await getSignedUrl(s3Client, command);
+
+      s3Client
+        .send(command)
+        .then(() => {
+          const fileUrl = url.split('?')[0];
+          updateStatus(uploader, key, 'success');
+          imageSize(fileUrl).then((s) =>
+            updateFile(uploader, key, {
+              size: s,
+              url: fileUrl,
+            })
+          );
+        })
+        .catch((error: any) => {
+          updateStatus(
+            uploader,
+            key,
+            'error',
+            `S3 upload error: ${error.message}, check your S3 configuration.`
+          );
+          console.log({ error });
+        });
+      }
   },
   clear: (uploader) => {
     get().update(uploader, (draft) => {
@@ -173,18 +217,23 @@ const emptyUploader = (key: string, bucket: string): Uploader => ({
   },
 });
 
-function useClient() {
+function useS3Client() {
   const {
+    backend,
     s3: { credentials, configuration },
+    tlonHosting,
   } = useStorage();
-  const { client, createClient } = useFileStore();
+  const { s3Client, createS3Client, setTlonHostingCredentials } = useFileStore();
   const [hasCredentials, setHasCredentials] = useState(false);
 
   useEffect(() => {
     const hasCreds =
-      credentials?.accessKeyId &&
-      credentials?.endpoint &&
-      credentials?.secretAccessKey;
+      backend === "s3" ?
+        credentials?.accessKeyId &&
+        credentials?.endpoint &&
+        credentials?.secretAccessKey :
+      backend === "tlon-hosting" ?
+        !!tlonHosting: false
     if (hasCreds) {
       setHasCredentials(true);
     }
@@ -192,37 +241,42 @@ function useClient() {
 
   const initClient = useCallback(async () => {
     if (credentials) {
-      await createClient(credentials, configuration.region);
+      if (backend === "s3") {
+        await createS3Client(credentials, configuration.region);
+      }
+      if (backend === "tlon-hosting") {
+        await setTlonHostingCredentials(tlonHosting);
+      }
     }
-  }, [createClient, credentials, configuration]);
+  }, [createS3Client, credentials, configuration]);
 
   useEffect(() => {
-    if (hasCredentials && !client) {
+    if (hasCredentials && !s3Client) {
       initClient();
     }
-  }, [client, hasCredentials, initClient]);
+  }, [s3Client, hasCredentials, initClient]);
 
-  return client;
+  return s3Client;
 }
 
-const selS3 = (s: StorageState) => s.s3;
 const selUploader = (key: string) => (s: FileStore) => s.uploaders[key];
 export function useUploader(key: string): Uploader | undefined {
   const {
-    configuration: { currentBucket },
-  } = useStorage(selS3);
-  const client = useClient();
+    tlonHosting: { token },
+    s3: { configuration: { currentBucket } },
+  } = useStorage();
+  const s3Client = useS3Client();
   const uploader = useFileStore(selUploader(key));
 
   useEffect(() => {
-    if (client && currentBucket) {
+    if ((s3Client && currentBucket) || token) {
       useFileStore.setState(
         produce((draft) => {
           draft.uploaders[key] = emptyUploader(key, currentBucket);
         })
       );
     }
-  }, [client, currentBucket, key]);
+  }, [s3Client, currentBucket, key, token]);
 
   return uploader;
 }

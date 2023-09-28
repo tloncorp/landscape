@@ -20,6 +20,7 @@ export const useStorage = createState<BaseStorageState>(
   () => ({
     loaded: false,
     hasCredentials: false,
+    backend: "tlon-hosting",
     s3: {
       configuration: {
         buckets: new Set(),
@@ -27,6 +28,10 @@ export const useStorage = createState<BaseStorageState>(
         region: '',
       },
       credentials: null,
+    },
+    tlonHosting: {
+      endpoint: 'http://localhost:8888',
+      token: 'token',
     },
   }),
   {},
