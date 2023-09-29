@@ -46,10 +46,10 @@ const fetchRuntimeVersion = () => {
       useVereState.setState((state) => {
         if (typeof data === 'object' && data !== null) {
           const vereData = data as Vere;
-          const vereVersion = vereData.cur.rev.split('/vere/live/~.')[1];
+          const vereVersion = vereData.cur.rev.split('/')[2].substr(2);
           const latestVereVersion =
             vereData.next !== undefined
-              ? vereData.next.rev.split('/vere/live/~.')[1]
+              ? vereData.next.rev.split('/')[2].substr(2)
               : vereVersion;
           const isLatest =
             vereVersion === latestVereVersion || vereData.next === undefined;
