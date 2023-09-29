@@ -39,9 +39,6 @@ export const Tile: FunctionComponent<TileProps> = ({
   const pike = usePike(desk);
   const { lightText, tileColor, menuColor, suspendColor, suspendMenuColor } =
     useTileColor(color);
-  if (desk === 'canvas') {
-    debugger;
-  }
   const status = getTileStatus(chad, pike, disabled);
   const suspended = status === 'inactive';
   const active = status === 'active';
