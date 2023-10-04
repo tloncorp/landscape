@@ -3,15 +3,12 @@
 ::
 |%
 +$  card  card:agent:gall
-+$  versioned-state
-  $%  state-0
-  ==
-+$  state-0  [%0 enabled=_| bark-host=_~rilfet-palsum]
++$  state-1  [%1 enabled=_| bark-host=_~rilfet-palsum]
 --
 ::
 ::  This agent should eventually go into landscape
 ::
-=|  state-0
+=|  state-1
 =*  state  -
 %-  agent:dbug
 %+  verb  |
@@ -41,6 +38,26 @@
       (~(gut by desk.data) %groups ~)
     'logActivity'
   [%b |]
+::
+++  on-save  !>(state)
+++  on-load
+  |=  old-state=vase
+  |^  ^-  (quip card _this)
+      =+  !<(old=versioned-state old-state)
+      ?-  -.old
+          %0
+        =^  caz  this  on-init  ::  %0 dropped the ball, re-initialize
+        :_  this
+        :_  caz
+        [%pass /settings %agent [our.bowl %settings] %leave ~]
+      ::
+          %1
+        [~ this(state old)]
+      ==
+  ::
+  +$  versioned-state  $%(state-0 state-1)
+  +$  state-0  [%0 enabled=_| bark-host=_~rilfet-palsum]
+  --
 ::
 ++  on-poke
   |=  [=mark =vase]
@@ -91,17 +108,19 @@
       %fact
     ?.  =(%settings-event p.cage.sign)  (on-agent:def wire sign)
     =+  !<(=event:settings q.cage.sign)
-    =/  new=?
-      =;  =val:settings
-        ?:(?=(%b -.val) p.val |)
-      ?+  event  b+|
-        [%put-bucket %groups %groups *]  (~(gut by bucket.event) 'logActivity' b+|)
-        [%del-bucket %groups %groups]    b+|
-        [%put-entry %groups %groups %'logActivity' *]  val.event
-        [%del-entry %groups %groups %'logActivity']    b+|
+    =/  new=(unit ?)
+      =;  val=(unit val:settings)
+        ?~  val  ~
+        `?:(?=(%b -.u.val) p.u.val |)
+      ?+  event  ~
+        [%put-bucket %groups %groups *]  `(~(gut by bucket.event) 'logActivity' b+|)
+        [%del-bucket %groups %groups]    `b+|
+        [%put-entry %groups %groups %'logActivity' *]  `val.event
+        [%del-entry %groups %groups %'logActivity']    `b+|
       ==
-    ?:  =(new enabled)  [~ this]
-    (on-poke ?:(new %enable %disable) !>(~))
+    ?~  new  [~ this]
+    ?:  =(u.new enabled)  [~ this]
+    (on-poke ?:(u.new %enable %disable) !>(~))
   ==
 ::
 ++  on-watch  on-watch:def
@@ -111,15 +130,6 @@
 ++  on-leave
   |=  =path
   `this
-++  on-save  !>(state)
-++  on-load
-  |=  old-state=vase
-  ^-  (quip card _this)
-  =/  old  !<(versioned-state old-state)
-  ?-  -.old
-      %0
-    `this(state old)
-  ==
 ++  on-arvo  on-arvo:def
 ++  on-peek  on-peek:def
 --
