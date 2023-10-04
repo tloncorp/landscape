@@ -63,5 +63,5 @@
 ::
 =/  [%khan %arow %.y %noun vs=vase]  simp
 =+  !<([gud=? msg=@t] vs)
-?.  gud  ~|(msg !!)
+?.  gud  ~|([ship=ship.args mail=u.mail msg] !!)
 (pure:m !>(msg))
