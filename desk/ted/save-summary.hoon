@@ -18,6 +18,7 @@
     ::
       $=  summary
       $%  [%life [sen=@ud rec=@ud gro=@t] [dms=@ud etc=@ud group=@t chat=@t]]
+          [%wipe ~]
       ==
   ==
 =/  args  !<([~ arg-mold] arg)
@@ -45,6 +46,9 @@
       =;  vars=(map @t json)
         !>(`[mailchimp.args u.mail vars])
       %-  ~(gas by *(map @t json))
+      =?  summary.args  ?=(%wipe -.summary.args)
+        [%life [0 0 ''] [0 0 '' '']]
+      ?>  ?=(%life -.summary.args)
       =,  summary.args
       :~  ['MSGS_SENT' (numb:enjs:format sen)]
           ['MSGS_RECD' (numb:enjs:format rec)]
