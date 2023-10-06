@@ -22,6 +22,20 @@ interface VereState {
   nock?: number;
 }
 
+function parseVersion(versionPath: string | undefined) {
+  if (versionPath === undefined) {
+    return null;
+  }
+
+  const pattern = /~\.(\d+\.\d+)/gi;
+  const match = pattern.exec(versionPath);
+  if (!match) {
+    return null;
+  }
+
+  return match[1];
+}
+
 const useVereState = create<Vere>((set, get) => ({
   cur: {
     rev: '',
@@ -46,10 +60,10 @@ const fetchRuntimeVersion = () => {
       useVereState.setState((state) => {
         if (typeof data === 'object' && data !== null) {
           const vereData = data as Vere;
-          const vereVersion = vereData.cur.rev.split('/')[3].substr(2);
+          const vereVersion = parseVersion(vereData.cur.rev);
           const latestVereVersion =
             vereData.next !== undefined
-              ? vereData.next.rev.split('/')[2].substr(3)
+              ? parseVersion(vereData.next.rev)
               : vereVersion;
           const isLatest =
             vereVersion === latestVereVersion || vereData.next === undefined;
