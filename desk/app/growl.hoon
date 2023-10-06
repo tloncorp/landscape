@@ -18,7 +18,7 @@
     def   ~(. (default-agent this %.n) bowl)
 ::
 ++  on-init
-  =^  caz  this  (on-poke %default !>(~))
+  =^  caz  this  (on-poke %initialize !>(~))
   :_  this
   ::NOTE  sadly, we cannot subscribe to items that may not exist right now,
   ::      so we subscribe to the whole bucket instead
@@ -52,7 +52,7 @@
     ?>  =(src.bowl our.bowl)
     `this(bark-host !<(ship vase))
   ::
-      %default
+      %initialize
     =;  consent=?
       $(mark ?:(consent %enable %disable), vase !>(~))
     =/  bap=path  /(scot %p our.bowl)/settings/(scot %da now.bowl)
@@ -123,7 +123,7 @@
   ^-  (quip card _this)
   ?>  =(/re-set wire)
   ?>  ?=(%wake +<.sign)
-  (on-poke %default !>(~))
+  (on-poke %initialize !>(~))
 ::
 ++  on-watch  on-watch:def
 ++  on-fail
