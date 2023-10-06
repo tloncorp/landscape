@@ -18,26 +18,11 @@
     def   ~(. (default-agent this %.n) bowl)
 ::
 ++  on-init
-  =;  consent=?
-    =^  caz  this  (on-poke ?:(consent %enable %disable) !>(~))
-    :_  this
-    ::NOTE  sadly, we cannot subscribe to items that may not exist right now,
-    ::      so we subscribe to the whole bucket instead
-    [[%pass /settings %agent [our.bowl %settings] %watch /desk/groups] caz]
-  =+  .^  =data:settings
-        %gx
-        (scot %p our.bowl)
-        %settings
-        (scot %da now.bowl)
-        /desk/groups/settings-data
-      ==
-  ?>  ?=(%desk -.data)
-  =;  =val:settings
-    ?>(?=(%b -.val) p.val)
-  %+  %~  gut  by
-      (~(gut by desk.data) %groups ~)
-    'logActivity'
-  [%b |]
+  =^  caz  this  (on-poke %initialize !>(~))
+  :_  this
+  ::NOTE  sadly, we cannot subscribe to items that may not exist right now,
+  ::      so we subscribe to the whole bucket instead
+  [[%pass /settings %agent [our.bowl %settings] %watch /desk/groups] caz]
 ::
 ++  on-save  !>(state)
 ++  on-load
@@ -45,14 +30,10 @@
   |^  ^-  (quip card _this)
       =+  !<(old=versioned-state old-state)
       ?-  -.old
-          %0
-        =^  caz  this  on-init  ::  %0 dropped the ball, re-initialize
-        :_  this
-        :_  caz
-        [%pass /settings %agent [our.bowl %settings] %leave ~]
-      ::
-          %1
-        [~ this(state old)]
+        ::  %0 lost sync with the flag so must re-set, but not scry during load
+        ::
+        %0  [[%pass /re-set %arvo %b %wait now.bowl]~ this]
+        %1  [~ this(state old)]
       ==
   ::
   +$  versioned-state  $%(state-0 state-1)
@@ -70,15 +51,29 @@
       %set-host
     ?>  =(src.bowl our.bowl)
     `this(bark-host !<(ship vase))
-      ::
+  ::
+      %initialize
+    =;  consent=?
+      $(mark ?:(consent %enable %disable), vase !>(~))
+    =/  bap=path  /(scot %p our.bowl)/settings/(scot %da now.bowl)
+    ?.  .^(? %gu (snoc bap %$))  |
+    =+  .^(=data:settings %gx (weld bap /desk/groups/settings-data))
+    ?>  ?=(%desk -.data)
+    =;  =val:settings
+      ?:(?=(%b -.val) p.val |)
+    %+  %~  gut  by
+        (~(gut by desk.data) %groups ~)
+      'logActivity'
+    [%b |]
+  ::
       %enable
     :_  this(enabled %.y)
     ~[[%pass /add-recipient %agent [bark-host %bark] %poke %bark-add-recipient !>(our.bowl)]]
-      ::
+  ::
       %disable
     :_  this(enabled %.n)
     ~[[%pass /remove-recipient %agent [bark-host %bark] %poke %bark-remove-recipient !>(our.bowl)]]
-      ::
+  ::
       %growl-summarize
     ?.  enabled
       :_  this
@@ -123,6 +118,13 @@
     (on-poke ?:(u.new %enable %disable) !>(~))
   ==
 ::
+++  on-arvo
+  |=  [=wire sign=sign-arvo]
+  ^-  (quip card _this)
+  ?>  =(/re-set wire)
+  ?>  ?=(%wake +<.sign)
+  (on-poke %initialize !>(~))
+::
 ++  on-watch  on-watch:def
 ++  on-fail
   |=  [=term =tang]
@@ -130,6 +132,5 @@
 ++  on-leave
   |=  =path
   `this
-++  on-arvo  on-arvo:def
 ++  on-peek  on-peek:def
 --
