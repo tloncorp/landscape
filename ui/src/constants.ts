@@ -67,13 +67,24 @@ export const APPS = [
     desk: 'scooore',
   },
   {
-    title: "Trill",
-    description: "Twitter without limits, and much more",
+    title: 'Trill',
+    description: 'Twitter without limits, and much more',
     color: '#FFD400',
     link: '/apps/trill',
     section: SECTIONS.PALS,
     desk: 'trill',
-    source: '~dister-dozzod-sortug'
+    source: '~dister-dozzod-sortug',
+  },
+  {
+    title: 'Portal',
+    description:
+      'A tool for decentralized curation and discovery of groups, apps and content on Urbit.',
+    color: '#FFFFFF',
+    link: '/apps/portal',
+    section: SECTIONS.PALS,
+    desk: 'portal',
+    source: '~worpet-bildet',
+    image: 'https://toptyr-bilder.nyc3.cdn.digitaloceanspaces.com/tile2.svg',
   },
   {
     title: 'Docs',
