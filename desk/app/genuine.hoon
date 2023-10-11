@@ -3,17 +3,13 @@
 ++  give-payload
   |=  [id=@ta =simple-payload:http]
   (give-simple-payload:app:server id simple-payload)
-++  make-secret
-  |=  eny=@uvJ
-  ^-  cord
-  (scot %uw eny)
 +$  card  card:agent:gall
 +$  versioned-state
   $%  state-0
   ==
 +$  state-0
   $:  %0
-      secret=cord
+      secret=@uvJ
   ==
 --
 ::
@@ -27,7 +23,7 @@
     def   ~(. (default-agent this %.n) bowl)
 ::
 ++  on-init
-  :_  this(secret (make-secret eny.bowl))
+  :_  this(secret eny.bowl)
   ~[[%pass /eyre/connect %arvo %e %connect [~ /genuine] dap.bowl]]
 ::
 ++  on-poke
@@ -36,7 +32,7 @@
   ?+  mark  (on-poke:def mark vase)
       %rotate
     ?>  =(src.bowl our.bowl)
-    `this(secret (make-secret eny.bowl))
+    `this(secret eny.bowl)
       %handle-http-request
     =+  !<([id=@ta inbound-request:eyre] vase)
     :_  this
@@ -45,7 +41,8 @@
       (give-payload id not-found:gen:server)
     =/  line  i.t.site.full-line
     ?+  method.request  (give-payload id not-found:gen:server)
-        %'GET'  (give-payload id (json-response:gen:server b+=(line secret)))
+        %'GET'
+      (give-payload id (json-response:gen:server b+=(line (scot %uw secret))))
     ==
   ==
 ::
@@ -85,6 +82,6 @@
   |=  =path
   ^-  (unit (unit cage))
   ?+  path  [~ ~]
-    [%x %secret ~]  ``json+!>([%s secret])
+    [%x %secret ~]  ``json+!>([%s (scot %uw secret)])
   ==
 --
