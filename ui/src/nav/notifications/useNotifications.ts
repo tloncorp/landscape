@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useSkeins } from '@/state/hark';
 import _ from 'lodash';
-import { Skein, Yarn } from '@/gear';
+import { Rope, Skein, Yarn } from '@/gear';
 import { makePrettyDay } from '@/logic/utils';
 
 export interface DayGrouping {
@@ -31,6 +31,12 @@ export const isComment = (yarn: Yarn) =>
 export const isReply = (yarn: Yarn) =>
   yarn.con.some((con) => con === ' replied to your message “');
 
+export const isDM = (rope: Rope) => rope.thread.startsWith('/dm');
+
+export const isClub = (rope: Rope) => rope.thread.startsWith('/club');
+
+export const isGroups = (rope: Rope) => rope.desk === 'groups';
+
 export const useNotifications = (mentionsOnly = false) => {
   const { data: skeins, status: skeinsStatus } = useSkeins();
 
@@ -44,10 +50,15 @@ export const useNotifications = (mentionsOnly = false) => {
       };
     }
 
-    const unreads = skeins.filter((s) => s.unread);
-    const filteredSkeins = skeins.filter((s) =>
-      mentionsOnly ? isMention(s.top) : s
-    );
+    const notDmsFromGroupsDesk = (s: Skein) =>
+      !((isDM(s.top.rope) || isClub(s.top.rope)) && isGroups(s.top.rope));
+
+    const unreads = skeins
+      .filter((s) => s.unread)
+      .filter((s) => notDmsFromGroupsDesk(s));
+    const filteredSkeins = skeins
+      .filter((s) => (mentionsOnly ? isMention(s.top) : s))
+      .filter((s) => notDmsFromGroupsDesk(s));
 
     return {
       notifications: groupSkeinsByDate(filteredSkeins),
