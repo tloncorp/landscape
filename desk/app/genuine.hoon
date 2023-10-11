@@ -57,7 +57,7 @@
 ::
 ++  on-fail
   |=  [=term =tang]
-  (mean ':sub +on-fail' term tang)
+  (mean ':genuine +on-fail' term tang)
 ::
 ++  on-leave  on-leave:def
 ++  on-save  !>(state)
