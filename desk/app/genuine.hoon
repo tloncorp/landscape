@@ -1,5 +1,4 @@
 /+  default-agent, verb, dbug, server
-::
 |%
 ++  give-payload
   |=  [id=@ta =simple-payload:http]
@@ -17,6 +16,7 @@
       secret=cord
   ==
 --
+::
 =|  state-0
 =*  state  -
 %-  agent:dbug
@@ -64,11 +64,13 @@
 ::
 ++  on-leave  on-leave:def
 ++  on-save  !>(state)
+::
 ++  on-load
   |=  old-state=vase
   ^-  (quip card _this)
   =/  old  !<(versioned-state old-state)
   `this(state old)
+::
 ++  on-arvo
   |=  [=wire =sign-arvo]
   ^-  (quip card _this)
@@ -78,6 +80,7 @@
       [dap.bowl 'eyre bind rejected!' binding.sign-arvo]
     [~ this]
   ==
+::
 ++  on-peek
   |=  =path
   ^-  (unit (unit cage))
