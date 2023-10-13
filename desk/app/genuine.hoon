@@ -3,6 +3,14 @@
 ++  give-payload
   |=  [id=@ta =simple-payload:http]
   (give-simple-payload:app:server id simple-payload)
+::  without removing the dots, there are intermittent mismatches when reading
+::  the secret from the URL
+++  serialize
+  |=  eny=@uvJ
+  %-  crip
+  %+  skip  (trip (scot %uw eny))
+  |=  =cord
+  =(cord '.')
 +$  card  card:agent:gall
 +$  versioned-state
   $%  state-0
@@ -42,9 +50,7 @@
     =/  line  i.t.site.full-line
     ?+  method.request  (give-payload id not-found:gen:server)
         %'GET'
-      ~&  ["from URL" line]
-      ~&  ["from state" (scot %uw secret)]
-      (give-payload id (json-response:gen:server b+=(line (scot %uw secret))))
+      (give-payload id (json-response:gen:server b+=(line (serialize secret))))
     ==
   ==
 ::
@@ -84,6 +90,6 @@
   |=  =path
   ^-  (unit (unit cage))
   ?+  path  [~ ~]
-    [%x %secret ~]  ``json+!>([%s (scot %uw secret)])
+    [%x %secret ~]  ``json+!>([%s (serialize secret)])
   ==
 --
