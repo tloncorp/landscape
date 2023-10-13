@@ -42,6 +42,8 @@
     =/  line  i.t.site.full-line
     ?+  method.request  (give-payload id not-found:gen:server)
         %'GET'
+      ~&  ["from URL" line]
+      ~&  ["from state" (scot %uw secret)]
       (give-payload id (json-response:gen:server b+=(line (scot %uw secret))))
     ==
   ==
