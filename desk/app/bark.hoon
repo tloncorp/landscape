@@ -76,7 +76,13 @@
       %bark-remove-recipient
     =+  !<(=ship vase)
     ?>  =(src.bowl ship)
-    `this(recipients (~(del in recipients) ship))
+    :_  this(recipients (~(del in recipients) ship))
+    :_  ~
+    :*  %pass  /save-summary/(scot %p src.bowl)/(scot %da now.bowl)
+        %arvo  %k  %fard
+        %landscape  %save-summary  %noun
+        !>(`[tlon.api mailchimp.api src.bowl %wipe ~])
+    ==
     ::
       %bark-generate-summaries
     ?>  =(src.bowl our.bowl)
@@ -107,7 +113,7 @@
           ==  ==
       vase
     ?~  result
-      `this(recipients (~(del in recipients) src.bowl))
+      $(mark %bark-remove-recipient, vase !>(src.bowl))
     ::TODO  maybe drop the result (or re-request) if the timestamp is too old?
     :_  this
     :~  :*  %pass  /save-summary/(scot %p src.bowl)/(scot %da requested.u.result)

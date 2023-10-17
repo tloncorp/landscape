@@ -86,6 +86,7 @@ export const TileGrid = ({ menu }: TileGridProps) => {
         {order
           .filter((d) => d !== window.desk && d in charges)
           .filter((d) => d !== 'landscape')
+          .filter((d) => d !== 'garden')
           .map((desk) => (
             <TileContainer key={desk} desk={desk}>
               <Tile

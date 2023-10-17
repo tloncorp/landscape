@@ -5,7 +5,8 @@
 ::
 ::  > -bark!mailchimp-update-merge-fields 'apikey' 'list-id' 'sampel@example.com' fields
 ::  where fields is a (map cord json)
-::  and the list-id is most easily discovered through the /lists api
+::  and the list-id is most easily discovered through the /lists api:
+::  curl -X GET 'https://us14.api.mailchimp.com/3.0/lists?count=99&offset=0' --user "anystring:${apikey}"
 ::
 /-  spider
 /+  *strandio
@@ -26,7 +27,7 @@
   ::
     ^=  body
     %-  some
-    %-  as-octt:mimes:html
+    %-  as-octs:mimes:html
     %-  en:json:html
     %-  pairs:enjs:format
     ['merge_fields' o+vars]~

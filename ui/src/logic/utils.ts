@@ -10,6 +10,8 @@ import { findLast } from 'lodash';
 import { hsla, parseToHsla, parseToRgba } from 'color2k';
 import _ from 'lodash';
 import { differenceInDays, endOfToday, format } from 'date-fns';
+import { useCopyToClipboard } from 'usehooks-ts';
+import { useCallback, useState } from 'react';
 
 export const useMockData = import.meta.env.MODE === 'mock';
 
@@ -149,4 +151,29 @@ export async function asyncWithDefault<T>(
   } catch (error) {
     return def;
   }
+}
+
+export function useCopy(copied: string) {
+  const [didCopy, setDidCopy] = useState(false);
+  const [, copy] = useCopyToClipboard();
+
+  const doCopy = useCallback(async () => {
+    let success = false;
+    success = await copy(copied);
+    setDidCopy(success);
+
+    let timeout: NodeJS.Timeout;
+    if (success) {
+      timeout = setTimeout(() => {
+        setDidCopy(false);
+      }, 2000);
+    }
+
+    return () => {
+      setDidCopy(false);
+      clearTimeout(timeout);
+    };
+  }, [copied, copy]);
+
+  return { doCopy, didCopy };
 }

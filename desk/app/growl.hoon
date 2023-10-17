@@ -3,15 +3,12 @@
 ::
 |%
 +$  card  card:agent:gall
-+$  versioned-state
-  $%  state-0
-  ==
-+$  state-0  [%0 enabled=_| bark-host=_~rilfet-palsum]
++$  state-1  [%1 enabled=_| bark-host=_~rilfet-palsum]
 --
 ::
 ::  This agent should eventually go into landscape
 ::
-=|  state-0
+=|  state-1
 =*  state  -
 %-  agent:dbug
 %+  verb  |
@@ -21,26 +18,27 @@
     def   ~(. (default-agent this %.n) bowl)
 ::
 ++  on-init
-  =;  consent=?
-    =^  caz  this  (on-poke ?:(consent %enable %disable) !>(~))
-    :_  this
-    ::NOTE  sadly, we cannot subscribe to items that may not exist right now,
-    ::      so we subscribe to the whole bucket instead
-    [[%pass /settings %agent [our.bowl %settings] %watch /desk/groups] caz]
-  =+  .^  =data:settings
-        %gx
-        (scot %p our.bowl)
-        %settings
-        (scot %da now.bowl)
-        /desk/groups/settings-data
+  =^  caz  this  (on-poke %initialize !>(~))
+  :_  this
+  ::NOTE  sadly, we cannot subscribe to items that may not exist right now,
+  ::      so we subscribe to the whole bucket instead
+  [[%pass /settings %agent [our.bowl %settings] %watch /desk/groups] caz]
+::
+++  on-save  !>(state)
+++  on-load
+  |=  old-state=vase
+  |^  ^-  (quip card _this)
+      =+  !<(old=versioned-state old-state)
+      ?-  -.old
+        ::  %0 lost sync with the flag so must re-set, but not scry during load
+        ::
+        %0  [[%pass /re-set %arvo %b %wait now.bowl]~ this]
+        %1  [~ this(state old)]
       ==
-  ?>  ?=(%desk -.data)
-  =;  =val:settings
-    ?>(?=(%b -.val) p.val)
-  %+  %~  gut  by
-      (~(gut by desk.data) %groups ~)
-    'logActivity'
-  [%b |]
+  ::
+  +$  versioned-state  $%(state-0 state-1)
+  +$  state-0  [%0 enabled=_| bark-host=_~rilfet-palsum]
+  --
 ::
 ++  on-poke
   |=  [=mark =vase]
@@ -53,15 +51,29 @@
       %set-host
     ?>  =(src.bowl our.bowl)
     `this(bark-host !<(ship vase))
-      ::
+  ::
+      %initialize
+    =;  consent=?
+      $(mark ?:(consent %enable %disable), vase !>(~))
+    =/  bap=path  /(scot %p our.bowl)/settings/(scot %da now.bowl)
+    ?.  .^(? %gu (snoc bap %$))  |
+    =+  .^(=data:settings %gx (weld bap /desk/groups/settings-data))
+    ?>  ?=(%desk -.data)
+    =;  =val:settings
+      ?:(?=(%b -.val) p.val |)
+    %+  %~  gut  by
+        (~(gut by desk.data) %groups ~)
+      'logActivity'
+    [%b |]
+  ::
       %enable
     :_  this(enabled %.y)
     ~[[%pass /add-recipient %agent [bark-host %bark] %poke %bark-add-recipient !>(our.bowl)]]
-      ::
+  ::
       %disable
     :_  this(enabled %.n)
     ~[[%pass /remove-recipient %agent [bark-host %bark] %poke %bark-remove-recipient !>(our.bowl)]]
-      ::
+  ::
       %growl-summarize
     ?.  enabled
       :_  this
@@ -91,18 +103,27 @@
       %fact
     ?.  =(%settings-event p.cage.sign)  (on-agent:def wire sign)
     =+  !<(=event:settings q.cage.sign)
-    =/  new=?
-      =;  =val:settings
-        ?:(?=(%b -.val) p.val |)
-      ?+  event  b+|
-        [%put-bucket %groups %groups *]  (~(gut by bucket.event) 'logActivity' b+|)
-        [%del-bucket %groups %groups]    b+|
-        [%put-entry %groups %groups %'logActivity' *]  val.event
-        [%del-entry %groups %groups %'logActivity']    b+|
+    =/  new=(unit ?)
+      =;  val=(unit val:settings)
+        ?~  val  ~
+        `?:(?=(%b -.u.val) p.u.val |)
+      ?+  event  ~
+        [%put-bucket %groups %groups *]  `(~(gut by bucket.event) 'logActivity' b+|)
+        [%del-bucket %groups %groups]    `b+|
+        [%put-entry %groups %groups %'logActivity' *]  `val.event
+        [%del-entry %groups %groups %'logActivity']    `b+|
       ==
-    ?:  =(new enabled)  [~ this]
-    (on-poke ?:(new %enable %disable) !>(~))
+    ?~  new  [~ this]
+    ?:  =(u.new enabled)  [~ this]
+    (on-poke ?:(u.new %enable %disable) !>(~))
   ==
+::
+++  on-arvo
+  |=  [=wire sign=sign-arvo]
+  ^-  (quip card _this)
+  ?>  =(/re-set wire)
+  ?>  ?=(%wake +<.sign)
+  (on-poke %initialize !>(~))
 ::
 ++  on-watch  on-watch:def
 ++  on-fail
@@ -111,15 +132,5 @@
 ++  on-leave
   |=  =path
   `this
-++  on-save  !>(state)
-++  on-load
-  |=  old-state=vase
-  ^-  (quip card _this)
-  =/  old  !<(versioned-state old-state)
-  ?-  -.old
-      %0
-    `this(state old)
-  ==
-++  on-arvo  on-arvo:def
 ++  on-peek  on-peek:def
 --

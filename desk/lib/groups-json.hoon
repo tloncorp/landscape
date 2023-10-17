@@ -16,6 +16,6 @@
   |%
   ++  ship  (se %p)
   ++  flag  (su ;~((glue fas) ;~(pfix sig fed:ag) sym))
-  ++  nest  (su ;~((glue fas) sym ;~(pfix sig fed:ag)))
+  ++  nest  (su ;~((glue fas) sym ;~(pfix sig fed:ag) sym))
   --
 --

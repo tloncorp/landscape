@@ -14,6 +14,7 @@ import { usePike, useLag } from '../../state/kiln';
 import useVereState from '../../state/vere';
 import { disableDefault, pluralize } from '@/logic/utils';
 import { UpdatePreferences } from './UpdatePreferences';
+import { ShipCode } from '@/components/ShipCode';
 
 function getHash(pike: Pike): string {
   const parts = pike.hash.split('.');
@@ -25,14 +26,14 @@ export const AboutSystem = () => {
   const { systemBlocked, blockedCharges, blockedCount, freezeApps } =
     useSystemUpdate();
   const gardenBlocked =
-    null != blockedCharges.find((charge) => charge.desk == 'garden');
+    null != blockedCharges.find((charge) => charge.desk == 'landscape');
   const hash = basePike && getHash(basePike);
   const lag = useLag();
 
   const vere = useVereState.getState();
-  const {isLatest, vereVersion, latestVereVersion, loaded} = vere;
+  const { isLatest, vereVersion, latestVereVersion, loaded } = vere;
 
-  const runtimeUpToDate = (!loaded || isLatest)
+  const runtimeUpToDate = !loaded || isLatest;
 
   return (
     <>
@@ -57,7 +58,10 @@ export const AboutSystem = () => {
                   <p className="text-orange-500">
                     System update failed because your runtime was out of date.
                   </p>
-                  <p>Your runtime version is {vereVersion}, the latest runtime version is {latestVereVersion}.</p>
+                  <p>
+                    Your runtime version is {vereVersion}, the latest runtime
+                    version is {latestVereVersion}.
+                  </p>
                   <p>Update your runtime or contact your hosting provider.</p>
                   <p>Once your runtime is up to date, click retry below.</p>
                   <Button variant="caution" onClick={freezeApps}>
@@ -145,24 +149,42 @@ export const AboutSystem = () => {
               )}
             </>
           ) : (
-              <>
-                  {runtimeUpToDate ?
-                   <>
-                       <p>Urbit Runtime Version {vereVersion}</p>
-                       <p>Your urbit is up to date.</p>
-                   </> :
-                   <>
-                       <p className="text-orange-500">Your runtime version is {vereVersion}, the latest runtime version is {latestVereVersion}.</p>
-                       <p className="text-orange-500">
-                           <a className="text-blue-500 font-bold" href="https://operators.urbit.org/manual/os/updates#runtime-updates">Update your runtime </a>
-                           or contact your hosting provider.</p>
-                   </>
-                  }
-              </>
+            <>
+              {runtimeUpToDate ? (
+                <>
+                  <p>Urbit Runtime Version {vereVersion}</p>
+                  <p>Your urbit is up to date.</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-orange-500">
+                    Your runtime version is {vereVersion}, the latest runtime
+                    version is {latestVereVersion}.
+                  </p>
+                  <p className="text-orange-500">
+                    <a
+                      className="font-bold text-blue-500"
+                      href="https://operators.urbit.org/manual/os/updates#runtime-updates"
+                    >
+                      Update your runtime{' '}
+                    </a>
+                    or contact your hosting provider.
+                  </p>
+                </>
+              )}
+            </>
           )}
         </div>
       </div>
       <UpdatePreferences />
+      <div className="inner-section relative mt-4 space-y-8">
+        <h2 className="h3">Access Key</h2>
+        <p className="leading-5">
+          Reveal or show your Landscape Access Key below to sign in to other
+          browsers and mobile applications.
+        </p>
+        <ShipCode />
+      </div>
     </>
   );
 };
