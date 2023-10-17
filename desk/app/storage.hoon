@@ -10,13 +10,15 @@
 +$  versioned-state
   $%  state-zero
       state-one
+      state-two
   ==
 ::
 +$  state-zero  [%0 =credentials:zero:past =configuration:zero:past]
-+$  state-one   [%1 =credentials =configuration]
++$  state-one   [%1 =credentials:one:past =configuration:one:past]
++$  state-two   [%2 =credentials =configuration]
 --
 ::
-=|  state-one
+=|  state-two
 =*  state  -
 ::
 %-  agent:dbug
@@ -41,13 +43,15 @@
 ++  on-save  !>(state)
 ++  on-load
   |=  =vase
+  |^
   =/  old  ((soft versioned-state) q.vase)
   ?~  old  on-init
   =/  old  u.old
-  |^
+  |-
   ?-  -.old
-    %1  `this(state old)
-    %0  `this(state (state-0-to-1 old))
+    %0  $(old (state-0-to-1 old))
+    %1  $(old (state-1-to-2 old))
+    %2  `this(state old)
   ==
   ++  state-0-to-1
     |=  zer=state-zero
@@ -56,12 +60,31 @@
         credentials.zer
         (configuration-0-to-1 configuration.zer)
     ==
+  ::
   ++  configuration-0-to-1
     |=  conf=configuration:zero:past
-    ^-  ^configuration
+    ^-  configuration:one:past
     :*  buckets.conf
         current-bucket.conf
         ''
+    ==
+  ::
+  ++  state-1-to-2
+    |=  one=state-one
+    ^-  state-two
+    :*  %2
+        credentials.one
+        (configuration-1-to-2 configuration.one)
+    ==
+  ::
+  ++  configuration-1-to-2
+    |=  conf=configuration:one:past
+    ^-  ^configuration
+    :*  buckets.conf
+        current-bucket.conf
+        region.conf
+        ''
+        %credentials
     ==
   --
 ::
@@ -127,6 +150,12 @@
     ::
         %remove-bucket
       state(buckets.configuration (~(del in buckets.configuration) bucket.act))
+    ::
+        %set-presigned-url
+      state(presigned-url.configuration url.act)
+    ::
+        %toggle-service
+      state(service.configuration service.act)
     ==
   --
 ::

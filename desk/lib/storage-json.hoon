@@ -14,6 +14,8 @@
         [%add-bucket so:dejs]
         [%remove-bucket so:dejs]
         [%set-current-bucket so:dejs]
+        [%set-presigned-url so:dejs]
+        [%toggle-service (su:dejs (perk %presigned-url %credentials ~))]
     ==
   --
 ::
@@ -30,6 +32,8 @@
           %remove-bucket       [%'removeBucket' s+bucket.upd]
           %set-endpoint        [%'setEndpoint' s+endpoint.upd]
           %set-access-key-id   [%'setAccessKeyId' s+access-key-id.upd]
+          %set-presigned-url   [%'setPresignedUrl' s+url.upd]
+          %toggle-service      [%'toggleService' s+service.upd]
           %set-secret-access-key
         [%'setSecretAccessKey' s+secret-access-key.upd]
       ::
@@ -47,6 +51,8 @@
         :~  [%buckets a+(turn ~(tap in buckets.configuration.upd) |=(a=@t s+a))]
             [%'currentBucket' s+current-bucket.configuration.upd]
             [%'region' s+region.configuration.upd]
+            [%'service' s+service.configuration.upd]
+            [%'presignedUrl' s+presigned-url.configuration.upd]
         ==
       ==
   ==
