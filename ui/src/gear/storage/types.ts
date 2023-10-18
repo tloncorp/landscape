@@ -2,34 +2,29 @@ import { S3Client } from '@aws-sdk/client-s3';
 
 export type Status = 'initial' | 'idle' | 'loading' | 'success' | 'error';
 
-export interface StorageConfigurationS3 {
+export type StorageService = 'presigned-url' | 'credentials';
+
+export interface StorageConfiguration {
   buckets: Set<string>;
   currentBucket: string;
   region: string;
+  presignedUrl: string;
+  service: StorageService;
 }
 
-export interface StorageCredentialsS3 {
+export interface StorageCredentials {
   endpoint: string;
   accessKeyId: string;
   secretAccessKey: string;
 }
 
-export interface StorageCredentialsTlonHosting {
-  endpoint: string;
-  token: string;
-}
-
-export type StorageBackend = 's3' | 'tlon-hosting';
-
 export interface BaseStorageState {
   loaded?: boolean;
   hasCredentials?: boolean;
-  backend: StorageBackend;
   s3: {
-    configuration: StorageConfigurationS3;
-    credentials: StorageCredentialsS3 | null;
+    configuration: StorageConfiguration;
+    credentials: StorageCredentials | null;
   };
-  tlonHosting: StorageCredentialsTlonHosting;
   [ref: string]: unknown;
 }
 
@@ -70,20 +65,21 @@ export interface Uploader {
 }
 
 export interface FileStore {
-  // Only one among S3 client or Tlon credentials will be set at a given time.
-  s3Client: S3Client | null;
-  tlonHostingCredentials: StorageCredentialsTlonHosting | null;
+  client: S3Client | null;
   uploaders: Record<string, Uploader>;
   getUploader: (key: string) => Uploader;
-  createS3Client: (s3: StorageCredentialsS3, region: string) => void;
-  setTlonHostingCredentials: (credentials: StorageCredentialsTlonHosting) => void;
+  createClient: (s3: StorageCredentials, region: string) => void;
   update: (key: string, updateFn: (uploader: Uploader) => void) => void;
   uploadFiles: (
     uploader: string,
     files: FileList | null,
-    bucket: string
+    config: StorageConfiguration
   ) => Promise<void>;
-  upload: (uploader: string, upload: Upload, bucket: string) => Promise<void>;
+  upload: (
+    uploader: string,
+    upload: Upload,
+    config: StorageConfiguration
+  ) => Promise<void>;
   clear: (uploader: string) => void;
   updateFile: (
     uploader: string,
@@ -100,8 +96,8 @@ export interface UploadInputProps {
   id: string;
 }
 
-export interface StorageUpdateCredentialsS3 {
-  credentials: StorageCredentialsS3;
+export interface StorageUpdateCredentials {
+  credentials: StorageCredentials;
 }
 
 export interface StorageUpdateConfiguration {
@@ -139,8 +135,16 @@ export interface StorageUpdateRegion {
   setRegion: string;
 }
 
+export interface StorageUpdateToggleService {
+  toggleService: string;
+}
+
+export interface StorageUpdateSetPresignedUrl {
+  setPresignedUrl: string;
+}
+
 export declare type StorageUpdate =
-  | StorageUpdateCredentialsS3
+  | StorageUpdateCredentials
   | StorageUpdateConfiguration
   | StorageUpdateCurrentBucket
   | StorageUpdateAddBucket
@@ -148,4 +152,6 @@ export declare type StorageUpdate =
   | StorageUpdateEndpoint
   | StorageUpdateAccessKeyId
   | StorageUpdateSecretAccessKey
-  | StorageUpdateRegion;
+  | StorageUpdateRegion
+  | StorageUpdateToggleService
+  | StorageUpdateSetPresignedUrl;

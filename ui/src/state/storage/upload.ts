@@ -9,12 +9,12 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   FileStore,
   Status,
-  StorageCredentialsS3,
-  StorageCredentialsTlonHosting,
-  Uploader
+  StorageConfiguration,
+  StorageCredentials,
+  Uploader,
 } from '@/gear';
 import { useStorage } from './storage';
-import { StorageState } from './reducer';
+import api from '@/api';
 
 function prefixEndpoint(endpoint: string) {
   return endpoint.match(/https?:\/\//) ? endpoint : `https://${endpoint}`;
@@ -29,12 +29,11 @@ function imageSize(url: string) {
 }
 
 export const useFileStore = create<FileStore>((set, get) => ({
-  s3Client: null,
-  tlonHostingCredentials: null,
+  client: null,
   uploaders: {},
-  createS3Client: (credentials: StorageCredentialsS3, region: string) => {
+  createClient: (credentials: StorageCredentials, region: string) => {
     const endpoint = new URL(prefixEndpoint(credentials.endpoint));
-    const s3Client = new S3Client({
+    const client = new S3Client({
       endpoint: {
         protocol: endpoint.protocol.slice(0, -1),
         hostname: endpoint.host,
@@ -45,10 +44,7 @@ export const useFileStore = create<FileStore>((set, get) => ({
       credentials,
       forcePathStyle: true,
     });
-    set({ s3Client, tlonHostingCredentials: null });
-  },
-  setTlonHostingCredentials: (credentials: StorageCredentialsTlonHosting) => {
-    set({ s3Client: null, tlonHostingCredentials: credentials });
+    set({ client });
   },
   getUploader: (key) => {
     const { uploaders } = get();
@@ -58,12 +54,14 @@ export const useFileStore = create<FileStore>((set, get) => ({
   update: (key: string, updateFn: (uploader: Uploader) => void) => {
     set(produce((draft) => updateFn(draft.uploaders[key])));
   },
-  uploadFiles: async (uploader, files, bucket) => {
+  uploadFiles: async (uploader, files, config) => {
     if (!files) return;
 
     const fileList = [...files].map((file) => ({
       file,
-      key: `${window.ship}/${deSig(formatDa(unixToDa(new Date().getTime())))}-${file.name}`,
+      key: `${window.ship}/${deSig(formatDa(unixToDa(new Date().getTime())))}-${
+        file.name
+      }`,
       status: 'initial' as Status,
       url: '',
       size: [0, 0] as [number, number],
@@ -77,29 +75,46 @@ export const useFileStore = create<FileStore>((set, get) => ({
       draft.files = { ...draft.files, ...newFiles };
     });
 
-    fileList.forEach((f) => upload(uploader, f, bucket));
+    fileList.forEach((f) => upload(uploader, f, config));
   },
-  upload: async (uploader, upload, bucket) => {
-    const { s3Client, tlonHostingCredentials, updateStatus, updateFile } = get();
+  upload: async (uploader, upload, config) => {
+    const { client, updateStatus, updateFile } = get();
 
     const { key, file } = upload;
     updateStatus(uploader, key, 'loading');
 
     // Logic for uploading with Tlon Hosting storage.
-    if (tlonHostingCredentials) {
+    if (config.service === 'presigned-url' && config.presignedUrl) {
+      // The first step is to send the PUT request to the proxy, which will
+      // respond with a redirect to a pre-signed url to the actual bucket. The
+      // token is in the url, not a header, so that it disappears after the
+      // redirect.
       const requestOptions = {
-          method: 'PUT',
-          headers: {
-            'Content-Type': file.type,
-          },
-          body: file
+        method: 'PUT',
+        headers: {
+          'Content-Type': file.type,
+        },
+        body: file,
       };
-      const { endpoint, token } = tlonHostingCredentials;
-      const url = `${endpoint}/${key}`;
+      const { presignedUrl } = config;
+      const url = `${presignedUrl}/${key}`;
+      const token = await api.scry<string>({
+        app: 'genuine',
+        path: '/secret',
+      });
       const urlWithToken = `${url}?token=${token}`;
       fetch(urlWithToken, requestOptions)
-        .then(() => {
-          const fileUrl = url.split('?')[0];
+        .then(async (response) => {
+          if (response.status !== 200) {
+            const body = await response.text();
+            throw new Error(body || 'Incorrect response status');
+          }
+          // When the PUT succeeded, we fetch the actual URL of the file. We do
+          // this to avoid having to proxy every single GET request, and to
+          // avoid remembering which file corresponds to which bucket, when
+          // using multiple buckets internally.
+          const fileUrlResponse = await fetch(url);
+          const fileUrl = await fileUrlResponse.json();
           updateStatus(uploader, key, 'success');
           imageSize(fileUrl).then((s) =>
             updateFile(uploader, key, {
@@ -120,9 +135,9 @@ export const useFileStore = create<FileStore>((set, get) => ({
     }
 
     // Logic for uploading with S3.
-    if (s3Client) {
+    if (config.service === 'credentials' && client) {
       const command = new PutObjectCommand({
-        Bucket: bucket,
+        Bucket: config.currentBucket,
         Key: key,
         Body: file,
         ContentType: file.type,
@@ -130,9 +145,9 @@ export const useFileStore = create<FileStore>((set, get) => ({
         ACL: 'public-read',
       });
 
-      const url = await getSignedUrl(s3Client, command);
+      const url = await getSignedUrl(client, command);
 
-      s3Client
+      client
         .send(command)
         .then(() => {
           const fileUrl = url.split('?')[0];
@@ -153,7 +168,7 @@ export const useFileStore = create<FileStore>((set, get) => ({
           );
           console.log({ error });
         });
-      }
+    }
   },
   clear: (uploader) => {
     get().update(uploader, (draft) => {
@@ -195,11 +210,14 @@ export const useFileStore = create<FileStore>((set, get) => ({
   },
 }));
 
-const emptyUploader = (key: string, bucket: string): Uploader => ({
+const emptyUploader = (
+  key: string,
+  config: StorageConfiguration
+): Uploader => ({
   files: {},
   getMostRecent: () => useFileStore.getState().getMostRecent(key),
   uploadFiles: async (files) =>
-    useFileStore.getState().uploadFiles(key, files, bucket),
+    useFileStore.getState().uploadFiles(key, files, config),
   clear: () => useFileStore.getState().clear(key),
   removeByURL: (url) => useFileStore.getState().removeByURL(key, url),
   prompt: () => {
@@ -210,73 +228,69 @@ const emptyUploader = (key: string, bucket: string): Uploader => ({
     input.accept = 'image/*,video/*,audio/*';
     input.addEventListener('change', async (e) => {
       const { files } = e.target as HTMLInputElement;
-      useFileStore.getState().uploadFiles(key, files, bucket);
+      useFileStore.getState().uploadFiles(key, files, config);
       input.remove();
     });
+    // Add to DOM for mobile Safari support
+    input.classList.add('hidden');
+    document.body.appendChild(input);
     input.click();
   },
 });
 
-function useS3Client() {
+function useClient() {
   const {
-    backend,
     s3: { credentials, configuration },
-    tlonHosting,
   } = useStorage();
-  const { s3Client, createS3Client, setTlonHostingCredentials } = useFileStore();
+  const { client, createClient } = useFileStore();
   const [hasCredentials, setHasCredentials] = useState(false);
 
   useEffect(() => {
     const hasCreds =
-      backend === "s3" ?
-        credentials?.accessKeyId &&
-        credentials?.endpoint &&
-        credentials?.secretAccessKey :
-      backend === "tlon-hosting" ?
-        !!tlonHosting: false
+      configuration.service === 'credentials' &&
+      credentials?.accessKeyId &&
+      credentials?.endpoint &&
+      credentials?.secretAccessKey;
     if (hasCreds) {
       setHasCredentials(true);
     }
-  }, [credentials]);
+  }, [credentials, configuration]);
 
   const initClient = useCallback(async () => {
     if (credentials) {
-      if (backend === "s3") {
-        await createS3Client(credentials, configuration.region);
-      }
-      if (backend === "tlon-hosting") {
-        await setTlonHostingCredentials(tlonHosting);
-      }
+      await createClient(credentials, configuration.region);
     }
-  }, [createS3Client, credentials, configuration]);
+  }, [createClient, credentials, configuration]);
 
   useEffect(() => {
-    if (hasCredentials && !s3Client) {
+    if (hasCredentials && !client) {
       initClient();
     }
-  }, [s3Client, hasCredentials, initClient]);
+  }, [client, hasCredentials, initClient]);
 
-  return s3Client;
+  return client;
 }
 
 const selUploader = (key: string) => (s: FileStore) => s.uploaders[key];
 export function useUploader(key: string): Uploader | undefined {
   const {
-    tlonHosting: { token },
-    s3: { configuration: { currentBucket } },
+    s3: { configuration },
   } = useStorage();
-  const s3Client = useS3Client();
+  const client = useClient();
   const uploader = useFileStore(selUploader(key));
 
   useEffect(() => {
-    if ((s3Client && currentBucket) || token) {
+    if (
+      (client && configuration.service === 'credentials') ||
+      (configuration.service === 'presigned-url' && configuration.presignedUrl)
+    ) {
       useFileStore.setState(
         produce((draft) => {
-          draft.uploaders[key] = emptyUploader(key, currentBucket);
+          draft.uploaders[key] = emptyUploader(key, configuration);
         })
       );
     }
-  }, [s3Client, currentBucket, key, token]);
+  }, [client, configuration, key]);
 
   return uploader;
 }
