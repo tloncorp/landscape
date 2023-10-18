@@ -67,7 +67,7 @@ export const StoragePrefs = () => {
     useCallback(() => {
       return api.trackedPoke<
         StorageUpdateToggleService,
-        { storageUpdate: StorageUpdate }
+        { 'storage-update': StorageUpdate }
       >(
         toggleService(hostedStorage ? 'credentials' : 'presigned-url'),
         { app: 'storage', path: '/all' },
