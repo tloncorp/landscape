@@ -102,6 +102,28 @@ const region = (json: StorageUpdate, state: StorageState): StorageState => {
   return state;
 };
 
+const presignedUrl = (
+  json: StorageUpdate,
+  state: StorageState
+): StorageState => {
+  const data = _.get(json, 'setPresignedUrl', false);
+  if (data && state.s3.configuration) {
+    state.s3.configuration.presignedUrl = data;
+  }
+  return state;
+};
+
+const toggleService = (
+  json: StorageUpdate,
+  state: StorageState
+): StorageState => {
+  const data = _.get(json, 'toggleService', false);
+  if (data && state.s3.configuration) {
+    state.s3.configuration.service = data;
+  }
+  return state;
+};
+
 const reduce = [
   credentials,
   configuration,
@@ -112,6 +134,8 @@ const reduce = [
   accessKeyId,
   secretAccessKey,
   region,
+  presignedUrl,
+  toggleService,
 ];
 
 export default reduce;
