@@ -3,6 +3,7 @@ import { StorageUpdate } from '@/gear';
 import _ from 'lodash';
 import { BaseStorageState } from '@/gear';
 import { BaseState } from '../base';
+import { hostingUploadURL } from '@/logic/utils';
 
 export type StorageState = BaseStorageState & BaseState<BaseStorageState>;
 
@@ -27,8 +28,10 @@ const configuration = (
       buckets: new Set(data.buckets),
       currentBucket: data.currentBucket,
       region: data.region,
-      presignedUrl: data.presignedUrl,
-      service: data.service,
+      // if landscape is not up to date we need to default these so the
+      // client init logic still works
+      presignedUrl: data.presignedUrl || hostingUploadURL,
+      service: data.service || 'credentials',
     };
   }
   return state;
