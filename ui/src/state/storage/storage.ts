@@ -8,6 +8,7 @@ import {
   reduceStateN,
   BaseState,
 } from '../base';
+import { hostingUploadURL, isHosted } from '@/logic/utils';
 
 enableMapSet();
 
@@ -44,9 +45,30 @@ export const useStorage = createState<BaseStorageState>(
           }
           numLoads += 1;
           if (numLoads === 2) {
-            set({ loaded: true });
+            const {
+              s3: { credentials, configuration },
+            } = get();
+
+            if (!credentials?.endpoint && isHosted) {
+              set({
+                loaded: true,
+                s3: {
+                  credentials,
+                  configuration: {
+                    ...configuration,
+                    presignedUrl:
+                      configuration.presignedUrl || hostingUploadURL,
+                    service: 'presigned-url',
+                  },
+                },
+              });
+            } else {
+              set({ loaded: true });
+            }
           }
         }
       ),
   ]
 );
+
+window.useStorage = useStorage;
