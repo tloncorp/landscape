@@ -2,6 +2,16 @@ import { S3Client } from '@aws-sdk/client-s3';
 
 export type Status = 'initial' | 'idle' | 'loading' | 'success' | 'error';
 
+export type StorageService = 'presigned-url' | 'credentials';
+
+export interface StorageConfiguration {
+  buckets: Set<string>;
+  currentBucket: string;
+  region: string;
+  presignedUrl: string;
+  service: StorageService;
+}
+
 export interface StorageCredentials {
   endpoint: string;
   accessKeyId: string;
@@ -12,11 +22,7 @@ export interface BaseStorageState {
   loaded?: boolean;
   hasCredentials?: boolean;
   s3: {
-    configuration: {
-      buckets: Set<string>;
-      currentBucket: string;
-      region: string;
-    };
+    configuration: StorageConfiguration;
     credentials: StorageCredentials | null;
   };
   [ref: string]: unknown;
@@ -67,9 +73,13 @@ export interface FileStore {
   uploadFiles: (
     uploader: string,
     files: FileList | null,
-    bucket: string
+    config: StorageConfiguration
   ) => Promise<void>;
-  upload: (uploader: string, upload: Upload, bucket: string) => Promise<void>;
+  upload: (
+    uploader: string,
+    upload: Upload,
+    config: StorageConfiguration
+  ) => Promise<void>;
   clear: (uploader: string) => void;
   updateFile: (
     uploader: string,
@@ -125,6 +135,14 @@ export interface StorageUpdateRegion {
   setRegion: string;
 }
 
+export interface StorageUpdateToggleService {
+  toggleService: string;
+}
+
+export interface StorageUpdateSetPresignedUrl {
+  setPresignedUrl: string;
+}
+
 export declare type StorageUpdate =
   | StorageUpdateCredentials
   | StorageUpdateConfiguration
@@ -134,4 +152,6 @@ export declare type StorageUpdate =
   | StorageUpdateEndpoint
   | StorageUpdateAccessKeyId
   | StorageUpdateSecretAccessKey
-  | StorageUpdateRegion;
+  | StorageUpdateRegion
+  | StorageUpdateToggleService
+  | StorageUpdateSetPresignedUrl;
