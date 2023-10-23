@@ -26,7 +26,7 @@ export const useStorage = createState<BaseStorageState>(
         buckets: new Set(),
         currentBucket: '',
         region: '',
-        presignedUrl: '',
+        presignedUrl: hostingUploadURL,
         service: 'credentials',
       },
       credentials: null,
@@ -70,5 +70,3 @@ export const useStorage = createState<BaseStorageState>(
       ),
   ]
 );
-
-window.useStorage = useStorage;
