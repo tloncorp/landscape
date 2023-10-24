@@ -130,7 +130,9 @@
     =/  group   i.t.t.path
     ?~  (~(has in outstanding-pokes) [target group])  `this
     :_  this(outstanding-pokes (~(put in outstanding-pokes) [target group]))
-    ~[[%pass path %agent [target %reel] %poke %reel-want-token-link !>(group)]]
+    :~  [%pass path %agent [target %reel] %poke %reel-want-token-link !>(group)]
+        [%pass /expire/(scot %p our.bowl)/[group] %arvo %b [%wait (add ~h1 now.bowl)]]
+    ==
   ==
 ::
 ++  on-leave  on-leave:def
@@ -150,12 +152,23 @@
   ==
 ::
 ++  on-arvo
-  |=  [=wire sign=sign-arvo]
+  |=  [=wire =sign-arvo]
   ^-  (quip card:agent:gall _this)
-  ?>  ?=([%set-ship ~] wire)
-  ?>  ?=([%khan %arow *] sign)
-  ?:  ?=(%.n -.p.sign)
-    ((slog 'reel: fetch bait ship failed' p.p.sign) `this)
-  `this
+  ?+  wire  (on-arvo:def wire sign-arvo)
+      [%set-ship ~]
+    ?>  ?=([%khan %arow *] sign-arvo)
+    ?:  ?=(%.n -.p.sign-arvo)
+      ((slog 'reel: fetch bait ship failed' p.p.sign-arvo) `this)
+    `this
+      [%expire @ @ ~]
+    ?+  sign-arvo  (on-arvo:def wire sign-arvo)
+        [%behn %wake *]
+      =/  target  (slav %p i.t.wire)
+      =/  group   i.t.t.wire
+      ?~  error.sign-arvo
+        `this(outstanding-pokes (~(del in outstanding-pokes) [target group]))
+      (on-arvo:def wire sign-arvo)
+    ==
+  ==
 ++  on-fail   on-fail:def
 --
