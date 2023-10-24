@@ -170,6 +170,7 @@
     ?:  ?=(%.n -.p.sign-arvo)
       ((slog 'reel: fetch bait ship failed' p.p.sign-arvo) `this)
     `this
+  ::
       [%expire @ @ ~]
     ?+  sign-arvo  (on-arvo:def wire sign-arvo)
         [%behn %wake *]
