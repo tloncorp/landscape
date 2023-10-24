@@ -6,6 +6,7 @@
   $%  state-0
       state-1
       state-2
+      state-3
   ==
 ::
 ::  vic: URL of bait service
@@ -32,11 +33,18 @@
       our-metadata=(map cord metadata:reel)
       outstanding-pokes=(set (pair ship cord))
   ==
++$  state-3
+  $:  %3
+      vic=@t
+      civ=ship
+      our-metadata=(map cord metadata:reel)
+      outstanding-pokes=(set (pair ship cord))
+  ==
 ++  url-for-token
   |=  [vic=cord our=ship token=cord]
   (crip "{(trip vic)}{(trip (scot %p our))}/{(trip token)}")
 --
-=|  state-2
+=|  state-3
 =*  state  -
 ::
 %-  agent:dbug
@@ -55,12 +63,14 @@
   ^-  (quip card _this)
   =/  old  !<(versioned-state old-state)
   ?-  -.old
-      %2
+      %3
     `this(state old)
+      %2
+    `this(state [%3 vic.old civ.old our-metadata.old ~])
       %1
-    `this(state [%2 'https://tlon.network/lure/' ~loshut-lonreg ~ ~])
+    `this(state [%3 'https://tlon.network/lure/' ~loshut-lonreg ~ ~])
       %0
-    `this(state [%2 'https://tlon.network/lure/' ~loshut-lonreg ~ ~])
+    `this(state [%3 'https://tlon.network/lure/' ~loshut-lonreg ~ ~])
   ==
 ::
 ++  on-poke
