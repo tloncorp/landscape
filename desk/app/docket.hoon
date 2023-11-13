@@ -703,6 +703,7 @@
     ?:  =(suffix /desk/js)
       %-  inline-js-response
       (rap 3 'window.desk = "' u.des '";' ~)
+    =.  suffix  (turn suffix |=(s=@t (crip (en-urlt:html (trip s)))))
     =/  requested
       ?:  (~(has by glob) suffix)  suffix
       /index/html
