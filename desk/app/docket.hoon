@@ -656,28 +656,40 @@
     ?~  file            [glob 'file without filename' err]
     ?~  type            [glob (cat 3 'file without type: ' u.file) err]
     ?^  code            [glob (cat 3 'strange encoding: ' u.code) err]
-    =/  filp            (rush u.file fip)
-    ?~  filp            [glob (cat 3 'strange filename: ' u.file) err]
+    =/  filp            (fip u.file)
     ::  ignore metadata files and other "junk"
     ::TODO  consider expanding coverage
     ::
-    ?:  =('.DS_Store' (rear `path`u.filp))
+    ?:  =('.DS_Store' (rear `path`filp))
       [glob err]
     ::  make sure to exclude the top-level dir from the path
     ::
     :_  err
-    %+  ~(put by glob)  (slag 1 `path`u.filp)
+    %+  ~(put by glob)  (slag 1 `path`filp)
     [u.type (as-octs:mimes:html body)]
   ::
+  ++  split-at
+    =|  fst=tape
+    |=  [=tape char=@tD]
+    ^+  [fst fst]
+    ?~  tape  [fst tape]
+    ?:  =(i.tape char)
+      [fst t.tape]
+    $(tape t.tape, fst (snoc fst i.tape))
+  ::
   ++  fip
-    =,  de-purl:html
-    ;:  cook
-      |=(pork (weld q (drop p)))
-      deft
-      |=(a=cord (rash a (more fas smeg))) 
-      crip 
-      (star ;~(pose (cold '%20' (just ' ')) next))
-    ==
+    |=  fil=@t
+    =/  fil  (trip fil)
+    =^  ext  fil  (split-at (flop fil) '.')
+    =/  ext  (crip (flop ext))
+    =.  fil  (flop fil)
+    =-  (snoc - ext)
+    %+  turn
+      (scan fil (most fas (star ;~(less fas next))))
+    |=  t=^tape
+    %-  crip
+    (en-urlt:html t)
+  ::
   ::
   ++  inline-js-response
     |=  js=cord
