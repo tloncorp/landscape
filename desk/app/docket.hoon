@@ -679,11 +679,8 @@
   ::
   ++  fip
     |=  fil=@t
-    =/  fil  (trip fil)
-    =^  ext  fil  (split-at (flop fil) '.')
-    =/  ext  (crip (flop ext))
-    =.  fil  (flop fil)
-    =-  (snoc - ext)
+    =/  [fil=tape ext=tape]  (split-at (trip fil) '.')
+    =-  (snoc - (crip ext))
     %+  turn
       (scan fil (most fas (star ;~(less fas next))))
     |=  t=^tape
