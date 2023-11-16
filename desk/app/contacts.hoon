@@ -447,8 +447,8 @@
       ==
       ::
         ?(act:base:mar %contact-action-0)
-      ?>  =(our src):bowl
       =/  act  !<(action vase)
+      ?>  |(=(-.act %heed) =(our src):bowl)
       ?-  -.act
         %anon  p-anon:pub
         %edit  (p-edit:pub p.act)
