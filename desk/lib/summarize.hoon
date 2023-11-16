@@ -1,6 +1,6 @@
 ::  summarize: utilities for summarizing groups/chat state in various ways
 ::
-/-  chat, groups
+/-  c=channels, ct=chat, chat=chat-2, groups
 ::
 |_  [our=@p now=@da]
 ::  +range: period of time to summarize over
@@ -14,6 +14,48 @@
   [(scot %p our) term (scot %da now) spur]
 ::
 ++  summarize-activity
+  ?:  .^(? %gu (scry-path %channels /$))
+    summarize-activity-new-groups
+  summarize-activity-old-groups
+::
+++  summarize-activity-new-groups
+  ^-  $:  sent=@ud
+          received=@ud
+          most-sent-group=@t
+      ==
+  =-  :+  s  r
+      =/  g=flag:groups
+        =<  -
+        ::TODO  crashes if no groups
+        %+  snag  0
+        %+  sort  ~(tap by g)
+        |=([[* a=@ud] [* b=@ud]] (gth a b))
+      =<  title.meta
+      .^  group:groups
+        %gx
+        (scry-path %groups /groups/(scot %p p.g)/[q.g]/group)
+      ==
+  %+  roll
+    %~  tap  by
+    .^  channels:c
+      %gx
+      (scry-path %channels /channels/channels)
+    ==
+  |=  [[n=nest:c channel:c] g=(map flag:groups @ud) s=@ud r=@ud]
+  ?.  ?=(%chat kind.n)  [g s r]
+  =+  .^  paged-posts:c
+        %gx
+        %+  scry-path  %channels
+        /chat/(scot %p ship.n)/[name.n]/posts/newer/(scot %ud (sub now range))/(scot %ud limit)/outline/channel-posts
+      ==
+  :-  %+  ~(put by g)  group.perm
+      (add (~(gut by g) group.perm 0) (wyt:on-posts:c posts))
+  %+  roll  (tap:on-posts:c posts)
+  |=  [[id-post:c p=(unit post:c)] s=_s r=_r]
+  ?~  p  [s r]
+  ?:(=(our author.u.p) [+(s) r] [s +(r)])
+::
+++  summarize-activity-old-groups
   ^-  $:  sent=@ud
           received=@ud
           most-sent-group=@t
@@ -31,7 +73,7 @@
         (scry-path %groups /groups/(scot %p p.g)/[q.g]/group)
       ==
   %+  roll
-    %~  tap  in
+    %~  tap  by
     .^  (map flag:chat chat:chat)
       %gx
       (scry-path %chat /chats/chats)
@@ -50,6 +92,54 @@
   ?:(=(our author) [+(s) r] [s +(r)])
 ::
 ++  summarize-inactivity
+  ?:  .^(? %gu (scry-path %channels /$))
+    summarize-inactivity-new-groups
+  summarize-inactivity-old-groups
+::
+++  summarize-inactivity-new-groups
+  ^-  $:  unread-dms=@ud  ::  unread dm count
+          unread-etc=@ud  ::  unread chats count
+          top-group=@t    ::  most active group
+          top-channel=@t  ::  most active channel
+      ==
+  =+  .^(=unreads:ct %gx (scry-path %chat /unreads/chat-unreads))
+  ::  accumulate unread counts
+  ::
+  =/  dum=@ud
+    %-  ~(rep by unreads)
+    |=  [[w=whom:ct unread:unreads:ct] n=@ud]
+    (add n count)
+  :-  dum
+  ::  gather all chat channels & their groups & unread counts
+  ::
+  =/  [duc=@ud faz=(list [g=flag:groups n=nest:c u=@ud])]
+    %+  roll
+      %~  tap  by
+      .^(channels:c %gx (scry-path %channels /channels/channels))
+    =+  .^(=unreads:c %gx (scry-path %channels /unreads/channel-unreads))
+    |=  [[n=nest:c channel:c] duc=@ud faz=(list [flag:groups nest:c @ud])]
+    ?.  ?=(%chat kind.n)  [duc faz]  ::  ignore non-chat channels for now
+    =/  =unread:c  (~(gut by unreads) n *unread:c)
+    :-  (add duc count.unread)
+    [[group.perm n count.unread] faz]
+  :-  duc
+  =.  faz  (sort faz |=([[* * a=@ud] [* * b=@ud]] (gth a b)))
+  ::  get display titles of most active channel and its group
+  ::
+  ::NOTE  in rare cases, we might not know of the existence of the associated
+  ::      group. simply skip past it and try the next one...
+  =+  .^(=groups:groups %gx (scry-path %groups /groups/groups))
+  |-
+  ?~  faz  ['???' '???']  ::TODO  better copy
+  ~|  i.faz
+  ?.  (~(has by groups) g.i.faz)
+    $(faz t.faz)
+  =/  =group:^groups  (~(got by groups) g.i.faz)
+  ?~  chat=(~(get by channels.group) n.i.faz)
+    $(faz t.faz)
+  [title.meta.group title.meta.u.chat]
+::
+++  summarize-inactivity-old-groups
   ^-  $:  unread-dms=@ud  ::  unread dm count
           unread-etc=@ud  ::  unread chats count
           top-group=@t    ::  most active group
@@ -71,7 +161,7 @@
   ::
   =/  faz=(list [g=flag:chat c=flag:chat n=@ud])
     %+  turn
-      %~  tap  in
+      %~  tap  by
       .^  (map flag:chat chat:chat)
         %gx
         (scry-path %chat /chats/chats)
