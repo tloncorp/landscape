@@ -155,13 +155,14 @@ export const APPS = [
     source: '~dister-dozzod-niblyx-malnus',
   },
   {
-    title: '%blog',
-    description: 'a tool for publishing',
-    color: '#573C7C',
+    title: 'Common Blog',
+    description: 'Self-hosted writing and publishing.',
+    color: '#EFF0F4',
     link: '/apps/blog',
     section: SECTIONS.USEFUL,
     desk: 'blog',
-    source: '~hanrut-sillet-dachus-tiprel',
+    source: '~dister-bonbud-macryg',
+    image: 'https://raw.githubusercontent.com/thecommons-urbit/blog/main/assets/tile.png'
   },
   {
     title: 'Board',
