@@ -9,7 +9,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    name: "Bumps versions and pushes to master"
+    name: "Bumps versions and pushes to develop"
     steps:
       - uses: actions/checkout@v3
         with:
