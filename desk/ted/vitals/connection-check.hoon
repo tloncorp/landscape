@@ -10,7 +10,7 @@
 |=  arg=vase
 =/  m  (strand ,vase)
 ^-  form:m
-=+  !<(target=ship arg)
+=+  !<([~ target=ship] arg)
 ;<  our=@p  bind:m  get-our:io
 |^
   ::  early exit; check if we have live path to target
@@ -33,7 +33,13 @@
   ::  set pending to %trying-local
   ;<  ~  bind:m  (update-status [%trying-local ~])
   ::  check if we can contact our own galaxy
-  ;<  gqos=qos:ames  bind:m  (scry:io qos:ames ~[%gx %vitals %galaxy %vitals-qos])
+  ;<    gqos=qos:ames
+      bind:m
+    =/  mm  (strand ,qos:ames)
+    ^-  form:mm
+    ?:  ?=(%czar (clan:title our))
+      (pure:mm [%live *@da])
+    (scry:io qos:ames ~[%gx %vitals %galaxy %vitals-qos])
   ?.  ?=(%live -.gqos)
     (post-result [%no-our-galaxy last-contact.gqos])
   ::  set pending to %trying-target
@@ -104,12 +110,15 @@
   ^-  update:vitals
   [target now %pending pending]
 ++  get-qos
-  |=  =ship
+  |=  peer=ship
   =/  m  (strand ,qos:ames)
   ^-  form:m
-  ;<    state=ship-state:ames
-      bind:m
-    (scry:io ship-state:ames ~[%ax %$ %peers (scot %p ship)])
+  ;<  peers=(map ship ?(%alien %known))  bind:m
+    (scry:io (map ship ?(%alien %known)) ~[%ax %$ %peers])
+  ?.  (~(has by peers) peer)
+    (pure:m [%dead *@da])
+  ;<  state=ship-state:ames  bind:m
+    (scry:io ship-state:ames ~[%ax %$ %peers (scot %p peer)])
   (pure:m (simplify-qos:lib-vitals state))
 ++  galaxy-down
   |=  galaxy=ship

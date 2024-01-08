@@ -138,7 +138,7 @@
           %landscape
           %vitals-connection-check
           %noun
-          !>(ship)
+          !>((some ship))
       ==
     ?:  ?=(%pending -.status.u.stat)
       cor
@@ -153,7 +153,7 @@
         %landscape
         %vitals-connection-check
         %noun
-        !>(ship)
+        !>((some ship))
     ==
   ::
   ::  public pokes
