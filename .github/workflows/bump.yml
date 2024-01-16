@@ -12,8 +12,6 @@ jobs:
     name: "Bumps versions and pushes to develop"
     steps:
       - uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.REPO_TOKEN }}
       - name: Bump
         run: sed -i "s/version+\[.*]/version+[${{ github.event.inputs.tag }}]/" desk/desk.docket-0
       - name: Commit
