@@ -12,9 +12,9 @@
 ^-  form:m
 =+  !<([~ target=ship] arg)
 ;<  our=@p  bind:m  get-our:io
+;<  now=@da  bind:m  get-time:io
 |^
   ::  early exit; check if we have live path to target
-  ;<  now=@da  bind:m  get-time:io
   ;<  tqos=qos:ames  bind:m  (get-qos target)
   ?:  ?&  ?=(%live -.tqos)
           (gth last-contact.tqos (sub now info-timeout:vitals))
@@ -33,13 +33,7 @@
   ::  set pending to %trying-local
   ;<  ~  bind:m  (update-status [%trying-local ~])
   ::  check if we can contact our own galaxy
-  ;<    gqos=qos:ames
-      bind:m
-    =/  mm  (strand ,qos:ames)
-    ^-  form:mm
-    ?:  ?=(%czar (clan:title our))
-      (pure:mm [%live *@da])
-    (scry:io qos:ames ~[%gx %vitals %galaxy %vitals-qos])
+  ;<  gqos=qos:ames  bind:m  (scry:io qos:ames ~[%gx %vitals %galaxy %vitals-qos])
   ?.  ?=(%live -.gqos)
     (post-result [%no-our-galaxy last-contact.gqos])
   ::  set pending to %trying-target
@@ -102,21 +96,23 @@
   |=  =pending:vitals
   =/  m  (strand ,~)
   ^-  form:m
-  ;<  now=@da  bind:m  get-time:io
   %+  poke-our:io
     %vitals
   :-  %update-status
   !>
   ^-  update:vitals
   [target now %pending pending]
+::  thread version of +scry-qos in /=landscape=/lib/vitals/hoon
 ++  get-qos
   |=  peer=ship
   =/  m  (strand ,qos:ames)
   ^-  form:m
+  ?:  =(our peer)
+    (pure:m [%live now])
   ;<  peers=(map ship ?(%alien %known))  bind:m
     (scry:io (map ship ?(%alien %known)) ~[%ax %$ %peers])
   ?.  (~(has by peers) peer)
-    (pure:m [%dead *@da])
+    (pure:m [%unborn now])
   ;<  state=ship-state:ames  bind:m
     (scry:io ship-state:ames ~[%ax %$ %peers (scot %p peer)])
   (pure:m (simplify-qos:lib-vitals state))
