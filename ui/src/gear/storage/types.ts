@@ -8,6 +8,7 @@ export interface StorageConfiguration {
   buckets: Set<string>;
   currentBucket: string;
   region: string;
+  publicUrlBase: string;
   presignedUrl: string;
   service: StorageService;
 }
@@ -135,6 +136,10 @@ export interface StorageUpdateRegion {
   setRegion: string;
 }
 
+export interface StorageUpdatePublicUrlBase {
+  setPublicUrlBase: string;
+}
+
 export interface StorageUpdateToggleService {
   toggleService: string;
 }
@@ -153,5 +158,6 @@ export declare type StorageUpdate =
   | StorageUpdateAccessKeyId
   | StorageUpdateSecretAccessKey
   | StorageUpdateRegion
+  | StorageUpdatePublicUrlBase
   | StorageUpdateToggleService
   | StorageUpdateSetPresignedUrl;

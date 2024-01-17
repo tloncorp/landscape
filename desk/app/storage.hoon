@@ -11,14 +11,16 @@
   $%  state-zero
       state-one
       state-two
+      state-three
   ==
 ::
-+$  state-zero  [%0 =credentials:zero:past =configuration:zero:past]
-+$  state-one   [%1 =credentials:one:past =configuration:one:past]
-+$  state-two   [%2 =credentials =configuration]
++$  state-zero    [%0 =credentials:zero:past =configuration:zero:past]
++$  state-one     [%1 =credentials:one:past =configuration:one:past]
++$  state-two     [%2 =credentials:two:past =configuration:two:past]
++$  state-three   [%3 =credentials =configuration]
 --
 ::
-=|  state-two
+=|  state-three
 =*  state  -
 ::
 %-  agent:dbug
@@ -49,9 +51,10 @@
   =/  old  u.old
   |-
   ?-  -.old
-    %0  $(old (state-0-to-1 old))
+    %3  `this(state old)
+    %2  $(old (state-2-to-3 old))
     %1  $(old (state-1-to-2 old))
-    %2  `this(state old)
+    %0  $(old (state-0-to-1 old))
   ==
   ++  state-0-to-1
     |=  zer=state-zero
@@ -79,12 +82,29 @@
   ::
   ++  configuration-1-to-2
     |=  conf=configuration:one:past
-    ^-  ^configuration
+    ^-  configuration:two:past
     :*  buckets.conf
         current-bucket.conf
         region.conf
         ''
         %credentials
+    ==
+  ++  state-2-to-3
+    |=  two=state-two
+    ^-  state-three
+    :*  %3
+        credentials.two
+        (configuration-2-to-3 configuration.two)
+    ==
+  ++  configuration-2-to-3
+    |=  conf=configuration:two:past
+    ^-  ^configuration
+    :*  buckets.conf
+        current-bucket.conf
+        region.conf
+        presigned-url.conf
+        service.conf
+        ''
     ==
   --
 ::
@@ -138,6 +158,9 @@
     ::
         %set-region
       state(region.configuration region.act)
+    ::
+        %set-public-url-base
+      state(public-url-base.configuration public-url-base.act)
     ::
         %set-current-bucket
       %_  state

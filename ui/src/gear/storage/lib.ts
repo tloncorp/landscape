@@ -8,6 +8,7 @@ import {
   StorageUpdateAccessKeyId,
   StorageUpdateSecretAccessKey,
   StorageUpdateRegion,
+  StorageUpdatePublicUrlBase,
   StorageService,
   StorageUpdateSetPresignedUrl,
   StorageUpdateToggleService,
@@ -58,6 +59,13 @@ export const setSecretAccessKey = (
 export const setRegion = (region: string): Poke<StorageUpdateRegion> =>
   storageAction({
     'set-region': region,
+  });
+
+export const setPublicUrlBase = (
+  publicUrlBase: string
+): Poke<StorageUpdatePublicUrlBase> =>
+  storageAction({
+    'set-public-url-base': publicUrlBase,
   });
 
 export const setPresignedUrl = (
