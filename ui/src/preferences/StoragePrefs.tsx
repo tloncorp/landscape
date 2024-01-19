@@ -212,7 +212,7 @@ export const StoragePrefs = () => {
               </div>
               <div className="mb-8 flex flex-col space-y-2">
                 <label className="font-semibold" htmlFor="publicUrlBase">
-                  Public URL base
+                  Public URL base (normally unnecessary)
                 </label>
                 <div className="relative">
                   <input
