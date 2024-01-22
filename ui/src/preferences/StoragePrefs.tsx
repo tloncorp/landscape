@@ -20,11 +20,13 @@ interface CredentialsSubmit {
   accessId: string;
   accessSecret: string;
   region: string;
+  publicUrlBase: string;
   bucket: string;
 }
 
 type S3Update =
   | { 'set-region': string }
+  | { 'set-public-url-base': string }
   | { 'set-endpoint': string }
   | { 'set-access-key-id': string }
   | { 'set-secret-access-key': string }
@@ -60,6 +62,7 @@ export const StoragePrefs = () => {
       api.poke(storagePoke({ 'set-secret-access-key': data.accessSecret }));
       api.poke(storagePoke({ 'set-current-bucket': data.bucket }));
       api.poke(storagePoke({ 'set-region': data.region }));
+      api.poke(storagePoke({ 'set-public-url-base': data.publicUrlBase }));
     }, [])
   );
 
@@ -202,6 +205,23 @@ export const StoragePrefs = () => {
                     autoCorrect="off"
                     defaultValue={s3.configuration?.region}
                     {...register('region', { required: true })}
+                    className="input default-ring bg-gray-50"
+                  />
+                  {!loaded && <Spinner className="absolute top-1 right-2" />}
+                </div>
+              </div>
+              <div className="mb-8 flex flex-col space-y-2">
+                <label className="font-semibold" htmlFor="publicUrlBase">
+                  Public URL base (normally unnecessary)
+                </label>
+                <div className="relative">
+                  <input
+                    disabled={!loaded}
+                    id="publicUrlBase"
+                    type="text"
+                    autoCorrect="off"
+                    defaultValue={s3.configuration?.publicUrlBase}
+                    {...register('publicUrlBase')}
                     className="input default-ring bg-gray-50"
                   />
                   {!loaded && <Spinner className="absolute top-1 right-2" />}

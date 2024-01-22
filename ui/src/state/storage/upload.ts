@@ -145,17 +145,18 @@ export const useFileStore = create<FileStore>((set, get) => ({
         ACL: 'public-read',
       });
 
-      const url = await getSignedUrl(client, command);
+      const url = config.publicUrlBase
+        ? new URL(key, config.publicUrlBase).toString()
+        : await getSignedUrl(client, command).then((res) => res.split('?')[0]);
 
       client
         .send(command)
         .then(() => {
-          const fileUrl = url.split('?')[0];
           updateStatus(uploader, key, 'success');
-          imageSize(fileUrl).then((s) =>
+          imageSize(url).then((s) =>
             updateFile(uploader, key, {
               size: s,
-              url: fileUrl,
+              url,
             })
           );
         })

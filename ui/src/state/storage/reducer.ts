@@ -28,6 +28,7 @@ const configuration = (
       buckets: new Set(data.buckets),
       currentBucket: data.currentBucket,
       region: data.region,
+      publicUrlBase: data.publicUrlBase,
       // if landscape is not up to date we need to default these so the
       // client init logic still works
       presignedUrl: data.presignedUrl || hostingUploadURL,
@@ -105,6 +106,16 @@ const region = (json: StorageUpdate, state: StorageState): StorageState => {
   return state;
 };
 
+const publicUrlBase = (
+  json: StorageUpdate, state: StorageState
+): StorageState => {
+  const data = _.get(json, 'setPublicUrlBase', false);
+  if (data && state.s3.configuration) {
+    state.s3.configuration.publicUrlBase = data;
+  }
+  return state;
+};
+
 const presignedUrl = (
   json: StorageUpdate,
   state: StorageState
@@ -137,6 +148,7 @@ const reduce = [
   accessKeyId,
   secretAccessKey,
   region,
+  publicUrlBase,
   presignedUrl,
   toggleService,
 ];
