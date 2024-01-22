@@ -481,6 +481,8 @@
 ++  handle-http-request
   |=  [eyre-id=@ta inbound-request:eyre]
   ^-  (quip card _state)
+  ~&  authenticated/authenticated
+  ~&  args/+<
   ::
   =;  [payload=simple-payload:http caz=(list card) =_state]
     :_  state
@@ -671,15 +673,17 @@
   ++  split-at
     =|  fst=tape
     |=  [=tape char=@tD]
+    =.  tape  (flop tape)
+    |-
     ^+  [fst fst]
-    ?~  tape  [fst tape]
+    ?~  tape  [(flop fst) (flop tape)]
     ?:  =(i.tape char)
-      [fst t.tape]
+      [(flop fst) (flop t.tape)]
     $(tape t.tape, fst (snoc fst i.tape))
   ::
   ++  fip
     |=  fil=@t
-    =/  [fil=tape ext=tape]  (split-at (trip fil) '.')
+    =/  [ext=tape fil=tape]  (split-at (trip fil) '.')
     =-  (snoc - (crip ext))
     %+  turn
       (scan fil (most fas (star ;~(less fas next))))
