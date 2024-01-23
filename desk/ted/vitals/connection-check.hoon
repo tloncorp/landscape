@@ -12,10 +12,10 @@
 ^-  form:m
 =+  !<([~ target=ship] arg)
 ;<  our=@p  bind:m  get-our:io
-;<  now=@da  bind:m  get-time:io
 |^
   ::  early exit; check if we have live path to target
   ;<  tqos=qos:ames  bind:m  (get-qos target)
+  ;<  now=@da  bind:m  get-time:io
   ?:  ?&  ?=(%live -.tqos)
           (gth last-contact.tqos (sub now info-timeout:vitals))
       ==
@@ -96,6 +96,7 @@
   |=  =pending:vitals
   =/  m  (strand ,~)
   ^-  form:m
+  ;<  now=@da  bind:m  get-time:io
   %+  poke-our:io
     %vitals
   :-  %update-status
@@ -107,6 +108,7 @@
   |=  peer=ship
   =/  m  (strand ,qos:ames)
   ^-  form:m
+  ;<  now=@da  bind:m  get-time:io
   ?:  =(our peer)
     (pure:m [%live now])
   ;<  peers=(map ship ?(%alien %known))  bind:m

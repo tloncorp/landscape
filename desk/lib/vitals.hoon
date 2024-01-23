@@ -14,20 +14,13 @@
   ::  a ship is not guaranteed by %ames to know itself, so we fake it
   ?:  =(ship peer)
     [%live time]
-  ::  .^(* %ax /=//=/peers/[peer]) crashes if the peer is unknown, so we
+  ::  .^(* /ax/=//=/peers/[peer]) crashes if the peer is unknown, so we
   ::  check the source map beforehand and fake an %unborn if we can see
   ::  a crash coming
-  =/  peers  .^((map ^ship ?(%alien %known)) ~[%ax %$ %peers])
+  =/  ames-peers=path  /ax/(scot %p ship)//(scot %da time)/peers
+  =/  peers  .^((map ^ship ?(%alien %known)) ames-peers)
   ?.  (~(has by peers) peer)
     [%unborn time]
-  %-  simplify-qos
-  .^  ship-state:ames
-      %ax
-      (scot %p ship)
-      %$
-      (scot %da time)
-      %peers
-      (scot %p peer)
-      ~
-  ==
+  =/  pqos  .^(ship-state:ames (snoc ames-peers (scot %p peer)))
+  (simplify-qos pqos)
 --
