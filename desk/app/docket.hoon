@@ -482,7 +482,6 @@
   |=  [eyre-id=@ta inbound-request:eyre]
   ^-  (quip card _state)
   ~&  authenticated/authenticated
-  ~&  args/+<
   ::
   =;  [payload=simple-payload:http caz=(list card) =_state]
     :_  state
