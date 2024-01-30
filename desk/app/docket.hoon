@@ -669,15 +669,27 @@
     %+  ~(put by glob)  (slag 1 `path`u.filp)
     [u.type (as-octs:mimes:html body)]
   ::
+  ++  split-at
+    =|  fst=tape
+    |=  [=tape char=@tD]
+    =.  tape  (flop tape)
+    |-
+    ^+  [fst fst]
+    ?~  tape  [(flop fst) (flop tape)]
+    ?:  =(i.tape char)
+      [(flop fst) (flop t.tape)]
+    $(tape t.tape, fst (snoc fst i.tape))
+  ::
   ++  fip
-    =,  de-purl:html
-    ;:  cook
-      |=(pork (weld q (drop p)))
-      deft
-      |=(a=cord (rash a (more fas smeg))) 
-      crip 
-      (star ;~(pose (cold '%20' (just ' ')) next))
-    ==
+    |=  fil=@t
+    =/  [ext=tape fil=tape]  (split-at (trip fil) '.')
+    =-  (snoc - (crip ext))
+    %+  turn
+      (scan fil (most fas (star ;~(less fas next))))
+    |=  t=^tape
+    %-  crip
+    (en-urlt:html t)
+  ::
   ::
   ++  inline-js-response
     |=  js=cord
@@ -703,6 +715,8 @@
     ?:  =(suffix /desk/js)
       %-  inline-js-response
       (rap 3 'window.desk = "' u.des '";' ~)
+    =?  suffix  !(~(has by glob) suffix)
+      (turn suffix |=(s=@t (crip (en-urlt:html (trip s)))))
     =/  requested
       ?:  (~(has by glob) suffix)  suffix
       /index/html
