@@ -1,11 +1,4 @@
-/-  zer=storage-0, uno=storage-1, dos=storage-2
 |%
-++  past
-  |%
-  ++  zero  zer
-  ++  one   uno
-  ++  two   dos
-  --
 +$  service  ?(%presigned-url %credentials)
 +$  credentials
   $:  endpoint=@t
@@ -20,7 +13,6 @@
 ::    $region: the region of the current bucket
 ::    $presigned-url: the presigned url endpoint
 ::    $service: whether to use a presigned url service or direct S3 uploads
-::    $public-url-base: URL base to substitute into returned object URLs
 ::
 +$  configuration
   $:  buckets=(set @t)
@@ -28,7 +20,6 @@
       region=@t
       presigned-url=@t
       =service
-      public-url-base=@t
   ==
 ::
 +$  action
@@ -39,7 +30,6 @@
       [%remove-bucket bucket=@t]
       [%set-current-bucket bucket=@t]
       [%set-region region=@t]
-      [%set-public-url-base public-url-base=@t]
       [%set-presigned-url url=@t]
       [%toggle-service =service]
   ==

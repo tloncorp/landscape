@@ -8,7 +8,7 @@ desk=$2
 ship=$3
 zone=$4
 project=$5
-ref=${6:-master}
+ref=${6:-develop}
 folder=$ship/$desk
 
 set -e

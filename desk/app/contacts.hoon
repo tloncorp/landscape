@@ -115,6 +115,7 @@
   ++  abet  [(flop out) state]
   ++  cor   .
   ++  emit  |=(c=card cor(out [c out]))
+  ++  emil  |=(c=(list card) cor(out (weld (flop c) out)))
   ++  give  |=(=gift:agent:gall (emit %give gift))
   ++  pass  |=([=wire =note:agent:gall] (emit %pass wire note))
   ::
@@ -244,7 +245,7 @@
                       %-  (slog 'contact-fail' u.p.sign)
                       pe-peer:si-epic(sag %fail)
         ::
-          %kick       si-heed
+          %kick       si-heed(sag ~)
         ::
         ::  [compat] we *should* maintain backcompat here
         ::
@@ -402,10 +403,23 @@
     |=  old-vase=vase
     ^+  cor
     |^  =+  !<([old=versioned-state cool=epic] old-vase)
-        =.  state
-          ?-  -.old
-            %0  old
-          ==
+        ::  if there should be a sub (%chi saga), but there is none (in the
+        ::  bowl), re-establish it. %kick handling used to be faulty.
+        ::  we run this "repair" on every load, in the spirit of +inflate-io.
+        ::
+        =^  cards  rol.old
+          %+  roll  ~(tap by rol.old)
+          |=  [[who=ship foreign] caz=(list card) rol=rolodex]
+          ?.  ?&  =([%chi ~] sag)
+                  !(~(has by wex.bowl) [/contact who dap.bowl])
+              ==
+            [caz (~(put by rol) who for sag)]
+          :-  :_  caz
+              =/  =path  [%contact ?~(for / /at/(scot %da wen.for))]
+              [%pass /contact %agent [who dap.bowl] %watch path]
+          (~(put by rol) who for %want)
+        =.  state  old
+        =.  cor    (emil cards)
         ::  [compat] if our protocol version changed
         ::
         ::    we first tell the world, then see if we can now understand

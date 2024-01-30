@@ -142,12 +142,12 @@ const NotificationContent: React.FC<NotificationContent> = ({
   type,
   content,
 }) => {
-  const con = content;
+  const line = (content[1] || '').toString();
   const mentionRe = new RegExp('mentioned');
   const replyRe = new RegExp('replied');
 
-  const isMention = type === 'channel' && mentionRe.test(content[1].toString());
-  const isReply = type === 'channel' && replyRe.test(content[1].toString());
+  const isMention = type === 'channel' && mentionRe.test(line);
+  const isReply = type === 'channel' && replyRe.test(line);
 
   function renderContent(c: YarnContent) {
     if (typeof c === 'string') {
