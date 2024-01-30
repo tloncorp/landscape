@@ -6,6 +6,7 @@ on:
         type: string
         required: true
         description: Enter the tag to deploy
+        default: staging
       kernel:
         type: boolean
         required: false
