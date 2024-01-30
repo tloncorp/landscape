@@ -14,7 +14,12 @@
   %+  turn  paths
   |=  pax=path
   ^-  [path mime]
-  :-  (slag (lent dir) pax)
+  :-
+    ?>  ?=(^ pax)
+    %+  turn  t.pax
+    |=  seg=@t
+    ^-  @t
+    (crip (en-urlt:html (trip seg)))
   =/  mar=mark  (rear pax)
   =+  .^(vas=vase %cr (weld home pax))
   =+  .^(=tube:clay %cc (weld home /[mar]/mime))
