@@ -5,7 +5,6 @@ on:
       tag:
         type: string
         required: false
-        default: develop
         description: Enter the tag to deploy
         default: staging
 jobs:
