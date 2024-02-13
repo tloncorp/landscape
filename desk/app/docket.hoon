@@ -656,17 +656,16 @@
     ?~  file            [glob 'file without filename' err]
     ?~  type            [glob (cat 3 'file without type: ' u.file) err]
     ?^  code            [glob (cat 3 'strange encoding: ' u.code) err]
-    =/  filp            (rush u.file fip)
-    ?~  filp            [glob (cat 3 'strange filename: ' u.file) err]
+    =/  filp            (fip u.file)
     ::  ignore metadata files and other "junk"
     ::TODO  consider expanding coverage
     ::
-    ?:  =('.DS_Store' (rear `path`u.filp))
+    ?:  =('DS_Store' (rear filp))
       [glob err]
     ::  make sure to exclude the top-level dir from the path
     ::
     :_  err
-    %+  ~(put by glob)  (slag 1 `path`u.filp)
+    %+  ~(put by glob)  (slag 1 filp)
     [u.type (as-octs:mimes:html body)]
   ::
   ++  split-at
@@ -682,6 +681,7 @@
   ::
   ++  fip
     |=  fil=@t
+    ^-  path
     =/  [ext=tape fil=tape]  (split-at (trip fil) '.')
     =-  (snoc - (crip ext))
     %+  turn
