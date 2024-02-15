@@ -10,12 +10,12 @@
 |=  arg=vase
 =/  m  (strand ,vase)
 ^-  form:m
-=+  !<(target=ship arg)
+=+  !<([~ target=ship] arg)
 ;<  our=@p  bind:m  get-our:io
 |^
   ::  early exit; check if we have live path to target
-  ;<  now=@da  bind:m  get-time:io
   ;<  tqos=qos:ames  bind:m  (get-qos target)
+  ;<  now=@da  bind:m  get-time:io
   ?:  ?&  ?=(%live -.tqos)
           (gth last-contact.tqos (sub now info-timeout:vitals))
       ==
@@ -103,13 +103,20 @@
   !>
   ^-  update:vitals
   [target now %pending pending]
+::  thread version of +scry-qos in /=landscape=/lib/vitals/hoon
 ++  get-qos
-  |=  =ship
+  |=  peer=ship
   =/  m  (strand ,qos:ames)
   ^-  form:m
-  ;<    state=ship-state:ames
-      bind:m
-    (scry:io ship-state:ames ~[%ax %$ %peers (scot %p ship)])
+  ;<  now=@da  bind:m  get-time:io
+  ?:  =(our peer)
+    (pure:m [%live now])
+  ;<  peers=(map ship ?(%alien %known))  bind:m
+    (scry:io (map ship ?(%alien %known)) ~[%ax %$ %peers])
+  ?.  (~(has by peers) peer)
+    (pure:m [%unborn now])
+  ;<  state=ship-state:ames  bind:m
+    (scry:io ship-state:ames ~[%ax %$ %peers (scot %p peer)])
   (pure:m (simplify-qos:lib-vitals state))
 ++  galaxy-down
   |=  galaxy=ship
