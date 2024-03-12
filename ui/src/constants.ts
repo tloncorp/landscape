@@ -187,11 +187,11 @@ export const APPS = [
   {
     title: 'radio',
     description: 'an app for urbit disc jockeys',
-    color: '#FF0000',
+    color: '#FFFFFF',
     link: '/apps/radio',
     section: SECTIONS.FUN,
     desk: 'radio',
     source: '~nodmyn-dosrux',
-    image: 'https://0x0.st/o4--.png',
+    image: 'https://bwyl.nyc3.digitaloceanspaces.com/radio/radio.png',
   },
 ];
