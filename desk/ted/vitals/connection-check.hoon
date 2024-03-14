@@ -33,8 +33,9 @@
   ::  set pending to %trying-local
   ;<  ~  bind:m  (update-status [%trying-local ~])
   ::  check if we can contact our own galaxy
+  ;<  =ping:vitals  bind:m  (scry:io ping:vitals ~[%gx %ping %noun])
   ;<  gqos=qos:ames  bind:m  (scry:io qos:ames ~[%gx %vitals %galaxy %vitals-qos])
-  ?.  ?=(%live -.gqos)
+  ?:  &(!=(%live -.gqos) !=(%off -.plan.ping))
     (post-result [%no-our-galaxy last-contact.gqos])
   ::  set pending to %trying-target
   ;<  ~  bind:m  (update-status [%trying-target ~])

@@ -41,4 +41,17 @@
   $:  =ship
       =result
   ==
+::
++$  ping
+  $:  version=@
+      ships=(set ship)
+      nonce=@ud
+      $=  plan
+      $~  [%nat ~]
+      $%  [%nat ~]
+          [%pub ip=(unit @t)]
+          [%off ~]
+          [%one ~]
+      ==
+  ==
 --
