@@ -3,7 +3,7 @@
 |%
 +$  card  card:agent:gall
 +$  app-state
-  $:  %4
+  $:  %5
       ::  local
       charges=(map desk charge)
   ==
@@ -65,13 +65,18 @@
     ?.  ?=(%3 -.old)  `old
     :_  old(- %4)  :_  ~
     [%pass /reinstall %agent [our.bowl dap.bowl] %poke %reinstall-groups !>(~)]
-  ?>  ?=(%4 -.old)
+  =^  cards-4  old
+    ?.  ?=(%4 -.old)  `old
+    :_  old(- %5)  :_  ~
+    =/  =cage  [%kiln-suspend !>(`desk`%garden)]
+    [%pass /suspend %agent [our.bowl %hood] %poke cage]
+  ?>  ?=(%5 -.old)
   =/  cards-tire  [~(tire pass /tire) ~]
   =.  -.state  old
   ::  inflate-cache needs to be called after the state is set
   ::
   =.  +.state  inflate-cache
-  [:(weld cards-1 cards-2 cards-3 cards-tire) this]
+  [:(weld cards-1 cards-2 cards-3 cards-4 cards-tire) this]
   ::
   ++  inflate-cache
     ^-  cache
@@ -87,9 +92,11 @@
         state-1
         state-2
         state-3
+        state-4
         app-state
     ==
   ::
+  +$  state-4  [%4 (map desk charge)]
   +$  state-3  [%3 (map desk charge)]
   +$  state-2  [%2 (map desk charge)]
   +$  state-1  [%1 (map desk charge)]
@@ -250,6 +257,7 @@
       [%kiln ~]       `state
       [%charge @ *]   (take-charge i.t.wire t.t.wire)
       [%reinstall *]  `state
+      [%suspend ~]    `state
     ==
   [cards this]
   ::
@@ -674,8 +682,8 @@
     ;:  cook
       |=(pork (weld q (drop p)))
       deft
-      |=(a=cord (rash a (more fas smeg))) 
-      crip 
+      |=(a=cord (rash a (more fas smeg)))
+      crip
       (star ;~(pose (cold '%20' (just ' ')) next))
     ==
   ::
