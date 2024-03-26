@@ -4,7 +4,7 @@
     glob-http+['https://bootstrap.urbit.org/glob-0v3.0dqi8.1csij.8dv08.lhglb.45fpk.glob' 0v3.0dqi8.1csij.8dv08.lhglb.45fpk]
     ::glob-ames+~zod^0v0
     base+'landscape'
-    version+[1 20 0]
+    version+[1 24 0]
     website+'https://tlon.io'
     license+'MIT'
 ==
