@@ -1,10 +1,10 @@
 :~  title+'Landscape'
     info+'An app launcher for Urbit.'
     color+0xee.5432
-    glob-http+['https://bootstrap.urbit.org/glob-0v7.c3mlj.gm8sb.1cmkv.ugntt.pg185.glob' 0v7.c3mlj.gm8sb.1cmkv.ugntt.pg185]
+    glob-http+['https://bootstrap.urbit.org/glob-0v3.0dqi8.1csij.8dv08.lhglb.45fpk.glob' 0v3.0dqi8.1csij.8dv08.lhglb.45fpk]
     ::glob-ames+~zod^0v0
     base+'landscape'
-    version+[1 20 0]
+    version+[1 24 0]
     website+'https://tlon.io'
     license+'MIT'
 ==

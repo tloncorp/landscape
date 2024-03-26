@@ -10,12 +10,12 @@
 |=  arg=vase
 =/  m  (strand ,vase)
 ^-  form:m
-=+  !<(target=ship arg)
+=+  !<([~ target=ship] arg)
 ;<  our=@p  bind:m  get-our:io
 |^
   ::  early exit; check if we have live path to target
-  ;<  now=@da  bind:m  get-time:io
   ;<  tqos=qos:ames  bind:m  (get-qos target)
+  ;<  now=@da  bind:m  get-time:io
   ?:  ?&  ?=(%live -.tqos)
           (gth last-contact.tqos (sub now info-timeout:vitals))
       ==
@@ -33,8 +33,9 @@
   ::  set pending to %trying-local
   ;<  ~  bind:m  (update-status [%trying-local ~])
   ::  check if we can contact our own galaxy
+  ;<  =ping:vitals  bind:m  (scry:io ping:vitals ~[%gx %ping %noun])
   ;<  gqos=qos:ames  bind:m  (scry:io qos:ames ~[%gx %vitals %galaxy %vitals-qos])
-  ?.  ?=(%live -.gqos)
+  ?:  !(galaxy-reachable ping gqos)
     (post-result [%no-our-galaxy last-contact.gqos])
   ::  set pending to %trying-target
   ;<  ~  bind:m  (update-status [%trying-target ~])
@@ -45,23 +46,30 @@
   ::  if we're a moon, check if we can contact our planet
   ::
   ::  NN: failing to contact our sponsor is only a failure condition for moons,
-  ::      since currently only moons receive additional routing help from their
-  ::      sponsors
+  ::      since currently only moons require the direct sponsor to be online for
+  ::      peers to grab the moon keys
   ::  NN: we do this after the initial target check because if we're a moon and
   ::      our planet is down, it's useful to talk to ships that still have live
   ::      wires (e.g. for troubleshooting); thus, by waiting to perform this
   ::      check, we don't report %no-our-planet for every connectivity check
   ::      when attempting to track down a live peer from whom to seek help
   ::
-  ;<    sqos=qos:ames
+  ;<  moon-sponsor-reachable=?
       bind:m
-    =/  mm  (strand ,qos:ames)
+    =/  mm  (strand ,?)
     ^-  form:mm
     ?.  ?=(%earl (clan:title our))
-      (pure:mm [%live *@da])
-    (scry:io qos:ames ~[%gx %vitals %sponsor %vitals-qos])
-  ?.  ?=(%live -.sqos)
-    (post-result [%no-our-planet last-contact.sqos])
+      (pure:mm %.y)
+    =/  sponsor=@p  (end 5 our)
+    ;<  ~  bind:mm  (update-status [%trying-sponsor sponsor])
+    ;<  pchek=(unit)   bind:mm  (check-online sponsor target-timeout:vitals)
+    ?:  ?=([%$ %$] pchek)
+      (pure:mm %.y)
+    (pure:mm %.n)
+  ::
+  ?:  !moon-sponsor-reachable
+    ;<  pqos=qos:ames  bind:m  (scry:io qos:ames ~[%gx %vitals %sponsor %vitals-qos])
+    (post-result [%no-our-planet last-contact.pqos])
   ::  early exit; if target is a galaxy, there's nothing more we can check
   ?:  ?=(%czar (clan:title target))
     (galaxy-down target)
@@ -92,6 +100,30 @@
   ?:  u.live
     [%no-sponsor-hit i.sponsors]
   [%no-sponsor-miss i.sponsors]
+::
+++  galaxy-reachable
+  |=  [=ping:vitals =qos:ames]
+  ^-  ?
+  ?-    -.ping
+      %0
+    ?=(%live -.qos)
+  ::
+      %1
+    ?:  ?=(%pub -.plan.ping)
+      %.y
+    ?=(%live -.qos)
+  ::
+      %2
+    ?.  ?=(%nat -.plan.ping)
+      %.y
+    ?=(%live -.qos)
+  ::
+      %3
+    ?:  ?=(%informal mode.ping)
+      %.y
+    ?=(%live -.qos)
+  ==
+::
 ++  update-status
   |=  =pending:vitals
   =/  m  (strand ,~)
@@ -103,13 +135,20 @@
   !>
   ^-  update:vitals
   [target now %pending pending]
+::  thread version of +scry-qos in /=landscape=/lib/vitals/hoon
 ++  get-qos
-  |=  =ship
+  |=  peer=ship
   =/  m  (strand ,qos:ames)
   ^-  form:m
-  ;<    state=ship-state:ames
-      bind:m
-    (scry:io ship-state:ames ~[%ax %$ %peers (scot %p ship)])
+  ;<  now=@da  bind:m  get-time:io
+  ?:  =(our peer)
+    (pure:m [%live now])
+  ;<  peers=(map ship ?(%alien %known))  bind:m
+    (scry:io (map ship ?(%alien %known)) ~[%ax %$ %peers])
+  ?.  (~(has by peers) peer)
+    (pure:m [%unborn now])
+  ;<  state=ship-state:ames  bind:m
+    (scry:io ship-state:ames ~[%ax %$ %peers (scot %p peer)])
   (pure:m (simplify-qos:lib-vitals state))
 ++  galaxy-down
   |=  galaxy=ship

@@ -41,4 +41,43 @@
   $:  =ship
       =result
   ==
+::
++$  ship-state
+  $%  [%idle ~]
+      [%poking ~]
+      [%http until=@da]
+      [%waiting until=@da]
+  ==
+::
++$  ping
+  $%  [%0 ships=(map ship [=rift =ship-state])]
+      $:  %1
+          ships=(set ship)
+          nonce=@ud
+          $=  plan
+          $~  [%nat ~]
+          $%  [%nat ~]
+              [%pub ip=(unit @t)]
+          ==
+      ==
+    ::
+      $:  %2
+          ships=(set ship)
+          nonce=@ud
+          $=  plan
+          $~  [%nat ~]
+          $%  [%nat ~]
+              [%pub ip=(unit @t)]
+              [%off ~]
+              [%one ~]
+          ==
+      ==
+    ::
+     $:  %3
+         mode=?(%formal %informal)
+         pokes=@ud
+         timer=(unit [=wire date=@da])
+         galaxy=@p
+     ==
+  ==
 --

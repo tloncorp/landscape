@@ -3,7 +3,7 @@
 |%
 +$  card  card:agent:gall
 +$  app-state
-  $:  %4
+  $:  %5
       ::  local
       charges=(map desk charge)
   ==
@@ -65,13 +65,18 @@
     ?.  ?=(%3 -.old)  `old
     :_  old(- %4)  :_  ~
     [%pass /reinstall %agent [our.bowl dap.bowl] %poke %reinstall-groups !>(~)]
-  ?>  ?=(%4 -.old)
+  =^  cards-4  old
+    ?.  ?=(%4 -.old)  `old
+    :_  old(- %5)  :_  ~
+    =/  =cage  [%kiln-suspend !>(`desk`%garden)]
+    [%pass /suspend %agent [our.bowl %hood] %poke cage]
+  ?>  ?=(%5 -.old)
   =/  cards-tire  [~(tire pass /tire) ~]
   =.  -.state  old
   ::  inflate-cache needs to be called after the state is set
   ::
   =.  +.state  inflate-cache
-  [:(weld cards-1 cards-2 cards-3 cards-tire) this]
+  [:(weld cards-1 cards-2 cards-3 cards-4 cards-tire) this]
   ::
   ++  inflate-cache
     ^-  cache
@@ -87,9 +92,11 @@
         state-1
         state-2
         state-3
+        state-4
         app-state
     ==
   ::
+  +$  state-4  [%4 (map desk charge)]
   +$  state-3  [%3 (map desk charge)]
   +$  state-2  [%2 (map desk charge)]
   +$  state-1  [%1 (map desk charge)]
@@ -250,6 +257,7 @@
       [%kiln ~]       `state
       [%charge @ *]   (take-charge i.t.wire t.t.wire)
       [%reinstall *]  `state
+      [%suspend ~]    `state
     ==
   [cards this]
   ::
@@ -656,28 +664,40 @@
     ?~  file            [glob 'file without filename' err]
     ?~  type            [glob (cat 3 'file without type: ' u.file) err]
     ?^  code            [glob (cat 3 'strange encoding: ' u.code) err]
-    =/  filp            (rush u.file fip)
-    ?~  filp            [glob (cat 3 'strange filename: ' u.file) err]
+    =/  filp            (fip u.file)
     ::  ignore metadata files and other "junk"
     ::TODO  consider expanding coverage
     ::
-    ?:  =('.DS_Store' (rear `path`u.filp))
+    ?:  =('DS_Store' (rear filp))
       [glob err]
     ::  make sure to exclude the top-level dir from the path
     ::
     :_  err
-    %+  ~(put by glob)  (slag 1 `path`u.filp)
+    %+  ~(put by glob)  (slag 1 filp)
     [u.type (as-octs:mimes:html body)]
   ::
+  ++  split-at
+    =|  fst=tape
+    |=  [=tape char=@tD]
+    =.  tape  (flop tape)
+    |-
+    ^+  [fst fst]
+    ?~  tape  [(flop fst) (flop tape)]
+    ?:  =(i.tape char)
+      [(flop fst) (flop t.tape)]
+    $(tape t.tape, fst (snoc fst i.tape))
+  ::
   ++  fip
-    =,  de-purl:html
-    ;:  cook
-      |=(pork (weld q (drop p)))
-      deft
-      |=(a=cord (rash a (more fas smeg))) 
-      crip 
-      (star ;~(pose (cold '%20' (just ' ')) next))
-    ==
+    |=  fil=@t
+    ^-  path
+    =/  [ext=tape fil=tape]  (split-at (trip fil) '.')
+    =-  (snoc - (crip ext))
+    %+  turn
+      (scan fil (most fas (star ;~(less fas next))))
+    |=  t=^tape
+    %-  crip
+    (en-urlt:html t)
+  ::
   ::
   ++  inline-js-response
     |=  js=cord
@@ -703,6 +723,8 @@
     ?:  =(suffix /desk/js)
       %-  inline-js-response
       (rap 3 'window.desk = "' u.des '";' ~)
+    =?  suffix  !(~(has by glob) suffix)
+      (turn suffix |=(s=@t (crip (en-urlt:html (trip s)))))
     =/  requested
       ?:  (~(has by glob) suffix)  suffix
       /index/html

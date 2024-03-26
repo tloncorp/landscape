@@ -7,7 +7,6 @@ on:
         required: false
         default: develop
         description: Enter the tag to deploy
-        default: staging
 jobs:
   build-frontend:
     runs-on: ubuntu-latest

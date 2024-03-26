@@ -138,7 +138,7 @@
           %landscape
           %vitals-connection-check
           %noun
-          !>(ship)
+          !>((some ship))
       ==
     ?:  ?=(%pending -.status.u.stat)
       cor
@@ -153,17 +153,14 @@
         %landscape
         %vitals-connection-check
         %noun
-        !>(ship)
+        !>((some ship))
     ==
   ::
   ::  public pokes
   ::
       %ship
     =+  !<(=ship vase)
-    ?<  =(our ship)
-    ?<  =(~ (find ~[our] (saxo:title our now ship)))
-    ?.  ?=([%live *] (scry-qos:lib our now ship))
-      !!
+    ?>  ?=([%live *] (scry-qos:lib our now ship))
     cor
   ==
 ++  watch
@@ -187,14 +184,12 @@
   ?+  path  [~ ~]
   ::
       [%x %sponsor ~]
-    ?<  ?=(%czar (clan:title our))
     %-  some
     %-  some
     :-  %vitals-qos
     !>  (scry-qos:lib our now (sein:title our now our))
   ::
       [%x %galaxy ~]
-    ?<  ?=(%czar (clan:title our))
     %-  some
     %-  some
     :-  %vitals-qos
