@@ -18,7 +18,7 @@
 --
 ::
 %-  agent:dbug
-%+  verb  &
+%+  verb  |
 ^-  agent:gall
 =|  state-0
 =*  state  -
