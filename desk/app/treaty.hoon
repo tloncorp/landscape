@@ -112,6 +112,17 @@
     ::      present in the treaties map
     (fact-init:io (treaty-update:cg:cc %ini treaties))^~
     ::
+      [%treaties @ ~]
+    :_  this
+    =/  =ship  (slav %p i.t.path)
+    =/  alliance  (~(get ju allies) ship)
+    =/  allied
+      %-  ~(gas by *(map [^ship desk] treaty))
+      %+  skim  ~(tap by treaties)
+      |=  [ref=[^ship desk] =treaty]
+      (~(has in alliance) ref)
+    (fact-init:io (treaty-update:cg:ca:cc %ini allied))^~
+    ::
       [%alliance ~]
     :_  this
     (fact-init:io (alliance-update:cg:cc %ini entente))^~
@@ -308,12 +319,14 @@
   ++  gone
     ^-  (list card)
     :~  (fact:io (treaty-update:cg %del ship desk) /treaties ~)
+        (fact:io (treaty-update:cg %del ship desk) /treaties/[(scot %p ship)] ~)
         (kick-only:io our.bowl path ~)
     ==
   ++  give
     ^-  (list card)
     =/  t=treaty  (~(got by treaties) ship desk)
     :~  (fact:io (treaty-update:cg %add t) /treaties ~)
+        (fact:io (treaty-update:cg %add t) /treaties/[(scot %p ship)] ~)
         (fact:io (treaty:cg t) path ~)
     ==
   --
