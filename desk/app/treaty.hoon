@@ -330,8 +330,7 @@
   ++  leave  (leave:pass dock)
   ++  gone
     ^-  (list card)
-    :~  (fact:io (treaty-update:cg %del ship desk) /treaties ~)
-        (fact:io (treaty-update:cg %del ship desk) /treaties/[(scot %p ship)] ~)
+    :~  (fact:io (treaty-update:cg %del ship desk) /treaties /treaties/[(scot %p ship)] ~)
         (kick-only:io our.bowl path ~)
     ==
   ++  give
