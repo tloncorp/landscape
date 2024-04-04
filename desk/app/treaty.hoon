@@ -4,6 +4,7 @@
 ++  default-ally  ~dister-dozzod-dozzod
 ::
 +$  card  card:agent:gall
++$  state-1  [%1 state-0]
 +$  state-0
   $:  treaties=(map [=ship =desk] treaty)
       sovereign=(map desk treaty)
@@ -15,7 +16,7 @@
 ^-  agent:gall
 %+  verb  |
 %-  agent:dbug
-=|  state-0
+=|  state-1
 =*  state  -
 =<
 |_  =bowl:gall
@@ -30,8 +31,19 @@
 ++  on-save  !>(state)
 ++  on-load
   |=  =vase
+  ?:  =(%1 -.q.vase)
+    =+  !<(old=state-1 vase)
+    `this(state old)
   =+  !<(old=state-0 vase)
-  `this(state old)
+  :_  this(state [%1 old])
+  %-  zing
+  ^-  (list (list card))
+  %+  turn  ~(tap by allies.old)
+  |=  [=ship s=(set *)]
+  ^-  (list card)
+  =*  al  ~(. al:cc ship)
+  ?^  s  ~
+  ~[leave:al watch:al]
 ::
 ++  on-poke
   |=  [=mark =vase]
@@ -59,7 +71,7 @@
     ?<  =(ship our.bowl)
     =*  al   ~(. al:cc ship.update)
     ?-  -.update
-      %add  [~[watch:al] this(allies (~(put by allies) ship *alliance))]
+      %add  [~[leave:al watch:al] this(allies (~(put by allies) ship *alliance))]
       %del  [~[leave:al] this(allies (~(del by allies) ship))]
     ==
   ::
