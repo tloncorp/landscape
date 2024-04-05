@@ -59,7 +59,9 @@
     ?<  =(ship our.bowl)
     =*  al   ~(. al:cc ship.update)
     ?-  -.update
-      %add  [~[watch:al] this(allies (~(put by allies) ship *alliance))]
+      %add  ?:  (~(has by allies) ship)
+              `this
+            [~[watch:al] this(allies (~(put by allies) ship *alliance))]
       %del  [~[leave:al] this(allies (~(del by allies) ship))]
     ==
   ::
