@@ -4,6 +4,7 @@
 ++  default-ally  ~dister-dozzod-dozzod
 ::
 +$  card  card:agent:gall
++$  state-1  [%1 state-0]
 +$  state-0
   $:  treaties=(map [=ship =desk] treaty)
       sovereign=(map desk treaty)
@@ -15,7 +16,7 @@
 ^-  agent:gall
 %+  verb  |
 %-  agent:dbug
-=|  state-0
+=|  state-1
 =*  state  -
 =<
 |_  =bowl:gall
@@ -30,8 +31,19 @@
 ++  on-save  !>(state)
 ++  on-load
   |=  =vase
+  ?:  =(%1 -.q.vase)
+    =+  !<(old=state-1 vase)
+    `this(state old)
   =+  !<(old=state-0 vase)
-  `this(state old)
+  :_  this(state [%1 old])
+  %-  zing
+  ^-  (list (list card))
+  %+  turn  ~(tap by allies.old)
+  |=  [=ship s=(set *)]
+  ^-  (list card)
+  =*  al  ~(. al:cc ship)
+  ?^  s  ~
+  ~[leave:al watch:al]
 ::
 ++  on-poke
   |=  [=mark =vase]
@@ -59,7 +71,7 @@
     ?<  =(ship our.bowl)
     =*  al   ~(. al:cc ship.update)
     ?-  -.update
-      %add  [~[watch:al] this(allies (~(put by allies) ship *alliance))]
+      %add  [~[leave:al watch:al] this(allies (~(put by allies) ship *alliance))]
       %del  [~[leave:al] this(allies (~(del by allies) ship))]
     ==
   ::
@@ -111,6 +123,17 @@
     ::NOTE  this assumes that all treaties in sovereign are also
     ::      present in the treaties map
     (fact-init:io (treaty-update:cg:cc %ini treaties))^~
+    ::
+      [%treaties @ ~]
+    :_  this
+    =/  =ship  (slav %p i.t.path)
+    =/  alliance  (~(get ju allies) ship)
+    =/  allied
+      %-  ~(gas by *(map [^ship desk] treaty))
+      %+  skim  ~(tap by treaties)
+      |=  [ref=[^ship desk] =treaty]
+      (~(has in alliance) ref)
+    (fact-init:io (treaty-update:cg:ca:cc %ini allied))^~
     ::
       [%alliance ~]
     :_  this
@@ -307,13 +330,14 @@
   ++  leave  (leave:pass dock)
   ++  gone
     ^-  (list card)
-    :~  (fact:io (treaty-update:cg %del ship desk) /treaties ~)
+    :~  (fact:io (treaty-update:cg %del ship desk) /treaties /treaties/[(scot %p ship)] ~)
         (kick-only:io our.bowl path ~)
     ==
   ++  give
     ^-  (list card)
     =/  t=treaty  (~(got by treaties) ship desk)
     :~  (fact:io (treaty-update:cg %add t) /treaties ~)
+        (fact:io (treaty-update:cg %add t) /treaties/[(scot %p ship)] ~)
         (fact:io (treaty:cg t) path ~)
     ==
   --
