@@ -16,6 +16,7 @@
     %-  pairs
     :~  ship+s+(scot %p ship.t)
         desk+s+desk.t
+        signed+b+signed.t
         cass+(case case.t)
         hash+s+(scot %uv hash.t)
     ==
