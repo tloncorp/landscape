@@ -1,9 +1,6 @@
 /-  meta, e=epic
-/-  old=group
-/-  grp=group-store
-/-  metadata-store
 |%
-++  okay  `epic:e`2
+++  okay  `epic:e`3
 ++  mar
   |%
   ++  act  `mark`(rap 3 %group-action '-' (scot %ud okay) ~)
@@ -17,7 +14,7 @@
 ::
 ::  $nest: ID for a channel, {app}/{ship}/{name}
 ::
-+$  nest  (pair dude:gall flag)
++$  nest  (pair term flag)
 ::
 ::  $sect: ID for cabal, similar to a role
 ::
@@ -145,8 +142,10 @@
       =cordon
       secret=?
       meta=data:meta
+      =flagged-content
   ==
 ::
++$  group-ui  [group saga=(unit saga:e)]
 ::  $cabal: metadata representing a $sect or role
 ::
 ++  cabal
@@ -256,6 +255,7 @@
       [%secret p=?]
       [%create p=group]
       [%del ~]
+      [%flag-content =nest =post-key src=ship]
   ==
 ::
 ::  $action: the complete set of data required to edit a group
@@ -283,6 +283,9 @@
 ::
 +$  init  [=time =group]
 ::
+::  $groups-ui: map for frontend to display groups
++$  groups-ui
+  (map flag group-ui)
 +$  groups
   (map flag group)
 +$  net-groups
@@ -303,6 +306,13 @@
   $%  [%pub p=log]
       [%sub p=time load=_| =saga:e]
   ==
+::
++$  post-key  [post=time reply=(unit time)]
+::
++$  flaggers  (set ship)
+::  $flagged-content: flagged posts and replies that need admin review
+::
++$  flagged-content  (map nest (map post-key flaggers))
 ::
 ::  $join: a join request, can elect to join all channels
 ::
@@ -352,9 +362,4 @@
   ==
 ::
 +$  gangs  (map flag gang)
-++  met     metadata-store
-::
-+$  import  [self=association:met chan=(map flag =association:met) roles=(set flag) =group:old]
-::
-+$  imports  (map flag import)
 --
