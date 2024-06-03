@@ -35,6 +35,16 @@ export const scryAllyTreaties = (ship: string): Scry => ({
   path: `/treaties/${ship}`
 });
 
+export const scryPassport = (ship: string, desk: string): Scry => ({
+  app: 'treaty',
+  path: `/passport/${ship}/${desk}`
+});
+
+export const scrySeal = (ship: string, desk: string): Scry => ({
+  app: 'treaty',
+  path: `/seal/${ship}/${desk}`
+});
+
 /**
  * Uninstall a desk, and remove docket
  */
