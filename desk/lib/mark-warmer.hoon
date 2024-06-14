@@ -5,4 +5,5 @@
 /$  blanket     %hark-blanket         %json
 /$  settings    %settings-data        %json
 /$  creds       %update               %json
+/$  storage     %storage-update       %json
 ~
