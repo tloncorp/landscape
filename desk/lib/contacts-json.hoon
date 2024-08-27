@@ -9,21 +9,21 @@
   ++  ship
     |=(her=@p n+(rap 3 '"' (scot %p her) '"' ~))
   ::
-  ++  action
-    |=  a=action:c
+  ++  action-0
+    |=  a=action-0:c
     ^-  json
     %+  frond  -.a
     ?-  -.a
       %anon  ~
-      %edit  a+(turn p.a field)
+      %edit  a+(turn p.a field-0)
       %meet  a+(turn p.a ship)
       %heed  a+(turn p.a ship)
       %drop  a+(turn p.a ship)
       %snub  a+(turn p.a ship)
     ==
   ::
-  ++  contact
-    |=  c=contact:c
+  ++  contact-0
+    |=  c=contact-0:c
     ^-  json
     %-  pairs
     :~  nickname+s+nickname.c
@@ -38,8 +38,8 @@
         |=([f=flag:g j=(list json)] [s+(flag:enjs:gj f) j])
     ==
   ::
-  ++  field
-    |=  f=field:c
+  ++  field-0
+    |=  f=field-0:c
     ^-  json
     %+  frond  -.f
     ?-  -.f
@@ -53,20 +53,20 @@
       %del-group  s+(flag:enjs:gj flag.f)
     ==
   ::
-  ++  rolodex
-    |=  r=rolodex:c
+  ++  rolodex-0
+    |=  r=rolodex-0:c
     ^-  json
     %-  pairs
     %-  ~(rep by r)
-    |=  [[who=@p foreign:c] j=(list [@t json])]
-    [[(scot %p who) ?.(?=([@ ^] for) ~ (contact con.for))] j]  :: XX stale flag per sub state?
+    |=  [[who=@p foreign-0:c] j=(list [@t json])]
+    [[(scot %p who) ?.(?=([@ ^] for) ~ (contact-0 con.for))] j]  :: XX stale flag per sub state?
   ::
-  ++  news
-    |=  n=news:c
+  ++  news-0
+    |=  n=news-0:c
     ^-  json
     %-  pairs
     :~  who+(ship who.n)
-        con+?~(con.n ~ (contact con.n))
+        con+?~(con.n ~ (contact-0 con.n))
     ==
   --
 ::
@@ -92,19 +92,19 @@
               (slav aur (cut 3 [1 (sub wyd 2)] p.jon))
     ==
   ::
-  ++  action
-    ^-  $-(json action:c)
+  ++  action-0
+    ^-  $-(json action-0:c)
     %-  of
     :~  anon+ul
-        edit+(ar field)
+        edit+(ar field-0)
         meet+(ar ship)
         heed+(ar ship)
         drop+(ar ship)
         snub+(ar ship)
     ==
   ::
-  ++  contact
-    ^-  $-(json contact:c)
+  ++  contact-0
+    ^-  $-(json contact-0:c)
     %-  ot
     :~  nickname+so
         bio+so
@@ -115,8 +115,8 @@
         groups+(as flag:dejs:gj)
     ==
   ::
-  ++  field
-    ^-  $-(json field:c)
+  ++  field-0
+    ^-  $-(json field-0:c)
     %-  of
     :~  nickname+so
         bio+so

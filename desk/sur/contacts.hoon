@@ -34,7 +34,7 @@
   $:  nickname=@t
       bio=@t
       status=@t
-      color=@uxF
+      color=@ux
       avatar=(unit @t)
       cover=(unit @t)
       groups=(set flag:g)
@@ -44,20 +44,39 @@
 +$  profile-0  [wen=@da con=$@(~ contact-0)]
 +$  rolodex-0  (map ship foreign-0)
 ::
-+$  contact  contact-0
-+$  foreign  foreign-0
-+$  profile  profile-0
-+$  rolodex  rolodex-0
-+$  field  field-0
-+$  action  action-0
-+$  news  news-0
-+$  update  update-0
 ::
-+$  field-1
++$  value-type-1
+  $?  %text
+      %date
+      %tint
+      %look
+      %cult
+      %set
+  ==
+++  unis 
+  |=  set=(set value-1)
+  ^-  ?
+  ?~  set  &
+  =/  typ  -.n.set
+  |-
+  ?^  l.set
+    ?.  =(typ -.n.l.set)
+      |
+    $(set l.set)
+  ?^  r.set
+    ?.  =(typ -.n.r.set)
+      |
+    $(set r.set)
+  ?.  =(typ -.n.set)
+    |
+  &
+::    $value-1: contact field value
+::
++$  value-1 
+  $+  contact-value-1
+  $@  ~
   $%  [%text p=@t]
       [%date p=@da]
-      [%quot p=@ud]
-      [%frac p=@rd]
       ::
       ::  color
       [%tint p=@ux]
@@ -66,29 +85,48 @@
       ::  picture
       [%look p=@ta]
       ::
-      ::  network resource
-      [%link p=@ta]
+      ::  group
+      [%cult p=flag:g]
       ::
-      ::  geocode (XX introduce @x aura to Hoon)
-      [%geos @x]
-      [%tags p=(set @t)]
-      ::  XX typechecker could be smarter here?
-      [%rows p=$@(~ (list field-1))]
-      [%set p=$@(~ (set field-1))]
+      ::  uniform set
+      [%set $|(p=(set value-1) unis)]
   ==
-+$  contact-1  (map @tas field-1)
-+$  foreign-1  [for=$@(~ profile-1) sag=$@(~ saga)]
-::  .wen: date
-::  .con: contact
-::  .mod: user modified
+::    $contact-1: contact data
 ::
-+$  profile-1  [wen=@da con=(unit contact-1) mod=(unit contact-1)]
++$  contact-1  (map @tas value-1)
+::    $foreign-1: foreign profile
 ::
-::  contact id
+::  .for: profile
+::  .con: optional contact id
+::  .sag: connection status
+::
++$  foreign-1  [for=$@(~ profile-1) cid=(unit cid) sag=$@(~ saga)]
+::    $cid: contact page id
+::
+::  generated from entropy and guaranteed non-zero
+::  
+::
 +$  cid  @uvF
+::    $profile-1: contact profile
+::
+::  .wen: last updated
+::  .con: contact
+::
++$  profile-1  [wen=@da con=contact-1]
+::    $page: contact book page
+::
++$  page  (pair (unit ship) $@(~ profile-1))
+::    $book: contact book
+::  
++$  book  (map cid page)
+::    $rolodex-1: rolodex
+::
+::  .book: contact book, original and modified
+::  .net: network contacts
+::
 +$  rolodex-1
-  $%  rox=(map cid @ta)
-      net=(map ship cid)
+  $:  =book
+      net=(map ship foreign-1)
   ==
 ::
 +$  epic  epic:e
@@ -135,33 +173,48 @@
 ::
 +$  news-0
   [who=ship con=$@(~ contact-0)]
-::  %anon: delete our profile
-::  %edit: change profile
+::  %anon: delete the profile
+::  %page: create a new contact page
+::  %edit: edit the profile or a contact page
+::  %wipe: delete a page
+::  %spot: associate a page
 ::  %meet: track a peer
-::  %heed: follow a peer
-::  %spot: discover contact peer
 ::  %drop: discard a peer
 ::  %snub: unfollow a peer
 ::
 +$  action-1
   $%  [%anon ~]
-      [%edit p=ship q=(list (pair @t field-1))]
-      [%meet p=(list ship)]
-      [%heed p=(list ship)]
+      [%page p=(list (pair @tas value-1))]
+      ::
+      ::  .p=~ edit the profile
+      [%edit p=(unit cid) q=(list (pair @tas value-1))]
       [%spot p=(list (pair ship cid))]
+      [%wipe p=(list cid)]
+      [%meet p=(list ship)]
       [%drop p=(list ship)]
       [%snub p=(list ship)]
   ==
 ::  network
+::  
+::  %full: deliver full profile
 ::
 +$  update-1
-  $%  [%full profile-1]
-      [%field (pair @tas (unit field-1))]
+  $%  [%full $@(~ profile-1)]
   ==
 ::  local
 ::
+::  user-modified fields take priority
+::
 +$  news-1
-  $%  [%full who=ship con=(unit contact-1)]
-      [%field who=ship fil=(pair @tas (unit field-1))]
+  $%  [%full who=ship con=$@(~ contact-1)]
   ==
++|  %version
+++  foreign  foreign-0
+++  rolodex  rolodex-0
+++  contact  contact-0
+++  action  action-0
+++  profile  profile-0
+++  news  news-0
+++  update  update-0
+++  field  field-0
 --

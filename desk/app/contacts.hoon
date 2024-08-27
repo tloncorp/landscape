@@ -14,7 +14,8 @@
 ::
 +|  %types
 +$  card     card:agent:gall
-+$  state-0  [%0 rof=$@(~ profile) rol=rolodex]
++$  state-0  [%0 rof=$@(~ profile-0) rol=rolodex-0]
++$  state-1  [%1 rof=$@(~ profile-1) rol=rolodex-1]
 --
 ::
 %-  agent:dbug
@@ -70,8 +71,108 @@
 ::
 +|  %help
 ::
-++  do-edit
-  |=  [c=contact f=field]
+::  +cy: contact map engine
+::
+++  cy
+  |_  c=contact-1
+  ::  +get: get typed value
+  ::
+  ++  get
+    |*  [key=@tas typ=value-type-1]
+    ^-  (unit _p:*$>(_typ value-1))
+    =/  val=(unit value-1)  (~(get by c) key)
+    ?~  val  ~
+    ?~  u.val  !!
+    ~|  "{<typ>} expected at {<key>}"
+    ::  XX Hoon compiler really needs to eat more fish
+    :: ?>  ?=($>(_typ value-1) -.u.val)
+    :: +.u.val
+    ::
+    ?-  typ
+      %text  ?>(?=(%text -.u.val) (some p.u.val))
+      %date  ?>(?=(%date -.u.val) (some p.u.val))
+      %tint  ?>(?=(%tint -.u.val) (some p.u.val))
+      %ship  ?>(?=(%ship -.u.val) (some p.u.val))
+      %look  ?>(?=(%look -.u.val) (some p.u.val))
+      %cult  ?>(?=(%cult -.u.val) (some p.u.val))
+      %set   ?>(?=(%set -.u.val) (some p.u.val))
+    ==
+  ::  +gos: got specialized to set
+  ::
+  ++  gos
+    |*  [key=@tas typ=value-type-1]
+    ::  XX make Hoon compiler smarter
+    ::  to be able to specialize to uniform set of
+    ::  type typ.
+    :: =*  vat  $>(_typ value-1)
+    :: ^-  (set _+:*vat)
+    ::
+    =/  val=value-1  (~(got by c) key)
+    ?~  val  !!
+    ~|  "set expected at {<key>}" 
+    ?>  ?=(%set -.val)
+    p.val
+  ::  +gut: got with default
+  ::
+  ++  gut
+    |*  [key=@tas def=value-1]
+    ^+  +.def
+    =/  val=value-1  (~(gut by c) key ~)
+    ?~  val
+      +.def
+    ~|  "{<-.def>} expected at {<key>}"
+    :: XX wish for Hoon compiler to be smarter.
+    :: this results in fish-loop.
+    :: ?+  -.def  !!
+    ::   %text  ?>(?=(%text -.val) +.val)
+    :: ==
+    :: ?>  ?=(_-.def -.val)
+    ?-  -.val
+      %text  ?>(?=(%text -.def) p.val)
+      %date  ?>(?=(%date -.def) p.val)
+      %tint  ?>(?=(%tint -.def) p.val)
+      %ship  ?>(?=(%ship -.def) p.val)
+      %look  ?>(?=(%look -.def) p.val)
+      %cult  ?>(?=(%cult -.def) p.val)
+      %set   ?>(?=(%set -.def) p.val)
+    ==
+  ::  +gub: got with bunt default
+  ::
+  ++  gub
+    |*  [key=@tas typ=value-type-1]
+    ^+  +:*$>(_typ value-1)
+    =/  val=value-1  (~(gut by c) key ~)
+    ?~  val
+      ?+  typ  !!
+        %text  p:*$>(%text value-1)
+        %date  p:*$>(%date value-1)
+        %tint  p:*$>(%tint value-1)
+        %ship  p:*$>(%ship value-1)
+        %look  p:*$>(%look value-1)
+        %cult  p:*$>(%cult value-1)
+        %set   p:*$>(%set value-1)
+      ==
+    :: ~|  "{<key>} expected to be {<-.def>}"
+    :: XX wish for Hoon compiler to be smarter.
+    :: this results in fish-loop.
+    :: ?+  -.def  !!
+    ::   %text  ?>(?=(%text -.val) +.val)
+    :: ==
+    :: ?>  ?=(_-.def -.val)
+    ::
+    ?-  typ
+      %text  ?>(?=(_typ -.val) p.val)
+      %date  ?>(?=(_typ -.val) p.val)
+      %tint  ?>(?=(%tint -.val) p.val)
+      %ship  ?>(?=(%ship -.val) p.val)
+      %look  ?>(?=(%look -.val) p.val)
+      %cult  ?>(?=(%cult -.val) p.val)
+      %set   ?>(?=(%set -.val) p.val)
+    ==
+  --
+++  do-edit  do-edit-0
+++  do-edit-0
+  |=  [c=contact-0 f=field-0]
   ^+  c
   ?-  -.f
     %nickname   c(nickname nickname.f)
@@ -95,6 +196,119 @@
   ::
     %del-group  c(groups (~(del in groups.c) flag.f))
   ==
+++  do-edit-1
+  |=  [con=contact-1 edit=(list (pair @tas value-1))]
+  ^+  con
+  =/  don  (~(gas by con) edit)
+  :: XX are these checks neccessary?
+  :: if so, we need to introduce link field.
+  ::
+  =+  avatar=(~(get cy don) %avatar %text)
+  ?:  ?&  ?=(^ avatar)
+          =('data:' (end 3^5 u.avatar))
+      ==
+    ~|  "cannot add a data url to avatar"  !!
+  =+  cover=(~(get cy don) %cover %text)
+  ?:  ?&  ?=(^ cover)
+          !=('data:' (end 3^5 u.cover))
+      ==
+    ~|  "cannot add a data url to cover"  !!
+  ::
+  don
+::  +to-contact-1: convert contact-0
+::
+++  to-contact-1
+  |=  c=contact-0
+  ^-  contact-1
+  =/  o=contact-1
+    %-  malt
+    ^-  (list (pair @tas value-1))
+    :~  nickname+text/nickname.c
+        bio+text/bio.c
+        status+text/status.c
+        color+tint/color.c
+    ==
+  =?  o  ?=(^ avatar.c)
+    (~(put by o) %avatar text/u.avatar.c)
+  =?  o  ?=(^ cover.c)
+    (~(put by o) %cover text/u.cover.c)
+  =.  o  %+  ~(put by o)  %groups
+    :-  %set
+    %-  ~(run in groups.c)
+    |=  =flag:g
+    cult/flag
+  o
+::  +to-contact-0: convert contact-1
+::
+++  to-contact-0
+  |=  c=contact-1
+  ^-  contact-0
+  =|  o=contact-0
+  %=  o
+    nickname
+      (~(gub cy c) %nickname %text)
+    bio
+      (~(gut cy c) %bio text/'')
+    status
+      (~(gut cy c) %status text/'')
+    color
+      (~(gut cy c) %color tint/0x0)
+    avatar
+      :: XX prohibit data: link
+      (~(get cy c) %avatar %text)
+    cover
+      :: XX prohibit data: link
+      (~(get cy c) %cover %text)
+    groups
+      ^-  (set flag:g)
+      %-  ~(run in (~(gos cy c) %groups %cult))
+      |=  val=value-1
+      ?>  ?=(%cult -.val)
+      p.val
+  ==
+::  +to-profile-1: convert profile-0
+::
+++  to-profile-1
+  |=  o=profile-0
+  ^-  profile-1
+  [wen.o ?~(con.o ~ (to-contact-1 con.o))]
+::  +gen-cid: generate new contact id
+::
+++  gen-cid
+  |=  [eny=@uvJ =book]
+  ^-  cid
+  =/  nid=cid
+    (end [0 4] eny)
+  |-
+  ?.  |(=(0x0 nid) (~(has by book) nid))
+    nid
+  $(nid +(nid))
+::  +to-rolodex-1: convert rolodex-0
+::
+:: ++  to-rolodex-1
+::   |=  [eny=@uvJ r=rolodex-0]
+::   ^-  rolodex-1
+::   %-  ~(rep by r)
+::   |=  $:  [=ship raf=foreign-0]
+::           acc=rolodex-1
+::       ==
+::   =+  cid=(gen-cid eny book.acc)
+::   =/  far=foreign-1
+::     ?~  for.raf
+::       [~ sag.raf]
+::     [(some cid) sag.raf]
+::   %_  acc
+::     book
+::       ?~  for.raf  book.acc
+::       ?~  con.for.raf
+::         (~(put by book.acc) cid *page)
+::       %+  ~(put by book.acc)  
+::         cid
+::       ^-  page
+::       [[wen.for.raf (to-contact-1 con.for.raf)] ~]
+::     net
+::       (~(put by net.acc) ship far)
+::   ==
 ::
 ++  mono
   |=  [old=@da new=@da]
