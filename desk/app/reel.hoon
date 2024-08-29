@@ -118,6 +118,7 @@
       %reel-describe
     ?>  =(our.bowl src.bowl)
     =+  !<([token=cord =metadata:reel] vase)
+    ?~  (~(has by stable-id) token)  `this
     ::  the token here is a temporary identifier for the metadata
     ::  a new one will be assigned by the bait provider and returned to us
     =/  new-fields  (~(put by fields.metadata) 'bite-type' '2')
