@@ -5,6 +5,7 @@
 +$  versioned-state
   $%  state-0
       state-1
+      state-2
   ==
 ::
 +$  state-0
@@ -14,6 +15,10 @@
 +$  state-1
   $:  %1
       token-metadata=(map [inviter=ship token=cord] metadata:reel)
+  ==
++$  state-2
+  $:  %2
+      token-metadata=(map token=cord metadata:reel)
   ==
 --
 ::
@@ -53,7 +58,7 @@
   ==
 --
 ::
-=|  state-1
+=|  state-2
 =*  state  -
 ::
 %-  agent:dbug
@@ -72,10 +77,22 @@
   ^-  (quip card _this)
   =/  old  !<(versioned-state old-state)
   ?-  -.old
-      %1
+      %2
     `this(state old)
+  ::
+      %1
+    =/  new-metadata
+      %-  ~(gas by *(map cord metadata:reel))
+      %+  turn
+        ~(tap by token-metadata.old)
+      |=  [[inviter=ship token=cord] meta=metadata:reel]
+      =/  new-token
+        (crip "{(trip (scot %p inviter))}/{(trip token)}")
+      [new-token meta]
+    `this(state [%2 new-metadata])
+  ::
       %0
-    `this(state *state-1)
+    `this(state *state-2)
   ==
 ::
 ++  on-poke
@@ -88,53 +105,97 @@
     :_  this
     =/  full-line=request-line:server  (parse-request-line:server url.request)
     =/  line
-      ?:  ?=([%lure @ @ *] site.full-line)
+      ?:  ?=([%lure @ *] site.full-line)
         t.site.full-line
       ?:  ?=([@ @ *] site.full-line)
         site.full-line
       !!
     ?+    method.request  (give not-found:gen:server)
-        %'GET'
-      ?:  ?=([%bait %who ~] line)
-        (give (json-response:gen:server s+(scot %p our.bowl)))
-      =/  inviter  (slav %p i.line)
-      =/  token  i.t.line
-      =/  =metadata:reel  (fall (~(get by token-metadata) [inviter token]) *metadata:reel)
-      ?:  ?=([@ @ %metadata ~] line)
-        (give (json-response:gen:server (enjs-metadata metadata)))
-      (give (manx-response:gen:server (landing-page metadata)))
+      %'GET'  (get-request line)
+    ::
         %'POST'
-      =/  inviter  (slav %p i.line)
-      =/  token  i.t.line
       ?~  body.request
+        ~&  "body not found"
         (give not-found:gen:server)
       ?.  =('ship=%7E' (end [3 8] q.u.body.request))
+        ~&  "ship not found in body"
         (give not-found:gen:server)
       =/  joiner  (slav %p (cat 3 '~' (rsh [3 8] q.u.body.request)))
-      :*  :*  %pass  /bite  %agent  [inviter %reel]
-              %poke  %reel-bite  !>([%bite-1 token joiner inviter])
-          ==
-          :*  %pass  /bite  %agent  [our.bowl %reel]
-              %poke  %reel-bite  !>([%bite-1 token joiner inviter])
-          ==
-          (give (manx-response:gen:server (sent-page joiner)))
-      ==
+      =;  [=bite:reel inviter=(unit ship)]
+        ?~  inviter
+          ~&  "inviter not found"
+          (give not-found:gen:server)
+        ^-  (list card)
+        :*  :*  %pass  /bite  %agent  [u.inviter %reel]
+                %poke  %reel-bite  !>(bite)
+            ==
+            :*  %pass  /bite  %agent  [our.bowl %reel]
+                %poke  %reel-bite  !>(bite)
+            ==
+            (give (manx-response:gen:server (sent-page joiner)))
+        ==
+      =/  =(pole knot)  line
+      ?:  ?=([@ @ ~] line)
+        =/  inviter  (slav %p i.line)
+        =/  old-token  i.t.line
+        :_  `inviter
+        [%bite-1 (scot %t old-token) joiner inviter]
+      =/  token
+        ?~  ext.full-line  i.line
+        (crip "{(trip i.line)}.{(trip u.ext.full-line)}")
+      =/  =metadata:reel  (~(gut by token-metadata) token *metadata:reel)
+      ?~  type=(~(get by fields.metadata) 'bite-type')
+        ~|("no bite type for token: {<token>}" !!)
+      ?>  =('2' u.type)
+      :_
+        ?~  inviter-field=(~(get by fields.metadata) 'inviter')  ~
+        `(slav %p u.inviter-field)
+      [%bite-2 token joiner metadata]
     ==
+    ++  get-request
+      |=  =(pole knot)
+      ^-  (list card)
+      ?+  pole  (give not-found:gen:server)
+          [%bait %who ~]
+        (give (json-response:gen:server s+(scot %p our.bowl)))
+      ::
+          [ship=@ name=@ %metadata ~]
+        =/  token  (crip "{(trip ship.pole)}/{(trip name.pole)}")
+        =/  =metadata:reel
+          (~(gut by token-metadata) token *metadata:reel)
+        (give (json-response:gen:server (enjs-metadata metadata)))
+      ::
+          [token=@ %metadata ~]
+        =/  =metadata:reel
+          (~(gut by token-metadata) token.pole *metadata:reel)
+        (give (json-response:gen:server (enjs-metadata metadata)))
+      ::
+          [token=* ~]
+        =/  token  (crip (join '/' pole))
+        =/  =metadata:reel
+          (~(gut by token-metadata) token *metadata:reel)
+        (give (manx-response:gen:server (landing-page metadata)))
+      ==
     ::
     ++  give
       |=  =simple-payload:http
       (give-simple-payload:app:server id simple-payload)
     --
       %bait-describe
-    =+  !<([token=cord =metadata:reel] vase)
-    `this(token-metadata (~(put by token-metadata) [src.bowl token] metadata))
+    =+  !<([nonce=cord =metadata:reel] vase)
+    =/  token=cord  (scot %uv (end [3 16] eny.bowl))
+    :_  this(token-metadata (~(put by token-metadata) token metadata))
+    =/  =cage  reel-confirmation+!>([nonce token])
+    ~[[%pass /confirm/[nonce] %agent [src.bowl %reel] %poke cage]]
   ::
       %bait-undescribe
     =+  !<(token=cord vase)
-    `this(token-metadata (~(del by token-metadata) [src.bowl token]))
+    `this(token-metadata (~(del by token-metadata) token))
+  ::
       %bind-slash
     :_  this
     ~[[%pass /eyre/connect %arvo %e %connect [~ /] dap.bowl]]
+  ::
       %unbind-slash
     :_  this
     ~[[%pass /eyre/connect %arvo %e %connect [~ /] %docket]]
