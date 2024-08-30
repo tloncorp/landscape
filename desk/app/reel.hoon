@@ -108,14 +108,16 @@
     =+  !<(token=cord vase)
     :_  this
     =/  result=(unit [cord cord])
-      ?.  (~(has by our-metadata) token)  ~
+      ?.  (~(has by our-metadata) token)  `[token '']
       `[token (url-for-token vic our.bowl token)]
     ~[[%pass [%token-link-want token ~] %agent [src.bowl %reel] %poke %reel-give-token-link !>(result)]]
       %reel-give-token-link
     =+  !<(result=(unit [cord cord]) vase)
     ?~  result  `this
-    =/  [token=cord url=cord]  u.result
     :_  this
+    =/  [token=cord url=cord]  u.result
+    ?:  =('' url)
+      ~[[%give %fact ~[[%token-link (scot %p src.bowl) token ~]] %json !>(~)]]
     ~[[%give %fact ~[[%token-link (scot %p src.bowl) token ~]] %json !>(s+url)]]
   ==
 ::
