@@ -314,7 +314,7 @@
   |=  [old=@da new=@da]
   ^-  @da
   ?:  (lth old new)  new
-  (add old ^~((div ~s1 (bex 16))))
+  (add old ^~((rsh 3^2 ~s1)))
 ::
 +|  %state
 ::
