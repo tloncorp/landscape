@@ -121,12 +121,14 @@
 +$  book  (map cid page)
 ::    $rolodex-1: rolodex
 ::
-::  .book: contact book, original and modified
-::  .net: network contacts
+::  .book: contact book
+::  .peers: network contacts
+::  .block: network blacklist
 ::
 +$  rolodex-1
   $:  =book
-      net=(map ship foreign-1)
+      peers=(map ship foreign-1)
+      block=(set ship)
   ==
 ::
 +$  epic  epic:e
