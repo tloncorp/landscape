@@ -144,7 +144,7 @@
   $%  [%nickname nickname=@t]
       [%bio bio=@t]
       [%status status=@t]
-      [%color color=@uxF]
+      [%color color=@ux]
       [%avatar avatar=(unit @t)]
       [%cover cover=(unit @t)]
       [%add-group =flag:g]
@@ -179,20 +179,18 @@
 ::  %page: create a new contact page
 ::  %edit: edit the profile or a contact page
 ::  %wipe: delete a page
-::  %spot: associate a page
 ::  %meet: track a peer
+::  %spot: associate peer with a page
 ::  %drop: discard a peer
 ::  %snub: unfollow a peer
 ::
 +$  action-1
   $%  [%anon ~]
-      [%page p=(list (pair @tas value-1))]
-      ::
-      ::  .p=~ edit the profile
+      [%page p=cid q=(list (pair @tas value-1))]
       [%edit p=(unit cid) q=(list (pair @tas value-1))]
-      [%spot p=(list (pair ship cid))]
       [%wipe p=(list cid)]
       [%meet p=(list ship)]
+      [%spot p=(list (pair ship (unit cid)))]
       [%drop p=(list ship)]
       [%snub p=(list ship)]
   ==
@@ -211,12 +209,13 @@
   $%  [%full who=ship con=$@(~ contact-1)]
   ==
 +|  %version
-++  foreign  foreign-0
-++  rolodex  rolodex-0
-++  contact  contact-0
-++  action  action-0
-++  profile  profile-0
-++  news  news-0
-++  update  update-0
-++  field  field-0
+:: ++  foreign  foreign-0
+:: ++  rolodex  rolodex-0
+:: ++  contact  contact-0
+:: ++  action  action-
+++  action  action-1
+:: ++  profile  profile-0
+:: ++  news  news-0
+:: ++  update  update-0
+:: ++  field  field-0
 --

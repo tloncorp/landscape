@@ -21,7 +21,7 @@
 %-  agent:dbug
 %+  verb  |
 ^-  agent:gall
-=|  state-0
+=|  state-1
 =*  state  -
 ::
 =<  |_  =bowl:gall
@@ -109,7 +109,7 @@
     ::
     =/  val=value-1  (~(got by c) key)
     ?~  val  !!
-    ~|  "set expected at {<key>}" 
+    ~|  "set expected at {<key>}"
     ?>  ?=(%set -.val)
     p.val
   ::  +gut: got with default
@@ -161,8 +161,8 @@
     :: ?>  ?=(_-.def -.val)
     ::
     ?-  typ
-      %text  ?>(?=(_typ -.val) p.val)
-      %date  ?>(?=(_typ -.val) p.val)
+      %text  ?>(?=(%text -.val) p.val)
+      %date  ?>(?=(%date -.val) p.val)
       %tint  ?>(?=(%tint -.val) p.val)
       %ship  ?>(?=(%ship -.val) p.val)
       %look  ?>(?=(%look -.val) p.val)
@@ -302,7 +302,7 @@
 ::       ?~  for.raf  book.acc
 ::       ?~  con.for.raf
 ::         (~(put by book.acc) cid *page)
-::       %+  ~(put by book.acc)  
+::       %+  ~(put by book.acc)
 ::         cid
 ::       ^-  page
 ::       [[wen.for.raf (to-contact-1 con.for.raf)] ~]
@@ -310,6 +310,78 @@
 ::       (~(put by net.acc) ship far)
 ::   ==
 ::
+++  to-edit-1
+  |=  edit-0=(list field-0)
+  ^-  (list (pair @tas value-1))
+  =;  [edit-1=(list (pair @tas value-1)) groups=(set $>(%cult value-1))]
+    :_  edit-1
+    [%groups set/groups]
+  ::
+  %+  roll  edit-0
+    |=  $:  fed=field-0
+            acc=(list (pair @tas value-1))
+            gan=(set $>(%cult value-1))
+        ==
+    ::
+    ^+  [acc gan]
+    ::  XX improve this by taking out :_ gan
+    ::  outside
+    ?-  -.fed
+        ::
+        %nickname
+      :_  gan
+      :_  acc
+      [%nickname text/nickname.fed]
+        ::
+        %bio
+      :_  gan
+      :_  acc
+      [%bio text/bio.fed]
+        ::
+        %status
+      :_  gan
+      :_  acc
+      [%status text/status.fed]
+        ::
+        %color
+      :_  gan
+      :_  acc
+      [%color tint/color.fed]
+        ::
+        %avatar
+      ?~  avatar.fed  [acc gan]
+      :_  gan
+      :_  acc
+      [%avatar look/u.avatar.fed]
+        ::
+        %cover
+      ?~  cover.fed  [acc gan]
+      :_  gan
+      :_  acc
+      [%cover look/u.cover.fed]
+        ::
+        %add-group
+      :-  acc
+      (~(put in gan) [%cult flag.fed])
+        ::
+        %del-group
+      :-  acc
+      (~(del in gan) [%cult flag.fed])
+    ==
+
+++  to-action-1
+  ::  o=$<(%meet action-0)
+  |=  o=action-0
+  ^-  action-1
+  ?-  -.o
+    %anon  [%anon ~]
+    %edit  [%edit ~ (to-edit-1 p.o)]
+    %meet  ~|(action-fail+%meet !!)
+    %heed  ~|(action-fail+%heed !!)
+    %drop  [%drop p.o]
+    %snub  [%snub p.o]
+  ==
+
 ++  mono
   |=  [old=@da new=@da]
   ^-  @da
@@ -348,49 +420,49 @@
   ::    /epic protocol versions are even more trivial,
   ::    published ad-hoc, elsewhere.
   ::
-  ++  pub
-    =>  |%
-        ::  if this proves to be too slow, the set of paths
-        ::  should be maintained statefully: put on +p-init:pub,
-        ::  filtered at some interval (on +load?) to avoid a space leak.
-        ::
-        ++  subs
-          ^-  (set path)
-          %-  ~(rep by sup.bowl)
-          |=  [[duct ship pat=path] acc=(set path)]
-          ?.(?=([%contact *] pat) acc (~(put in acc) pat))
-        ::
-        ++  fact
-          |=  [pat=(set path) u=update]
-          ^-  gift:agent:gall
-          [%fact ~(tap in pat) upd:mar !>(u)]
-        --
-    ::
-    |%
-    ++  p-anon  ?.(?=([@ ^] rof) cor (p-diff ~))
-    ::
-    ++  p-edit
-      |=  l=(list field)
-      =/  old  ?.(?=([@ ^] rof) *contact con.rof)
-      =/  new  (roll l |=([f=field c=_old] (do-edit c f)))
-      ?:  =(old new)
-        cor
-      (p-diff:pub new)
-    ::
-    ++  p-diff
-      |=  con=$@(~ contact)
-      =/  p=profile  [?~(rof now.bowl (mono wen.rof now.bowl)) con]
-      (give:(p-news(rof p) our.bowl con) (fact subs full+p))
-    ::
-    ++  p-init
-      |=  wen=(unit @da)
-      ?~  rof  cor
-      ?~  wen  (give (fact ~ full+rof))
-      ?:  =(u.wen wen.rof)  cor
-      ?>((lth u.wen wen.rof) (give (fact ~ full+rof))) :: no future subs
-    ::
-    ++  p-news  |=(n=news (give %fact [/news ~] %contact-news !>(n)))
-    --
+  :: ++  pub
+  ::   =>  |%
+  ::       ::  if this proves to be too slow, the set of paths
+  ::       ::  should be maintained statefully: put on +p-init:pub,
+  ::       ::  filtered at some interval (on +load?) to avoid a space leak.
+  ::       ::
+  ::       ++  subs
+  ::         ^-  (set path)
+  ::         %-  ~(rep by sup.bowl)
+  ::         |=  [[duct ship pat=path] acc=(set path)]
+  ::         ?.(?=([%contact *] pat) acc (~(put in acc) pat))
+  ::       ::
+  ::       ++  fact
+  ::         |=  [pat=(set path) u=update]
+  ::         ^-  gift:agent:gall
+  ::         [%fact ~(tap in pat) upd:mar !>(u)]
+  ::       --
+  ::   ::
+  ::   |%
+  ::   ++  p-anon  ?.(?=([@ ^] rof) cor (p-diff ~))
+  ::   ::
+  ::   ++  p-edit
+  ::     |=  l=(list field)
+  ::     =/  old  ?.(?=([@ ^] rof) *contact con.rof)
+  ::     =/  new  (roll l |=([f=field c=_old] (do-edit c f)))
+  ::     ?:  =(old new)
+  ::       cor
+  ::     (p-diff:pub new)
+  ::   ::
+  ::   ++  p-diff
+  ::     |=  con=$@(~ contact)
+  ::     =/  p=profile  [?~(rof now.bowl (mono wen.rof now.bowl)) con]
+  ::     (give:(p-news(rof p) our.bowl con) (fact subs full+p))
+  ::   ::
+  ::   ++  p-init
+  ::     |=  wen=(unit @da)
+  ::     ?~  rof  cor
+  ::     ?~  wen  (give (fact ~ full+rof))
+  ::     ?:  =(u.wen wen.rof)  cor
+  ::     ?>((lth u.wen wen.rof) (give (fact ~ full+rof))) :: no future subs
+  ::   ::
+  ::   ++  p-news  |=(n=news (give %fact [/news ~] %contact-news !>(n)))
+  ::   --
   ::
   ::  +sub: subscription mgmt
   ::
@@ -410,205 +482,205 @@
   ::    for a given peer, we always have at most one subscription,
   ::    to either /contact/* or /epic.
   ::
-  ++  sub
-    |^  |=  who=ship
-        ^+  s-impl
-        ?<  =(our.bowl who)
-        =/  old  (~(get by rol) who)
-        ~(. s-impl who %live ?=(~ old) (fall old [~ ~]))
-    ::
-    ++  s-many
-      |=  [l=(list ship) f=$-(_s-impl _s-impl)]
-      ^+  cor
-      %+  roll  l
-      |=  [who=@p acc=_cor]
-      ?:  =(our.bowl who)  acc
-      si-abet:(f (sub:acc who))
-    ::
-    ++  s-impl
-      |_  [who=ship sas=?(%dead %live) new=? foreign]
-      ::
-      ++  si-cor  .
-      ::
-      ++  si-abet
-        ^+  cor
-        ?-  sas
-          %live  =.  rol  (~(put by rol) who for sag)
-                 ::  NB: this assumes con.for is only set in +si-hear
-                 ::
-                 ?.(new cor (p-news:pub who ~))
-        ::
-          %dead  ?:  new  cor
-                 =.  rol  (~(del by rol) who)
-                 ::
-                 ::  this is not quite right, reflecting *total* deletion
-                 ::  as *contact* deletion. but it's close, and keeps /news simpler
-                 ::
-                 (p-news:pub who ~)
-        ==
-      ::
-      ++  si-take
-        |=  =sign:agent:gall
-        ^+  si-cor
-        ?-  -.sign
-          %poke-ack   ~|(strange-poke-ack+wire !!)
-        ::
-          %watch-ack  ~|  strange-watch-ack+wire
-                      ?>  ?=(%want sag)
-                      ?~  p.sign  si-cor(sag [%chi ~])
-                      %-  (slog 'contact-fail' u.p.sign)
-                      pe-peer:si-epic(sag %fail)
-        ::
-          %kick       si-heed(sag ~)
-        ::
-        ::  [compat] we *should* maintain backcompat here
-        ::
-        ::    by either directly handling or upconverting
-        ::    old actions. but if we don't, we'll fall back
-        ::    to /epic and wait for our peer to upgrade.
-        ::
-        ::    %fact's from the future are also /epic,
-        ::    in case our peer downgrades. if not, we'll
-        ::    handle it on +load.
-        ::
-          %fact       ?+    p.cage.sign  (si-odd p.cage.sign)
-                          ?(upd:base:mar %contact-update-0)
-                        (si-hear !<(update q.cage.sign))
-        ==            ==
+  :: ++  sub
+  ::   |^  |=  who=ship
+  ::       ^+  s-impl
+  ::       ?<  =(our.bowl who)
+  ::       =/  old  (~(get by rol) who)
+  ::       ~(. s-impl who %live ?=(~ old) (fall old [~ ~]))
+  ::   ::
+  ::   ++  s-many
+  ::     |=  [l=(list ship) f=$-(_s-impl _s-impl)]
+  ::     ^+  cor
+  ::     %+  roll  l
+  ::     |=  [who=@p acc=_cor]
+  ::     ?:  =(our.bowl who)  acc
+  ::     si-abet:(f (sub:acc who))
+  ::   ::
+  ::   ++  s-impl
+  ::     |_  [who=ship sas=?(%dead %live) new=? foreign]
+  ::     ::
+  ::     ++  si-cor  .
+  ::     ::
+  ::     ++  si-abet
+  ::       ^+  cor
+  ::       ?-  sas
+  ::         %live  =.  rol  (~(put by rol) who for sag)
+  ::                ::  NB: this assumes con.for is only set in +si-hear
+  ::                ::
+  ::                ?.(new cor (p-news:pub who ~))
+  ::       ::
+  ::         %dead  ?:  new  cor
+  ::                =.  rol  (~(del by rol) who)
+  ::                ::
+  ::                ::  this is not quite right, reflecting *total* deletion
+  ::                ::  as *contact* deletion. but it's close, and keeps /news simpler
+  ::                ::
+  ::                (p-news:pub who ~)
+  ::       ==
+  ::     ::
+  ::     ++  si-take
+  ::       |=  =sign:agent:gall
+  ::       ^+  si-cor
+  ::       ?-  -.sign
+  ::         %poke-ack   ~|(strange-poke-ack+wire !!)
+  ::       ::
+  ::         %watch-ack  ~|  strange-watch-ack+wire
+  ::                     ?>  ?=(%want sag)
+  ::                     ?~  p.sign  si-cor(sag [%chi ~])
+  ::                     %-  (slog 'contact-fail' u.p.sign)
+  ::                     pe-peer:si-epic(sag %fail)
+  ::       ::
+  ::         %kick       si-heed(sag ~)
+  ::       ::
+  ::       ::  [compat] we *should* maintain backcompat here
+  ::       ::
+  ::       ::    by either directly handling or upconverting
+  ::       ::    old actions. but if we don't, we'll fall back
+  ::       ::    to /epic and wait for our peer to upgrade.
+  ::       ::
+  ::       ::    %fact's from the future are also /epic,
+  ::       ::    in case our peer downgrades. if not, we'll
+  ::       ::    handle it on +load.
+  ::       ::
+  ::         %fact       ?+    p.cage.sign  (si-odd p.cage.sign)
+  ::                         ?(upd:base:mar %contact-update-0)
+  ::                       (si-hear !<(update q.cage.sign))
+  ::       ==            ==
 
-      ++  si-hear
-        |=  u=update
-        ^+  si-cor
-        ?:  &(?=(^ for) (lte wen.u wen.for))
-          si-cor
-        si-cor(for +.u, cor (p-news:pub who con.u))
-      ::
-      ++  si-meet  si-cor  :: init key in +si-abet
-      ::
-      ++  si-heed
-        ^+  si-cor
-        ?.  ?=(~ sag)
-          si-cor
-        =/  pat  [%contact ?~(for / /at/(scot %da wen.for))]
-        %=  si-cor
-          cor  (pass /contact %agent [who dap.bowl] %watch pat)
-          sag  %want
-        ==
-      ::
-      ++  si-drop  si-snub(sas %dead)
-      ::
-      ++  si-snub
-        %_  si-cor
-          sag  ~
-          cor  ?+    sag   cor
-                   ?(%fail [?(%lev %dex) *])
-                 (pass /epic %agent [who dap.bowl] %leave ~)
-               ::
-                   ?(%want [%chi *])
-                 (pass /contact %agent [who dap.bowl] %leave ~)
-        ==     ==
-      ::
-      ++  si-odd
-        |=  =mark
-        ^+  si-cor
-        =*  upd  *upd:base:mar
-        =*  wid  ^~((met 3 upd))
-        ?.  =(upd (end [3 wid] mark))
-          ~&(fake-news+mark si-cor)   ::  XX unsub?
-        ?~  ver=(slaw %ud (rsh 3^+(wid) mark))
-          ~&(weird-news+mark si-cor)  ::  XX unsub?
-        ?:  =(okay u.ver)
-          ~|(odd-not-odd+mark !!)     ::  oops!
-        =.  si-cor  si-snub  :: unsub before .sag update
-        =.  sag  ?:((lth u.ver okay) [%lev ~] [%dex u.ver])
-        pe-peer:si-epic
-      ::
-      ++  si-epic
-        |%
-        ++  pe-take
-          |=  =sign:agent:gall
-          ^+  si-cor
-          ?-  -.sign
-            %poke-ack   ~|(strange-poke-ack+wire !!)
-          ::
-            %watch-ack  ?~  p.sign  si-cor
-                        %-  (slog 'epic-fail' u.p.sign)
-                        si-cor(sag %lost)
-          ::
-            %kick       ?.  ?=(?(%fail [?(%dex %lev) *]) sag)
-                          si-cor  :: XX strange
-                        pe-peer
-          ::
-            %fact       ?+  p.cage.sign
-                                 ~&(fact-not-epic+p.cage.sign si-cor)
-                          %epic  (pe-hear !<(epic q.cage.sign))
-          ==            ==
-        ::
-        ++  pe-hear
-          |=  =epic
-          ^+  si-cor
-          ?.  ?=(?(%fail [?(%dex %lev) *]) sag)
-            ~|(strange-epic+[okay epic] !!)  :: get %kick'd
-          ?:  =(okay epic)
-            ?:  ?=(%fail sag)
-              si-cor(sag %lost)  :: abandon hope
-            si-heed:si-snub
-          ::
-          ::  handled generically to support peer downgrade
-          ::
-          si-cor(sag ?:((gth epic okay) [%dex epic] [%lev ~]))
-        ::
-        ++  pe-peer
-          si-cor(cor (pass /epic %agent [who dap.bowl] %watch /epic))
-        --
-      --
-    --
+  ::     ++  si-hear
+  ::       |=  u=update
+  ::       ^+  si-cor
+  ::       ?:  &(?=(^ for) (lte wen.u wen.for))
+  ::         si-cor
+  ::       si-cor(for +.u, cor (p-news:pub who con.u))
+  ::     ::
+  ::     ++  si-meet  si-cor  :: init key in +si-abet
+  ::     ::
+  ::     ++  si-heed
+  ::       ^+  si-cor
+  ::       ?.  ?=(~ sag)
+  ::         si-cor
+  ::       =/  pat  [%contact ?~(for / /at/(scot %da wen.for))]
+  ::       %=  si-cor
+  ::         cor  (pass /contact %agent [who dap.bowl] %watch pat)
+  ::         sag  %want
+  ::       ==
+  ::     ::
+  ::     ++  si-drop  si-snub(sas %dead)
+  ::     ::
+  ::     ++  si-snub
+  ::       %_  si-cor
+  ::         sag  ~
+  ::         cor  ?+    sag   cor
+  ::                  ?(%fail [?(%lev %dex) *])
+  ::                (pass /epic %agent [who dap.bowl] %leave ~)
+  ::              ::
+  ::                  ?(%want [%chi *])
+  ::                (pass /contact %agent [who dap.bowl] %leave ~)
+  ::       ==     ==
+  ::     ::
+  ::     ++  si-odd
+  ::       |=  =mark
+  ::       ^+  si-cor
+  ::       =*  upd  *upd:base:mar
+  ::       =*  wid  ^~((met 3 upd))
+  ::       ?.  =(upd (end [3 wid] mark))
+  ::         ~&(fake-news+mark si-cor)   ::  XX unsub?
+  ::       ?~  ver=(slaw %ud (rsh 3^+(wid) mark))
+  ::         ~&(weird-news+mark si-cor)  ::  XX unsub?
+  ::       ?:  =(okay u.ver)
+  ::         ~|(odd-not-odd+mark !!)     ::  oops!
+  ::       =.  si-cor  si-snub  :: unsub before .sag update
+  ::       =.  sag  ?:((lth u.ver okay) [%lev ~] [%dex u.ver])
+  ::       pe-peer:si-epic
+  ::     ::
+  ::     ++  si-epic
+  ::       |%
+  ::       ++  pe-take
+  ::         |=  =sign:agent:gall
+  ::         ^+  si-cor
+  ::         ?-  -.sign
+  ::           %poke-ack   ~|(strange-poke-ack+wire !!)
+  ::         ::
+  ::           %watch-ack  ?~  p.sign  si-cor
+  ::                       %-  (slog 'epic-fail' u.p.sign)
+  ::                       si-cor(sag %lost)
+  ::         ::
+  ::           %kick       ?.  ?=(?(%fail [?(%dex %lev) *]) sag)
+  ::                         si-cor  :: XX strange
+  ::                       pe-peer
+  ::         ::
+  ::           %fact       ?+  p.cage.sign
+  ::                                ~&(fact-not-epic+p.cage.sign si-cor)
+  ::                         %epic  (pe-hear !<(epic q.cage.sign))
+  ::         ==            ==
+  ::       ::
+  ::       ++  pe-hear
+  ::         |=  =epic
+  ::         ^+  si-cor
+  ::         ?.  ?=(?(%fail [?(%dex %lev) *]) sag)
+  ::           ~|(strange-epic+[okay epic] !!)  :: get %kick'd
+  ::         ?:  =(okay epic)
+  ::           ?:  ?=(%fail sag)
+  ::             si-cor(sag %lost)  :: abandon hope
+  ::           si-heed:si-snub
+  ::         ::
+  ::         ::  handled generically to support peer downgrade
+  ::         ::
+  ::         si-cor(sag ?:((gth epic okay) [%dex epic] [%lev ~]))
+  ::       ::
+  ::       ++  pe-peer
+  ::         si-cor(cor (pass /epic %agent [who dap.bowl] %watch /epic))
+  ::       --
+  ::     --
+  ::   --
   ::  +migrate: from :contact-store
   ::
   ::    all known ships, non-default profiles, no subscriptions
   ::
-  ++  migrate
-    =>  |%
-        ++  legacy
-          |%
-          +$  rolodex   (map ship contact)
-          +$  resource  [=entity name=term]
-          +$  entity    ship
-          +$  contact
-            $:  nickname=@t
-                bio=@t
-                status=@t
-                color=@ux
-                avatar=(unit @t)
-                cover=(unit @t)
-                groups=(set resource)
-                last-updated=@da
-            ==
-          --
-        --
-    ::
-    ^+  cor
-    =/  bas  /(scot %p our.bowl)/contact-store/(scot %da now.bowl)
-    ?.  .^(? gu+(weld bas /$))  cor
-    =/  ful  .^(rolodex:legacy gx+(weld bas /all/noun))
-    ::
-    |^  cor(rof us, rol them)
-    ++  us  (biff (~(get by ful) our.bowl) convert)
-    ::
-    ++  them
-      ^-  rolodex
-      %-  ~(rep by (~(del by ful) our.bowl))
-      |=  [[who=ship con=contact:legacy] rol=rolodex]
-      (~(put by rol) who (convert con) ~)
-    ::
-    ++  convert
-      |=  con=contact:legacy
-      ^-  $@(~ profile)
-      ?:  =(*contact:legacy con)  ~
-      [last-updated.con con(|6 groups.con)]
-    --
+  :: ++  migrate
+  ::   =>  |%
+  ::       ++  legacy
+  ::         |%
+  ::         +$  rolodex   (map ship contact)
+  ::         +$  resource  [=entity name=term]
+  ::         +$  entity    ship
+  ::         +$  contact
+  ::           $:  nickname=@t
+  ::               bio=@t
+  ::               status=@t
+  ::               color=@ux
+  ::               avatar=(unit @t)
+  ::               cover=(unit @t)
+  ::               groups=(set resource)
+  ::               last-updated=@da
+  ::           ==
+  ::         --
+  ::       --
+  ::   ::
+  ::   ^+  cor
+  ::   =/  bas  /(scot %p our.bowl)/contact-store/(scot %da now.bowl)
+  ::   ?.  .^(? gu+(weld bas /$))  cor
+  ::   =/  ful  .^(rolodex:legacy gx+(weld bas /all/noun))
+  ::   ::
+  ::   |^  cor(rof us, rol them)
+  ::   ++  us  (biff (~(get by ful) our.bowl) convert)
+  ::   ::
+  ::   ++  them
+  ::     ^-  rolodex
+  ::     %-  ~(rep by (~(del by ful) our.bowl))
+  ::     |=  [[who=ship con=contact:legacy] rol=rolodex]
+  ::     (~(put by rol) who (convert con) ~)
+  ::   ::
+  ::   ++  convert
+  ::     |=  con=contact:legacy
+  ::     ^-  $@(~ profile)
+  ::     ?:  =(*contact:legacy con)  ~
+  ::     [last-updated.con con(|6 groups.con)]
+  ::   --
   ::
-  +|  %implementation
+  :: +|  %implementation
   ::
   ++  init
     (emit %pass /migrate %agent [our dap]:bowl %poke noun+!>(%migrate))
@@ -617,120 +689,128 @@
     |=  old-vase=vase
     ^+  cor
     |^  =+  !<([old=versioned-state cool=epic] old-vase)
-        ::  if there should be a sub (%chi saga), but there is none (in the
-        ::  bowl), re-establish it. %kick handling used to be faulty.
-        ::  we run this "repair" on every load, in the spirit of +inflate-io.
-        ::
-        =^  cards  rol.old
-          %+  roll  ~(tap by rol.old)
-          |=  [[who=ship foreign] caz=(list card) rol=rolodex]
-          ?.  ?&  =([%chi ~] sag)
-                  !(~(has by wex.bowl) [/contact who dap.bowl])
-              ==
-            [caz (~(put by rol) who for sag)]
-          :-  :_  caz
-              =/  =path  [%contact ?~(for / /at/(scot %da wen.for))]
-              [%pass /contact %agent [who dap.bowl] %watch path]
-          (~(put by rol) who for %want)
-        =.  state  old
-        =.  cor    (emil cards)
-        ::  [compat] if our protocol version changed
-        ::
-        ::    we first tell the world, then see if we can now understand
-        ::    any of our friends who were sending messages from the future.
-        ::
-        ?:(=(okay cool) cor l-bump(cor l-epic))
+        ?>  ?=(%1 -.old)
+        cor(state old)
+    :: |^  =+  !<([old=versioned-state cool=epic] old-vase)
+    ::     ::  if there should be a sub (%chi saga), but there is none (in the
+    ::     ::  bowl), re-establish it. %kick handling used to be faulty.
+    ::     ::  we run this "repair" on every load, in the spirit of +inflate-io.
+    ::     ::
+    ::     =^  cards  rol.old
+    ::       %+  roll  ~(tap by rol.old)
+    ::       |=  [[who=ship foreign] caz=(list card) rol=rolodex]
+    ::       ?.  ?&  =([%chi ~] sag)
+    ::               !(~(has by wex.bowl) [/contact who dap.bowl])
+    ::           ==
+    ::         [caz (~(put by rol) who for sag)]
+    ::       :-  :_  caz
+    ::           =/  =path  [%contact ?~(for / /at/(scot %da wen.for))]
+    ::           [%pass /contact %agent [who dap.bowl] %watch path]
+    ::       (~(put by rol) who for %want)
+    ::     =.  state  old
+    ::     =.  cor    (emil cards)
+    ::     ::  [compat] if our protocol version changed
+    ::     ::
+    ::     ::    we first tell the world, then see if we can now understand
+    ::     ::    any of our friends who were sending messages from the future.
+    ::     ::
+    ::     ?:(=(okay cool) cor l-bump(cor l-epic))
     ::
     +$  versioned-state
       $%  state-0
+          state-1
       ==
     ::
-    ++  l-epic  (give %fact [/epic ~] epic+!>(okay))
-    ::
-    ++  l-bump
-      ^+  cor
-      %-  ~(rep by rol)
-      |=  [[who=ship foreign] =_cor]
-      ::  XX to fully support downgrade, we'd need to also
-      ::  save an epic in %lev
-      ::
-      ?.  ?&  ?=([%dex *] sag)
-              =(okay ver.sag)
-          ==
-        cor
-      si-abet:si-heed:si-snub:(sub:cor who)
+    :: ++  l-epic  (give %fact [/epic ~] epic+!>(okay))
+    :: ::
+    :: ++  l-bump
+    ::   ^+  cor
+    ::   %-  ~(rep by rol)
+    ::   |=  [[who=ship foreign] =_cor]
+    ::   ::  XX to fully support downgrade, we'd need to also
+    ::   ::  save an epic in %lev
+    ::   ::
+    ::   ?.  ?&  ?=([%dex *] sag)
+    ::           =(okay ver.sag)
+    ::       ==
+    ::     cor
+    ::   si-abet:si-heed:si-snub:(sub:cor who)
     --
   ::
   ++  poke
     |=  [=mark =vase]
     ^+  cor
-    ::  [compat] we *should* maintain backcompat here
-    ::
-    ::    by either directly handling or upconverting old actions
-    ::
     ?+    mark  ~|(bad-mark+mark !!)
         %noun
       ?+  q.vase  !!
-        %migrate  migrate
+        %migrate  ~|(%migrate-not-implemented !!)
       ==
       ::
         ?(act:base:mar %contact-action-0)
       ?>  =(our src):bowl
-      =/  act  !<(action vase)
-      ?-  -.act
-        %anon  p-anon:pub
-        %edit  (p-edit:pub p.act)
-        %meet  (s-many:sub p.act |=(s=_s-impl:sub si-meet:s))
-        %heed  (s-many:sub p.act |=(s=_s-impl:sub si-heed:s))
-        %drop  (s-many:sub p.act |=(s=_s-impl:sub si-drop:s))
-        %snub  (s-many:sub p.act |=(s=_s-impl:sub si-snub:s))
-      ==
+      =/  act
+        ?-  mark
+          act:base:mar  !<(action vase)
+          %contact-action-0  (to-action-1 !<(action-0 vase))
+        ==
+      ~|(%poke-not-implemented !!)
+      :: ?-  -.act
+      ::   %anon  p-anon:pub
+      ::   %edit  (p-edit:pub p.act)
+      ::   %meet  (s-many:sub p.act |=(s=_s-impl:sub si-meet:s))
+      ::   %heed  (s-many:sub p.act |=(s=_s-impl:sub si-heed:s))
+      ::   %drop  (s-many:sub p.act |=(s=_s-impl:sub si-drop:s))
+      ::   %snub  (s-many:sub p.act |=(s=_s-impl:sub si-snub:s))
+      :: ==
     ==
   ::
   ++  peek
     |=  pat=(pole knot)
     ^-  (unit (unit cage))
-    ?+    pat  [~ ~]
-        [%x %all ~]
-      =/  lor=rolodex
-        ?:  |(?=(~ rof) ?=(~ con.rof))  rol
-        (~(put by rol) our.bowl rof ~)
-      ``contact-rolodex+!>(lor)
-    ::
-        [%x %contact her=@ ~]
-      ?~  who=`(unit @p)`(slaw %p her.pat)
-        [~ ~]
-      =/  tac=?(~ contact)
-        ?:  =(our.bowl u.who)  ?~(rof ~ con.rof)
-        =+  (~(get by rol) u.who)
-        ?:  |(?=(~ -) ?=(~ for.u.-))  ~
-        con.for.u.-
-      ?~  tac  [~ ~]
-      ``contact+!>(`contact`tac)
-    ==
+    ~|(bad-peek+pat !!)
+    :: ?+    pat  [~ ~]
+    ::     [%x %all ~]
+    ::   =/  lor=rolodex
+    ::     ?:  |(?=(~ rof) ?=(~ con.rof))  rol
+    ::     (~(put by rol) our.bowl rof ~)
+    ::   ``contact-rolodex+!>(lor)
+    :: ::
+    ::     [%x %contact her=@ ~]
+    ::   ?~  who=`(unit @p)`(slaw %p her.pat)
+    ::     [~ ~]
+    ::   =/  tac=?(~ contact)
+    ::     ?:  =(our.bowl u.who)  ?~(rof ~ con.rof)
+    ::     =+  (~(get by rol) u.who)
+    ::     ?:  |(?=(~ -) ?=(~ for.u.-))  ~
+    ::     con.for.u.-
+    ::   ?~  tac  [~ ~]
+    ::   ``contact+!>(`contact`tac)
+    :: ==
   ::
   ++  peer
     |=  pat=(pole knot)
     ^+  cor
-    ?+  pat  ~|(bad-watch-path+pat !!)
-      [%contact %at wen=@ ~]  (p-init:pub `(slav %da wen.pat))
-      [%contact ~]  (p-init:pub ~)
-      [%epic ~]  (give %fact ~ epic+!>(okay))
-      [%news ~]  ~|(local-news+src.bowl ?>(=(our src):bowl cor))
-    ==
+    ~|(bad-watch-path+pat !!)
+    :: ?+  pat  ~|(bad-watch-path+pat !!)
+    ::   [%contact %at wen=@ ~]  (p-init:pub `(slav %da wen.pat))
+    ::   [%contact ~]  (p-init:pub ~)
+    ::   [%epic ~]  (give %fact ~ epic+!>(okay))
+    ::   [%news ~]  ~|(local-news+src.bowl ?>(=(our src):bowl cor))
+    :: ==
   ::
   ++  agent
     |=  [=wire =sign:agent:gall]
     ^+  cor
-    ?+  wire  ~|(evil-agent+wire !!)
-      [%contact ~]  si-abet:(si-take:(sub src.bowl) sign)
-      [%epic ~]     si-abet:(pe-take:si-epic:(sub src.bowl) sign)
-      ::
-        [%migrate ~]
-      ?>  ?=(%poke-ack -.sign)
-      ?~  p.sign  cor
-      %-  (slog leaf/"{<wire>} failed" u.p.sign)
-      cor
-    ==
+    ~|(evil-agent+wire !!)
+    :: ?+  wire  ~|(evil-agent+wire !!)
+    ::   [%contact ~]  si-abet:(si-take:(sub src.bowl) sign)
+    ::   [%epic ~]     si-abet:(pe-take:si-epic:(sub src.bowl) sign)
+    ::   ::
+    ::     [%migrate ~]
+    ::   ?>  ?=(%poke-ack -.sign)
+    ::   ?~  p.sign  cor
+    ::   %-  (slog leaf/"{<wire>} failed" u.p.sign)
+    ::   cor
+    :: ==
   --
 --
