@@ -48,10 +48,10 @@
   $:  %4
       vic=@t
       civ=ship
-      our-metadata=(map cord metadata:reel)
+      our-metadata=(map token:reel metadata:reel)
       open-link-requests=(set (pair ship cord))
-      open-describes=(set cord)
-      stable-id=(map cord cord)
+      open-describes=(set token:reel)
+      stable-id=(map cord token:reel)
   ==
 ::  url with old style token
 ++  url-for-token
@@ -117,16 +117,16 @@
   ::
       %reel-describe
     ?>  =(our.bowl src.bowl)
-    =+  !<([token=cord =metadata:reel] vase)
-    ?~  (~(has by stable-id) token)  `this
+    =+  !<([id=cord =metadata:reel] vase)
+    ?~  (~(has by stable-id) id)  `this
     ::  the token here is a temporary identifier for the metadata
     ::  a new one will be assigned by the bait provider and returned to us
     =/  new-fields  (~(put by fields.metadata) 'bite-type' '2')
     =/  new-metadata  metadata(fields new-fields)
-    =/  nonce=cord  (scot %da now.bowl)
+    =/  =nonce:reel  (scot %da now.bowl)
     =.  our-metadata  (~(put by our-metadata) nonce new-metadata)
     =.  open-describes  (~(put in open-describes) nonce)
-    =.  stable-id  (~(put by stable-id) token nonce)
+    =.  stable-id  (~(put by stable-id) id nonce)
     :_  this
     ~[[%pass /describe %agent [civ %bait] %poke %bait-describe !>([nonce new-metadata])]]
   ::
@@ -136,10 +136,10 @@
     =.  open-describes  (~(del in open-describes) nonce)
     ?~  md=(~(get by our-metadata) nonce)
       ~|("no metadata for nonce: {<nonce>}" !!)
-    =/  ids=(list [id=cord token=cord])
+    =/  ids=(list [id=cord =token:reel])
       %+  skim
         ~(tap by stable-id)
-      |=  [key=cord token=cord]
+      |=  [key=cord =token:reel]
       =(nonce token)
     ?~  ids
       ~|("no stable id for nonce: {<nonce>}" !!)
@@ -153,7 +153,7 @@
   ::
       %reel-undescribe
     ?>  =(our.bowl src.bowl)
-    =+  !<(token=cord vase)
+    =+  !<(=token:reel vase)
     ::  the token here should be the actual token given to us by the provider
     :_  this(our-metadata (~(del by our-metadata) token))
     ~[[%pass /undescribe %agent [civ %bait] %poke %bait-undescribe !>(token)]]
@@ -161,7 +161,7 @@
   ::  are unique to that ship/user and can be scried out
   ::
       %reel-want-token-link
-    =+  !<(token=cord vase)
+    =+  !<(=token:reel vase)
     :_  this
     =/  result=(unit [cord cord])
       ?.  (~(has by our-metadata) token)  ~
@@ -232,7 +232,7 @@
     ``reel-metadata+!>(metadata)
   ::
       [%x any %token-url token=*]
-    =/  token  (crip (join '/' token.pole))
+    =/  =token:reel  (crip (join '/' token.pole))
     =/  url  (url-for-token vic token)
     ``reel-token-url+!>(url)
   ::

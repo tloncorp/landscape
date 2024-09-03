@@ -10,10 +10,10 @@
   $:  %4
       vic=@t
       civ=ship
-      our-metadata=(map cord metadata:r)
+      our-metadata=(map token:r metadata:r)
       open-link-requests=(set (pair ship cord))
-      open-describes=(set cord)
-      stable-id=(map cord cord)
+      open-describes=(set token:r)
+      stable-id=(map cord token:r)
   ==
 ++  test-reel-describe
   %-  eval-mare

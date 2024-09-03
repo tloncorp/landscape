@@ -7,11 +7,11 @@
 ++  civ  ~loshut-lonreg
 ++  eny
   `@uv`0xffff.ffff.ffff.ffff.ffff.ffff.ffff.ffff
-++  nonce  '~2000.1.1'
+++  nonce  `@ta`'~2000.1.1'
 ++  token  `@t`(scot %uv (end [3 16] eny))
 +$  bait-state
   $:  %2
-      metadata=(map cord metadata:r)
+      metadata=(map token:r metadata:r)
   ==
 ++  test-bait-describe
   %-  eval-mare
@@ -108,9 +108,9 @@
     [eyre-id (eyre-post-request '/lure/~zod/test' payload)]
   ;<  caz=(list card)  bind:m  (do-poke %handle-http-request !>(request))
   %+  ex-cards  caz
-  =/  =cage  reel-bite+!>([%bite-1 token ~rus m1])
+  =/  =cage  reel-bite+!>([%bite-1 `@ta`'test' ~rus ~zod])
   %+  welp
-    :~  (ex-poke /bite [~dev %reel] cage)
+    :~  (ex-poke /bite [~zod %reel] cage)
         (ex-poke /bite [civ %reel] cage)
     ==
   (eyre-request-cards eyre-id simple-payload)

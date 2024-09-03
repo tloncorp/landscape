@@ -115,16 +115,13 @@
     ::
         %'POST'
       ?~  body.request
-        ~&  "body not found"
-        (give not-found:gen:server)
+        (give-not-found 'body not found')
       ?.  =('ship=%7E' (end [3 8] q.u.body.request))
-        ~&  "ship not found in body"
-        (give not-found:gen:server)
+        (give-not-found 'ship not found in body')
       =/  joiner  (slav %p (cat 3 '~' (rsh [3 8] q.u.body.request)))
       =;  [=bite:reel inviter=(unit ship)]
         ?~  inviter
-          ~&  "inviter not found"
-          (give not-found:gen:server)
+          (give-not-found 'inviter not found')
         ^-  (list card)
         :*  :*  %pass  /bite  %agent  [u.inviter %reel]
                 %poke  %reel-bite  !>(bite)
@@ -139,7 +136,7 @@
         =/  inviter  (slav %p i.line)
         =/  old-token  i.t.line
         :_  `inviter
-        [%bite-1 (scot %t old-token) joiner inviter]
+        [%bite-1 old-token joiner inviter]
       =/  token
         ?~  ext.full-line  i.line
         (crip "{(trip i.line)}.{(trip u.ext.full-line)}")
@@ -177,6 +174,9 @@
         (give (manx-response:gen:server (landing-page metadata)))
       ==
     ::
+    ++  give-not-found
+      |=  body=cord
+      (give [[404 ~] `(as-octs:mimes:html body)])
     ++  give
       |=  =simple-payload:http
       (give-simple-payload:app:server id simple-payload)
