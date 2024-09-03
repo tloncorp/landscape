@@ -18,7 +18,7 @@
   ==
 +$  state-2
   $:  %2
-      token-metadata=(map token=cord metadata:reel)
+      token-metadata=(map token:reel metadata:reel)
   ==
 --
 ::
@@ -82,12 +82,12 @@
   ::
       %1
     =/  new-metadata
-      %-  ~(gas by *(map cord metadata:reel))
+      %-  ~(gas by *(map token:reel metadata:reel))
       %+  turn
         ~(tap by token-metadata.old)
-      |=  [[inviter=ship token=cord] meta=metadata:reel]
+      |=  [[inviter=ship =token:reel] meta=metadata:reel]
       =/  new-token
-        (crip "{(trip (scot %p inviter))}/{(trip token)}")
+        (rap 3 (scot %p inviter) '/' token ~)
       [new-token meta]
     `this(state [%2 new-metadata])
   ::
@@ -123,6 +123,7 @@
         ?~  inviter
           (give-not-found 'inviter not found')
         ^-  (list card)
+        ::  TODO: figure out if we need to send both pokes
         :*  :*  %pass  /bite  %agent  [u.inviter %reel]
                 %poke  %reel-bite  !>(bite)
             ==
@@ -181,8 +182,8 @@
       (give-simple-payload:app:server id simple-payload)
     --
       %bait-describe
-    =+  !<([nonce=cord =metadata:reel] vase)
-    =/  token=cord  (scot %uv (end [3 16] eny.bowl))
+    =+  !<([=nonce:reel =metadata:reel] vase)
+    =/  =token:reel  (scot %uv (end [3 16] eny.bowl))
     :_  this(token-metadata (~(put by token-metadata) token metadata))
     =/  =cage  reel-confirmation+!>([nonce token])
     ~[[%pass /confirm/[nonce] %agent [src.bowl %reel] %poke cage]]
