@@ -53,7 +53,7 @@
       %cult
       %set
   ==
-++  unis 
+++  unis
   |=  set=(set value-1)
   ^-  ?
   ?~  set  &
@@ -72,7 +72,7 @@
   &
 ::    $value-1: contact field value
 ::
-+$  value-1 
++$  value-1
   $+  contact-value-1
   $@  ~
   $%  [%text p=@t]
@@ -104,7 +104,7 @@
 ::    $cid: contact page id
 ::
 ::  generated from entropy and guaranteed non-zero
-::  
+::
 ::
 +$  cid  @uvF
 ::    $profile-1: contact profile
@@ -115,20 +115,18 @@
 +$  profile-1  [wen=@da con=contact-1]
 ::    $page: contact book page
 ::
-+$  page  (pair (unit ship) $@(~ profile-1))
++$  page  (pair (unit ship) contact-1)
 ::    $book: contact book
-::  
+::
 +$  book  (map cid page)
 ::    $rolodex-1: rolodex
 ::
 ::  .book: contact book
 ::  .peers: network contacts
-::  .block: network blacklist
 ::
 +$  rolodex-1
   $:  =book
       peers=(map ship foreign-1)
-      block=(set ship)
   ==
 ::
 +$  epic  epic:e
@@ -176,37 +174,43 @@
 +$  news-0
   [who=ship con=$@(~ contact-0)]
 ::  %anon: delete the profile
-::  %page: create a new contact page
 ::  %edit: edit the profile or a contact page
-::  %wipe: delete a page
+::  %wipe: delete a contact page
+::  %spot: associate page with a peer
 ::  %meet: track a peer
-::  %spot: associate peer with a page
 ::  %drop: discard a peer
 ::  %snub: unfollow a peer
 ::
 +$  action-1
   $%  [%anon ~]
-      [%page p=cid q=(list (pair @tas value-1))]
       [%edit p=(unit cid) q=(list (pair @tas value-1))]
+      [%spot p=(list (pair cid (unit ship)))]
       [%wipe p=(list cid)]
       [%meet p=(list ship)]
-      [%spot p=(list (pair ship (unit cid)))]
       [%drop p=(list ship)]
       [%snub p=(list ship)]
   ==
 ::  network
-::  
-::  %full: deliver full profile
+::
+::  %full: our profile
 ::
 +$  update-1
-  $%  [%full $@(~ profile-1)]
+  $%  [%full profile-1]
   ==
-::  local
+::    $news-1: local update
 ::
-::  user-modified fields take priority
+::  %self: our profile
+::  %page: contact page update
+::  %spot: peer with contact page
+::  %wipe: contact deleted
+::  %peer: peer update or deletion
 ::
 +$  news-1
-  $%  [%full who=ship con=$@(~ contact-1)]
+  $%  [%self con=contact-1]
+      [%page =cid con=contact-1]
+      [%wipe =cid]
+      [%spot =cid who=(unit ship)]
+      [%peer who=ship con=contact-1]
   ==
 +|  %version
 :: ++  foreign  foreign-0
