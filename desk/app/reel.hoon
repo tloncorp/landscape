@@ -13,7 +13,8 @@
 ::  vic: URL of bait service
 ::  civ: @p of bait service
 ::  our-metadata: a mapping from nonce/token to metadata
-::  open-link-requests: open requests for an existing foreign link, DEPRECATED
+::  open-link-requests: open requests for an existing foreign link, v0
+::                      lure links only
 ::  open-describes: attempts to create a link waiting to be assigned a token
 ::  stable-id: a mapping from something the client can use to identify the
 ::             metadata to nonce and/or token
