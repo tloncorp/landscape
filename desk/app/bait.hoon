@@ -147,10 +147,9 @@
       ?~  type=(~(get by fields.metadata) 'bite-type')
         ~|("no bite type for token: {<token>}" !!)
       ?>  =('2' u.type)
-      :_
-        ?~  inviter-field=(~(get by fields.metadata) 'inviter')  ~
-        `(slav %p u.inviter-field)
-      [%bite-2 token joiner metadata]
+      :-  [%bite-2 token joiner metadata]
+      ?~  inviter-field=(~(get by fields.metadata) 'inviter')  ~
+      `(slav %p u.inviter-field)
     ==
     ++  get-request
       |=  =(pole knot)
