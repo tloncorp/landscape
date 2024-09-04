@@ -7,12 +7,17 @@
       state-1
       state-2
       state-3
+      state-4
   ==
 ::
 ::  vic: URL of bait service
 ::  civ: @p of bait service
-::  our-metadata: map from tokens to their metadata
-::  outstanding-pokes: ships we have poked and await a response from
+::  our-metadata: a mapping from nonce/token to metadata
+::  open-link-requests: open requests for an existing foreign link, v0
+::                      lure links only
+::  open-describes: attempts to create a link waiting to be assigned a token
+::  stable-id: a mapping from something the client can use to identify the
+::             metadata to nonce and/or token
 ::
 +$  state-0
   $:  %0
@@ -40,11 +45,21 @@
       our-metadata=(map cord metadata:reel)
       outstanding-pokes=(set (pair ship cord))
   ==
++$  state-4
+  $:  %4
+      vic=@t
+      civ=ship
+      our-metadata=(map token:reel metadata:reel)
+      open-link-requests=(set (pair ship cord))
+      open-describes=(set token:reel)
+      stable-id=(map cord token:reel)
+  ==
+::  url with old style token
 ++  url-for-token
-  |=  [vic=cord our=ship token=cord]
-  (crip "{(trip vic)}{(trip (scot %p our))}/{(trip token)}")
+  |=  [vic=cord token=cord]
+  (cat 3 vic token)
 --
-=|  state-3
+=|  state-4
 =*  state  -
 ::
 %-  agent:dbug
@@ -63,14 +78,16 @@
   ^-  (quip card _this)
   =/  old  !<(versioned-state old-state)
   ?-  -.old
-      %3
+      %4
     `this(state old)
+      %3
+    `this(state [%4 vic.old civ.old our-metadata.old outstanding-pokes.old ~ ~])
       %2
-    `this(state [%3 vic.old civ.old our-metadata.old ~])
+    `this(state [%4 vic.old civ.old our-metadata.old ~ ~ ~])
       %1
-    `this(state [%3 'https://tlon.network/lure/' ~loshut-lonreg ~ ~])
+    `this(state [%4 'https://tlon.network/lure/' ~loshut-lonreg ~ ~ ~ ~])
       %0
-    `this(state [%3 'https://tlon.network/lure/' ~loshut-lonreg ~ ~])
+    `this(state [%4 'https://tlon.network/lure/' ~loshut-lonreg ~ ~ ~ ~])
   ==
 ::
 ++  on-poke
@@ -85,7 +102,9 @@
       :_  this(vic vic.command)
       ~[[%pass /set-ship %arvo %k %fard q.byk.bowl %reel-set-ship %noun !>(vic.command)]]
         %set-ship
-      :_  this(civ civ.command)
+      ::  since we're changing providers, we need to regenerate links
+      ::  we'll use whatever key we currently have as the nonce
+      :_  this(civ civ.command, open-describes ~(key by our-metadata))
       %+  turn  ~(tap by our-metadata)
       |=  [token=cord =metadata:reel]
       ^-  card
@@ -93,24 +112,62 @@
     ==
   ::
       %reel-bite
+    ?>  =(civ src.bowl)
     =+  !<(=bite:reel vase)
     [[%give %fact ~[/bites] mark !>(bite)]~ this]
   ::
       %reel-describe
-    =+  !<([token=cord =metadata:reel] vase)
-    :_  this(our-metadata (~(put by our-metadata) token metadata))
-    ~[[%pass /describe %agent [civ %bait] %poke %bait-describe !>([token metadata])]]
+    ?>  =(our.bowl src.bowl)
+    =+  !<([id=cord =metadata:reel] vase)
+    ?~  (~(has by stable-id) id)  `this
+    ::  the token here is a temporary identifier for the metadata
+    ::  a new one will be assigned by the bait provider and returned to us
+    =/  new-fields  (~(put by fields.metadata) 'bite-type' '2')
+    =/  new-metadata  metadata(fields new-fields)
+    =/  =nonce:reel  (scot %da now.bowl)
+    =.  our-metadata  (~(put by our-metadata) nonce new-metadata)
+    =.  open-describes  (~(put in open-describes) nonce)
+    =.  stable-id  (~(put by stable-id) id nonce)
+    :_  this
+    ~[[%pass /describe %agent [civ %bait] %poke %bait-describe !>([nonce new-metadata])]]
+  ::
+      %reel-confirmation
+    ?>  =(civ src.bowl)
+    =+  !<(confirmation:reel vase)
+    =.  open-describes  (~(del in open-describes) nonce)
+    ?~  md=(~(get by our-metadata) nonce)
+      ~|("no metadata for nonce: {<nonce>}" !!)
+    =/  ids=(list [id=cord =token:reel])
+      %+  skim
+        ~(tap by stable-id)
+      |=  [key=cord =token:reel]
+      =(nonce token)
+    ?~  ids
+      ~|("no stable id for nonce: {<nonce>}" !!)
+    =*  id  -<.ids
+    ::  update the token the id points to
+    =.  stable-id  (~(put by stable-id) id token)
+    ::  swap out the nonce for the token in our-metadata
+    =.  our-metadata
+      (~(put by (~(del by our-metadata) nonce)) token u.md)
+    `this
+  ::
       %reel-undescribe
-    =+  !<(token=cord vase)
+    ?>  =(our.bowl src.bowl)
+    =+  !<(=token:reel vase)
+    ::  the token here should be the actual token given to us by the provider
     :_  this(our-metadata (~(del by our-metadata) token))
     ~[[%pass /undescribe %agent [civ %bait] %poke %bait-undescribe !>(token)]]
+  ::  old pokes for getting links, we no longer use these because all links
+  ::  are unique to that ship/user and can be scried out
+  ::
       %reel-want-token-link
-    =+  !<(token=cord vase)
+    =+  !<(=token:reel vase)
     :_  this
     =/  result=(unit [cord cord])
       ?.  (~(has by our-metadata) token)  `[token '']
-      `[token (url-for-token vic our.bowl token)]
-    ~[[%pass [%token-link-want token ~] %agent [src.bowl %reel] %poke %reel-give-token-link !>(result)]]
+      `[token (url-for-token vic token)]
+    ~[[%pass [%token-link-want token ~] %agent [src dap]:bowl %poke %reel-give-token-link !>(result)]]
       %reel-give-token-link
     =+  !<(result=(unit [cord cord]) vase)
     ?~  result  `this
@@ -124,43 +181,69 @@
 ++  on-agent
   |=  [=wire =sign:agent:gall]
   ^-  (quip card _this)
-  ?:  ?=([%token-link @ @ ~] wire)
+  =/  =(pole knot)  wire
+  ?+  pole  (on-agent:def wire sign)
+      [%token-link @ name=@ ~]
     ?+  -.sign  (on-agent:def wire sign)
         %poke-ack
-      `this(outstanding-pokes (~(del in outstanding-pokes) [src.bowl i.t.t.wire]))
+      `this(open-link-requests (~(del in open-link-requests) [src.bowl name.pole]))
     ==
-  (on-agent:def wire sign)
+  ==
 ::
 ++  on-watch
-  |=  =path
+  |=  =(pole knot)
   ^-  (quip card _this)
   ?>  =(our.bowl src.bowl)
-  ?+  path  (on-watch:def path)
-    [%bites ~]  `this
-      [%token-link @ @ ~]
-    =/  target  (slav %p i.t.path)
-    =/  group   i.t.t.path
-    ?~  (~(has in outstanding-pokes) [target group])  `this
-    :_  this(outstanding-pokes (~(put in outstanding-pokes) [target group]))
-    :~  [%pass path %agent [target %reel] %poke %reel-want-token-link !>(group)]
-        [%pass /expire/(scot %p our.bowl)/[group] %arvo %b [%wait (add ~h1 now.bowl)]]
+  =/  any  ?(%v0 %v1)
+  =?  pole  !?=([any *] pole)
+    [%v0 pole]
+  ?+  pole  ~|("bad pole: {<pole>}" (on-watch:def pole))
+    [any %bites ~]  `this
+  ::  old subscription for getting links, we no longer use these because all
+  ::  links are unique to that ship/user and can be scried out
+  ::
+      [%v0 %token-link ship=@ token=@ ~]
+    =/  ship  (slav %p ship.pole)
+    =/  key  [ship token.pole]
+    ?~  (~(has in open-link-requests) key)  `this
+    :_  this(open-link-requests (~(put in open-link-requests) key))
+    =/  =dock  [ship dap.bowl]
+    =/  =cage  reel-want-token-link+!>(token.pole)
+    :~  [%pass +.pole %agent dock %poke cage]
+        [%pass /expire/[ship.pole]/[token.pole] %arvo %b [%wait (add ~h1 now.bowl)]]
     ==
   ==
 ::
 ++  on-leave  on-leave:def
 ++  on-peek
-  |=  =path
+  |=  =(pole knot)
   ^-  (unit (unit cage))
-  ?+  path  [~ ~]
-    [%x %service ~]  ``noun+!>(vic)
-    [%x %bait ~]  ``reel-bait+!>([vic civ])
-    ::
-      [%x %outstanding-poke @ @ ~]
-    ``json+!>([%b (~(has in outstanding-pokes) [(slav %p i.t.t.path) i.t.t.t.path])])
-    ::
-      [%x %metadata @ ~]
-    =/  =metadata:reel  (fall (~(get by our-metadata) i.t.t.path) *metadata:reel)
+  =/  any  ?(%v0 %v1)
+  =?  +.pole  !?=([any *] +.pole)
+    [%v0 +.pole]
+  ?+  pole  [~ ~]
+    [%x any %service ~]  ``noun+!>(vic)
+    [%x any %bait ~]  ``reel-bait+!>([vic civ])
+  ::
+      [%x %v0 %outstanding-poke ship=@ name=@ ~]
+    =/  has  (~(has in open-link-requests) [(slav %p ship.pole) name.pole])
+    ``json+!>([%b has])
+  ::
+      [%x any %metadata token=@ ~]
+    =/  =metadata:reel  (fall (~(get by our-metadata) token.pole) *metadata:reel)
     ``reel-metadata+!>(metadata)
+  ::
+      [%x any %token-url token=*]
+    =/  =token:reel  (crip (join '/' token.pole))
+    =/  url  (url-for-token vic token)
+    ``reel-token-url+!>(url)
+  ::
+      [%x %v1 %id-url id=*]
+    =/  id  (crip (join '/' id.pole))
+    ?~  token=(~(get by stable-id) id)
+      ``reel-token-url+!>('')
+    =/  url  (cat 3 vic id)
+    ``reel-token-url+!>(url)
   ==
 ::
 ++  on-arvo
@@ -179,7 +262,9 @@
       =/  target  (slav %p i.t.wire)
       =/  group   i.t.t.wire
       ?~  error.sign-arvo
-        `this(outstanding-pokes (~(del in outstanding-pokes) [target group]))
+        :_  this(open-link-requests (~(del in open-link-requests) [target group]))
+        =/  path  (welp /token-link t.wire)
+        ~[[%give %kick ~[path] ~]]
       (on-arvo:def wire sign-arvo)
     ==
   ==
