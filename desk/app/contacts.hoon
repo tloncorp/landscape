@@ -697,6 +697,11 @@
         =/  peer=foreign-1
           ~|  unknown-peer+u.who
           (~(got by peers) u.who)
+        ::  unlink peer page
+        ::
+        =?  book  ?=(^ cid.peer)
+          =/  sage=^page  (~(got by book) u.cid.peer)
+          (~(put by book) u.cid.peer ~ q.sage)
         =.  peers  (~(put by peers) u.who peer(cid `cid))
         :: XX version .con, .for, etc.
         ::
@@ -722,7 +727,7 @@
       ?:  =(u.wen wen.rof)  cor
       ::
       :: no future subs
-      ?>((lth u.wen wen.rof) (give (fact-0 ~ full+(to-profile-0 rof)))) 
+      ?>((lth u.wen wen.rof) (give (fact-0 ~ full+(to-profile-0 rof))))
     ::
     ++  p-init
       |=  wen=(unit @da)
@@ -731,7 +736,7 @@
       ?:  =(u.wen wen.rof)  cor
       ::
       :: no future subs
-      ?>((lth u.wen wen.rof) (give (fact ~ full+rof))) 
+      ?>((lth u.wen wen.rof) (give (fact ~ full+rof)))
     ::
     ++  p-news-0
       |=  n=news-0
@@ -1087,7 +1092,7 @@
       ?~  who=`(unit @p)`(slaw %p her.pat)
         [~ ~]
       =/  tac=?(~ contact-0)
-        ?:  =(our.bowl u.who)  
+        ?:  =(our.bowl u.who)
           ?~(rof ~ (to-contact-0 con.rof))
         =+  (~(get by peers) u.who)
         ?:  |(?=(~ -) ?=(~ for.u.-))  ~

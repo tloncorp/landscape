@@ -263,8 +263,8 @@
   %+  ex-equal
   q.cage
   !>(mypage)
-::
-+|  %peek-0
+::  XX test spot of two different pages to the same ship
+:: +|  %peek-0
 ::  +test-peek-0-all: v0 scry /all
 ::
 :: ++  test-peek-0-all  (eval-mare (ex-equal !>(2) !>(2)))
