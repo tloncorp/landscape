@@ -115,6 +115,8 @@
 +$  profile-1  [wen=@da con=contact-1]
 ::    $page: contact book page
 ::
+::  Contact Page
+::
 +$  page  (pair (unit ship) contact-1)
 ::    $book: contact book
 ::
@@ -183,8 +185,9 @@
 ::
 +$  action-1
   $%  [%anon ~]
-      [%edit p=(unit cid) q=(list (pair @tas value-1))]
-      [%spot p=(list (pair cid (unit ship)))]
+      [%self p=(map @tas value-1)]
+      [%edit p=cid q=(map @tas value-1)]
+      [%spot p=(pair cid (unit ship))]
       [%wipe p=(list cid)]
       [%meet p=(list ship)]
       [%drop p=(list ship)]
@@ -205,6 +208,7 @@
 ::  %wipe: contact deleted
 ::  %peer: peer update or deletion
 ::
+:: /news
 +$  news-1
   $%  [%self con=contact-1]
       [%page =cid con=contact-1]

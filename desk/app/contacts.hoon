@@ -9,7 +9,7 @@
 ::    .con: a contact
 ::    .rof: our profile
 ::    .rol: our full rolodex
-::    .per: foreign peer
+::    .far: foreign peer
 ::    .for: foreign profile
 ::    .sag: foreign subscription state
 ::
@@ -20,7 +20,7 @@
 --
 ::
 %-  agent:dbug
-%+  verb  |
+:: %+  verb  |
 ^-  agent:gall
 =|  state-1
 =*  state  -
@@ -198,9 +198,9 @@
     %del-group  c(groups (~(del in groups.c) flag.f))
   ==
 ++  do-edit-1
-  |=  [con=contact-1 edit=(list (pair @tas value-1))]
+  |=  [con=contact-1 edit=(map @tas value-1)]
   ^+  con
-  =/  don  (~(gas by con) edit)
+  =/  don  (~(uni by con) edit)
   :: XX are these checks neccessary?
   :: if so, we need to introduce link field.
   ::
@@ -221,6 +221,7 @@
 ++  to-contact-1
   |=  c=contact-0
   ^-  contact-1
+  ~&  contact-0-to-1+c
   =/  o=contact-1
     %-  malt
     ^-  (list (pair @tas value-1))
@@ -233,7 +234,8 @@
     (~(put by o) %avatar text/u.avatar.c)
   =?  o  ?=(^ cover.c)
     (~(put by o) %cover text/u.cover.c)
-  =.  o  %+  ~(put by o)  %groups
+  =?  o  !?=(~ groups.c)
+    %+  ~(put by o)  %groups
     :-  %set
     %-  ~(run in groups.c)
     |=  =flag:g
@@ -262,12 +264,20 @@
       :: XX prohibit data: link
       (~(get cy c) %cover %text)
     groups
+      =/  groups
+        (~(get cy c) %groups %set)
+      ?~  groups  ~
       ^-  (set flag:g)
-      %-  ~(run in (~(gos cy c) %groups %cult))
+      %-  ~(run in u.groups)
       |=  val=value-1
       ?>  ?=(%cult -.val)
       p.val
   ==
+::  +to-contact-0-mod: convert to contact-0 with overlay
+::
+++  to-contact-0-mod
+  |=  [c=contact-1 mod=contact-1]
+  (to-contact-0 (~(uni by c) mod))
 ::  +to-profile-1: convert profile-0
 ::
 ++  to-profile-1
@@ -280,8 +290,27 @@
   |=  p=profile-1
   ^-  profile-0
   [wen.p (to-contact-0 con.p)]
-::  +overlay: fuse peer contact with overlay
-++  contact-overlay
+::
+++  to-profile-0-mod
+  |=  [p=profile-1 mod=contact-1]
+  ^-  profile-0
+  [wen.p (to-contact-0-mod con.p mod)]
+::
+++  to-foreign-0
+  |=  f=foreign-1
+  ^-  foreign-0
+  [?~(for.f ~ (to-profile-0 for.f)) sag.f]
+::  +to-foreign-0-mod: convert foreign-1 with contact overlay
+::
+++  to-foreign-0-mod
+  |=  [f=foreign-1 mod=contact-1]
+  ^-  foreign-0
+  [?~(for.f ~ (to-profile-0-mod for.f mod)) sag.f]
+::  +contact-mod: fuse peer contact with overlay
+::
+::  XX name is confusing rename
+::
+++  contact-mod
   |=  [per=foreign-1 don=contact-1]
   ^-  contact-1
   ?~  for.per
@@ -327,14 +356,15 @@
 ::
 ++  to-edit-1
   |=  edit-0=(list field-0)
-  ^-  (list (pair @tas value-1))
-  =;  [edit-1=(list (pair @tas value-1)) groups=(set $>(%cult value-1))]
-    :_  edit-1
-    [%groups set/groups]
+  ^-  (map @tas value-1)
+  =;  [edit-1=(map @tas value-1) groups=(set $>(%cult value-1))]
+    ?~  groups
+      edit-1
+    (~(put by edit-1) %groups set/groups)
   ::
   %+  roll  edit-0
     |=  $:  fed=field-0
-            acc=(list (pair @tas value-1))
+            acc=(map @tas value-1)
             gan=(set $>(%cult value-1))
         ==
     ::
@@ -345,35 +375,41 @@
         ::
         %nickname
       :_  gan
-      :_  acc
-      [%nickname text/nickname.fed]
+      %+  ~(put by acc)
+        %nickname
+      text/nickname.fed
         ::
         %bio
       :_  gan
-      :_  acc
-      [%bio text/bio.fed]
+      %+  ~(put by acc)
+        %bio
+      text/bio.fed
         ::
         %status
       :_  gan
-      :_  acc
-      [%status text/status.fed]
+      %+  ~(put by acc)
+        %status
+      text/status.fed
         ::
         %color
       :_  gan
-      :_  acc
-      [%color tint/color.fed]
+      %+  ~(put by acc)
+        %color
+      tint/color.fed
         ::
         %avatar
       ?~  avatar.fed  [acc gan]
       :_  gan
-      :_  acc
-      [%avatar look/u.avatar.fed]
+      %+  ~(put by acc)
+        %avatar
+      look/u.avatar.fed
         ::
         %cover
       ?~  cover.fed  [acc gan]
       :_  gan
-      :_  acc
-      [%cover look/u.cover.fed]
+      %+  ~(put by acc)
+        %cover
+      look/u.cover.fed
         ::
         %add-group
       :-  acc
@@ -390,7 +426,7 @@
   ^-  action-1
   ?-  -.o
     %anon  [%anon ~]
-    %edit  [%edit ~ (to-edit-1 p.o)]
+    %edit  [%self (to-edit-1 p.o)]
     ::
     :: old %meet is now a no-op
     %meet  [%meet ~]
@@ -514,7 +550,11 @@
         ::  XX number of peers is usually around 5.000.
         ::  this means that the number of subscribers is about the
         ::  same. Thus on each contact update we need to filter
-        ::  over 5.000 elements.
+        ::  over 5.000 elements: do some benchmarking.
+        ::
+        ::  XX when there are no subscribers on a path, we still
+        ::  send facts on an empty path. This is no problem, unless
+        ::  it is used in ++peer
         ::
         ++  subs-0
           ^-  (set path)
@@ -530,7 +570,7 @@
         ++  fact-0
           |=  [pat=(set path) u=update-0]
           ^-  gift:agent:gall
-          [%fact ~(tap in pat) %contact-update-0 !>(u)]
+          [%fact ~(tap in pat) %contact-update !>(u)]
         ::
         ++  fact
           |=  [pat=(set path) u=update-1]
@@ -540,40 +580,42 @@
     ::
     |%
     ::
-    ++  p-anon  ?.(?=([@ ^] rof) cor (p-diff-profile ~))
+    ++  p-anon  ?.(?=([@ ^] rof) cor (p-diff-self ~))
     ::
-    ++  p-edit-profile
-      |=  l=(list (pair @tas value-1))
+    ++  p-self
+      |=  e=(map @tas value-1)
       =/  old=contact-1
         ?.(?=([@ ^] rof) *contact-1 con.rof)
       =/  new=contact-1
-        (do-edit-1 old l)
+        (do-edit-1 old e)
       ?:  =(old new)
         cor
-      (p-diff-profile new)
+      (p-diff-self new)
     ::
-    ++  p-edit-contact
-      |=  [=cid l=(list (pair @tas value-1))]
+    ++  p-edit
+      |=  [=cid e=(map @tas value-1)]
       =/  =page
-        ~|  "contact id {<cid>} not found"
-        (~(got by book) cid)
+        =+  (~(get by book) cid)
+        ?~(- *page u.-)
       =/  old=contact-1  q.page
       =/  new=contact-1
-        (do-edit-1 old l)
+        (do-edit-1 old e)
       ?:  =(old new)
         cor
-      (p-diff-contact cid p.page new)
+      (p-diff-edit cid p.page new)
     ::
-    ++  p-wipe-contact
-      |=  =cid
+    ++  p-wipe
+      |=  del=(list cid)
+      %+  reel  del
+      |=  [=cid acc=_cor]
       =/  =page
         ~|  "contact id {<cid>} not found"
         (~(got by book) cid)
-      (p-diff-contact-wipe cid page)
+      (p-diff-wipe cid page)
     :: XX can we spot someone who is not a peer?
     :: Should we then meet them automatically?
     ::
-    ++  p-spot-peer
+    ++  p-spot
       |=  [=cid who=(unit ship)]
       =/  page=(unit page)
         (~(get by book) cid)
@@ -581,9 +623,9 @@
         ~|  "contact id {<cid>} not found"  !!
       ?:  =(p.u.page who)
         cor
-      (p-diff-spot cid who u.page)
+      (p-diff-spot cid u.page who)
     ::
-    ++  p-diff-profile
+    ++  p-diff-self
       |=  con=contact-1
       =/  p=profile-1  [?~(rof now.bowl (mono wen.rof now.bowl)) con]
       =.  rof  p
@@ -595,7 +637,7 @@
       =.  cor
         (p-news-0 our.bowl (to-contact-0 con))
       (p-news [%self con])
-    ::  +p-diff-contact: publish contact modification
+    ::  +p-diff-edit: publish contact page update
     ::
     ::  XX is there a way to guard against someone
     ::  using this arm to modify who out of band?
@@ -604,7 +646,7 @@
     ::  .who: peer -- inherited from page
     ::  .con: contact
     ::
-    ++  p-diff-contact
+    ++  p-diff-edit
       |=  [=cid who=(unit ship) con=contact-1]
       ::  .who.page: guaranteed unchanged
       ::
@@ -615,14 +657,13 @@
       ::
       =?  cor  ?=(^ who)
         =/  peer=foreign-1
-          :: XX spot unknown peer?
-          ::
+          ~|  unknown-peer+u.who
           (~(got by peers) u.who)
         %+  p-news-0  u.who
-        (to-contact-0 (contact-overlay peer con))
+        (to-contact-0 (contact-mod peer con))
       (p-news [%page cid con])
     ::
-    ++  p-diff-contact-wipe
+    ++  p-diff-wipe
       |=  [=cid =page]
       =*  who  p.page
       =.  book
@@ -631,9 +672,12 @@
       ::
       =?  cor  ?=(^ who)
         =/  peer=foreign-1
+          ~|  unknown-peer+u.who
           (~(got by peers) u.who)
         =.  peers
           (~(put by peers) u.who peer(cid ~))
+        ::
+        ::  v0 peer contact is modified
         %+  p-news-0  u.who
         (to-contact-0 ?~(for.peer ~ con.for.peer))
       (p-news [%wipe cid])
@@ -641,42 +685,53 @@
     ::
     ::  .cid: contact id
     ::  .who: new peer
-    ::  .con: contact -- inherited from page
-    ::
-    ::  XX spot unknown peer?
+    ::  .page: associated page
     ::
     ++  p-diff-spot
-      |=  [=cid who=(unit ship) =page]
+      |=  [=cid =page who=(unit ship)]
       =.  book
         (~(put by book) cid [who q.page])
-      ::  .who peer spot
+      ::  spot a peer
       ::
       =?  cor  ?=(^ who)
         =/  peer=foreign-1
+          ~|  unknown-peer+u.who
           (~(got by peers) u.who)
         =.  peers  (~(put by peers) u.who peer(cid `cid))
         :: XX version .con, .for, etc.
         ::
         %+  p-news-0  u.who
-        (to-contact-0 (contact-overlay peer q.page))
-      ::  .p.page peer is unspot
+        (to-contact-0 (contact-mod peer q.page))
+      ::  unspot a peer
       ::
       =?  cor  ?=(^ p.page)
         =/  peer=foreign-1
+          ~|  unknown-peer+u.p.page
           (~(got by peers) u.p.page)
         =.  peers  (~(put by peers) u.p.page peer(cid ~))
-        :: XX version .con, .for, etc.
+        :: XX version .con, .for, etc. for clarity
         ::
         %+  p-news-0  u.p.page
         (to-contact-0 ?~(for.peer ~ con.for.peer))
       (p-news [%spot cid who])
+    ::
+    ++  p-init-0
+      |=  wen=(unit @da)
+      ?~  rof  cor
+      ?~  wen  (give (fact ~ full+rof))
+      ?:  =(u.wen wen.rof)  cor
+      ::
+      :: no future subs
+      ?>((lth u.wen wen.rof) (give (fact-0 ~ full+(to-profile-0 rof)))) 
     ::
     ++  p-init
       |=  wen=(unit @da)
       ?~  rof  cor
       ?~  wen  (give (fact ~ full+rof))
       ?:  =(u.wen wen.rof)  cor
-      ?>((lth u.wen wen.rof) (give (fact ~ full+rof))) :: no future subs
+      ::
+      :: no future subs
+      ?>((lth u.wen wen.rof) (give (fact ~ full+rof))) 
     ::
     ++  p-news-0
       |=  n=news-0
@@ -963,8 +1018,7 @@
   ++  poke
     |=  [=mark =vase]
     ^+  cor
-    ~&  poke+mark
-    ?+    mark  ~&(%bad-mark ~|(bad-mark+mark !!))
+    ?+    mark  ~|(bad-mark+mark !!)
         %noun
       ?+  q.vase  !!
         %migrate  ~|(%migrate-not-implemented !!)
@@ -981,51 +1035,127 @@
             ?(act:base:mar %contact-action-0)
           (to-action-1 !<(action-0 vase))
         ==
-      ~&  act
-      ~|(%poke-not-implemented !!)
-      :: ?-  -.act
-      ::   %anon  p-anon:pub
-      ::   %edit  (p-edit:pub p.act)
-      ::   %meet  (s-many:sub p.act |=(s=_s-impl:sub si-meet:s))
-      ::   %heed  (s-many:sub p.act |=(s=_s-impl:sub si-heed:s))
-      ::   %drop  (s-many:sub p.act |=(s=_s-impl:sub si-drop:s))
-      ::   %snub  (s-many:sub p.act |=(s=_s-impl:sub si-snub:s))
-      :: ==
+      ?+  -.act  ~|(%poke-not-implemented !!)
+        %anon  p-anon:pub
+        %self  (p-self:pub p.act)
+        %edit  (p-edit:pub p.act q.act)
+        %spot  (p-spot:pub p.act)
+        %wipe  (p-wipe:pub p.act)
+        :: %meet  (s-many:sub p.act |=(s=_s-impl:sub si-meet:s))
+        :: %heed  (s-many:sub p.act |=(s=_s-impl:sub si-heed:s))
+        :: %drop  (s-many:sub p.act |=(s=_s-impl:sub si-drop:s))
+        :: %snub  (s-many:sub p.act |=(s=_s-impl:sub si-snub:s))
+      ==
     ==
+  ::  +peek: scry
+  ::
+  ::  v0 scries
+  ::
+  ::  /x/all -> $rolodex-0
+  ::  /x/contact/her=@ -> $@(~ contact-0)
+  ::
+  ::  v1 scries
+  ::
+  ::  /x/v1/self -> $@(~ $profile-1)
+  ::  /x/v1/book -> $book
+  ::  /x/v1/book/cid=@uv -> $page
+  ::  /x/v1/peer/her=@p -> $foreign-1
+  ::  /x/v1/contact/her=@p -> $contact-1 (effective contact)
   ::
   ++  peek
     |=  pat=(pole knot)
     ^-  (unit (unit cage))
-    ~|(bad-peek+pat !!)
-    :: ?+    pat  [~ ~]
-    ::     [%x %all ~]
-    ::   =/  lor=rolodex
-    ::     ?:  |(?=(~ rof) ?=(~ con.rof))  rol
-    ::     (~(put by rol) our.bowl rof ~)
-    ::   ``contact-rolodex+!>(lor)
-    :: ::
-    ::     [%x %contact her=@ ~]
-    ::   ?~  who=`(unit @p)`(slaw %p her.pat)
-    ::     [~ ~]
-    ::   =/  tac=?(~ contact)
-    ::     ?:  =(our.bowl u.who)  ?~(rof ~ con.rof)
-    ::     =+  (~(get by rol) u.who)
-    ::     ?:  |(?=(~ -) ?=(~ for.u.-))  ~
-    ::     con.for.u.-
-    ::   ?~  tac  [~ ~]
-    ::   ``contact+!>(`contact`tac)
-    :: ==
+    ~&  scry+pat
+    ?+    pat  [~ ~]
+        ::
+        [%x %all ~]
+      =/  rol-0=rolodex-0
+        %-  ~(run by peers)
+        |=  far=foreign-1
+        ^-  foreign-0
+        =/  mod=contact-1
+          ?~  cid.far
+            ~
+          q:(~(got by book) u.cid.far)
+        (to-foreign-0-mod far mod)
+      =/  lor-0=rolodex-0
+        ?:  |(?=(~ rof) ?=(~ con.rof))  rol-0
+        (~(put by rol-0) our.bowl (to-profile-0 rof) ~)
+      ``contact-rolodex+!>(lor-0)
+        ::
+        [%x %contact her=@ ~]
+      ?~  who=`(unit @p)`(slaw %p her.pat)
+        [~ ~]
+      =/  tac=?(~ contact-0)
+        ?:  =(our.bowl u.who)  
+          ?~(rof ~ (to-contact-0 con.rof))
+        =+  (~(get by peers) u.who)
+        ?:  |(?=(~ -) ?=(~ for.u.-))  ~
+        (to-contact-0 con.for.u.-)
+      ?~  tac  [~ ~]
+      :: XX smart compiler > Hoon compiler
+      ``contact+!>(`contact-0`tac)
+        ::
+        [%x %v1 %self ~]
+      ?~  rof  ~
+      ?~  con.rof  [~ ~]
+      ``contact-1+!>(con.rof)
+        ::
+        [%x %v1 %book ~]
+      ``contact-book-1+!>(book)
+        ::
+        [%x %v1 %book cid=@uv ~]
+      ?~  cid=`(unit @uv)`(slaw %uv cid.pat)
+        [~ ~]
+      ?~  page=(~(get by book) u.cid)
+        [~ ~]
+      ``contact-page-1+!>(u.page)
+        :: XX is foreign-1 useful at all?
+        :: perhaps we return it because the profile
+        :: could be missing yet, but peer already
+        :: exists?
+        ::
+        [%x %v1 %peer her=@p ~]
+      ?~  who=`(unit @p)`(slaw %p her.pat)
+        [~ ~]
+      ?~  far=(~(get by peers) u.who)
+        [~ ~]
+      ``foreign-1+!>(u.far)
+        ::
+        [%x %v1 %contact her=@p ~]
+      ?~  who=`(unit @p)`(slaw %p her.pat)
+        [~ ~]
+      ?~  far=(~(get by peers) u.who)
+        ``contact-1+!>(^-(contact-1 ~))
+      =/  con=contact-1
+        ?~  for.u.far  ~
+        con.for.u.far
+      ?~  cid.u.far
+        ``contact-1+!>(con)
+      %-  some  %-  some
+      :-  %contact-1
+      !>  %-  ~(uni by con)
+      q:(~(got by book) u.cid.u.far)
+    ==
   ::
   ++  peer
     |=  pat=(pole knot)
     ^+  cor
-    ~|(bad-watch-path+pat !!)
-    :: ?+  pat  ~|(bad-watch-path+pat !!)
-    ::   [%contact %at wen=@ ~]  (p-init:pub `(slav %da wen.pat))
-    ::   [%contact ~]  (p-init:pub ~)
-    ::   [%epic ~]  (give %fact ~ epic+!>(okay))
-    ::   [%news ~]  ~|(local-news+src.bowl ?>(=(our src):bowl cor))
-    :: ==
+    ?+  pat  ~|(bad-watch-path+pat !!)
+      ::
+      [%contact %at wen=@ ~]  (p-init-0:pub `(slav %da wen.pat))
+      [%contact ~]  (p-init-0:pub ~)
+      ::  XX confirm that giving a fact on ~ outside of peer
+      ::  does nothing
+      ::
+      [%v1 %contact %at wen=@ ~]  (p-init:pub `(slav %da wen.pat))
+      [%v1 %contact ~]  (p-init:pub ~)
+      ::
+      [%news ~]  ~|(local-news+src.bowl ?>(=(our src):bowl cor))
+      [%v1 %news ~]  ~|(local-news+src.bowl ?>(=(our src):bowl cor))
+      ::
+      [%epic ~]  (give %fact ~ epic+!>(okay))
+    ==
   ::
   ++  agent
     |=  [=wire =sign:agent:gall]
