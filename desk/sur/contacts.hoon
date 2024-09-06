@@ -116,10 +116,13 @@
 ::    $page: contact book page
 ::
 ::  Contact Page
+::  XX switch order in this pair
+::  XX (pair contact-1 contact-1)
+::  peer contact and user overlay
 ::
 +$  page  (pair (unit ship) contact-1)
 ::    $book: contact book
-::
+::  XX next version (map $@(ship [%cid cid]) page)
 +$  book  (map cid page)
 ::    $rolodex-1: rolodex
 ::
@@ -130,6 +133,7 @@
   $:  =book
       peers=(map ship foreign-1)
   ==
+::
 ::
 +$  epic  epic:e
 +$  saga
@@ -176,7 +180,7 @@
 +$  news-0
   [who=ship con=$@(~ contact-0)]
 ::  %anon: delete the profile
-::  %edit: edit the profile or a contact page
+::  %edit: edit the contact page
 ::  %wipe: delete a contact page
 ::  %spot: associate page with a peer
 ::  %meet: track a peer
@@ -204,11 +208,10 @@
 ::
 ::  %self: our profile
 ::  %page: contact page update
-::  %spot: peer with contact page
+::  %spot: contact page with peer
 ::  %wipe: contact deleted
-::  %peer: peer update or deletion
+::  %peer: peer update
 ::
-:: /news
 +$  news-1
   $%  [%self con=contact-1]
       [%page =cid con=contact-1]

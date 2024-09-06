@@ -258,11 +258,10 @@
   ::  peek page in the book: new contact page is found
   ::
   ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/book/0v1)
-  =/  cage  (need (need peek))
-  ?>  ?=(%contact-page-1 p.cage)
+  =/  =cage  (need (need peek))
   %+  ex-equal
-  q.cage
-  !>(mypage)
+  !>  [%contact-page-1 q.cage]
+  !>  [%contact-page-1 !>(mypage)]
 ::  XX test spot of two different pages to the same ship
 :: +|  %peek-0
 ::  +test-peek-0-all: v0 scry /all
