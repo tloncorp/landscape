@@ -20,7 +20,7 @@
 --
 ::
 %-  agent:dbug
-:: %+  verb  |
+%+  verb  |
 ^-  agent:gall
 =|  state-1
 =*  state  -
@@ -316,17 +316,6 @@
   ?~  for.per
     don
   (~(uni by con.for.per) don)
-:: ::  +gen-cid: generate new contact id
-:: ::
-:: ++  gen-cid
-::   |=  [eny=@uvJ =^book]
-::   ^-  cid
-::   =/  nid=cid
-::     (end [0 4] eny)
-::   |-
-::   ?.  |(=(0x0 nid) (~(has by book) nid))
-::     nid
-::   $(nid +(nid))
 ::  +to-rolodex-1: convert rolodex-0
 ::
 :: ++  to-rolodex-1
@@ -434,74 +423,6 @@
     %drop  [%drop p.o]
     %snub  [%snub p.o]
   ==
-  :: ?-  -.n
-  ::     ::
-  ::     %self
-  ::   ?~  con.n
-  ::     [our.bowl ~]
-  ::   =/  =contact-0
-  ::     (to-contact-0 con.n)
-  ::   [our.bowl contact-0]
-  ::     ::
-  ::     %page
-  ::   ?<  ?=(~ who.n)
-  ::   =/  =contact-0
-  ::     (~(uni by con.n) mod.n)
-  ::   [u.who.n (to-contact-0 contact-0)]
-  ::     ::
-  ::     ::  when we unspot a peer, we publish
-  ::     ::  his original contact, if there is one,
-  ::     ::  or announce deletion of his contact, if the
-  ::     ::  profile is missing or contact is empty.
-  ::     ::
-  ::     ::  if we spot a peer, we publish
-  ::     ::  his effective profile.
-  ::     ::
-  ::     %spot
-  ::   =/  =page
-  ::     ~|  "contact id {<cid.n>} not found"
-  ::     (~(got by book) cid)
-  ::   =*  who  u.p.page
-  ::   ?<  ?=(~ who)
-  ::   =/  =foreign-1
-  ::     (~(got by peers) who)
-  ::   ::  unspot a peer
-  ::   ::
-  ::   ?:  ?=(~ who.n)
-  ::     ?~  for.foreign-1
-  ::       [%full who ~]
-  ::     ?~  con.for.foreign-1
-  ::       [%full who ~]
-  ::     [%full who (to-contact-0 con.for.foreign-1)]
-  ::   ::  spot a peer
-  ::   ::
-  ::   ::  no profile, publish user overlay
-  ::   ::
-  ::   ?:  ?|  ?=(~ for.foreign-1)
-  ::           ?=(~ con.for.foreign-1)
-  ::       ==
-  ::       [%full who ?~(q.page ~ (to-contact-0 con.q.page))]
-  ::   :: XX to-contact-0 should return $@(~ contact-0)
-  ::   ::
-  ::   =/  =contact-0
-  ::     %-  to-contact-0
-  ::     (~(uni by con.for) q.page)
-  ::   [%full who contact-0]
-  ::     ::
-  ::     ::  when a contact associated with a peer is deleted
-  ::     ::  we publish his original profile, if it exists, or
-  ::     ::  announce its deletion.
-  ::     ::
-  ::     %wipe
-  ::   =/  =page
-  ::     ~|  "contact id {<cid.n>} not found"
-  ::     (~(got by book) cid)
-  ::   ?<  ?=(~ p.page)
-  ::   =*  who  u.p.page
-  ::   =/  =foreign-1
-  ::     :: XX In the meantime, the peer could be dropped
-  ::     :: or deleted
-  ::     (~(got by peers) who)
 ::
 ++  mono
   |=  [old=@da new=@da]
@@ -699,9 +620,10 @@
           (~(got by peers) u.who)
         ::  unlink peer page
         ::
-        =?  book  ?=(^ cid.peer)
+        =?  cor  ?=(^ cid.peer)
           =/  sage=^page  (~(got by book) u.cid.peer)
-          (~(put by book) u.cid.peer ~ q.sage)
+          =.  book  (~(put by book) u.cid.peer ~ q.sage)
+          (p-news [%spot u.cid.peer ~])
         =.  peers  (~(put by peers) u.who peer(cid `cid))
         :: XX version .con, .for, etc.
         ::
@@ -765,159 +687,172 @@
   ::    for a given peer, we always have at most one subscription,
   ::    to either /contact/* or /epic.
   ::
-  :: ++  sub
-  ::   |^  |=  who=ship
-  ::       ^+  s-impl
-  ::       ?<  =(our.bowl who)
-  ::       =/  old  (~(get by rol) who)
-  ::       ~(. s-impl who %live ?=(~ old) (fall old [~ ~]))
-  ::   ::
-  ::   ++  s-many
-  ::     |=  [l=(list ship) f=$-(_s-impl _s-impl)]
-  ::     ^+  cor
-  ::     %+  roll  l
-  ::     |=  [who=@p acc=_cor]
-  ::     ?:  =(our.bowl who)  acc
-  ::     si-abet:(f (sub:acc who))
-  ::   ::
-  ::   ++  s-impl
-  ::     |_  [who=ship sas=?(%dead %live) new=? foreign]
-  ::     ::
-  ::     ++  si-cor  .
-  ::     ::
-  ::     ++  si-abet
-  ::       ^+  cor
-  ::       ?-  sas
-  ::         %live  =.  rol  (~(put by rol) who for sag)
-  ::                ::  NB: this assumes con.for is only set in +si-hear
-  ::                ::
-  ::                ?.(new cor (p-news:pub who ~))
-  ::       ::
-  ::         %dead  ?:  new  cor
-  ::                =.  rol  (~(del by rol) who)
-  ::                ::
-  ::                ::  this is not quite right, reflecting *total* deletion
-  ::                ::  as *contact* deletion. but it's close, and keeps /news simpler
-  ::                ::
-  ::                (p-news:pub who ~)
-  ::       ==
-  ::     ::
-  ::     ++  si-take
-  ::       |=  =sign:agent:gall
-  ::       ^+  si-cor
-  ::       ?-  -.sign
-  ::         %poke-ack   ~|(strange-poke-ack+wire !!)
-  ::       ::
-  ::         %watch-ack  ~|  strange-watch-ack+wire
-  ::                     ?>  ?=(%want sag)
-  ::                     ?~  p.sign  si-cor(sag [%chi ~])
-  ::                     %-  (slog 'contact-fail' u.p.sign)
-  ::                     pe-peer:si-epic(sag %fail)
-  ::       ::
-  ::         %kick       si-heed(sag ~)
-  ::       ::
-  ::       ::  [compat] we *should* maintain backcompat here
-  ::       ::
-  ::       ::    by either directly handling or upconverting
-  ::       ::    old actions. but if we don't, we'll fall back
-  ::       ::    to /epic and wait for our peer to upgrade.
-  ::       ::
-  ::       ::    %fact's from the future are also /epic,
-  ::       ::    in case our peer downgrades. if not, we'll
-  ::       ::    handle it on +load.
-  ::       ::
-  ::         %fact       ?+    p.cage.sign  (si-odd p.cage.sign)
-  ::                         ?(upd:base:mar %contact-update-0)
-  ::                       (si-hear !<(update q.cage.sign))
-  ::       ==            ==
-
-  ::     ++  si-hear
-  ::       |=  u=update
-  ::       ^+  si-cor
-  ::       ?:  &(?=(^ for) (lte wen.u wen.for))
-  ::         si-cor
-  ::       si-cor(for +.u, cor (p-news:pub who con.u))
-  ::     ::
-  ::     ++  si-meet  si-cor  :: init key in +si-abet
-  ::     ::
-  ::     ++  si-heed
-  ::       ^+  si-cor
-  ::       ?.  ?=(~ sag)
-  ::         si-cor
-  ::       =/  pat  [%contact ?~(for / /at/(scot %da wen.for))]
-  ::       %=  si-cor
-  ::         cor  (pass /contact %agent [who dap.bowl] %watch pat)
-  ::         sag  %want
-  ::       ==
-  ::     ::
-  ::     ++  si-drop  si-snub(sas %dead)
-  ::     ::
-  ::     ++  si-snub
-  ::       %_  si-cor
-  ::         sag  ~
-  ::         cor  ?+    sag   cor
-  ::                  ?(%fail [?(%lev %dex) *])
-  ::                (pass /epic %agent [who dap.bowl] %leave ~)
-  ::              ::
-  ::                  ?(%want [%chi *])
-  ::                (pass /contact %agent [who dap.bowl] %leave ~)
-  ::       ==     ==
-  ::     ::
-  ::     ++  si-odd
-  ::       |=  =mark
-  ::       ^+  si-cor
-  ::       =*  upd  *upd:base:mar
-  ::       =*  wid  ^~((met 3 upd))
-  ::       ?.  =(upd (end [3 wid] mark))
-  ::         ~&(fake-news+mark si-cor)   ::  XX unsub?
-  ::       ?~  ver=(slaw %ud (rsh 3^+(wid) mark))
-  ::         ~&(weird-news+mark si-cor)  ::  XX unsub?
-  ::       ?:  =(okay u.ver)
-  ::         ~|(odd-not-odd+mark !!)     ::  oops!
-  ::       =.  si-cor  si-snub  :: unsub before .sag update
-  ::       =.  sag  ?:((lth u.ver okay) [%lev ~] [%dex u.ver])
-  ::       pe-peer:si-epic
-  ::     ::
-  ::     ++  si-epic
-  ::       |%
-  ::       ++  pe-take
-  ::         |=  =sign:agent:gall
-  ::         ^+  si-cor
-  ::         ?-  -.sign
-  ::           %poke-ack   ~|(strange-poke-ack+wire !!)
-  ::         ::
-  ::           %watch-ack  ?~  p.sign  si-cor
-  ::                       %-  (slog 'epic-fail' u.p.sign)
-  ::                       si-cor(sag %lost)
-  ::         ::
-  ::           %kick       ?.  ?=(?(%fail [?(%dex %lev) *]) sag)
-  ::                         si-cor  :: XX strange
-  ::                       pe-peer
-  ::         ::
-  ::           %fact       ?+  p.cage.sign
-  ::                                ~&(fact-not-epic+p.cage.sign si-cor)
-  ::                         %epic  (pe-hear !<(epic q.cage.sign))
-  ::         ==            ==
-  ::       ::
-  ::       ++  pe-hear
-  ::         |=  =epic
-  ::         ^+  si-cor
-  ::         ?.  ?=(?(%fail [?(%dex %lev) *]) sag)
-  ::           ~|(strange-epic+[okay epic] !!)  :: get %kick'd
-  ::         ?:  =(okay epic)
-  ::           ?:  ?=(%fail sag)
-  ::             si-cor(sag %lost)  :: abandon hope
-  ::           si-heed:si-snub
-  ::         ::
-  ::         ::  handled generically to support peer downgrade
-  ::         ::
-  ::         si-cor(sag ?:((gth epic okay) [%dex epic] [%lev ~]))
-  ::       ::
-  ::       ++  pe-peer
-  ::         si-cor(cor (pass /epic %agent [who dap.bowl] %watch /epic))
-  ::       --
-  ::     --
-  ::   --
+  ++  sub
+    |^  |=  who=ship
+        ^+  s-impl
+        ?<  =(our.bowl who)
+        =/  old  (~(get by peers) who)
+        ~(. s-impl who %live ?=(~ old) (fall old *foreign-1))
+    ::
+    ++  s-many
+      |=  [l=(list ship) f=$-(_s-impl _s-impl)]
+      ^+  cor
+      %+  roll  l
+      |=  [who=@p acc=_cor]
+      ?:  =(our.bowl who)  acc
+      si-abet:(f (sub:acc who))
+    ::
+    ++  s-impl
+      |_  [who=ship sas=?(%dead %live) new=? foreign-1]
+      ::
+      ++  si-cor  .
+      ::
+      ++  si-abet
+        ^+  cor
+        ?-  sas
+          %live  =.  peers  (~(put by peers) who [for cid sag])
+                 ::  NB: this assumes con.for is only set in +si-hear
+                 ::
+                 ?.  new  cor
+                 =.  cor  (p-news-0:pub who ~)
+                 (p-news:pub [%peer who ~])
+          ::
+          %dead  ?:  new  cor
+                 =.  peers  (~(del by peers) who)
+                 ::
+                 ::  this is not quite right, reflecting *total* deletion
+                 ::  as *contact* deletion. but it's close, and keeps /news simpler
+                 ::
+                 =.  cor  (p-news-0:pub who ~)
+                 (p-news:pub [%peer who ~])
+        ==
+      ::
+      ++  si-take
+        |=  =sign:agent:gall
+        ^+  si-cor
+        ?-  -.sign
+          %poke-ack   ~|(strange-poke-ack+wire !!)
+        ::
+          %watch-ack  ~|  strange-watch-ack+wire
+                      ?>  ?=(%want sag)
+                      ?~  p.sign  si-cor(sag [%chi ~])
+                      %-  (slog 'contact-fail' u.p.sign)
+                      pe-peer:si-epic(sag %fail)
+        ::
+          %kick       si-meet(sag ~)
+        ::
+        ::  [compat] we *should* maintain backcompat here
+        ::
+        ::    by either directly handling or upconverting
+        ::    old actions. but if we don't, we'll fall back
+        ::    to /epic and wait for our peer to upgrade.
+        ::
+        ::    %fact's from the future are also /epic,
+        ::    in case our peer downgrades. if not, we'll
+        ::    handle it on +load.
+        ::
+          %fact       ?+    p.cage.sign  (si-odd p.cage.sign)
+                          :: XX make sure I have got it right here
+                          ::
+                          ?(upd:base:mar %contact-update-1)
+                        (si-hear !<(update-1 q.cage.sign))
+        ==            ==
+      ::
+      ++  si-hear
+        |=  u=update-1
+        ^+  si-cor
+        ?:  &(?=(^ for) (lte wen.u wen.for))
+          si-cor
+        %=  si-cor
+          for  +.u
+          cor  =.  cor  
+                 (p-news-0:pub who (to-contact-0 con.u))
+               (p-news:pub %peer who con.u)
+        ==
+      ::
+      :: ++  si-meet  si-cor  :: init key in +si-abet
+      ::
+      ++  si-meet
+        ^+  si-cor
+        ?.  ?=(~ sag)
+          si-cor
+        =/  pat  [%v1 %contact ?~(for / /at/(scot %da wen.for))]
+        %=  si-cor
+          cor  (pass /contact %agent [who dap.bowl] %watch pat)
+          sag  %want
+        ==
+      ::
+      ++  si-drop  si-snub(sas %dead)
+      ::
+      ++  si-snub
+        %_  si-cor
+          sag  ~
+          cor  ?+    sag   cor
+                   ?(%fail [?(%lev %dex) *])
+                 (pass /epic %agent [who dap.bowl] %leave ~)
+               ::
+                   ?(%want [%chi *])
+                 (pass /contact %agent [who dap.bowl] %leave ~)
+        ==     ==
+      ::
+      ++  si-odd
+        |=  =mark
+        ^+  si-cor
+        =*  upd  *upd:base:mar
+        =*  wid  ^~((met 3 upd))
+        ?.  =(upd (end [3 wid] mark))
+          ~&(fake-news+mark si-cor)   ::  XX unsub?
+        ?~  ver=(slaw %ud (rsh 3^+(wid) mark))
+          ~&(weird-news+mark si-cor)  ::  XX unsub?
+        ?:  =(okay u.ver)
+          ~|(odd-not-odd+mark !!)     ::  oops!
+        =.  si-cor  si-snub  :: unsub before .sag update
+        =.  sag  ?:((lth u.ver okay) [%lev ~] [%dex u.ver])
+        pe-peer:si-epic
+      ::
+      ++  si-epic
+        |%
+        ++  pe-take
+          |=  =sign:agent:gall
+          ^+  si-cor
+          ?-  -.sign
+            %poke-ack   ~|(strange-poke-ack+wire !!)
+          ::
+            %watch-ack  ?~  p.sign  si-cor
+                        %-  (slog 'epic-fail' u.p.sign)
+                        si-cor(sag %lost)
+          ::
+            %kick       ?.  ?=(?(%fail [?(%dex %lev) *]) sag)
+                          si-cor  :: XX strange
+                        pe-peer
+          ::
+            %fact       ?+  p.cage.sign
+                                 ~&(fact-not-epic+p.cage.sign si-cor)
+                          %epic  (pe-hear !<(epic q.cage.sign))
+          ==            ==
+        ::
+        ++  pe-hear
+          |=  =epic
+          ^+  si-cor
+          ?.  ?=(?(%fail [?(%dex %lev) *]) sag)
+            ~|(strange-epic+[okay epic] !!)  :: get %kick'd
+          ?:  =(okay epic)
+            ?:  ?=(%fail sag)
+              si-cor(sag %lost)  :: abandon hope
+            si-meet:si-snub
+          ::
+          ::  handled generically to support peer downgrade
+          ::
+          si-cor(sag ?:((gth epic okay) [%dex epic] [%lev ~]))
+        ::
+        ++  pe-peer
+          si-cor(cor (pass /epic %agent [who dap.bowl] %watch /epic))
+        --
+      --
+    --
+  ::  XX can we just assume this migration happened
+  ::  at %contacts v0 and cut it out?
+  ::
   ::  +migrate: from :contact-store
   ::
   ::    all known ships, non-default profiles, no subscriptions
@@ -1040,16 +975,15 @@
             ?(act:base:mar %contact-action-0)
           (to-action-1 !<(action-0 vase))
         ==
-      ?+  -.act  ~|(%poke-not-implemented !!)
+      ?-  -.act
         %anon  p-anon:pub
         %self  (p-self:pub p.act)
         %edit  (p-edit:pub p.act q.act)
-        %spot  (p-spot:pub p.act)
         %wipe  (p-wipe:pub p.act)
-        :: %meet  (s-many:sub p.act |=(s=_s-impl:sub si-meet:s))
-        :: %heed  (s-many:sub p.act |=(s=_s-impl:sub si-heed:s))
-        :: %drop  (s-many:sub p.act |=(s=_s-impl:sub si-drop:s))
-        :: %snub  (s-many:sub p.act |=(s=_s-impl:sub si-snub:s))
+        %spot  (p-spot:pub p.act)
+        %meet  (s-many:sub p.act |=(s=_s-impl:sub si-meet:s))
+        %drop  (s-many:sub p.act |=(s=_s-impl:sub si-drop:s))
+        %snub  (s-many:sub p.act |=(s=_s-impl:sub si-snub:s))
       ==
     ==
   ::  +peek: scry
@@ -1070,7 +1004,6 @@
   ++  peek
     |=  pat=(pole knot)
     ^-  (unit (unit cage))
-    ~&  scry+pat
     ?+    pat  [~ ~]
         ::
         [%x %all ~]
@@ -1112,7 +1045,9 @@
         [%x %v1 %book cid=@uv ~]
       ?~  cid=`(unit @uv)`(slaw %uv cid.pat)
         [~ ~]
-      ?~  page=(~(get by book) u.cid)
+      =/  page=(unit page)
+        (~(get by book) u.cid)
+      ?~  page
         [~ ~]
       ``contact-page-1+!>(u.page)
         :: XX is foreign-1 useful at all?
@@ -1148,15 +1083,14 @@
     ^+  cor
     ?+  pat  ~|(bad-watch-path+pat !!)
       ::
-      [%contact %at wen=@ ~]  (p-init-0:pub `(slav %da wen.pat))
       [%contact ~]  (p-init-0:pub ~)
-      ::  XX confirm that giving a fact on ~ outside of peer
-      ::  does nothing
-      ::
-      [%v1 %contact %at wen=@ ~]  (p-init:pub `(slav %da wen.pat))
-      [%v1 %contact ~]  (p-init:pub ~)
-      ::
+      [%contact %at wen=@ ~]  (p-init-0:pub `(slav %da wen.pat))
       [%news ~]  ~|(local-news+src.bowl ?>(=(our src):bowl cor))
+      ::  XX confirm that giving a fact in a gall agent on ~ outside of
+      ::  on-watch does nothing (subs returns ~ on empty subscriber)
+      ::
+      [%v1 %contact ~]  (p-init:pub ~)
+      [%v1 %contact %at wen=@ ~]  (p-init:pub `(slav %da wen.pat))
       [%v1 %news ~]  ~|(local-news+src.bowl ?>(=(our src):bowl cor))
       ::
       [%epic ~]  (give %fact ~ epic+!>(okay))
@@ -1165,16 +1099,15 @@
   ++  agent
     |=  [=wire =sign:agent:gall]
     ^+  cor
-    ~|(evil-agent+wire !!)
-    :: ?+  wire  ~|(evil-agent+wire !!)
-    ::   [%contact ~]  si-abet:(si-take:(sub src.bowl) sign)
-    ::   [%epic ~]     si-abet:(pe-take:si-epic:(sub src.bowl) sign)
-    ::   ::
-    ::     [%migrate ~]
-    ::   ?>  ?=(%poke-ack -.sign)
-    ::   ?~  p.sign  cor
-    ::   %-  (slog leaf/"{<wire>} failed" u.p.sign)
-    ::   cor
-    :: ==
+    ?+  wire  ~|(evil-agent+wire !!)
+      [%contact ~]  si-abet:(si-take:(sub src.bowl) sign)
+      [%epic ~]     si-abet:(pe-take:si-epic:(sub src.bowl) sign)
+      ::
+      ::   [%migrate ~]
+      :: ?>  ?=(%poke-ack -.sign)
+      :: ?~  p.sign  cor
+      :: %-  (slog leaf/"{<wire>} failed" u.p.sign)
+      :: cor
+    ==
   --
 --
