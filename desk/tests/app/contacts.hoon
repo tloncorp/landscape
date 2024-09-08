@@ -237,7 +237,7 @@
     ~[nickname+text/'Sun' bio+text/'It is bright today']
   ::
   =/  =news-1
-    [%page 0v1 con-1]
+    [%page id+0v1 ~ con-1]
   =/  mypage=^page
     [p=~ q=con-1]
   =/  edit-1  con-1
@@ -247,9 +247,9 @@
   ;<  caz=(list card)  b  (do-watch /v1/news)
   ::
   ;<  ~  b  (set-src our.bowl)
-  ::  %edit new contact page
+  ::  create new contact page
   ::
-  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%edit 0v1 con-1]))
+  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%page 0v1 con-1]))
   ::  news is published on /v1/news
   ::
   ;<  ~  b  %+  ex-cards  caz
@@ -257,7 +257,7 @@
     ==
   ::  peek page in the book: new contact page is found
   ::
-  ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/book/0v1)
+  ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/book/id/0v1)
   =/  =cage  (need (need peek))
   %+  ex-equal
   !>  [%contact-page-1 q.cage]

@@ -97,33 +97,30 @@
 ::    $foreign-1: foreign profile
 ::
 ::  .for: profile
-::  .con: optional contact id
 ::  .sag: connection status
 ::
-+$  foreign-1  [for=$@(~ profile-1) cid=(unit cid) sag=$@(~ saga)]
-::    $cid: contact page id
-::
-::  generated from entropy and guaranteed non-zero
-::
-::
-+$  cid  @uvF
++$  foreign-1  [for=$@(~ profile-1) sag=$@(~ saga)]
 ::    $profile-1: contact profile
 ::
 ::  .wen: last updated
 ::  .con: contact
 ::
 +$  profile-1  [wen=@da con=contact-1]
-::    $page: contact book page
+::    $page: contact page
 ::
-::  Contact Page
-::  XX switch order in this pair
-::  XX (pair contact-1 contact-1)
-::  peer contact and user overlay
+::  .p: peer contact
+::  .q: user overlay
 ::
-+$  page  (pair (unit ship) contact-1)
++$  page  (pair contact-1 contact-1)
+::    $cid: contact page id
+::
++$  cid  @uvF
+::    $kip: contact book key
+::
++$  kip  $@(ship [%id cid])
 ::    $book: contact book
-::  XX next version (map $@(ship [%cid cid]) page)
-+$  book  (map cid page)
+::
++$  book  (map kip page)
 ::    $rolodex-1: rolodex
 ::
 ::  .book: contact book
@@ -180,19 +177,22 @@
 +$  news-0
   [who=ship con=$@(~ contact-0)]
 ::  %anon: delete the profile
-::  %edit: edit the contact page
+::  %self: edit the profile
+::  %page: create a new contact page
+::  %spot: add peer as a contact
+::  %edit: edit a contact overlay
 ::  %wipe: delete a contact page
-::  %spot: associate page with a peer
 ::  %meet: track a peer
 ::  %drop: discard a peer
 ::  %snub: unfollow a peer
 ::
 +$  action-1
   $%  [%anon ~]
-      [%self p=(map @tas value-1)]
-      [%edit p=cid q=(map @tas value-1)]
-      [%spot p=(pair cid (unit ship))]
-      [%wipe p=(list cid)]
+      [%self p=contact-1]
+      [%page p=cid q=contact-1]
+      [%spot p=ship q=contact-1]
+      [%edit p=kip q=contact-1]
+      [%wipe p=(list kip)]
       [%meet p=(list ship)]
       [%drop p=(list ship)]
       [%snub p=(list ship)]
@@ -206,17 +206,15 @@
   ==
 ::    $news-1: local update
 ::
-::  %self: our profile
+::  %self: profile update
 ::  %page: contact page update
-::  %spot: contact page with peer
-::  %wipe: contact deleted
+::  %wipe: contact page delete
 ::  %peer: peer update
 ::
 +$  news-1
   $%  [%self con=contact-1]
-      [%page =cid con=contact-1]
-      [%wipe =cid]
-      [%spot =cid who=(unit ship)]
+      [%page =kip con=contact-1 mod=contact-1]
+      [%wipe =kip]
       [%peer who=ship con=contact-1]
   ==
 +|  %version
