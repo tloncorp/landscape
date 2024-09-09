@@ -138,8 +138,8 @@
     =.  stable-id  (~(put by stable-id) id nonce)
     :_  this
     %+  welp
-    ?~  old-token  ~
-    ~[[%pass /undescribe %agent [civ %bait] %poke %bait-undescribe !>(u.old-token)]]
+      ?~  old-token  ~
+      ~[[%pass /undescribe %agent [civ %bait] %poke %bait-undescribe !>(u.old-token)]]
     ~[[%pass /describe %agent [civ %bait] %poke %bait-describe !>([nonce new-metadata])]]
   ::
       %reel-confirmation
