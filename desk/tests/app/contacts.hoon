@@ -537,15 +537,22 @@
     %+  ex-cards  caz
     :~  (ex-task /contact [~sun %contacts] %leave ~)
         (ex-fact ~[/news] %contact-news !>([~sun ~]))
-        (ex-fact ~[/v1/news] %contact-news-1 !>([%page ~sun ~ con-mod]))
         (ex-fact ~[/v1/news] %contact-news-1 !>([%peer ~sun ~]))
     ==
   ::  ~sun is not found in peers
   ::
   ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/peer/~sun)
+  ;<  ~  b
+    %+  ex-equal
+    !>  peek
+    !>  [~ ~]
+  ::  but his contact is not modified
+  ::
+  ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/book/~sun)
+  =/  cag=cage  (need (need peek))
   %+  ex-equal
-  !>  peek
-  !>  [~ ~]
+  !>  cag
+  !>  contact-page-1+!>(`page:c`[con-sun con-mod])
 ::
 ++  test-poke-snub
   %-  eval-mare
@@ -606,7 +613,7 @@
   ::   :*  /contact
   ::       [~sun %contacts]
   ::       %fact
-  ::       %contact-update-1  
+  ::       %contact-update-1
   ::       !>([%full now.bowl (~(uni by con-sun) con-mod)])
   ::   ==
   ::  ~sun is still found in peers
@@ -654,7 +661,7 @@
   =/  cag=cage  (need (need peek))
   ?>  ?=(%contact-rolodex p.cag)
   =/  rol  !<(rolodex-0 q.cag)
-  ;<  ~  b  
+  ;<  ~  b
     %+  ex-equal
     !>  (~(got by rol) ~sun)
     !>  [[now.bowl (to-contact-0:c con-sun)] %want]
@@ -688,7 +695,7 @@
   =/  cag=cage  (need (need peek))
   ?>  ?=(%contact-book-1 p.cag)
   =/  =book  !<(book q.cag)
-  ;<  ~  b  
+  ;<  ~  b
     %+  ex-equal
     !>  q:(~(got by book) id+0v1)
     !>  con-1
