@@ -340,11 +340,6 @@
                  ::  as *contact* deletion. but it's close, and keeps /news simpler
                  ::
                  =.  cor  (p-news-0:pub who ~)
-                 ::  peer is a contact, update page
-                 ::
-                 =?  cor  ?=(^ page)
-                   =.  book  (~(put by book) who u.page(p ~))
-                   (p-news:pub %page who ~ q.u.page)
                  (p-news:pub [%peer who ~])
         ==
       ::
