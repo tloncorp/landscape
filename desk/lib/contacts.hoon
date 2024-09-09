@@ -206,6 +206,7 @@
 ::
 ++  contact-mod
   |=  [c=contact-1 mod=contact-1]
+  ^-  contact-1
   (~(uni by c) mod)
 ::  +to-profile-1: convert profile-0
 ::
