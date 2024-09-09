@@ -688,6 +688,14 @@
       ?~  page
         [~ ~]
       ``contact-page-1+!>(`^page`u.page)
+        [%x %v1 %contact her=@p ~]
+      ?~  who=`(unit @p)`(slaw %p her.pat)
+        [~ ~]
+      ?~  far=(~(get by peers) u.who)
+        [~ ~]
+      ?~  page=(~(get by book) u.who)
+        ``contact-1+!>(`contact-1`?~(for.u.far ~ con.for.u.far))
+      ``contact-1+!>((contact-mod u.page))
         ::
         [%x %v1 %peer her=@p ~]
       ::
@@ -709,13 +717,11 @@
     |=  pat=(pole knot)
     ^+  cor
     ?+  pat  ~|(bad-watch-path+pat !!)
-      ::
+      ::  v0
       [%contact ~]  (p-init-0:pub ~)
       [%contact %at wen=@ ~]  (p-init-0:pub `(slav %da wen.pat))
       [%news ~]  ~|(local-news+src.bowl ?>(=(our src):bowl cor))
-      ::  XX confirm that giving a fact in a gall agent on ~ outside of
-      ::  on-watch does nothing (subs returns ~ on empty subscriber)
-      ::
+      ::  v1
       [%v1 %contact ~]  (p-init:pub ~)
       [%v1 %contact %at wen=@ ~]  (p-init:pub `(slav %da wen.pat))
       [%v1 %news ~]  ~|(local-news+src.bowl ?>(=(our src):bowl cor))
