@@ -119,17 +119,27 @@
       %reel-describe
     ?>  =(our.bowl src.bowl)
     =+  !<([id=cord =metadata:reel] vase)
-    ?~  (~(has by stable-id) id)  `this
-    ::  the token here is a temporary identifier for the metadata
+    =/  old-token  (~(get by stable-id) id)
+    =.  fields.metadata
+      %-  ~(gas by fields.metadata)
+      :~  ['bite-type' '2']
+          ['inviter' (scot %p src.bowl)]
+          ['group' id]
+      ==
+    ::  the nonce here is a temporary identifier for the metadata
     ::  a new one will be assigned by the bait provider and returned to us
-    =/  new-fields  (~(put by fields.metadata) 'bite-type' '2')
-    =/  new-metadata  metadata(fields new-fields)
     =/  =nonce:reel  (scot %da now.bowl)
-    =.  our-metadata  (~(put by our-metadata) nonce new-metadata)
+    ::  delete old metadata if we have an existing token for this id
+    =?  our-metadata  ?=(^ old-token)
+      (~(del by our-metadata) u.old-token)
+    =.  our-metadata  (~(put by our-metadata) nonce metadata)
     =.  open-describes  (~(put in open-describes) nonce)
     =.  stable-id  (~(put by stable-id) id nonce)
     :_  this
-    ~[[%pass /describe %agent [civ %bait] %poke %bait-describe !>([nonce new-metadata])]]
+    %+  welp
+      ?~  old-token  ~
+      ~[[%pass /undescribe %agent [civ %bait] %poke %bait-undescribe !>(u.old-token)]]
+    ~[[%pass /describe %agent [civ %bait] %poke %bait-describe !>([nonce metadata])]]
   ::
       %reel-confirmation
     ?>  =(civ src.bowl)
@@ -229,21 +239,30 @@
     =/  has  (~(has in open-link-requests) [(slav %p ship.pole) name.pole])
     ``json+!>([%b has])
   ::
-      [%x any %metadata token=@ ~]
-    =/  =metadata:reel  (fall (~(get by our-metadata) token.pole) *metadata:reel)
+      [%x %v1 %metadata ship=@ name=@ ~]
+    =/  id  (rap 3 ship.pole '/' name.pole ~)
+    =/  token  (~(get by stable-id) id)
+    ?~  token  [~ ~]
+    =/  =metadata:reel  (fall (~(get by our-metadata) u.token) *metadata:reel)
+    ``reel-metadata+!>(metadata)
+  ::
+      [%x %v0 %metadata name=@ ~]
+    ::  old style tokens are directly in metadata
+    =/  id  (rap 3 (scot %p our.bowl) '/' name.pole ~)
+    =/  =metadata:reel  (fall (~(get by our-metadata) id) *metadata:reel)
     ``reel-metadata+!>(metadata)
   ::
       [%x any %token-url token=*]
-    =/  =token:reel  (crip (join '/' token.pole))
+    =/  =token:reel  (crip +:(spud token.pole))
     =/  url  (url-for-token vic token)
-    ``reel-token-url+!>(url)
+    ``json+!>(s+url)
   ::
       [%x %v1 %id-url id=*]
-    =/  id  (crip (join '/' id.pole))
+    =/  id  (crip +:(spud id.pole))
     ?~  token=(~(get by stable-id) id)
-      ``reel-token-url+!>('')
-    =/  url  (cat 3 vic id)
-    ``reel-token-url+!>(url)
+      ``json+!>(s+'')
+    =/  url  (cat 3 vic u.token)
+    ``json+!>(s+url)
   ==
 ::
 ++  on-arvo

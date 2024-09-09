@@ -11,7 +11,7 @@
 =/  url
   ?:  =(vic 'https://tlon.network/lure/')
     "https://tlon.network/v1/lure/bait/who"
-  "{(trip vic)}/bait/who"
+  "{(trip vic)}bait/who"
 ;<  =json  bind:m  (fetch-json url)
 =/  =ship  (slav %p (so:dejs:format json))
 ;<  ~  bind:m  (poke [our %reel] reel-command+!>([%set-ship ship]))
