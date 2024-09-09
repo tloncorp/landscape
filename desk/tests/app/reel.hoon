@@ -20,7 +20,7 @@
   =/  m  (mare ,~)
   ;<  *  bind:m  (do-init dap reel-agent)
   ;<  *  bind:m  (jab-bowl |=(b=bowl b(our ~dev, src ~dev, now *@da)))
-  =/  =metadata:r  [%test (my ['inviter' '~dev'] ~)]
+  =/  =metadata:r  [%test (my ['inviter' '~dev'] ['group' '~bus/reel-test'] ~)]
   =/  describe  [token metadata]
   ;<  caz=(list card)  bind:m  (do-poke %reel-describe !>(describe))
   ;<  bw=bowl  bind:m  get-bowl

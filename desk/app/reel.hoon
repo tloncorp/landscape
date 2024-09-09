@@ -120,27 +120,26 @@
     ?>  =(our.bowl src.bowl)
     =+  !<([id=cord =metadata:reel] vase)
     =/  old-token  (~(get by stable-id) id)
-    =/  new-fields
+    =.  fields.metadata
       %-  ~(gas by fields.metadata)
       :~  ['bite-type' '2']
           ['inviter' (scot %p src.bowl)]
           ['group' id]
       ==
-    =/  new-metadata  metadata(fields new-fields)
     ::  the nonce here is a temporary identifier for the metadata
     ::  a new one will be assigned by the bait provider and returned to us
     =/  =nonce:reel  (scot %da now.bowl)
     ::  delete old metadata if we have an existing token for this id
     =?  our-metadata  ?=(^ old-token)
       (~(del by our-metadata) u.old-token)
-    =.  our-metadata  (~(put by our-metadata) nonce new-metadata)
+    =.  our-metadata  (~(put by our-metadata) nonce metadata)
     =.  open-describes  (~(put in open-describes) nonce)
     =.  stable-id  (~(put by stable-id) id nonce)
     :_  this
     %+  welp
     ?~  old-token  ~
     ~[[%pass /undescribe %agent [civ %bait] %poke %bait-undescribe !>(u.old-token)]]
-    ~[[%pass /describe %agent [civ %bait] %poke %bait-describe !>([nonce new-metadata])]]
+    ~[[%pass /describe %agent [civ %bait] %poke %bait-describe !>([nonce metadata])]]
   ::
       %reel-confirmation
     ?>  =(civ src.bowl)
