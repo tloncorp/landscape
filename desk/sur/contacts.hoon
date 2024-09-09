@@ -124,7 +124,7 @@
 ::    $rolodex-1: rolodex
 ::
 ::  .book: contact book
-::  .peers: network contacts
+::  .peers: network peers
 ::
 +$  rolodex-1
   $:  =book
