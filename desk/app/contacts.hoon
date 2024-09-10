@@ -324,8 +324,7 @@
       ++  si-abet
         ^+  cor
         ?-  sas
-          %live  ~&  live+who
-                 =.  peers  (~(put by peers) who [for sag])
+          %live  =.  peers  (~(put by peers) who [for sag])
                  ?.  new  cor
                  ::  NB: this assumes con.for is only set in +si-hear
                  ::
@@ -599,7 +598,6 @@
             ?(act:base:mar %contact-action-0)
           (to-action-1 !<(action-0 vase))
         ==
-      ~&  poke+-.act
       ?-  -.act
         %anon  p-anon:pub
         %self  (p-self:pub p.act)
@@ -627,6 +625,8 @@
   ::  /x/v1/book -> $book
   ::  /x/v1/book/her=@p -> $page
   ::  /x/v1/book/id/cid=@uv -> $page
+  ::  /x/v1/all -> (map ship contact-1)
+  ::  /x/v1/contact/her=@p -> $contact-1
   ::  /x/v1/peer/her=@p -> $contact-1
   ::
   ++  peek
@@ -687,13 +687,37 @@
       ?~  page
         [~ ~]
       ``contact-page-1+!>(`^page`u.page)
+        ::
+        [%x %v1 %all ~]
+      =|  all=(map ship contact-1)
+      ::  export all ship contacts
+      ::
+      =.  all
+        %-  ~(rep by book)
+        |=  [[=kip =page] =_all]
+        ?^  kip
+          all
+        (~(put by all) kip (contact-mod page))
+      ::  export all peers
+      ::
+      =.  all
+        %-  ~(rep by peers)
+        |=  [[who=ship far=foreign-1] =_all]
+        ?~  for.far  all
+        ?:  (~(has by all) who)  all
+        (~(put by all) who `contact-1`con.for.far)
+      ?~  all
+        [~ ~]
+      ``contact-directory-1+!>(all)
+        ::
         [%x %v1 %contact her=@p ~]
       ?~  who=`(unit @p)`(slaw %p her.pat)
         [~ ~]
       ?~  far=(~(get by peers) u.who)
         [~ ~]
       ?~  page=(~(get by book) u.who)
-        ``contact-1+!>(`contact-1`?~(for.u.far ~ con.for.u.far))
+        ?~  for.u.far  [~ ~]
+        ``contact-1+!>(con.for.u.far)
       ``contact-1+!>((contact-mod u.page))
         ::
         [%x %v1 %peer her=@p ~]
@@ -705,10 +729,6 @@
       ::  peer not found
       ?~  far=(~(get by peers) u.who)
         [~ ~]
-      ::
-      ::  peer has no profile
-      :: ?~  for.u.far
-      ::   [~ ~]
       ``contact-foreign-1+!>(`foreign-1`u.far)
     ==
   ::
