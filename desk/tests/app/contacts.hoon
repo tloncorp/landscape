@@ -772,4 +772,55 @@
   %+  ex-equal
   !>  q:(~(got by book) id+0v2)
   !>  con-2
+++  test-peek-all
+  %-  eval-mare
+  =/  m  (mare ,~)
+  =*  b  bind:m
+  ^-  form:m
+  ;<  caz=(list card)  b  (do-init %contacts contacts-agent)
+  ;<  =bowl  b  get-bowl
+  ::
+  =/  con-sun=contact-1
+    %-  malt
+    ^-  (list (pair @tas value-1))
+    ~[nickname+text/'Sun' bio+text/'It is bright today']
+  =/  con-mur=contact-1
+    %-  malt
+    ^-  (list (pair @tas value-1))
+    ~[nickname+text/'Mur' bio+text/'Murky waters']
+  =/  con-mod=contact-1
+    %-  malt
+    ^-  (list (pair @tas value-1))
+    ~[avatar+text/'https://sun.io/sun.png']
+  ::  meet ~sun and ~mur
+  ::
+  ;<  ~  b  (set-src our.bowl)
+  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%meet ~[~sun ~mur]]))
+  ::  ~sun publishes his contact
+  ::
+  ;<  ~  b  (set-src ~sun)
+  ;<  caz=(list card)  b
+    (do-agent /contact [~sun %contacts] %fact %contact-update-1 !>([%full now.bowl con-sun]))
+  ::  ~sun is added to the contact book with user overlay
+  ::
+  ;<  ~  b  (set-src our.bowl)
+  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%spot ~sun con-mod]))
+  ::  ~mur publishes his contact
+  ::
+  ;<  ~  b  (set-src ~mur)
+  ;<  caz=(list card)  b
+    (do-agent /contact [~mur %contacts] %fact %contact-update-1 !>([%full now.bowl con-mur]))
+  ::  peek all: two contacts are found
+  ::
+  ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/all)
+  =/  cag=cage  (need (need peek))
+  ?>  ?=(%contact-directory-1 p.cag)
+  =/  dir  !<(directory q.cag)
+  ;<  ~  b
+    %+  ex-equal
+    !>  (~(got by dir) ~sun)
+    !>  (contact-mod:c con-sun con-mod)
+  %+  ex-equal
+  !>  (~(got by dir) ~mur)
+  !>  con-mur
 --

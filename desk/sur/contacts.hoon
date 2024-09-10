@@ -121,6 +121,9 @@
 ::    $book: contact book
 ::
 +$  book  (map kip page)
+::    $directory: merged contacts
+::
++$  directory  (map ship contact-1)
 ::    $rolodex-1: rolodex
 ::
 ::  .book: contact book
