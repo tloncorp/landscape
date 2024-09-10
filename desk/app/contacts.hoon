@@ -324,10 +324,11 @@
       ++  si-abet
         ^+  cor
         ?-  sas
-          %live  =.  peers  (~(put by peers) who [for sag])
+          %live  ~&  live+who
+                 =.  peers  (~(put by peers) who [for sag])
+                 ?.  new  cor
                  ::  NB: this assumes con.for is only set in +si-hear
                  ::
-                 ?.  new  cor
                  =.  cor  (p-news-0:pub who ~)
                  (p-news:pub [%peer who ~])
           ::
@@ -598,11 +599,14 @@
             ?(act:base:mar %contact-action-0)
           (to-action-1 !<(action-0 vase))
         ==
+      ~&  poke+-.act
       ?-  -.act
         %anon  p-anon:pub
         %self  (p-self:pub p.act)
         %page  (p-page:pub p.act q.act)
-        %spot  (p-spot:pub p.act q.act)
+        %spot  =?  cor  !(~(has by peers) p.act)
+                 si-abet:si-meet:(sub p.act)
+               (p-spot:pub p.act q.act)
         %edit  (p-edit:pub p.act q.act)
         %wipe  (p-wipe:pub p.act)
         %meet  (s-many:sub p.act |=(s=_s-impl:sub si-meet:s))
@@ -703,9 +707,9 @@
         [~ ~]
       ::
       ::  peer has no profile
-      ?~  for.u.far
-        [~ ~]
-      ``contact-1+!>(con.for.u.far)
+      :: ?~  for.u.far
+      ::   [~ ~]
+      ``contact-foreign-1+!>(`foreign-1`u.far)
     ==
   ::
   ++  peer

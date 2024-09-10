@@ -3,7 +3,8 @@
 /+  c=contacts
 /=  contacts-agent  /app/contacts
 =*  agent  contacts-agent
-::
+::  XX consider structuring tests better
+::  with functional 'micro' strands
 |%
 +|  %help
 ++  tick  ^~((rsh 3^2 ~s1))
@@ -359,14 +360,83 @@
   =/  cag=cage  (need (need peek))
   ;<  ~  b
     %+  ex-equal
-    !>  [%contact-1 q.cag]
-    !>  [%contact-1 !>(con-sun)]
+    !>  cag
+    !>  contact-foreign-1+!>(`foreign-1`[[now.bowl con-sun] %want])
   ;<  ~  b  (set-src ~sun)
   ::  meet ~sun a second time: a no-op
   ::
   ;<  ~  b  (set-src our.bowl)
   ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%meet ~[~sun]]))
   (ex-cards caz ~)
+::
+++  test-poke-spot-unknown
+  %-  eval-mare
+  =/  m  (mare ,~)
+  =*  b  bind:m
+  ^-  form:m
+  ;<  caz=(list card)  b  (do-init %contacts contacts-agent)
+  ;<  =bowl  b  get-bowl
+  ::
+  =/  con-sun=contact-1
+    %-  malt
+    ^-  (list (pair @tas value-1))
+    ~[nickname+text/'Sun' bio+text/'It is bright today']
+  ::  local subscriber to /news
+  ::
+  ;<  ~  b  (set-src our.bowl)
+  ;<  caz=(list card)  b  (do-watch /news)
+  ::  spot ~sun to contact boook: he also becomes our peer
+  ::
+  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%spot ~sun ~]))
+  ;<  ~  b
+    %+  ex-cards  caz
+    :~  (ex-task /contact [~sun %contacts] %watch /v1/contact)
+        (ex-fact ~[/news] %contact-news !>([~sun ~]))
+        (ex-fact ~[/v1/news] %contact-news-1 !>([%peer ~sun ~]))
+        (ex-fact ~[/v1/news] %contact-news-1 !>([%page ~sun `page:c`[~ ~]]))
+    ==
+  ::  ~sun appears in peers
+  ::
+  ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/peer/~sun)
+  =/  cag=cage  (need (need peek))
+  ;<  ~  b
+    %+  ex-equal
+    !>  cag
+    !>  contact-foreign-1+!>(`foreign-1`[~ %want])
+  ::  ~sun publishes his contact
+  ::
+  ;<  ~  b  (set-src ~sun)
+  ;<  caz=(list card)  b
+    (do-agent /contact [~sun %contacts] %fact %contact-update-1 !>([%full now.bowl con-sun]))
+  ;<  ~  b
+    %+  ex-cards  caz
+    :~  (ex-fact ~[/news] %contact-news !>([~sun (to-contact-0:c con-sun)]))
+        (ex-fact ~[/v1/news] %contact-news-1 !>([%page ~sun con-sun ~]))
+        (ex-fact ~[/v1/news] %contact-news-1 !>([%peer ~sun con-sun]))
+    ==
+  ::  ~sun contact page is edited
+  ::
+  ;<  ~  b  (set-src our.bowl)
+  =/  con-mod=contact-1
+    %-  malt
+    ^-  (list (pair @tas value-1))
+    ~[nickname+text/'Bright Sun' avatar+text/'https://sun.io/sun.png']
+  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%edit ~sun con-mod]))
+  ::  ~sun's contact book page is updated 
+  ::
+  ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/book/~sun)
+  =/  cag=cage  (need (need peek))
+  ;<  ~  b
+    %+  ex-equal
+    !>  cag
+    !>  [%contact-page-1 !>(`page:c`[con-sun con-mod])]
+  ::  and his effective contact is changed
+  ::
+  ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/contact/~sun)
+  =/  cag=cage  (need (need peek))
+  %+  ex-equal
+  !>  cag
+  !>  [%contact-1 !>((contact-mod:c con-sun con-mod))]
 ::
 ++  test-poke-spot-wipe
   %-  eval-mare
@@ -403,8 +473,8 @@
   =/  cag=cage  (need (need peek))
   ;<  ~  b
     %+  ex-equal
-    !>  [%contact-1 q.cag]
-    !>  [%contact-1 !>(con-sun)]
+    !>  cag
+    !>  contact-foreign-1+!>(`foreign-1`[[now.bowl con-sun] %want])
   ;<  ~  b  (set-src ~sun)
   ::  ~sun is added to contacts
   ::
@@ -432,8 +502,8 @@
   =/  cag=cage  (need (need peek))
   ;<  ~  b
     %+  ex-equal
-    !>  [%contact-1 q.cag]
-    !>  [%contact-1 !>(con-sun)]
+    !>  cag
+    !>  contact-foreign-1+!>(`foreign-1`[[now.bowl con-sun] %want])
   ::  however, ~sun's contact book page is changed
   ::
   ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/book/~sun)
@@ -468,8 +538,8 @@
   ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/peer/~sun)
   =/  cag=cage  (need (need peek))
   %+  ex-equal
-  !>  [%contact-1 q.cag]
-  !>  [%contact-1 !>(con-sun)]
+  !>  cag
+  !>  contact-foreign-1+!>(`foreign-1`[[now.bowl con-sun] %want])
 ::
 ++  test-poke-drop
   %-  eval-mare
@@ -506,8 +576,8 @@
   =/  cag=cage  (need (need peek))
   ;<  ~  b
     %+  ex-equal
-    !>  [%contact-1 q.cag]
-    !>  [%contact-1 !>(con-sun)]
+    !>  cag
+    !>  contact-foreign-1+!>(`foreign-1`[[now.bowl con-sun] %want])
   ;<  ~  b  (set-src ~sun)
   ::  ~sun is added to contacts
   ::
@@ -622,7 +692,7 @@
   =/  cag=cage  (need (need peek))
   %+  ex-equal
   !>  cag
-  !>  contact-1+!>(con-sun)
+  !>  contact-foreign-1+!>(`foreign-1`[[now.bowl con-sun] ~])
 ::
 +|  %peek
 ++  test-peek-0-all
