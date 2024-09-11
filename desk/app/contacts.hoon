@@ -2,7 +2,7 @@
 /+  default-agent, dbug, verb
 /+  *contacts
 ::  performance, keep warm
-/+  contacts-json
+/+  j0=contacts-json-0, j1=contacts-json-1
 ::
 |%
 ::  conventions
@@ -621,11 +621,11 @@
   ::
   ::  v1 scries
   ::
-  ::  /x/v1/self -> $@(~ $profile-1)
+  ::  /x/v1/self -> $contact-1
   ::  /x/v1/book -> $book
   ::  /x/v1/book/her=@p -> $page
   ::  /x/v1/book/id/cid=@uv -> $page
-  ::  /x/v1/all -> (map ship contact-1)
+  ::  /x/v1/all -> $directory
   ::  /x/v1/contact/her=@p -> $contact-1
   ::  /x/v1/peer/her=@p -> $contact-1
   ::
