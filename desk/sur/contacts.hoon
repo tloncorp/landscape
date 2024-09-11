@@ -90,6 +90,7 @@
       ::
       ::  uniform set
       [%set $|(p=(set value-1) unis)]
+      :: [%set p=(set value-1)]
   ==
 ::    $contact-1: contact data
 ::
