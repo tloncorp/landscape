@@ -125,25 +125,15 @@
 ::    $directory: merged contacts
 ::
 +$  directory  (map ship contact-1)
-::    $rolodex-1: rolodex
+::    $peers: network peers
 ::
-::  .book: contact book
-::  .peers: network peers
-::
-+$  rolodex-1
-  $:  =book
-      peers=(map ship foreign-1)
-  ==
-::
++$  peers  (map ship foreign-1)
 ::
 +$  epic  epic:e
 +$  saga
-  $@  $?  %want    ::  subscribing
-          %fail    ::  %want failed
-          %lost    ::  epic %fail
-          ~        ::  none intended
-      ==
-  saga:e
+  $?  %want    ::  subscribing
+      ~        ::  none intended
+  ==
 ::
 +$  field-0
   $%  [%nickname nickname=@t]
