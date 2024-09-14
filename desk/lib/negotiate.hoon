@@ -514,7 +514,15 @@
         =*  sub         i.suz
         =.  cards       (snoc cards [%pass wire.sub %agent gill.sub %leave ~])
         =.  wex.bowl    (~(del by wex.bowl) -.sub)
-        =^  caz  inner  (on-agent:og wire.sub %kick ~)
+        ::  XX this seems wrong: src is not set
+        :: =^  caz  inner  (on-agent:og wire.sub %kick ~)
+        :: =^  caz  inner
+        ::   =.  src.bowl.inner-bowl  p.gill.i.suz
+        ::   (on-agent:og wire.sub %kick ~)
+        =^  caz  inner
+          %.  [wire.sub %kick ~]
+          =.  src.bowl  p.gill.i.suz
+          ~(on-agent inner inner-bowl:up)
         =^  caz  state  (play-cards:up caz)
         $(cards (weld cards caz), suz t.suz)
       ::

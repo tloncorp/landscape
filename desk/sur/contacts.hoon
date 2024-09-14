@@ -40,10 +40,9 @@
       groups=(set flag:g)
   ==
 ::
-+$  foreign-0  [for=$@(~ profile-0) sag=$@(~ saga)]
++$  foreign-0  [for=$@(~ profile-0) sag=$@(~ saga-0)]
 +$  profile-0  [wen=@da con=$@(~ contact-0)]
 +$  rolodex-0  (map ship foreign-0)
-::
 ::
 +$  value-type-1
   $?  %text
@@ -90,7 +89,6 @@
       ::
       ::  uniform set
       [%set $|(p=(set value-1) unis)]
-      :: [%set p=(set value-1)]
   ==
 ::    $contact-1: contact data
 ::
@@ -130,6 +128,14 @@
 +$  peers  (map ship foreign-1)
 ::
 +$  epic  epic:e
++$  saga-0
+  $@  $?  %want    ::  subscribing
+          %fail    ::  %want failed
+          %lost    ::  epic %fail
+          ~        ::  none intended
+      ==
+  saga:e
+::
 +$  saga
   $?  %want    ::  subscribing
       ~        ::  none intended
@@ -211,14 +217,4 @@
       [%wipe =kip]
       [%peer who=ship con=contact-1]
   ==
-+|  %version
-:: ++  foreign  foreign-0
-:: ++  rolodex  rolodex-0
-:: ++  contact  contact-0
-:: ++  action  action-
-++  action  action-1
-:: ++  profile  profile-0
-:: ++  news  news-0
-:: ++  update  update-0
-:: ++  field  field-0
 --

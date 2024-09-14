@@ -9,14 +9,13 @@
 ::
 ::    .con: a contact
 ::    .rof: our profile
-::    .rol: our full rolodex
+::    .rol: our full rolodex (v0)
 ::    .far: foreign peer
 ::    .for: foreign profile
 ::    .sag: foreign subscription state
 ::
 +|  %types
 +$  card     card:agent:gall
-+$  state-0  [%0 rof=$@(~ profile-0) rol=rolodex-0]
 +$  state-1  [%1 rof=$@(~ profile-1) =book =peers]
 --
 %-  %^  agent:neg
@@ -121,21 +120,21 @@
         ::  send facts on an empty path. This is no problem, unless
         ::  it is used in ++peer
         ::
-        ++  subs-0
-          ^-  (set path)
-          %-  ~(rep by sup.bowl)
-          |=  [[duct ship pat=path] acc=(set path)]
-          ?.(?=([%contact *] pat) acc (~(put in acc) pat))
+        :: ++  subs-0
+        ::   ^-  (set path)
+        ::   %-  ~(rep by sup.bowl)
+        ::   |=  [[duct ship pat=path] acc=(set path)]
+          :: ?.(?=([%contact *] pat) acc (~(put in acc) pat))
         ++  subs
           ^-  (set path)
           %-  ~(rep by sup.bowl)
           |=  [[duct ship pat=path] acc=(set path)]
           ?.(?=([%v1 %contact *] pat) acc (~(put in acc) pat))
         ::
-        ++  fact-0
-          |=  [pat=(set path) u=update-0]
-          ^-  gift:agent:gall
-          [%fact ~(tap in pat) %contact-update !>(u)]
+        :: ++  fact-0
+        ::   |=  [pat=(set path) u=update-0]
+        ::   ^-  gift:agent:gall
+        ::   [%fact ~(tap in pat) %contact-update !>(u)]
         ::
         ++  fact
           |=  [pat=(set path) u=update-1]
@@ -207,8 +206,6 @@
       =.  rof  p
       ::
       =.  cor
-        (give (fact-0 subs-0 [%full (to-profile-0 p)]))
-      =.  cor
         (give (fact subs [%full p]))
       =.  cor
         (p-news-0 our.bowl (to-contact-0 con))
@@ -253,15 +250,6 @@
         (~(put by book) who con mod)
       (p-news [%page who con mod])
     ::
-    ++  p-init-0
-      |=  wen=(unit @da)
-      ?~  rof  cor
-      ?~  wen  (give (fact ~ full+rof))
-      ?:  =(u.wen wen.rof)  cor
-      ::
-      :: no future subs
-      ?>((lth u.wen wen.rof) (give (fact-0 ~ full+(to-profile-0 rof))))
-    ::
     ++  p-init
       |=  wen=(unit @da)
       ?~  rof  cor
@@ -295,6 +283,9 @@
   ++  sub
     |^  |=  who=ship
         ^+  s-impl
+        ::  XX it seems lib negotiate does not set a correct
+        ::  src.bowl!
+        ::
         ?<  =(our.bowl who)
         =/  old  (~(get by peers) who)
         ~(. s-impl who %live ?=(~ old) (fall old *foreign-1))
@@ -451,12 +442,24 @@
         ?-  -.old
           %0
         =.  rof  ?~(rof.old ~ (to-profile-1 rof.old))
-        =^  cards  peers
+        =^  caz=(list card)  peers
           %+  roll  ~(tap by rol.old)
           |=  [[who=ship foreign-0] caz=(list card) =_peers]
           =/  for-1=$@(~ profile-1)
             ?~  for  ~
             (to-profile-1 for)
+          ::  no intent to subscribe
+          ::
+          ?:  =(~ sag)
+            :-  caz
+            (~(put by peers) who for-1 ~)
+          :_  (~(put by peers) who for-1 %want)
+          ?:  (~(has by wex.bowl) [/contact who dap.bowl])
+            caz
+          =/  =path  [%v1 %contact ?~(for / /at/(scot %da wen.for))]
+          :_  caz
+          [%pass /contact %agent [who dap.bowl] %watch path]
+        (emil caz)
           ::  in v0, any sag that is not null indicates intent to connect,
           ::  that could fail due to version mismatch or other reasons.
           ::  therefore, a v0 sag not equal to null means we should
@@ -468,20 +471,22 @@
           ::
           ::  no intent to connect
           ::
-          ?:  =(~ sag)
-            :_  (~(put by peers) who for-1 ~)
-            ?.  (~(has by wex.bowl) [/contact who dap.bowl])
-              caz
+          :: ?:  =(~ sag)
+          ::   :-  caz
+          ::   (~(put by peers) who for-1 ~)
             ::  leave existing v0 connection
+            ::  XX it seems lib-negotiate handles this
+            :: :_  caz
+            :: [%pass /contact %agent [who dap.bowl] %leave ~]
             ::
-            :_  caz
-            [%pass /contact %agent [who dap.bowl] %leave ~]
-          :-  :_  caz
-              =/  =path  [%v1 %contact ?~(for / /at/(scot %da wen.for))]
-              [%pass /contact %agent [who dap.bowl] %watch path]
-          (~(put by peers) who for-1 %want)
+            ::  XX it seems lib-negotiate will initiate this by
+            ::  simulating a %kick
+            :: :-  :_  caz
+            ::     =/  =path  [%v1 %contact ?~(for / /at/(scot %da wen.for))]
+            ::     [%pass /contact %agent [who dap.bowl] %watch path]
+          :: (~(put by peers) who for-1 %want)
         ::
-        (emil cards)
+        :: (emil cards)
         ::
           %1
         =.  state  old
@@ -499,7 +504,7 @@
           caz
         (emil cards)
         ==
-    ::
+    +$  state-0  [%0 rof=$@(~ profile-0) rol=rolodex-0]
     +$  versioned-state
       $%  state-0
           state-1
@@ -537,7 +542,7 @@
       =/  act
         ?-  mark
             %contact-action-1
-          !<(action vase)
+          !<(action-1 vase)
             ?(act:base:mar %contact-action-0)
           (to-action-1 !<(action-0 vase))
         ==
@@ -631,7 +636,7 @@
       ``contact-page-1+!>(`^page`u.page)
         ::
         [%x %v1 %all ~]
-      =|  all=(map ship contact-1)
+      =|  all=directory
       ::  export all ship contacts
       ::
       =.  all
@@ -674,10 +679,10 @@
     |=  pat=(pole knot)
     ^+  cor
     ?+  pat  ~|(bad-watch-path+pat !!)
+      ::
       ::  v0
-      [%contact ~]  (p-init-0:pub ~)
-      [%contact %at wen=@ ~]  (p-init-0:pub `(slav %da wen.pat))
       [%news ~]  ~|(local-news+src.bowl ?>(=(our src):bowl cor))
+      ::
       ::  v1
       [%v1 %contact ~]  (p-init:pub ~)
       [%v1 %contact %at wen=@ ~]  (p-init:pub `(slav %da wen.pat))
@@ -690,7 +695,8 @@
     |=  [=wire =sign:agent:gall]
     ^+  cor
     ?+  wire  ~|(evil-agent+wire !!)
-      [%contact ~]  si-abet:(si-take:(sub src.bowl) sign)
+        [%contact ~]
+      si-abet:(si-take:(sub src.bowl) sign)
         [%migrate ~]
       ?>  ?=(%poke-ack -.sign)
       ?~  p.sign  cor
