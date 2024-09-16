@@ -493,7 +493,7 @@
   ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%edit ~sun con-mod]))
   ;<  ~  b
     %+  ex-cards  caz
-    :~  (ex-fact ~[/news] contact-news+!>([~sun (to-contact-0:c (~(uni by con-sun) con-mod))]))
+    :~  :: (ex-fact ~[/news] contact-news+!>([~sun (to-contact-0:c (~(uni by con-sun) con-mod))]))
         (ex-fact ~[/v1/news] contact-news-1+!>([%page ~sun con-sun con-mod]))
     ==
   ::  despite the edit, ~sun peer contact is unchanged
@@ -525,7 +525,7 @@
   ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%wipe ~[~sun]]))
   ;<  ~  b
     %+  ex-cards  caz
-    :~  (ex-fact ~[/news] contact-news+!>([~sun (to-contact-0:c con-sun)]))
+    :~  :: (ex-fact ~[/news] contact-news+!>([~sun (to-contact-0:c con-sun)]))
         (ex-fact ~[/v1/news] contact-news-1+!>([%wipe ~sun]))
     ==
   ::  ~sun contact page is removed
@@ -596,7 +596,7 @@
   ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%edit ~sun con-mod]))
   ;<  ~  b
     %+  ex-cards  caz
-    :~  (ex-fact ~[/news] contact-news+!>([~sun (to-contact-0:c (~(uni by con-sun) con-mod))]))
+    :~  :: (ex-fact ~[/news] contact-news+!>([~sun (to-contact-0:c (~(uni by con-sun) con-mod))]))
         (ex-fact ~[/v1/news] contact-news-1+!>([%page ~sun con-sun con-mod]))
     ==
   ::  ~sun is dropped

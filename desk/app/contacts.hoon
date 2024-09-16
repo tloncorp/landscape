@@ -227,21 +227,21 @@
         (~(put by book) kip page)
       ::  this is a peer page, send v0 update
       ::
-      =?  cor  ?=(ship kip)
-        %+  p-news-0  kip
-        (to-contact-0 (contact-mod page))
+      :: =?  cor  ?=(ship kip)
+      ::   %+  p-news-0  kip
+      ::   (to-contact-0 (contact-mod page))
       (p-news [%page kip page])
     ::
     ++  p-send-wipe
       |=  [=kip =page]
       =.  book
         (~(del by book) kip)
-      ::  peer overlay lost
-      ::
-      =?  cor  &(?=(ship kip) !?=(~ q.page))
-        ::  v0 peer contact is modified
-        %+  p-news-0  kip
-        (to-contact-0 p.page)
+      :: ::  peer overlay lost: v0 peer contact is modified
+      :: ::
+      :: =?  cor  &(?=(ship kip) !?=(~ q.page))
+      ::   ::  v0 peer contact is modified
+      ::   %+  p-news-0  kip
+      ::   (to-contact-0 p.page)
       (p-news [%wipe kip])
     ::  +p-send-spot: publish peer spot
     ::
