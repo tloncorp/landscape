@@ -38,10 +38,10 @@
     :~  nickname+'Zod'
         bio+'The first of the galaxies'
     ==
-  ::  foreign subscriber to /contact
+  ::  foreign subscriber to /v1/contact
   ::
   ;<  ~  b  (set-src ~sun)
-  ;<  caz=(list card)  b  (do-watch /contact)
+  ;<  caz=(list card)  b  (do-watch /v1/contact)
   ::  local subscriber to /news
   ::
   ;<  ~  b  (set-src our.bowl)
@@ -58,10 +58,9 @@
     [%full (mono now.bowl now.bowl) ~]
   ;<  caz=(list card)  b  (do-poke %contact-action !>([%anon ~]))
   %+  ex-cards  caz
-  :~  (ex-fact ~[/contact] %contact-update !>(upd-0))
-      (ex-fact ~ %contact-update-1 !>(upd-1))
-      (ex-fact ~[/news] %contact-news !>([our.bowl ~]))
-      (ex-fact ~[/v1/news] %contact-news-1 !>([%self ~]))
+  :~  (ex-fact ~[/news] contact-news+!>([our.bowl ~]))
+      (ex-fact ~[/v1/news] contact-news-1+!>([%self ~]))
+      (ex-fact ~[/v1/contact] contact-update-1+!>(upd-1))
   ==
 ::  +test-poke-0-edit: v0 edit the profile
 ::
@@ -91,24 +90,27 @@
     :~  nickname+'Zod'
         bio+'The first of the galaxies'
     ==
-  ::  foreign subscriber to /contact
+  ::  foreign subscriber to /v1/contact
   ::
   ;<  ~  b  (set-src ~sun)
-  ;<  caz=(list card)  b  (do-watch /contact)
+  ;<  caz=(list card)  b  (do-watch /v1/contact)
   ::  local subscriber to /news
   ::
   ;<  ~  b  (set-src our.bowl)
   ;<  caz=(list card)  b  (do-watch /news)
+  ::  local subscriber to /v1/news
+  ::
+  ;<  ~  b  (set-src our.bowl)
+  ;<  caz=(list card)  b  (do-watch /v1/news)
   ::
   ;<  ~  b  (set-src our.bowl)
   ::  action-0 profile %edit
   ::
   ;<  caz=(list card)  b  (do-poke %contact-action !>([%edit edit-0]))
   %+  ex-cards  caz
-  :~  (ex-fact ~[/contact] %contact-update !>(upd-0))
-      (ex-fact ~ %contact-update-1 !>(upd-1))
-      (ex-fact ~[/news] %contact-news !>([our.bowl con-0]))
-      (ex-fact ~[/v1/news] %contact-news-1 !>([%self con-1]))
+  :~  (ex-fact ~[/news] contact-news+!>([our.bowl con-0]))
+      (ex-fact ~[/v1/news] contact-news-1+!>([%self con-1]))
+      (ex-fact ~[/v1/contact] contact-update-1+!>([%full now.bowl con-1]))
   ==
 ::  +test-poke-meet-0: v0 meet a peer
 ::
@@ -177,10 +179,9 @@
   ::  news is published on /news, /v1/news
   ::
   ;<  ~  b  %+  ex-cards  caz
-    :~  (ex-fact ~ %contact-update !>([%full (add now.bowl tick) ~]))
-        (ex-fact ~[/v1/contact] %contact-update-1 !>([%full (add now.bowl tick) ~]))
-        (ex-fact ~[/news] %contact-news !>([our.bowl ~]))
-        (ex-fact ~[/v1/news] %contact-news-1 !>([%self ~]))
+    :~  (ex-fact ~[/news] contact-news+!>([our.bowl ~]))
+        (ex-fact ~[/v1/news] contact-news-1+!>([%self ~]))
+        (ex-fact ~[/v1/contact] contact-update-1+!>([%full (add now.bowl tick) ~]))
     ==
   ::  v0 profile is empty
   ::
@@ -234,10 +235,9 @@
   ::
   ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%self con-1]))
   %+  ex-cards  caz
-  :~  (ex-fact ~ %contact-update !>(upd-0))
-      (ex-fact ~[/v1/contact] %contact-update-1 !>(upd-1))
-      (ex-fact ~[/news] %contact-news !>([our.bowl con-0]))
-      (ex-fact ~[/v1/news] %contact-news-1 !>([%self con-1]))
+  :~  (ex-fact ~[/news] contact-news+!>([our.bowl con-0]))
+      (ex-fact ~[/v1/news] contact-news-1+!>([%self con-1]))
+      (ex-fact ~[/v1/contact] contact-update-1+!>(upd-1))
   ==
 ::  +test-poke-page: create new contact page
 ::
@@ -315,7 +315,7 @@
   ::  news is published on /v1/news
   ::
   ;<  ~  b  %+  ex-cards  caz
-    :~  (ex-fact ~[/v1/news] %contact-news-1 !>(news-1))
+    :~  (ex-fact ~[/v1/news] contact-news-1+!>(news-1))
     ==
   ::  peek page in the book: new contact page is found
   ::
@@ -351,8 +351,8 @@
     (do-agent /contact [~sun %contacts] %fact %contact-update-1 !>([%full now.bowl con-sun]))
   ;<  ~  b
     %+  ex-cards  caz
-    :~  (ex-fact ~[/news] %contact-news !>([~sun (to-contact-0:c con-sun)]))
-        (ex-fact ~[/v1/news] %contact-news-1 !>([%peer ~sun con-sun]))
+    :~  (ex-fact ~[/news] contact-news+!>([~sun (to-contact-0:c con-sun)]))
+        (ex-fact ~[/v1/news] contact-news-1+!>([%peer ~sun con-sun]))
     ==
   ::  ~sun appears in peers
   ::
@@ -391,9 +391,9 @@
   ;<  ~  b
     %+  ex-cards  caz
     :~  (ex-task /contact [~sun %contacts] %watch /v1/contact)
-        (ex-fact ~[/news] %contact-news !>([~sun ~]))
-        (ex-fact ~[/v1/news] %contact-news-1 !>([%peer ~sun ~]))
-        (ex-fact ~[/v1/news] %contact-news-1 !>([%page ~sun `page:c`[~ ~]]))
+        (ex-fact ~[/news] contact-news+!>([~sun ~]))
+        (ex-fact ~[/v1/news] contact-news-1+!>([%peer ~sun ~]))
+        (ex-fact ~[/v1/news] contact-news-1+!>([%page ~sun `page:c`[~ ~]]))
     ==
   ::  ~sun appears in peers
   ::
@@ -410,9 +410,9 @@
     (do-agent /contact [~sun %contacts] %fact %contact-update-1 !>([%full now.bowl con-sun]))
   ;<  ~  b
     %+  ex-cards  caz
-    :~  (ex-fact ~[/news] %contact-news !>([~sun (to-contact-0:c con-sun)]))
-        (ex-fact ~[/v1/news] %contact-news-1 !>([%page ~sun con-sun ~]))
-        (ex-fact ~[/v1/news] %contact-news-1 !>([%peer ~sun con-sun]))
+    :~  (ex-fact ~[/news] contact-news+!>([~sun (to-contact-0:c con-sun)]))
+        (ex-fact ~[/v1/news] contact-news-1+!>([%page ~sun con-sun ~]))
+        (ex-fact ~[/v1/news] contact-news-1+!>([%peer ~sun con-sun]))
     ==
   ::  ~sun contact page is edited
   ::
@@ -464,8 +464,8 @@
     (do-agent /contact [~sun %contacts] %fact %contact-update-1 !>([%full now.bowl con-sun]))
   ;<  ~  b
     %+  ex-cards  caz
-    :~  (ex-fact ~[/news] %contact-news !>([~sun (to-contact-0:c con-sun)]))
-        (ex-fact ~[/v1/news] %contact-news-1 !>([%peer ~sun con-sun]))
+    :~  (ex-fact ~[/news] contact-news+!>([~sun (to-contact-0:c con-sun)]))
+        (ex-fact ~[/v1/news] contact-news-1+!>([%peer ~sun con-sun]))
     ==
   ::  ~sun appears in peers
   ::
@@ -482,7 +482,7 @@
   ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%spot ~sun ~]))
   ;<  ~  b
     %+  ex-cards  caz
-    :~  (ex-fact ~[/v1/news] %contact-news-1 !>([%page ~sun con-sun ~]))
+    :~  (ex-fact ~[/v1/news] contact-news-1+!>([%page ~sun con-sun ~]))
     ==
   ::  ~sun contact page is edited
   ::
@@ -493,8 +493,8 @@
   ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%edit ~sun con-mod]))
   ;<  ~  b
     %+  ex-cards  caz
-    :~  (ex-fact ~[/news] %contact-news !>([~sun (to-contact-0:c (~(uni by con-sun) con-mod))]))
-        (ex-fact ~[/v1/news] %contact-news-1 !>([%page ~sun con-sun con-mod]))
+    :~  (ex-fact ~[/news] contact-news+!>([~sun (to-contact-0:c (~(uni by con-sun) con-mod))]))
+        (ex-fact ~[/v1/news] contact-news-1+!>([%page ~sun con-sun con-mod]))
     ==
   ::  despite the edit, ~sun peer contact is unchanged
   ::
@@ -525,8 +525,8 @@
   ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%wipe ~[~sun]]))
   ;<  ~  b
     %+  ex-cards  caz
-    :~  (ex-fact ~[/news] %contact-news !>([~sun (to-contact-0:c con-sun)]))
-        (ex-fact ~[/v1/news] %contact-news-1 !>([%wipe ~sun]))
+    :~  (ex-fact ~[/news] contact-news+!>([~sun (to-contact-0:c con-sun)]))
+        (ex-fact ~[/v1/news] contact-news-1+!>([%wipe ~sun]))
     ==
   ::  ~sun contact page is removed
   ::
@@ -567,8 +567,8 @@
     (do-agent /contact [~sun %contacts] %fact %contact-update-1 !>([%full now.bowl con-sun]))
   ;<  ~  b
     %+  ex-cards  caz
-    :~  (ex-fact ~[/news] %contact-news !>([~sun (to-contact-0:c con-sun)]))
-        (ex-fact ~[/v1/news] %contact-news-1 !>([%peer ~sun con-sun]))
+    :~  (ex-fact ~[/news] contact-news+!>([~sun (to-contact-0:c con-sun)]))
+        (ex-fact ~[/v1/news] contact-news-1+!>([%peer ~sun con-sun]))
     ==
   ::  ~sun appears in peers
   ::
@@ -585,7 +585,7 @@
   ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%spot ~sun ~]))
   ;<  ~  b
     %+  ex-cards  caz
-    :~  (ex-fact ~[/v1/news] %contact-news-1 !>([%page ~sun con-sun ~]))
+    :~  (ex-fact ~[/v1/news] contact-news-1+!>([%page ~sun con-sun ~]))
     ==
   ::  ~sun contact page is edited
   ::
@@ -596,8 +596,8 @@
   ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%edit ~sun con-mod]))
   ;<  ~  b
     %+  ex-cards  caz
-    :~  (ex-fact ~[/news] %contact-news !>([~sun (to-contact-0:c (~(uni by con-sun) con-mod))]))
-        (ex-fact ~[/v1/news] %contact-news-1 !>([%page ~sun con-sun con-mod]))
+    :~  (ex-fact ~[/news] contact-news+!>([~sun (to-contact-0:c (~(uni by con-sun) con-mod))]))
+        (ex-fact ~[/v1/news] contact-news-1+!>([%page ~sun con-sun con-mod]))
     ==
   ::  ~sun is dropped
   ::
@@ -606,8 +606,8 @@
   ;<  ~  b
     %+  ex-cards  caz
     :~  (ex-task /contact [~sun %contacts] %leave ~)
-        (ex-fact ~[/news] %contact-news !>([~sun ~]))
-        (ex-fact ~[/v1/news] %contact-news-1 !>([%peer ~sun ~]))
+        (ex-fact ~[/news] contact-news+!>([~sun ~]))
+        (ex-fact ~[/v1/news] contact-news-1+!>([%peer ~sun ~]))
     ==
   ::  ~sun is not found in peers
   ::
@@ -650,8 +650,8 @@
     (do-agent /contact [~sun %contacts] %fact %contact-update-1 !>([%full now.bowl con-sun]))
   ;<  ~  b
     %+  ex-cards  caz
-    :~  (ex-fact ~[/news] %contact-news !>([~sun (to-contact-0:c con-sun)]))
-        (ex-fact ~[/v1/news] %contact-news-1 !>([%peer ~sun con-sun]))
+    :~  (ex-fact ~[/news] contact-news+!>([~sun (to-contact-0:c con-sun)]))
+        (ex-fact ~[/v1/news] contact-news-1+!>([%peer ~sun con-sun]))
     ==
   ::  ~sun is added to contacts
   ::
@@ -659,12 +659,12 @@
   ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%spot ~sun ~]))
   ;<  ~  b
     %+  ex-cards  caz
-    :~  (ex-fact ~[/v1/news] %contact-news-1 !>([%page ~sun con-sun ~]))
+    :~  (ex-fact ~[/v1/news] contact-news-1+!>([%page ~sun con-sun ~]))
     ==
   ::  ~sun is snubbed
   ::
   ;<  ~  b  (set-src our.bowl)
-  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%snub ~[~sun]]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%snub ~[~sun]]))
   ;<  ~  b
     %+  ex-cards  caz
     :~  (ex-task /contact [~sun %contacts] %leave ~)

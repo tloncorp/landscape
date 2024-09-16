@@ -23,7 +23,7 @@
       [~.contacts^%1 ~ ~]
       [~.contacts^[~.contacts^%1 ~ ~] ~ ~]
 %-  agent:dbug
-%+  verb  &
+%+  verb  |
 ^-  agent:gall
 =|  state-1
 =*  state  -
@@ -94,8 +94,8 @@
   ::
   ::  |pub: publication mgmt
   ::
-  ::    - /news: local updates to our profile and rolodex
-  ::    - /contact: updates to our profile
+  ::    - /v1/news: local updates to our profile and rolodex
+  ::    - /v1/contact: updates to our profile
   ::
   ::    as these publications are trivial, |pub does *not*
   ::    make use of the +abet pattern. the only behavior of note
@@ -104,6 +104,11 @@
   ::
   ::    /epic protocol versions are even more trivial,
   ::    published ad-hoc, elsewhere.
+  ::
+  ::    Facts are always send in the following order:
+  ::    1. (legacy) /news
+  ::    2. /v1/news
+  ::    3. /v1/contact
   ::
   ++  pub
     =>  |%
@@ -147,14 +152,12 @@
     ++  p-anon  ?.(?=([@ ^] rof) cor (p-send-self ~))
     ::
     ++  p-self
-      |=  e=(map @tas value-1)
+      |=  con=(map @tas value-1)
       =/  old=contact-1
         ?.(?=([@ ^] rof) *contact-1 con.rof)
-      =/  new=contact-1
-        (do-edit-1 old e)
-      ?:  =(old new)
+      ?:  =(old con)
         cor
-      (p-send-self new)
+      (p-send-self con)
     ::  +p-page: create new contact page
     ::
     ++  p-page
@@ -171,11 +174,9 @@
         (~(got by book) kip)
       =/  old=contact-1
         q.page
-      =/  new=contact-1
-        (do-edit-1 q.page mod)
-      ?:  =(old new)
+      ?:  =(old mod)
         cor
-      (p-send-edit kip p.page new)
+      (p-send-edit kip p.page mod)
     ::  +p-wipe: delete a contact page
     ::
     ++  p-wipe
@@ -206,10 +207,10 @@
       =.  rof  p
       ::
       =.  cor
-        (give (fact subs [%full p]))
-      =.  cor
         (p-news-0 our.bowl (to-contact-0 con))
-      (p-news [%self con])
+      =.  cor
+        (p-news [%self con])
+      (give (fact subs [%full p]))
     ::  +p-send-page: publish new contact page
     ::
     ++  p-send-page
