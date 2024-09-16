@@ -54,6 +54,7 @@
       open-describes=(set token:reel)
       stable-id=(map cord token:reel)
   ==
+++  flag  ;~((glue fas) ;~(pfix sig fed:ag) sym)
 ::  url with old style token
 ++  url-for-token
   |=  [vic=cord token=cord]
@@ -79,7 +80,20 @@
   =/  old  !<(versioned-state old-state)
   ?-  -.old
       %4
-    `this(state old)
+    =.  state  old
+    =^  new-md  stable-id
+      %+  roll
+        ~(tap by our-metadata)
+      |=  [[=token:reel =metadata:reel] [md=_our-metadata id=_stable-id]]
+      ?^  (slaw %uv token)  [md id]
+      ?^  (rush token flag)
+        :-  md
+        ?:  (~(has by id) token)  id
+        (~(put by id) token token)
+      =/  new  (rap 3 (scot %p our.bowl) '/' token ~)
+      :-  (~(put by md) new metadata)
+      (~(put by id) new new)
+    `this(our-metadata new-md)
       %3
     `this(state [%4 vic.old civ.old our-metadata.old outstanding-pokes.old ~ ~])
       %2
@@ -174,18 +188,20 @@
       %reel-want-token-link
     =+  !<(=token:reel vase)
     :_  this
+    =/  full-token
+      ?^  (rush token flag)  token
+      (rap 3 (scot %p our.bowl) '/' token ~)
     =/  result=(unit [cord cord])
-      ?.  (~(has by our-metadata) token)  `[token '']
-      `[token (url-for-token vic token)]
+      ?.  (~(has by our-metadata) full-token)  `[full-token '']
+      `[full-token (url-for-token vic full-token)]
     ~[[%pass [%token-link-want token ~] %agent [src dap]:bowl %poke %reel-give-token-link !>(result)]]
       %reel-give-token-link
     =+  !<(result=(unit [cord cord]) vase)
     ?~  result  `this
     :_  this
     =/  [token=cord url=cord]  u.result
-    ?:  =('' url)
-      ~[[%give %fact ~[[%token-link (scot %p src.bowl) token ~]] %json !>(~)]]
-    ~[[%give %fact ~[[%token-link (scot %p src.bowl) token ~]] %json !>(s+url)]]
+    =/  path  (stab (cat 3 '/token-link/' token))
+    ~[[%give %fact ~[path] %json !>(?:(=('' url) ~ s+url))]]
   ==
 ::
 ++  on-agent
