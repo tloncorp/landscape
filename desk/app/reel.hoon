@@ -174,7 +174,10 @@
     ::  swap out the nonce for the token in our-metadata
     =.  our-metadata
       (~(put by (~(del by our-metadata) nonce)) token u.md)
-    `this
+    :_  this
+    =/  url  (cat 3 vic token)
+    =/  path  (stab (cat 3 '/v1/id-link/' id))
+    ~[[%give %fact ~[path] %json !>(s+url)]]
   ::
       %reel-undescribe
     ?>  =(our.bowl src.bowl)
@@ -238,6 +241,16 @@
     :~  [%pass +.pole %agent dock %poke cage]
         [%pass /expire/[ship.pole]/[token.pole] %arvo %b [%wait (add ~h1 now.bowl)]]
     ==
+  ::
+      [%v1 %id-link id=*]
+    =/  id  (crip +:(spud id.pole))
+    ?~  token=(~(get by stable-id) id)  `this
+    ?:  (~(has in open-describes) u.token)
+      ::  when the confirmation comes back we'll send the fact
+      `this
+    =/  url  (cat 3 vic u.token)
+    :_  this
+    ~[[%give %fact ~[pole] %json !>(s+url)]]
   ==
 ::
 ++  on-leave  on-leave:def
