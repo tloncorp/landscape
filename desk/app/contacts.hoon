@@ -154,7 +154,6 @@
     ::
     ++  p-self
       |=  con=(map @tas value)
-      ?>  (sane-contact con)
       =/  old=contact
         ?.(?=([@ ^] rof) *contact con.rof)
       ::  XX handle deletion of fields
@@ -162,20 +161,20 @@
         (do-edit old con)
       ?:  =(old new)
         cor
+      ?>  (sane-contact new)
       (p-send-self new)
     ::  +p-page: create new contact page
     ::
     ++  p-page
       |=  [=cid con=contact]
-      ?>  (sane-contact con)
       ?:  (~(has by book) id+cid)
         ~|  "contact page {<cid>} already exists"  !!
+      ?>  (sane-contact con)
       (p-send-page cid con)
     ::  +p-edit: edit contact page overlay
     ::
     ++  p-edit
       |=  [=kip mod=(map @tas value)]
-      ?>  (sane-contact mod)
       =/  =page
         ~|  "contact page {<kip>} does not exist"
         (~(got by book) kip)
@@ -185,6 +184,7 @@
         (do-edit old mod)
       ?:  =(old new)
         cor
+      ?>  (sane-contact new)
       (p-send-edit kip p.page new)
     ::  +p-wipe: delete a contact page
     ::
@@ -200,7 +200,6 @@
     ::
     ++  p-spot
       |=  [who=ship mod=contact]
-      ?>  (sane-contact mod)
       ?:  (~(has by book) who)
         ~|  "peer {<who>} is already a contact"  !!
       =/  con=contact
@@ -209,6 +208,7 @@
           (~(got by peers) who)
         ?~  for.far  *contact
         con.for.far
+      ?>  (sane-contact mod)
       (p-send-spot who con mod)
     ::
     ++  p-send-self
