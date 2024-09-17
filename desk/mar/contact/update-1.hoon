@@ -1,5 +1,5 @@
 /-  c=contacts
-|_  update=update-1:c
+|_  update=update:c
 ++  grad  %noun
 ++  grow
   |%
@@ -7,6 +7,6 @@
   --
 ++  grab
   |%
-  ++  noun  update-1:c
+  ++  noun  update:c
   --
 --

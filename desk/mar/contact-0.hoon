@@ -1,14 +1,14 @@
 /-  c=contacts
 /+  j=contacts-json-0
-|_  =contact-0:c
+|_  contact=contact-0:legacy:c
 ++  grad  %noun
 ++  grow
   |%
-  ++  noun  contact-0
-  ++  json  (contact:enjs:j contact-0)
+  ++  noun  contact
+  ++  json  (contact:enjs:j contact)
   --
 ++  grab
   |%
-  ++  noun  contact-0:c
+  ++  noun  contact-0:legacy:c
   --
 --

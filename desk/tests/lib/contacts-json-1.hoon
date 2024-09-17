@@ -3,7 +3,7 @@
 /+  c=contacts, j=contacts-json-1
 ::
 /=  c0  /mar/contact-0
-/=  c1  /mar/contact-1
+/=  c1  /mar/contact
 /~  mar  *  /mar/contact
 ::
 |%
@@ -65,14 +65,14 @@
     ::
     %+  jex-equal
     %-  value:enjs:j 
-      [%set (silt `(list value-1)`~[cult/[~sampel-palnet %circle] cult/[~sampel-pardux %square]])]
+      [%set (silt `(list value)`~[cult/[~sampel-palnet %circle] cult/[~sampel-pardux %square]])]
     '{"type":"set","value":[{"type":"cult","value":"~sampel-palnet/circle"},{"type":"cult","value":"~sampel-pardux/square"}]}'
   ==
 ++  test-contact
   %+  jex-equal
   %-  contact:enjs:j
     %-  malt
-    ^-  (list [@tas value-1])
+    ^-  (list [@tas value])
     :~  name+text/'Sampel'
         surname+text/'Palnet'
     ==

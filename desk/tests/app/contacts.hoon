@@ -25,16 +25,16 @@
   ;<  caz=(list card)  b  (do-init %contacts contacts-agent)
   ;<  =bowl  b  get-bowl
   ::
-  =|  con-0=contact-0
+  =|  con-0=contact-0:legacy:legacy
   =.  nickname.con-0  'Zod'
   =.  bio.con-0  'The first of the galaxies'
   ::
-  =/  con-1=contact-1
+  =/  con-1=contact
     %-  malt
-    ^-  (list (pair @tas value-1))
+    ^-  (list (pair @tas value))
     ~[nickname+text/'Zod' bio+text/'The first of the galaxies']
-  =/  edit-0=(list field-0)
-    ^-  (list field-0)
+  =/  edit-0=(list field-0:legacy)
+    ^-  (list field-0:legacy)
     :~  nickname+'Zod'
         bio+'The first of the galaxies'
     ==
@@ -48,15 +48,15 @@
   ;<  caz=(list card)  b  (do-watch /news)
   ::
   ;<  ~  b  (set-src our.bowl)
-  ::  action-0 profile %edit
+  ::  action-0:legacy profile %edit
   ::
-  ;<  caz=(list card)  b  (do-poke %contact-action !>([%edit edit-0]))
+  ;<  caz=(list card)  b  (do-poke contact-action+!>([%edit edit-0]))
   ::
-  =/  upd-0=update-0
+  =/  upd-0=update-0:legacy
     [%full (mono now.bowl now.bowl) ~]
-  =/  upd-1=update-1
+  =/  upd-1=update
     [%full (mono now.bowl now.bowl) ~]
-  ;<  caz=(list card)  b  (do-poke %contact-action !>([%anon ~]))
+  ;<  caz=(list card)  b  (do-poke contact-action+!>([%anon ~]))
   %+  ex-cards  caz
   :~  (ex-fact ~[/news] contact-news+!>([our.bowl ~]))
       (ex-fact ~[/v1/news] contact-news-1+!>([%self ~]))
@@ -72,23 +72,26 @@
   ;<  caz=(list card)  b  (do-init %contacts contacts-agent)
   ;<  =bowl  b  get-bowl
   ::
-  =|  con-0=contact-0
+  =|  con-0=contact-0:legacy:legacy
   =.  nickname.con-0  'Zod'
   =.  bio.con-0  'The first of the galaxies'
+  =.  groups.con-0  (silt ~sampel-palnet^%oranges ~)
   ::
-  =/  con-1=contact-1
+  =/  con=contact
     %-  malt
-    ^-  (list (pair @tas value-1))
-    ~[nickname+text/'Zod' bio+text/'The first of the galaxies']
+    ^-  (list (pair @tas value))
+    :~  nickname+text/'Zod'
+        bio+text/'The first of the galaxies'
+        groups+set/(silt cult/~sampel-palnet^%oranges ~)
+    ==
   ::
-  =/  upd-0=update-0
-    [%full now.bowl con-0]
-  =/  upd-1=update-1
-    [%full now.bowl con-1]
-  =/  edit-0=(list field-0)
-    ^-  (list field-0)
+  =/  edit-0=(list field-0:legacy)
+    ^-  (list field-0:legacy)
     :~  nickname+'Zod'
         bio+'The first of the galaxies'
+        add-group+~sampel-palnet^%apples
+        add-group+~sampel-palnet^%oranges
+        del-group+~sampel-palnet^%apples
     ==
   ::  foreign subscriber to /v1/contact
   ::
@@ -104,14 +107,52 @@
   ;<  caz=(list card)  b  (do-watch /v1/news)
   ::
   ;<  ~  b  (set-src our.bowl)
-  ::  action-0 profile %edit
+  ::  action-0:legacy profile %edit
   ::
   ;<  caz=(list card)  b  (do-poke %contact-action !>([%edit edit-0]))
-  %+  ex-cards  caz
-  :~  (ex-fact ~[/news] contact-news+!>([our.bowl con-0]))
-      (ex-fact ~[/v1/news] contact-news-1+!>([%self con-1]))
-      (ex-fact ~[/v1/contact] contact-update-1+!>([%full now.bowl con-1]))
-  ==
+  ;<  ~  b  
+    %+  ex-cards  caz
+    :~  (ex-fact ~[/news] contact-news+!>([our.bowl con-0]))
+        (ex-fact ~[/v1/news] contact-news-1+!>([%self con]))
+        (ex-fact ~[/v1/contact] contact-update-1+!>([%full now.bowl con]))
+    ==
+  ::  profile is set
+  ::
+  ;<  peek=(unit (unit cage))  b
+    (get-peek /x/v1/self)
+  =/  cag  (need (need peek))
+  ;<  ~  b  
+    %+  ex-equal
+    !>  cag
+    !>  contact-1+!>(con)
+  ::  change groups
+  ::
+  ;<  caz=(list card)  b
+    (do-poke %contact-action !>([%edit del-group+~sampel-palnet^%oranges ~]))
+  =/  new-con
+    (~(put by con) groups+set/~)
+  ;<  ~  b  
+    %+  ex-cards  caz
+    :~  (ex-fact ~[/news] contact-news+!>([our.bowl con-0(groups ~)]))
+        (ex-fact ~[/v1/news] contact-news-1+!>([%self new-con]))
+        (ex-fact ~[/v1/contact] contact-update-1+!>([%full (add now.bowl tick) new-con]))
+    ==
+  ::  remove bio
+  ::
+  ;<  caz=(list card)  b
+    (do-poke %contact-action-1 !>([%self `contact`[%bio^~ ~ ~]]))
+  ::  add oranges back
+  ::
+  ;<  caz=(list card)  b
+    (do-poke %contact-action !>([%edit add-group+~sampel-palnet^%oranges ~]))
+  ::  profile is missing bio
+  ::
+  ;<  peek=(unit (unit cage))  b
+    (get-peek /x/v1/self)
+  =/  cag  (need (need peek))
+  %+  ex-equal
+  !>  cag
+  !>  contact-1+!>(`contact`(~(del by con) %bio))
 ::  +test-poke-meet-0: v0 meet a peer
 ::
 ++  test-poke-0-meet
@@ -153,9 +194,9 @@
   ;<  caz=(list card)  b  (do-init %contacts contacts-agent)
   ;<  =bowl  b  get-bowl
   ::
-  =/  con-1=contact-1
+  =/  con-1=contact
     %-  malt
-    ^-  (list (pair @tas value-1))
+    ^-  (list (pair @tas value))
     ~[nickname+text/'Zod' bio+text/'The first of the galaxies']
   ::
   =/  edit-1  con-1
@@ -171,10 +212,10 @@
   ;<  ~  b  (set-src our.bowl)
   ::  edit the profile
   ::
-  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%self con-1]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%self con-1]))
   ::  delete the profile
   ::
-  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%anon ~]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%anon ~]))
   ::  contact update is published on /v1/contact
   ::  news is published on /news, /v1/news
   ::
@@ -208,18 +249,18 @@
   ;<  caz=(list card)  b  (do-init %contacts contacts-agent)
   ;<  =bowl  b  get-bowl
   ::
-  =|  con-0=contact-0
+  =|  con-0=contact-0:legacy:legacy
   =.  nickname.con-0  'Zod'
   =.  bio.con-0  'The first of the galaxies'
   ::
-  =/  con-1=contact-1
+  =/  con-1=contact
     %-  malt
-    ^-  (list (pair @tas value-1))
+    ^-  (list (pair @tas value))
     ~[nickname+text/'Zod' bio+text/'The first of the galaxies']
   ::
-  =/  upd-0=update-0
+  =/  upd-0=update-0:legacy
     [%full now.bowl con-0]
-  =/  upd-1=update-1
+  =/  upd-1=update
     [%full now.bowl con-1]
   =/  edit-1  con-1
   ::  foreign subscriber to /contact
@@ -233,7 +274,7 @@
   ::
   ;<  ~  b  (set-src our.bowl)
   ::
-  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%self con-1]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%self con-1]))
   %+  ex-cards  caz
   :~  (ex-fact ~[/news] contact-news+!>([our.bowl con-0]))
       (ex-fact ~[/v1/news] contact-news-1+!>([%self con-1]))
@@ -249,12 +290,12 @@
   ;<  caz=(list card)  b  (do-init %contacts contacts-agent)
   ;<  =bowl  b  get-bowl
   ::
-  =/  con-1=contact-1
+  =/  con-1=contact
     %-  malt
-    ^-  (list (pair @tas value-1))
+    ^-  (list (pair @tas value))
     ~[nickname+text/'Sun' bio+text/'It is bright today']
   ::
-  =/  =news-1
+  =/  =news
     [%page id+0v1 ~ con-1]
   =/  mypage=^page
     [p=~ q=con-1]
@@ -266,11 +307,11 @@
   ;<  ~  b  (set-src our.bowl)
   ::  create new contact page
   ::
-  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%page 0v1 con-1]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%page 0v1 con-1]))
   ::  news is published on /v1/news
   ::
   ;<  ~  b  %+  ex-cards  caz
-    :~  (ex-fact ~[/v1/news] %contact-news-1 !>(news-1))
+    :~  (ex-fact ~[/v1/news] contact-news-1+!>(news))
     ==
   ::  peek page in the book: new contact page is found
   ::
@@ -282,7 +323,7 @@
     !>  [%contact-page-1 !>(mypage)]
   ::  fail to create duplicate page
   ::
-  %-  ex-fail  (do-poke %contact-action-1 !>([%page 0v1 con-1]))
+  %-  ex-fail  (do-poke contact-action-1+!>([%page 0v1 con-1]))
 ::  +test-poke-edit: edit the contact book
 ::
 ++  test-poke-edit
@@ -292,13 +333,20 @@
   ^-  form:m
   ;<  caz=(list card)  b  (do-init %contacts contacts-agent)
   ;<  =bowl  b  get-bowl
-  ::
-  =/  con-1=contact-1
+  =/  groups
+    ^-  (list value)
+    :~  cult/~sampel-palnet^%apples
+        cult/~sampel-palnet^%oranges
+    ==
+  =/  con-1=contact
     %-  malt
-    ^-  (list (pair @tas value-1))
-    ~[nickname+text/'Sun' bio+text/'It is bright today']
+    ^-  (list (pair @tas value))
+    :~  nickname+text/'Sun' 
+        bio+text/'It is bright today'
+        groups+set/(silt groups)
+    ==
   ::
-  =/  =news-1
+  =/  =news
     [%page id+0v1 ~ con-1]
   =/  mypage=^page
     [p=~ q=con-1]
@@ -311,11 +359,11 @@
   ;<  ~  b  (set-src our.bowl)
   ::  create new contact page
   ::
-  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%page 0v1 con-1]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%page 0v1 con-1]))
   ::  news is published on /v1/news
   ::
   ;<  ~  b  %+  ex-cards  caz
-    :~  (ex-fact ~[/v1/news] contact-news-1+!>(news-1))
+    :~  (ex-fact ~[/v1/news] contact-news-1+!>(news))
     ==
   ::  peek page in the book: new contact page is found
   ::
@@ -324,6 +372,8 @@
   %+  ex-equal
   !>  [%contact-page-1 q.cage]
   !>  [%contact-page-1 !>(mypage)]
+  ::  delete favourite groups
+  ::
 ::
 ++  test-poke-meet
   %-  eval-mare
@@ -333,9 +383,9 @@
   ;<  caz=(list card)  b  (do-init %contacts contacts-agent)
   ;<  =bowl  b  get-bowl
   ::
-  =/  con-sun=contact-1
+  =/  con-sun=contact
     %-  malt
-    ^-  (list (pair @tas value-1))
+    ^-  (list (pair @tas value))
     ~[nickname+text/'Sun' bio+text/'It is bright today']
   ::  local subscriber to /news
   ::
@@ -343,12 +393,12 @@
   ;<  caz=(list card)  b  (do-watch /news)
   ::  meet ~sun
   ::
-  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%meet ~[~sun]]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%meet ~[~sun]]))
   ::  ~sun publishes his contact
   ::
   ;<  ~  b  (set-src ~sun)
   ;<  caz=(list card)  b
-    (do-agent /contact [~sun %contacts] %fact %contact-update-1 !>([%full now.bowl con-sun]))
+    (do-agent /contact [~sun %contacts] %fact contact-update-1+!>([%full now.bowl con-sun]))
   ;<  ~  b
     %+  ex-cards  caz
     :~  (ex-fact ~[/news] contact-news+!>([~sun (to-contact-0:c con-sun)]))
@@ -361,12 +411,12 @@
   ;<  ~  b
     %+  ex-equal
     !>  cag
-    !>  contact-foreign-1+!>(`foreign-1`[[now.bowl con-sun] %want])
+    !>  contact-foreign-1+!>(`foreign`[[now.bowl con-sun] %want])
   ;<  ~  b  (set-src ~sun)
   ::  meet ~sun a second time: a no-op
   ::
   ;<  ~  b  (set-src our.bowl)
-  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%meet ~[~sun]]))
+  ;<  caz=(list card)  b  (do-poke %contact-action !>([%meet ~[~sun]]))
   (ex-cards caz ~)
 ::
 ++  test-poke-spot-unknown
@@ -377,9 +427,9 @@
   ;<  caz=(list card)  b  (do-init %contacts contacts-agent)
   ;<  =bowl  b  get-bowl
   ::
-  =/  con-sun=contact-1
+  =/  con-sun=contact
     %-  malt
-    ^-  (list (pair @tas value-1))
+    ^-  (list (pair @tas value))
     ~[nickname+text/'Sun' bio+text/'It is bright today']
   ::  local subscriber to /news
   ::
@@ -387,7 +437,7 @@
   ;<  caz=(list card)  b  (do-watch /news)
   ::  spot ~sun to contact boook: he also becomes our peer
   ::
-  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%spot ~sun ~]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%spot ~sun ~]))
   ;<  ~  b
     %+  ex-cards  caz
     :~  (ex-task /contact [~sun %contacts] %watch /v1/contact)
@@ -402,12 +452,12 @@
   ;<  ~  b
     %+  ex-equal
     !>  cag
-    !>  contact-foreign-1+!>(`foreign-1`[~ %want])
+    !>  contact-foreign-1+!>(`foreign`[~ %want])
   ::  ~sun publishes his contact
   ::
   ;<  ~  b  (set-src ~sun)
   ;<  caz=(list card)  b
-    (do-agent /contact [~sun %contacts] %fact %contact-update-1 !>([%full now.bowl con-sun]))
+    (do-agent /contact [~sun %contacts] %fact contact-update-1+!>([%full now.bowl con-sun]))
   ;<  ~  b
     %+  ex-cards  caz
     :~  (ex-fact ~[/news] contact-news+!>([~sun (to-contact-0:c con-sun)]))
@@ -417,11 +467,11 @@
   ::  ~sun contact page is edited
   ::
   ;<  ~  b  (set-src our.bowl)
-  =/  con-mod=contact-1
+  =/  con-mod=contact
     %-  malt
-    ^-  (list (pair @tas value-1))
+    ^-  (list (pair @tas value))
     ~[nickname+text/'Bright Sun' avatar+text/'https://sun.io/sun.png']
-  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%edit ~sun con-mod]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%edit ~sun con-mod]))
   ::  ~sun's contact book page is updated 
   ::
   ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/book/~sun)
@@ -436,7 +486,7 @@
   =/  cag=cage  (need (need peek))
   %+  ex-equal
   !>  cag
-  !>  [%contact-1 !>((contact-mod:c con-sun con-mod))]
+  !>  contact-1+!>((contact-mod:c con-sun con-mod))
 ::
 ++  test-poke-spot-wipe
   %-  eval-mare
@@ -446,9 +496,9 @@
   ;<  caz=(list card)  b  (do-init %contacts contacts-agent)
   ;<  =bowl  b  get-bowl
   ::
-  =/  con-sun=contact-1
+  =/  con-sun=contact
     %-  malt
-    ^-  (list (pair @tas value-1))
+    ^-  (list (pair @tas value))
     ~[nickname+text/'Sun' bio+text/'It is bright today']
   ::  local subscriber to /news
   ::
@@ -456,12 +506,12 @@
   ;<  caz=(list card)  b  (do-watch /news)
   ::  meet ~sun
   ::
-  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%meet ~[~sun]]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%meet ~[~sun]]))
   ::  ~sun publishes his contact
   ::
   ;<  ~  b  (set-src ~sun)
   ;<  caz=(list card)  b
-    (do-agent /contact [~sun %contacts] %fact %contact-update-1 !>([%full now.bowl con-sun]))
+    (do-agent /contact [~sun %contacts] %fact contact-update-1+!>([%full now.bowl con-sun]))
   ;<  ~  b
     %+  ex-cards  caz
     :~  (ex-fact ~[/news] contact-news+!>([~sun (to-contact-0:c con-sun)]))
@@ -474,23 +524,23 @@
   ;<  ~  b
     %+  ex-equal
     !>  cag
-    !>  contact-foreign-1+!>(`foreign-1`[[now.bowl con-sun] %want])
+    !>  contact-foreign-1+!>(`foreign`[[now.bowl con-sun] %want])
   ;<  ~  b  (set-src ~sun)
   ::  ~sun is added to contacts
   ::
   ;<  ~  b  (set-src our.bowl)
-  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%spot ~sun ~]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%spot ~sun ~]))
   ;<  ~  b
     %+  ex-cards  caz
     :~  (ex-fact ~[/v1/news] contact-news-1+!>([%page ~sun con-sun ~]))
     ==
   ::  ~sun contact page is edited
   ::
-  =/  con-mod=contact-1
+  =/  con-mod=contact
     %-  malt
-    ^-  (list (pair @tas value-1))
+    ^-  (list (pair @tas value))
     ~[nickname+text/'Bright Sun' avatar+text/'https://sun.io/sun.png']
-  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%edit ~sun con-mod]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%edit ~sun con-mod]))
   ;<  ~  b
     %+  ex-cards  caz
     :~  :: (ex-fact ~[/news] contact-news+!>([~sun (to-contact-0:c (~(uni by con-sun) con-mod))]))
@@ -503,7 +553,7 @@
   ;<  ~  b
     %+  ex-equal
     !>  cag
-    !>  contact-foreign-1+!>(`foreign-1`[[now.bowl con-sun] %want])
+    !>  contact-foreign-1+!>(`foreign`[[now.bowl con-sun] %want])
   ::  however, ~sun's contact book page is changed
   ::
   ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/book/~sun)
@@ -519,10 +569,10 @@
   ;<  ~  b
     %+  ex-equal
     !>  cag
-    !>  [%contact-1 !>((contact-mod:c con-sun con-mod))]
+    !>  contact-1+!>((contact-mod:c con-sun con-mod))
   ::  ~sun contact page is deleted
   ::
-  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%wipe ~[~sun]]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%wipe ~[~sun]]))
   ;<  ~  b
     %+  ex-cards  caz
     :~  :: (ex-fact ~[/news] contact-news+!>([~sun (to-contact-0:c con-sun)]))
@@ -539,7 +589,7 @@
   =/  cag=cage  (need (need peek))
   %+  ex-equal
   !>  cag
-  !>  contact-foreign-1+!>(`foreign-1`[[now.bowl con-sun] %want])
+  !>  contact-foreign-1+!>(`foreign`[[now.bowl con-sun] %want])
 ::
 ++  test-poke-drop
   %-  eval-mare
@@ -549,9 +599,9 @@
   ;<  caz=(list card)  b  (do-init %contacts contacts-agent)
   ;<  =bowl  b  get-bowl
   ::
-  =/  con-sun=contact-1
+  =/  con-sun=contact
     %-  malt
-    ^-  (list (pair @tas value-1))
+    ^-  (list (pair @tas value))
     ~[nickname+text/'Sun' bio+text/'It is bright today']
   ::  local subscriber to /news
   ::
@@ -559,12 +609,12 @@
   ;<  caz=(list card)  b  (do-watch /news)
   ::  meet ~sun
   ::
-  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%meet ~[~sun]]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%meet ~[~sun]]))
   ::  ~sun publishes his contact
   ::
   ;<  ~  b  (set-src ~sun)
   ;<  caz=(list card)  b
-    (do-agent /contact [~sun %contacts] %fact %contact-update-1 !>([%full now.bowl con-sun]))
+    (do-agent /contact [~sun %contacts] %fact contact-update-1+!>([%full now.bowl con-sun]))
   ;<  ~  b
     %+  ex-cards  caz
     :~  (ex-fact ~[/news] contact-news+!>([~sun (to-contact-0:c con-sun)]))
@@ -577,23 +627,23 @@
   ;<  ~  b
     %+  ex-equal
     !>  cag
-    !>  contact-foreign-1+!>(`foreign-1`[[now.bowl con-sun] %want])
+    !>  contact-foreign-1+!>(`foreign`[[now.bowl con-sun] %want])
   ;<  ~  b  (set-src ~sun)
   ::  ~sun is added to contacts
   ::
   ;<  ~  b  (set-src our.bowl)
-  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%spot ~sun ~]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%spot ~sun ~]))
   ;<  ~  b
     %+  ex-cards  caz
     :~  (ex-fact ~[/v1/news] contact-news-1+!>([%page ~sun con-sun ~]))
     ==
   ::  ~sun contact page is edited
   ::
-  =/  con-mod=contact-1
+  =/  con-mod=contact
     %-  malt
-    ^-  (list (pair @tas value-1))
+    ^-  (list (pair @tas value))
     ~[nickname+text/'Bright Sun' avatar+text/'https://sun.io/sun.png']
-  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%edit ~sun con-mod]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%edit ~sun con-mod]))
   ;<  ~  b
     %+  ex-cards  caz
     :~  :: (ex-fact ~[/news] contact-news+!>([~sun (to-contact-0:c (~(uni by con-sun) con-mod))]))
@@ -602,7 +652,7 @@
   ::  ~sun is dropped
   ::
   ;<  ~  b  (set-src our.bowl)
-  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%drop ~[~sun]]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%drop ~[~sun]]))
   ;<  ~  b
     %+  ex-cards  caz
     :~  (ex-task /contact [~sun %contacts] %leave ~)
@@ -632,9 +682,9 @@
   ;<  caz=(list card)  b  (do-init %contacts contacts-agent)
   ;<  =bowl  b  get-bowl
   ::
-  =/  con-sun=contact-1
+  =/  con-sun=contact
     %-  malt
-    ^-  (list (pair @tas value-1))
+    ^-  (list (pair @tas value))
     ~[nickname+text/'Sun' bio+text/'It is bright today']
   ::  local subscriber to /news
   ::
@@ -642,12 +692,12 @@
   ;<  caz=(list card)  b  (do-watch /news)
   ::  meet ~sun
   ::
-  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%meet ~[~sun]]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%meet ~[~sun]]))
   ::  ~sun publishes his contact
   ::
   ;<  ~  b  (set-src ~sun)
   ;<  caz=(list card)  b
-    (do-agent /contact [~sun %contacts] %fact %contact-update-1 !>([%full now.bowl con-sun]))
+    (do-agent /contact [~sun %contacts] %fact contact-update-1+!>([%full now.bowl con-sun]))
   ;<  ~  b
     %+  ex-cards  caz
     :~  (ex-fact ~[/news] contact-news+!>([~sun (to-contact-0:c con-sun)]))
@@ -656,7 +706,7 @@
   ::  ~sun is added to contacts
   ::
   ;<  ~  b  (set-src our.bowl)
-  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%spot ~sun ~]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%spot ~sun ~]))
   ;<  ~  b
     %+  ex-cards  caz
     :~  (ex-fact ~[/v1/news] contact-news-1+!>([%page ~sun con-sun ~]))
@@ -671,9 +721,9 @@
     ==
   ::  ~sun modifies his contact
   ::
-  =/  con-mod=contact-1
+  =/  con-mod=contact
     %-  malt
-    ^-  (list (pair @tas value-1))
+    ^-  (list (pair @tas value))
     ~[nickname+text/'Bright Sun' avatar+text/'https://sun.io/sun.png']
   ;<  ~  b  (set-src ~sun)
   ::  fact fails: no subscription
@@ -683,7 +733,7 @@
   ::   :*  /contact
   ::       [~sun %contacts]
   ::       %fact
-  ::       %contact-update-1
+  ::       %contact-update
   ::       !>([%full now.bowl (~(uni by con-sun) con-mod)])
   ::   ==
   ::  ~sun is still found in peers
@@ -692,7 +742,7 @@
   =/  cag=cage  (need (need peek))
   %+  ex-equal
   !>  cag
-  !>  contact-foreign-1+!>(`foreign-1`[[now.bowl con-sun] ~])
+  !>  contact-foreign-1+!>(`foreign`[[now.bowl con-sun] ~])
 ::
 +|  %peek
 ++  test-peek-0-all
@@ -703,13 +753,13 @@
   ;<  caz=(list card)  b  (do-init %contacts contacts-agent)
   ;<  =bowl  b  get-bowl
   ::
-  =/  con-sun=contact-1
+  =/  con-sun=contact
     %-  malt
-    ^-  (list (pair @tas value-1))
+    ^-  (list (pair @tas value))
     ~[nickname+text/'Sun' bio+text/'It is bright today']
-  =/  con-mur=contact-1
+  =/  con-mur=contact
     %-  malt
-    ^-  (list (pair @tas value-1))
+    ^-  (list (pair @tas value))
     ~[nickname+text/'Mur' bio+text/'Murky waters']
   ::  meet ~sun and ~mur
   ::
@@ -730,7 +780,7 @@
   ;<  peek=(unit (unit cage))  b  (get-peek /x/all)
   =/  cag=cage  (need (need peek))
   ?>  ?=(%contact-rolodex p.cag)
-  =/  rol  !<(rolodex-0 q.cag)
+  =/  rol  !<(rolodex-0:legacy q.cag)
   ;<  ~  b
     %+  ex-equal
     !>  (~(got by rol) ~sun)
@@ -748,17 +798,17 @@
   ;<  caz=(list card)  b  (do-init %contacts contacts-agent)
   ;<  =bowl  b  get-bowl
   ::
-  =/  con-1=contact-1
+  =/  con-1=contact
     %-  malt
-    ^-  (list (pair @tas value-1))
+    ^-  (list (pair @tas value))
     ~[nickname+text/'Sun' bio+text/'It is bright today']
-  =/  con-2=contact-1
+  =/  con-2=contact
     %-  malt
-    ^-  (list (pair @tas value-1))
+    ^-  (list (pair @tas value))
     ~[nickname+text/'Mur' bio+text/'Murky waters']
   ::
-  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%page 0v1 con-1]))
-  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%page 0v2 con-2]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%page 0v1 con-1]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%page 0v2 con-2]))
   ::  peek book: two contacts are found
   ::
   ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/book)
@@ -780,17 +830,17 @@
   ;<  caz=(list card)  b  (do-init %contacts contacts-agent)
   ;<  =bowl  b  get-bowl
   ::
-  =/  con-sun=contact-1
+  =/  con-sun=contact
     %-  malt
-    ^-  (list (pair @tas value-1))
+    ^-  (list (pair @tas value))
     ~[nickname+text/'Sun' bio+text/'It is bright today']
-  =/  con-mur=contact-1
+  =/  con-mur=contact
     %-  malt
-    ^-  (list (pair @tas value-1))
+    ^-  (list (pair @tas value))
     ~[nickname+text/'Mur' bio+text/'Murky waters']
-  =/  con-mod=contact-1
+  =/  con-mod=contact
     %-  malt
-    ^-  (list (pair @tas value-1))
+    ^-  (list (pair @tas value))
     ~[avatar+text/'https://sun.io/sun.png']
   ::  meet ~sun and ~mur
   ::
@@ -800,16 +850,16 @@
   ::
   ;<  ~  b  (set-src ~sun)
   ;<  caz=(list card)  b
-    (do-agent /contact [~sun %contacts] %fact %contact-update-1 !>([%full now.bowl con-sun]))
+    (do-agent /contact [~sun %contacts] %fact contact-update-1+!>([%full now.bowl con-sun]))
   ::  ~sun is added to the contact book with user overlay
   ::
   ;<  ~  b  (set-src our.bowl)
-  ;<  caz=(list card)  b  (do-poke %contact-action-1 !>([%spot ~sun con-mod]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%spot ~sun con-mod]))
   ::  ~mur publishes his contact
   ::
   ;<  ~  b  (set-src ~mur)
   ;<  caz=(list card)  b
-    (do-agent /contact [~mur %contacts] %fact %contact-update-1 !>([%full now.bowl con-mur]))
+    (do-agent /contact [~mur %contacts] %fact contact-update-1+!>([%full now.bowl con-mur]))
   ::  peek all: two contacts are found
   ::
   ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/all)

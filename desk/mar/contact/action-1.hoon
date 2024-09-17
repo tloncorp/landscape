@@ -1,6 +1,6 @@
 /-  c=contacts
 /+  j=contacts-json-1
-|_  action=action-1:c
+|_  action=action:c
 ++  grad  %noun
 ++  grow
   |%
@@ -8,7 +8,7 @@
   --
 ++  grab
   |%
-  ++  noun  action-1:c
+  ++  noun  action:c
   ++  json  action:dejs:j
   --
 --

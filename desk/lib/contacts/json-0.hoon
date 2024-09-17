@@ -10,7 +10,7 @@
     |=(her=@p n+(rap 3 '"' (scot %p her) '"' ~))
   ::
   ++  action
-    |=  a=action-0:c
+    |=  a=action-0:legacy:c
     ^-  json
     %+  frond  -.a
     ?-  -.a
@@ -23,7 +23,7 @@
     ==
   ::
   ++  contact
-    |=  c=contact-0:c
+    |=  c=contact-0:legacy:c
     ^-  json
     %-  pairs
     :~  nickname+s+nickname.c
@@ -39,7 +39,7 @@
     ==
   ::
   ++  field
-    |=  f=field-0:c
+    |=  f=field-0:legacy:c
     ^-  json
     %+  frond  -.f
     ?-  -.f
@@ -54,15 +54,15 @@
     ==
   ::
   ++  rolodex
-    |=  r=rolodex-0:c
+    |=  r=rolodex-0:legacy:c
     ^-  json
     %-  pairs
     %-  ~(rep by r)
-    |=  [[who=@p foreign-0:c] j=(list [@t json])]
+    |=  [[who=@p foreign-0:legacy:c] j=(list [@t json])]
     [[(scot %p who) ?.(?=([@ ^] for) ~ (contact con.for))] j]  :: XX stale flag per sub state?
   ::
   ++  news
-    |=  n=news-0:c
+    |=  n=news-0:legacy:c
     ^-  json
     %-  pairs
     :~  who+(ship who.n)
@@ -93,7 +93,7 @@
     ==
   ::
   ++  action
-    ^-  $-(json action-0:c)
+    ^-  $-(json action-0:legacy:c)
     %-  of
     :~  anon+ul
         edit+(ar field)
@@ -104,7 +104,7 @@
     ==
   ::
   ++  contact
-    ^-  $-(json contact-0:c)
+    ^-  $-(json contact-0:legacy:c)
     %-  ot
     :~  nickname+so
         bio+so
@@ -116,7 +116,7 @@
     ==
   ::
   ++  field
-    ^-  $-(json field-0:c)
+    ^-  $-(json field-0:legacy:c)
     %-  of
     :~  nickname+so
         bio+so

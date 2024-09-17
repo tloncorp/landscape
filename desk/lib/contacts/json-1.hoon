@@ -22,7 +22,7 @@
     (cid +.kip)
   ::
   ++  value
-    |=  val=value-1:c
+    |=  val=value:c
     ^-  json
     ?-  -.val
       %text  (pairs type+s/%text value+s/p.val ~)
@@ -35,7 +35,7 @@
     ==
   ::
   ++  contact
-    |=  c=contact-1:c
+    |=  c=contact:c
     ^-  json
     o+(~(run by c) value)
   ::
@@ -62,11 +62,11 @@
     =|  dir=(map @ta json)
     :-  %o
     %-  ~(rep by directory)
-    |=  [[who=@p con=contact-1:c] acc=_dir]
+    |=  [[who=@p con=contact:c] acc=_dir]
     (~(put by acc) (scot %p who) (contact con))
   ::
   ++  news
-    |=  n=news-1:c
+    |=  n=news:c
     ^-  json
     ?-  -.n
       %self  (frond self+(contact con.n))
@@ -109,7 +109,7 @@
     [mas (wit jon)]
   ::
   ++  value
-    ^-  $-(json value-1:c)
+    ^-  $-(json value:c)
     |=  jon=json
     ::  XX is there a way to do it in one go?
     ::
@@ -133,10 +133,10 @@
       %set   %.  val  (ta %set (as value))
     ==
   ++  contact
-    ^-  $-(json contact-1:c)
+    ^-  $-(json contact:c)
     (om value)
   ++  action
-    ^-  $-(json action-1:c)
+    ^-  $-(json action:c)
     %-  of
     :~  anon+ul
         self+contact
