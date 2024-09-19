@@ -1,5 +1,6 @@
 /-  c=contacts, g=groups
 /+  gj=groups-json
+=,  legacy:c
 |%
 ++  enjs
   =,  enjs:format

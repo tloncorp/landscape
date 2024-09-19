@@ -1,6 +1,6 @@
 /-  *contacts, g=groups
 /+  *test
-/+  c=contacts, j=contacts-json-1
+/+  c=contacts, j=contacts-json-1, mark-warmer
 ::
 /=  c0  /mar/contact-0
 /=  c1  /mar/contact

@@ -10,19 +10,19 @@
 ::
 ::    .con: a contact
 ::    .rof: our profile
-::    .rol: our full rolodex (v0)
+::    .rol: [legacy] our full rolodex
 ::    .far: foreign peer
 ::    .for: foreign profile
 ::    .sag: foreign subscription state
 ::
-+|  %types
++|  %molds
 +$  card     card:agent:gall
 +$  state-1  [%1 rof=$@(~ profile) =book =peers]
 --
-%-  %^  agent:neg
-      notify=|
-      [~.contacts^%1 ~ ~]
-      [~.contacts^[~.contacts^%1 ~ ~] ~ ~]
+:: %-  %^  agent:neg
+::       notify=|
+::       [~.contacts^%1 ~ ~]
+::       [~.contacts^[~.contacts^%1 ~ ~] ~ ~]
 %-  agent:dbug
 %+  verb  |
 ^-  agent:gall
@@ -93,7 +93,7 @@
   ::
   +|  %operations
   ::
-  ::  |pub: publication mgmt
+  ::  +pub: publication management
   ::
   ::    - /v1/news: local updates to our profile and rolodex
   ::    - /v1/contact: updates to our profile
@@ -107,7 +107,7 @@
   ::    published ad-hoc, elsewhere.
   ::
   ::    Facts are always send in the following order:
-  ::    1. (legacy) /news
+  ::    1. [legacy] /news
   ::    2. /v1/news
   ::    3. /v1/contact
   ::
@@ -122,26 +122,11 @@
         ::  same. Thus on each contact update we need to filter
         ::  over 5.000 elements: do some benchmarking.
         ::
-        ::  XX when there are no subscribers on a path, we still
-        ::  send facts on an empty path. This is no problem, unless
-        ::  it is used in ++peer
-        ::
-        :: ++  subs-0
-        ::   ^-  (set path)
-        ::   %-  ~(rep by sup.bowl)
-        ::   |=  [[duct ship pat=path] acc=(set path)]
-          :: ?.(?=([%contact *] pat) acc (~(put in acc) pat))
         ++  subs
           ^-  (set path)
           %-  ~(rep by sup.bowl)
           |=  [[duct ship pat=path] acc=(set path)]
           ?.(?=([%v1 %contact *] pat) acc (~(put in acc) pat))
-        ::
-        :: ++  fact-0
-        ::   |=  [pat=(set path) u=update-0]
-        ::   ^-  gift:agent:gall
-        ::   [%fact ~(tap in pat) %contact-update !>(u)]
-        ::
         ++  fact
           |=  [pat=(set path) u=update]
           ^-  gift:agent:gall
@@ -149,14 +134,15 @@
         --
     ::
     |%
+    ::  +p-anon: delete our profile
     ::
     ++  p-anon  ?.(?=([@ ^] rof) cor (p-send-self ~))
+    ::  +p-self: edit our profile
     ::
     ++  p-self
       |=  con=(map @tas value)
       =/  old=contact
         ?.(?=([@ ^] rof) *contact con.rof)
-      ::  XX handle deletion of fields
       =/  new=contact
         (do-edit old con)
       ?:  =(old new)
@@ -171,10 +157,24 @@
         ~|  "contact page {<cid>} already exists"  !!
       ?>  (sane-contact con)
       (p-send-page cid con)
+    ::  +p-spot: add peer as a contact
+    ::  
+    ++  p-spot
+      |=  [who=ship mod=contact]
+      ?:  (~(has by book) who)
+        ~|  "peer {<who>} is already a contact"  !!
+      =/  con=contact
+        ~|  "peer {<who>} not found"
+        =/  far=foreign
+          (~(got by peers) who)
+        ?~  for.far  *contact
+        con.for.far
+      ?>  (sane-contact mod)
+      (p-send-spot who con mod)
     ::  +p-edit: edit contact page overlay
     ::
     ++  p-edit
-      |=  [=kip mod=(map @tas value)]
+      |=  [=kip mod=contact]
       =/  =page
         ~|  "contact page {<kip>} does not exist"
         (~(got by book) kip)
@@ -196,20 +196,7 @@
           ~|  "contact id {<kip>} not found"
           (~(got by book) kip)
         (p-send-wipe kip page)
-    ::  +p-spot: add as a contact
-    ::
-    ++  p-spot
-      |=  [who=ship mod=contact]
-      ?:  (~(has by book) who)
-        ~|  "peer {<who>} is already a contact"  !!
-      =/  con=contact
-        ~|  "peer {<who>} not found"
-        =/  far=foreign
-          (~(got by peers) who)
-        ?~  for.far  *contact
-        con.for.far
-      ?>  (sane-contact mod)
-      (p-send-spot who con mod)
+    ::  +p-send-self: publish modified profile
     ::
     ++  p-send-self
       |=  con=contact
@@ -229,30 +216,6 @@
         [*contact mod]
       =.  book  (~(put by book) id+cid page)
       (p-news [%page id+cid page])
-    ::  +p-send-edit: publish contact page update
-    ::
-    ++  p-send-edit
-      |=  [=kip =page]
-      =.  book
-        (~(put by book) kip page)
-      ::  this is a peer page, send v0 update
-      ::
-      :: =?  cor  ?=(ship kip)
-      ::   %+  p-news-0:legacy  kip
-      ::   (to-contact-0:legacy (contact-mod page))
-      (p-news [%page kip page])
-    ::
-    ++  p-send-wipe
-      |=  [=kip =page]
-      =.  book
-        (~(del by book) kip)
-      :: XX ::  peer overlay lost: v0 peer contact is modified
-      :: ::
-      :: =?  cor  &(?=(ship kip) !?=(~ q.page))
-      ::   ::  v0 peer contact is modified
-      ::   %+  p-news-0:legacy  kip
-      ::   (to-contact-0:legacy p.page)
-      (p-news [%wipe kip])
     ::  +p-send-spot: publish peer spot
     ::
     ++  p-send-spot
@@ -260,6 +223,21 @@
       =.  book
         (~(put by book) who con mod)
       (p-news [%page who con mod])
+    ::  +p-send-edit: publish contact page update
+    ::
+    ++  p-send-edit
+      |=  [=kip =page]
+      =.  book
+        (~(put by book) kip page)
+      (p-news [%page kip page])
+    ::  +p-send-wipe: publish contact page wipe
+    ::
+    ++  p-send-wipe
+      |=  [=kip =page]
+      =.  book
+        (~(del by book) kip)
+      (p-news [%wipe kip])
+    ::  +p-init: publish our profile
     ::
     ++  p-init
       |=  wen=(unit @da)
@@ -269,10 +247,12 @@
       ::
       :: no future subs
       ?>((lth u.wen wen.rof) (give (fact ~ full+rof)))
+    ::  +p-news-0: [legacy] publish news
     ::
     ++  p-news-0
       |=  n=news-0:legacy
       (give %fact ~[/news] %contact-news !>(n))
+    ::  +p-news: publish news
     ::
     ++  p-news
       |=  n=news
@@ -281,7 +261,7 @@
   ::
   ::  +sub: subscription mgmt
   ::
-  ::    /contact/*: foreign profiles, |s-impl
+  ::    /contact/*: foreign profiles, _s-impl
   ::
   ::    subscription state is tracked per peer in .sag
   ::
@@ -294,9 +274,6 @@
   ++  sub
     |^  |=  who=ship
         ^+  s-impl
-        ::  XX it seems lib negotiate does not set a correct
-        ::  src.bowl!
-        ::
         ?<  =(our.bowl who)
         =/  old  (~(get by peers) who)
         ~(. s-impl who %live ?=(~ old) (fall old *foreign))
@@ -326,8 +303,6 @@
           ::
           %dead  ?:  new  cor
                  =.  peers  (~(del by peers) who)
-                 =/  page=(unit page)
-                   (~(get by book) who)
                  ::
                  ::  this is not quite right, reflecting *total* deletion
                  ::  as *contact* deletion. but it's close, and keeps /news simpler
@@ -358,12 +333,12 @@
         ?>  (sane-contact con.u)
         ?:  &(?=(^ for) (lte wen.u wen.for))
           si-cor
-        %=  si-cor
+        %_  si-cor
           for  +.u
           cor  =.  cor
                  (p-news-0:pub who (to-contact-0 con.u))
                =/  page=(unit page)  (~(get by book) who)
-               ::  update peer contact
+               ::  update peer contact page
                ::
                =?  cor  ?=(^ page)
                  ?:  =(p.u.page con.u)  cor
@@ -374,7 +349,9 @@
       ::
       ++  si-meet
         ^+  si-cor
-        ?.  ?=(~ sag)
+        ::
+        ::  already connected
+        ?:  ?=(%want sag)
           si-cor
         =/  pat  [%v1 %contact ?~(for / /at/(scot %da wen.for))]
         %=  si-cor
@@ -387,10 +364,9 @@
       ++  si-snub
         %_  si-cor
           sag  ~
-          cor  ?+    sag   cor
-                   %want
-                 (pass /contact %agent [who dap.bowl] %leave ~)
-        ==     ==
+          cor   ?.  ?=(%want sag)  cor
+                (pass /contact %agent [who dap.bowl] %leave ~)
+        ==
       --
     --
   ::
@@ -454,6 +430,11 @@
         ?-  -.old
           %0
         =.  rof  ?~(rof.old ~ (to-profile rof.old))
+        ::  migrate peers. for each peer
+        ::  1. leave /epic, if any
+        ::  2. subscribe if desired
+        ::  3. put into peers
+        ::
         =^  caz=(list card)  peers
           %+  roll  ~(tap by rol.old)
           |=  [[who=ship foreign-0:legacy] caz=(list card) =_peers]
@@ -462,48 +443,21 @@
           =?  caz  (~(has by wex.bowl) [/epic who dap.bowl])
             :_  caz
             [%pass /epic %agent [who dap.bowl] %leave ~]
-          =/  for-1=$@(~ profile)
+          =/  fir=$@(~ profile)
             ?~  for  ~
             (to-profile for)
-          ::  no intent to subscribe
+          ::  no intent to connect
           ::
           ?:  =(~ sag)
             :-  caz
-            (~(put by peers) who for-1 ~)
-          :_  (~(put by peers) who for-1 %want)
+            (~(put by peers) who fir ~)
+          :_  (~(put by peers) who fir %want)
           ?:  (~(has by wex.bowl) [/contact who dap.bowl])
             caz
-          =/  =path  [%v1 %contact ?~(for / /at/(scot %da wen.for))]
+          =/  =path  [%v1 %contact ?~(fir / /at/(scot %da wen.fir))]
           :_  caz
           [%pass /contact %agent [who dap.bowl] %watch path]
         (emil caz)
-          ::  in v0, any sag that is not null indicates intent to connect,
-          ::  that could fail due to version mismatch or other reasons.
-          ::  therefore, a v0 sag not equal to null means we should
-          ::  subscribe to the peer at the new v1 endpoint.
-          ::
-          ::  XX Should we manually leave all v0 /contact
-          ::  connections?
-          ::  XX Should we kick all our v0 /contact subscribers?
-          ::
-          ::  no intent to connect
-          ::
-          :: ?:  =(~ sag)
-          ::   :-  caz
-          ::   (~(put by peers) who for-1 ~)
-            ::  leave existing v0 connection
-            ::  XX it seems lib-negotiate handles this
-            :: :_  caz
-            :: [%pass /contact %agent [who dap.bowl] %leave ~]
-            ::
-            ::  XX it seems lib-negotiate will initiate this by
-            ::  simulating a %kick
-            :: :-  :_  caz
-            ::     =/  =path  [%v1 %contact ?~(for / /at/(scot %da wen.for))]
-            ::     [%pass /contact %agent [who dap.bowl] %watch path]
-          :: (~(put by peers) who for-1 %want)
-        ::
-        :: (emil cards)
         ::
           %1
         =.  state  old
@@ -521,26 +475,13 @@
           caz
         (emil cards)
         ==
-    +$  state-0  [%0 rof=$@(~ profile-0:legacy) rol=rolodex-0:legacy]
+    +$  state-0  [%0 rof=$@(~ profile-0:legacy) rol=rolodex:legacy]
     +$  versioned-state
       $%  state-0
           state-1
       ==
     ::
     ++  l-epic  (give %fact [/epic ~] epic+!>(okay))
-    ::
-    :: ++  l-bump
-    ::   ^+  cor
-    ::   %-  ~(rep by rol)
-    ::   |=  [[who=ship foreign] =_cor]
-    ::   ::  XX to fully support downgrade, we'd need to also
-    ::   ::  save an epic in %lev
-    ::   ::
-    ::   ?.  ?&  ?=([%dex *] sag)
-    ::           =(okay ver.sag)
-    ::       ==
-    ::     cor
-    ::   si-abet:si-heed:si-snub:(sub:cor who)
     --
   ::
   ++  poke
@@ -558,9 +499,8 @@
       ?>  =(our src):bowl
       =/  act=action
         ?-  mark
-            %contact-action-1
-          !<(action vase)
           ::
+          ::  legacy %contact-action
             ?(act:base:mar %contact-action-0)
           =/  act-0  !<(action-0:legacy vase)
           ?.  ?=(%edit -.act-0)
@@ -573,12 +513,18 @@
             =+  set=(~(ges cy con.rof) groups+%cult)
             ?:  =(~ set)  ~
             (need set)
-          [%self (to-edit-1 p.act-0 groups)]
+          [%self (to-self-edit p.act-0 groups)]
+          ::
+            %contact-action-1
+          !<(action vase)
         ==
       ?-  -.act
         %anon  p-anon:pub
         %self  (p-self:pub p.act)
         %page  (p-page:pub p.act q.act)
+        ::  if we spot someone who is not a peer,
+        ::  we meet them first
+        ::
         %spot  =?  cor  !(~(has by peers) p.act)
                  si-abet:si-meet:(sub p.act)
                (p-spot:pub p.act q.act)
@@ -593,7 +539,7 @@
   ::
   ::  v0 scries
   ::
-  ::  /x/all -> $rolodex-0:legacy
+  ::  /x/all -> $rolodex:legacy
   ::  /x/contact/her=@ -> $@(~ contact-0:legacy)
   ::
   ::  v1 scries
@@ -610,9 +556,9 @@
     |=  pat=(pole knot)
     ^-  (unit (unit cage))
     ?+    pat  [~ ~]
-        ::
+      ::
         [%x %all ~]
-      =/  rol-0=rolodex-0:legacy
+      =/  rol-0=rolodex:legacy
         %-  ~(urn by peers)
         |=  [who=ship far=foreign]
         ^-  foreign-0:legacy
@@ -621,31 +567,32 @@
             ~
           q.u.page
         (to-foreign-0 (foreign-mod far mod))
-      =/  lor-0=rolodex-0:legacy
+      =/  lor-0=rolodex:legacy
         ?:  |(?=(~ rof) ?=(~ con.rof))  rol-0
         (~(put by rol-0) our.bowl (to-profile-0 rof) ~)
       ``contact-rolodex+!>(lor-0)
-        ::
+      ::
         [%x %contact her=@ ~]
       ?~  who=`(unit @p)`(slaw %p her.pat)
         [~ ~]
       =/  tac=?(~ contact-0:legacy)
         ?:  =(our.bowl u.who)
           ?~(rof ~ (to-contact-0 con.rof))
-        =+  (~(get by peers) u.who)
-        ?:  |(?=(~ -) ?=(~ for.u.-))  ~
-        (to-contact-0 con.for.u.-)
+        =+  far=(~(get by peers) u.who)
+        ?:  |(?=(~ far) ?=(~ for.u.far))  ~
+        (to-contact-0 con.for.u.far)
       ?~  tac  [~ ~]
       ``contact+!>(`contact-0:legacy`tac)
-        ::
+      ::
         [%x %v1 %self ~]
       ?~  rof  [~ ~]
       ?~  con.rof  [~ ~]
       ``contact-1+!>(`contact`con.rof)
-        ::
+      ::
         [%x %v1 %book ~]
-      ``contact-book-1+!>(book)
-        ::
+      ?~  book  [~ ~]
+      ``contact-book-0+!>(book)
+      ::
         [%x %v1 %book her=@p ~]
       ?~  who=`(unit @p)`(slaw %p her.pat)
         [~ ~]
@@ -653,8 +600,8 @@
         (~(get by book) u.who)
       ?~  page
         [~ ~]
-      ``contact-page-1+!>(`^page`u.page)
-        ::
+      ``contact-page-0+!>(`^page`u.page)
+      ::
         [%x %v1 %book %id =cid ~]
       ?~  id=`(unit @uv)`(slaw %uv cid.pat)
         [~ ~]
@@ -662,30 +609,30 @@
         (~(get by book) id+u.id)
       ?~  page
         [~ ~]
-      ``contact-page-1+!>(`^page`u.page)
-        ::
+      ``contact-page-0+!>(`^page`u.page)
+      ::
         [%x %v1 %all ~]
-      =|  all=directory
+      =|  dir=directory
       ::  export all ship contacts
       ::
-      =.  all
+      =.  dir
         %-  ~(rep by book)
-        |=  [[=kip =page] =_all]
+        |=  [[=kip =page] =_dir]
         ?^  kip
-          all
-        (~(put by all) kip (contact-mod page))
+          dir
+        (~(put by dir) kip (contact-uni page))
       ::  export all peers
       ::
-      =.  all
+      =.  dir
         %-  ~(rep by peers)
-        |=  [[who=ship far=foreign] =_all]
-        ?~  for.far  all
-        ?:  (~(has by all) who)  all
-        (~(put by all) who `contact`con.for.far)
-      ?~  all
+        |=  [[who=ship far=foreign] =_dir]
+        ?~  for.far  dir
+        ?:  (~(has by dir) who)  dir
+        (~(put by dir) who con.for.far)
+      ?~  dir
         [~ ~]
-      ``contact-directory-1+!>(all)
-        ::
+      ``contact-directory-0+!>(dir)
+      ::
         [%x %v1 %contact her=@p ~]
       ?~  who=`(unit @p)`(slaw %p her.pat)
         [~ ~]
@@ -694,8 +641,8 @@
       ?~  page=(~(get by book) u.who)
         ?~  for.u.far  [~ ~]
         ``contact-1+!>(con.for.u.far)
-      ``contact-1+!>((contact-mod u.page))
-        ::
+      ``contact-1+!>((contact-uni u.page))
+      ::
         [%x %v1 %peer her=@p ~]
       ?~  who=`(unit @p)`(slaw %p her.pat)
         [~ ~]

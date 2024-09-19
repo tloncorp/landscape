@@ -4,7 +4,6 @@
 ++  enjs
   =,  enjs:format
   |%
-  ::  XX shadowed for compat, +ship:enjs removes the ~
   ::
   ++  ship
     |=(her=@p n+(rap 3 '"' (scot %p her) '"' ~))
@@ -43,8 +42,7 @@
     |=  =page:c
     ^-  json
     a+[(contact p.page) (contact q.page) ~]
-  ::  +$  kip $@(@p [%id cid])
-  ::  +$  book  (map kip page)
+  ::
   ++  book
     |=  =book:c
     ^-  json
@@ -102,6 +100,7 @@
     ?:  =('~' (end [3 1] p.jon))
       (ship jon)
     id+(cid jon)
+  ::  +ta: tag .wit parsed json with .mas
   ::
   ++  ta
     |*  [mas=@tas wit=fist]
@@ -119,9 +118,6 @@
     ?+  type  !!
       %text  %.  val  (ta %text so)
       %date  %.  val  (ta %date (se %da))
-      ::  XX invert arguments in +cu: arguments likely
-      ::  to be heavy should always be at the back
-      ::
       %tint  %.  val
              %+  ta  %tint
              %+  cu
@@ -132,9 +128,11 @@
       %cult  %.  val  (ta %cult flag:dejs:gj)
       %set   %.  val  (ta %set (as value))
     ==
+  ::
   ++  contact
     ^-  $-(json contact:c)
     (om value)
+  ::
   ++  action
     ^-  $-(json action:c)
     %-  of

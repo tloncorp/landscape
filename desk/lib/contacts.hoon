@@ -4,7 +4,7 @@
 ::
 ++  cy
   |_  c=contact
-  ::  +get: get typed value
+  ::  +get: typed get
   ::
   ++  get
     |*  [key=@tas typ=value-type]
@@ -22,15 +22,15 @@
       %cult  ?>(?=(%cult -.u.val) (some p.u.val))
       %set   ?>(?=(%set -.u.val) (some p.u.val))
     ==
-  ::  +ges: get specialized to set
+  ::  +ges: get specialized to typed set
   ::
   ++  ges
     |*  [key=@tas typ=value-type]
     ^-  (unit (set $>(_typ value)))
     =/  val=(unit value)  (~(get by c) key)
     ?~  val  ~
-    ~|  "set expected at {<key>}"
-    ?>  ?=(%set -.u.val)
+    ?.  ?=(%set -.u.val)
+      ~|  "set expected at {<key>}"  !!
     %-  some
     %-  ~(run in p.u.val)
       ?-  typ
@@ -42,14 +42,14 @@
         %cult  |=(v=value ?>(?=(%cult -.v) v))
         %set   |=(v=value ?>(?=(%set -.v) v))
       ==
-  ::  +gos: got specialized to set
+  ::  +gos: got specialized to typed set
   ::
   ++  gos
     |*  [key=@tas typ=value-type]
     ^-  (set $>(_typ value))
     =/  val=value  (~(got by c) key)
-    ~|  "set expected at {<key>}"
-    ?>  ?=(%set -.val)
+    ?.  ?=(%set -.val)
+      ~|  "set expected at {<key>}"  !!
     %-  ~(run in p.val)
       ?-  typ
         %text  |=(v=value ?>(?=(%text -.v) v))
@@ -60,7 +60,7 @@
         %cult  |=(v=value ?>(?=(%cult -.v) v))
         %set   |=(v=value ?>(?=(%set -.v) v))
       ==
-  ::  +gut: got with default
+  ::  +gut: typed gut with default
   ::
   ++  gut
     |*  [key=@tas def=value]
@@ -78,7 +78,7 @@
       %cult  ?>(?=(%cult -.def) p.val)
       %set   ?>(?=(%set -.def) p.val)
     ==
-  ::  +gub: got with bunt default
+  ::  +gub: typed gut with bunt default
   ::
   ++  gub
     |*  [key=@tas typ=value-type]
@@ -94,6 +94,7 @@
         %cult  *flag:g
         %set   *(set value)
       ==
+    ~|  "{<typ>} expected at {<key>}"
     ?-  typ
       %text  ?>(?=(%text -.val) p.val)
       %date  ?>(?=(%date -.val) p.val)
@@ -106,7 +107,7 @@
   --
 ::
 ++  do-edit-0
-  |=  [c=contact-0:legacy:legacy f=field-0:legacy]
+  |=  [c=contact-0:legacy f=field-0:legacy]
   ^+  c
   ?-  -.f
     %nickname   c(nickname nickname.f)
@@ -130,18 +131,21 @@
   ::
     %del-group  c(groups (~(del in groups.c) flag.f))
   ==
+::  +sane-contact: verify contact sanity
+::
+::  - restrict size of the jammed noun to 1kB
+::  - prohibit 'data:' URLs in image data
 ::
 ++  sane-contact
   |=  con=contact
   ^-  ?
-  ::  1kB contact should be enough for everyone
+  ::  1kB contact ought to be enough for anybody
   ::
   ?:  (gth (met 3 (jam con)) 1.000)
     |
   ::  prohibit data URLs in the image links
   ::
   =+  avatar=(~(get cy con) %avatar %text)
-  ::  XX restrict also on 
   ?:  ?&  ?=(^ avatar)
           =('data:' (end 3^5 u.avatar))
       ==
@@ -152,14 +156,17 @@
       ==
     |
   &
+::  +do-edit: edit contact
+::
+::  edit .con with .mod contact map.
+::  unifies the two maps, and deletes any resulting fields
+::  that are null.
 ::
 ++  do-edit
-  |=  [con=contact edit=(map @tas value)]
+  |=  [con=contact mod=(map @tas value)]
   ^+  con
-  =/  don  (~(uni by con) edit)
+  =/  don  (~(uni by con) mod)
   =/  del=(list @tas)
-    ::  XX accumulate new map?
-    ::
     %-  ~(rep by don)
     |=  [[key=@tas val=value] acc=(list @tas)]
     ?.  ?=(~ val)  acc
@@ -168,9 +175,8 @@
     %+  roll  del
     |=  [key=@tas acc=_don]
     (~(del by don) key)
-  ?>  (sane-contact don)
   don
-::  +to-contact: convert contact-0:legacy:legacy
+::  +to-contact: convert legacy to contact
 ::
 ++  to-contact
   |=  c=contact-0:legacy
@@ -194,14 +200,14 @@
     |=  =flag:g
     cult/flag
   o
-::  +to-contact-0: convert contact
+::  +to-contact-0: convert to legacy contact-0
 ::
 ++  to-contact-0
   |=  c=contact
   ^-  $@(~ contact-0:legacy)
   ?~  c  ~
   =|  o=contact-0:legacy
-  %=  o
+  %_  o
     nickname
       (~(gub cy c) %nickname %text)
     bio
@@ -211,10 +217,8 @@
     color
       (~(gub cy c) %color %tint)
     avatar
-      :: XX prohibit data: link
       (~(get cy c) %avatar %text)
     cover
-      :: XX prohibit data: link
       (~(get cy c) %cover %text)
     groups
       =/  groups
@@ -226,49 +230,53 @@
       ?>  ?=(%cult -.val)
       p.val
   ==
-::  +contact-mod: merge contacts
+::  +contact-uni: merge contacts
 ::
-++  contact-mod
+++  contact-uni
   |=  [c=contact mod=contact]
   ^-  contact
   (~(uni by c) mod)
-::  +to-profile: convert profile-0:legacy
+::  +to-profile: convert legacy to profile
 ::
 ++  to-profile
   |=  o=profile-0:legacy
   ^-  profile
   [wen.o ?~(con.o ~ (to-contact con.o))]
-::  +to-profile-0:legacy: convert profile
+::  +to-profile-0: convert to legacy profile-0
 ::
 ++  to-profile-0
   |=  p=profile
   ^-  profile-0:legacy
   [wen.p (to-contact-0 con.p)]
+::  +to-profile-0-mod: convert to legacy profile-0 with
+::  contact overlay
 ::
 ++  to-profile-0-mod
   |=  [p=profile mod=contact]
   ^-  profile-0:legacy
-  [wen.p (to-contact-0 (contact-mod con.p mod))]
+  [wen.p (to-contact-0 (contact-uni con.p mod))]
+::  +to-foreign-0: convert to legacy foreign-0
 ::
 ++  to-foreign-0
   |=  f=foreign
   ^-  foreign-0:legacy
   [?~(for.f ~ (to-profile-0 for.f)) sag.f]
-::  +to-foreign-0-mod: convert foreign with contact overlay
+::  +to-foreign-0-mod: convert to legacy foreign-0 
+::  with contact overlay
 ::
 ++  to-foreign-0-mod
   |=  [f=foreign mod=contact]
   ^-  foreign-0:legacy
   [?~(for.f ~ (to-profile-0-mod for.f mod)) sag.f]
-::  +foreign-mod: fuse peer contact with overlay
+::  +foreign-mod: modify foreign profile with user overlay
 ::
 ++  foreign-mod
   |=  [far=foreign mod=contact]
   ^-  foreign
   ?~  for.far
     far
-  far(con.for (contact-mod con.for.far mod))
-::  +foreign-contact: grab foreign contact
+  far(con.for (contact-uni con.for.far mod))
+::  +foreign-contact: get foreign contact
 ::
 ++  foreign-contact
   |=  far=foreign
@@ -278,57 +286,60 @@
 +$  sole-field-0
   $~  nickname+''
   $<(?(%add-group %del-group) field-0:legacy)
+::  +to-sole-edit: convert legacy sole field to contact edit
 ::
-++  to-sole-edit-1
+::  modify any field except for groups
+::
+++  to-sole-edit
   |=  edit-0=(list sole-field-0)
   ^-  contact
   %+  roll  edit-0
     |=  $:  fed=sole-field-0
             acc=(map @tas value)
         ==
-    ::  XX under a single ~put ?
     ^+  acc
     ?-  -.fed
-        ::
+      ::
         %nickname
       %+  ~(put by acc)
         %nickname
       text/nickname.fed
-        ::
+      ::
         %bio
       %+  ~(put by acc)
         %bio
       text/bio.fed
-        ::
+      ::
         %status
       %+  ~(put by acc)
         %status
       text/status.fed
-        ::
+      ::
         %color
       %+  ~(put by acc)
         %color
       tint/color.fed
-        ::
+      ::
         %avatar
       ?~  avatar.fed  acc
       %+  ~(put by acc)
         %avatar
       look/u.avatar.fed
-        ::
+      ::
         %cover
       ?~  cover.fed  acc
       %+  ~(put by acc)
         %cover
       look/u.cover.fed
     ==
+::  +to-self-edit: convert legacy to self edit
 ::
-++  to-edit-1
+++  to-self-edit
   |=  [edit-0=(list field-0:legacy) groups=(set value)]
   ^-  contact
-  ::  translating v0 profile edit to v1 %self is non-trivial:
+  ::  converting v0 profile edit to v1 is non-trivial.
   ::  for field edits other than groups, we derive a contact
-  ::  edit map. for group operations (%add-group, %del-group)
+  ::  edition map. for group operations (%add-group, %del-group)
   ::  we need to operate directly on (existing?) groups field in
   ::  the profile.
   ::
@@ -338,8 +349,7 @@
   =*  group-type  ?(%add-group %del-group)
   =*  sole-edits  (list $<(group-type field-0:legacy))
   =*  group-edits  (list $>(group-type field-0:legacy))
-  ::  sift v0 edits
-  ::  XX tall structure mode?
+  ::  sift edits
   ::
   =/  [sid=sole-edits gid=group-edits]
     ::
@@ -353,7 +363,7 @@
       gid
     :-  sid
     [f gid]
-  ::  edit groups
+  ::  edit favourite groups
   ::
   =.  groups
     %+  roll  gid
@@ -362,12 +372,16 @@
       %add-group
     (~(put in groups) cult/flag.ged)
       %del-group
-    ~|  "group {<flag.ged>} not found"
     (~(del in groups) cult/flag.ged)
     ==
-  %-  ~(uni by (to-sole-edit-1 sid))
+  %-  ~(uni by (to-sole-edit sid))
   ^-  contact
   [%groups^set/groups ~ ~]
+::  +to-action: convert legacy to action
+::
+::  convert any action except %edit.
+::  %edit must be handled separately, since we need
+::  access to existing groups to be able to process group edits.
 ::
 ++  to-action
   |=  o=$<(%edit action-0:legacy)
@@ -381,6 +395,7 @@
     %drop  [%drop p.o]
     %snub  [%snub p.o]
   ==
+::  +mono: tick time
 ::
 ++  mono
   |=  [old=@da new=@da]

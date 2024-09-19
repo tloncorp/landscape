@@ -3,8 +3,10 @@
 /+  c=contacts
 /=  contacts-agent  /app/contacts
 =*  agent  contacts-agent
-::  XX consider structuring tests better
-::  with functional 'micro' strands
+::  XX consider simplifying tests 
+::  with functional 'micro' strands, that set
+::  a contact, subscribe to a peer etc.
+::
 |%
 +|  %help
 ++  tick  ^~((rsh 3^2 ~s1))
@@ -319,8 +321,8 @@
   =/  =cage  (need (need peek))
   ;<  ~  b
     %+  ex-equal
-    !>  [%contact-page-1 q.cage]
-    !>  [%contact-page-1 !>(mypage)]
+    !>  [%contact-page-0 q.cage]
+    !>  [%contact-page-0 !>(mypage)]
   ::  fail to create duplicate page
   ::
   %-  ex-fail  (do-poke contact-action-1+!>([%page 0v1 con-1]))
@@ -370,8 +372,8 @@
   ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/book/id/0v1)
   =/  =cage  (need (need peek))
   %+  ex-equal
-  !>  [%contact-page-1 q.cage]
-  !>  [%contact-page-1 !>(mypage)]
+  !>  [%contact-page-0 q.cage]
+  !>  [%contact-page-0 !>(mypage)]
   ::  delete favourite groups
   ::
 ::
@@ -479,14 +481,14 @@
   ;<  ~  b
     %+  ex-equal
     !>  cag
-    !>  [%contact-page-1 !>(`page:c`[con-sun con-mod])]
+    !>  [%contact-page-0 !>(`page:c`[con-sun con-mod])]
   ::  and his effective contact is changed
   ::
   ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/contact/~sun)
   =/  cag=cage  (need (need peek))
   %+  ex-equal
   !>  cag
-  !>  contact-1+!>((contact-mod:c con-sun con-mod))
+  !>  contact-1+!>((contact-uni:c con-sun con-mod))
 ::
 ++  test-poke-spot-wipe
   %-  eval-mare
@@ -561,7 +563,7 @@
   ;<  ~  b
     %+  ex-equal
     !>  cag
-    !>  [%contact-page-1 !>(`page:c`[con-sun con-mod])]
+    !>  [%contact-page-0 !>(`page:c`[con-sun con-mod])]
   ::  and his effective contact is changed
   ::
   ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/contact/~sun)
@@ -569,7 +571,7 @@
   ;<  ~  b
     %+  ex-equal
     !>  cag
-    !>  contact-1+!>((contact-mod:c con-sun con-mod))
+    !>  contact-1+!>((contact-uni:c con-sun con-mod))
   ::  ~sun contact page is deleted
   ::
   ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%wipe ~[~sun]]))
@@ -672,8 +674,16 @@
   =/  cag=cage  (need (need peek))
   %+  ex-equal
   !>  cag
-  !>  contact-page-1+!>(`page:c`[con-sun con-mod])
+  !>  contact-page-0+!>(`page:c`[con-sun con-mod])
+::  +test-poke-snub: test snubbing a peer
 ::
+::    scenario
+::
+::  we heve a local subscriber to /news. we meet
+::  a peer ~sun. ~sun publishes his contact. subsequently,
+::  ~sun is added to the contact book. we now snub ~sun.
+::  ~sun is still found in peers.
+::  
 ++  test-poke-snub
   %-  eval-mare
   =/  m  (mare ,~)
@@ -686,10 +696,9 @@
     %-  malt
     ^-  (list (pair @tas value))
     ~[nickname+text/'Sun' bio+text/'It is bright today']
-  ::  local subscriber to /news
   ::
   ;<  ~  b  (set-src our.bowl)
-  ;<  caz=(list card)  b  (do-watch /news)
+  ;<  caz=(list card)  b  (do-watch /v1/news)
   ::  meet ~sun
   ::
   ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%meet ~[~sun]]))
@@ -703,14 +712,6 @@
     :~  (ex-fact ~[/news] contact-news+!>([~sun (to-contact-0:c con-sun)]))
         (ex-fact ~[/v1/news] contact-news-1+!>([%peer ~sun con-sun]))
     ==
-  ::  ~sun is added to contacts
-  ::
-  ;<  ~  b  (set-src our.bowl)
-  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%spot ~sun ~]))
-  ;<  ~  b
-    %+  ex-cards  caz
-    :~  (ex-fact ~[/v1/news] contact-news-1+!>([%page ~sun con-sun ~]))
-    ==
   ::  ~sun is snubbed
   ::
   ;<  ~  b  (set-src our.bowl)
@@ -719,23 +720,6 @@
     %+  ex-cards  caz
     :~  (ex-task /contact [~sun %contacts] %leave ~)
     ==
-  ::  ~sun modifies his contact
-  ::
-  =/  con-mod=contact
-    %-  malt
-    ^-  (list (pair @tas value))
-    ~[nickname+text/'Bright Sun' avatar+text/'https://sun.io/sun.png']
-  ;<  ~  b  (set-src ~sun)
-  ::  fact fails: no subscription
-  ::  XX extend test-agent to allow this test
-  :: ;<  ~  b  %-  ex-fail
-  ::   %-  do-agent
-  ::   :*  /contact
-  ::       [~sun %contacts]
-  ::       %fact
-  ::       %contact-update
-  ::       !>([%full now.bowl (~(uni by con-sun) con-mod)])
-  ::   ==
   ::  ~sun is still found in peers
   ::
   ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/peer/~sun)
@@ -744,7 +728,76 @@
   !>  cag
   !>  contact-foreign-1+!>(`foreign`[[now.bowl con-sun] ~])
 ::
++|  %peer
+::  +test-peer-profile
+::
+::    scenario
+::
+::  ~sun subscribes to our /contact. we publish
+::  our profile with current time-a. we then change
+::  the profile, advancing the timestamp to time-b.
+::  ~sun now subscribes to /contact/at/time-b.
+::  no update is sent.
+::
+++  test-peer-profile
+  %-  eval-mare
+  =/  m  (mare ,~)
+  =*  b  bind:m
+  ^-  form:m
+  ;<  caz=(list card)  b  (do-init %contacts contacts-agent)
+  ;<  =bowl  b  get-bowl
+  ::
+  =/  con=contact
+    %-  malt
+    ^-  (list (pair @tas value))
+    ~[nickname+text/'Dev' bio+text/'Let\'s build']
+  ::  edit our profile
+  ::
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%self con]))
+  ;<  ~  b
+    %+  ex-cards  caz
+    :~  (ex-fact ~[/news] contact-news+!>([our.bowl (to-contact-0:c con)]))
+        (ex-fact ~[/v1/news] contact-news-1+!>([%self con]))
+        (ex-fact ~ contact-update-1+!>([%full now.bowl con]))
+    ==
+  ::  ~sun subscribes to /contact, profile is published
+  ::
+  ;<  ~  b  (set-src ~sun)
+  ;<  caz=(list card)  b  (do-watch /v1/contact)
+  ;<  ~  b  %+  ex-cards  caz
+    :~  (ex-fact ~ contact-update-1+!>([%full now.bowl con]))
+    ==
+  ::  we update our profile, which advances the timestamp.
+  ::  update is published.
+  ::
+  =+  now=(add now.bowl tick)
+  =.  con  (~(put by con) birthday+date/~2000.1.1)
+  ;<  ~  b  (set-src our.bowl)
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%self con]))
+  ;<  ~  b
+    %+  ex-cards  caz
+    :~  (ex-fact ~[/news] contact-news+!>([our.bowl (to-contact-0:c con)]))
+        (ex-fact ~[/v1/news] contact-news-1+!>([%self con]))
+        (ex-fact ~[/v1/contact] contact-update-1+!>([%full now con]))
+    ==
+  ::  ~sun resubscribes to /contact/at/old-now
+  ::  update is sent
+  ::
+  ;<  ~  b  (set-src ~sun)
+  ;<  caz=(list card)  b  (do-watch /v1/contact/at/(scot %da now.bowl))
+  ;<  ~  b  
+    %+  ex-cards  caz
+    :~  (ex-fact ~ contact-update-1+!>([%full now con]))
+    ==
+  ::  ~sun subscribes to /contact/at/(add now.bowl tick).
+  ::  no update is sent - already at latest
+  ::
+  ;<  ~  b  (set-src ~sun)
+  ;<  caz=(list card)  b  (do-watch /v1/contact/at/(scot %da now))
+  %+  ex-cards  caz  ~
+::
 +|  %peek
+::
 ++  test-peek-0-all
   %-  eval-mare
   =/  m  (mare ,~)
@@ -780,7 +833,7 @@
   ;<  peek=(unit (unit cage))  b  (get-peek /x/all)
   =/  cag=cage  (need (need peek))
   ?>  ?=(%contact-rolodex p.cag)
-  =/  rol  !<(rolodex-0:legacy q.cag)
+  =/  rol  !<(rolodex:legacy q.cag)
   ;<  ~  b
     %+  ex-equal
     !>  (~(got by rol) ~sun)
@@ -813,7 +866,7 @@
   ::
   ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/book)
   =/  cag=cage  (need (need peek))
-  ?>  ?=(%contact-book-1 p.cag)
+  ?>  ?=(%contact-book-0 p.cag)
   =/  =book  !<(book q.cag)
   ;<  ~  b
     %+  ex-equal
@@ -864,12 +917,12 @@
   ::
   ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/all)
   =/  cag=cage  (need (need peek))
-  ?>  ?=(%contact-directory-1 p.cag)
+  ?>  ?=(%contact-directory-0 p.cag)
   =/  dir  !<(directory q.cag)
   ;<  ~  b
     %+  ex-equal
     !>  (~(got by dir) ~sun)
-    !>  (contact-mod:c con-sun con-mod)
+    !>  (contact-uni:c con-sun con-mod)
   %+  ex-equal
   !>  (~(got by dir) ~mur)
   !>  con-mur

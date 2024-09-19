@@ -1,19 +1,5 @@
 /-  e=epic, g=groups
 |%
-::  [compat] protocol-versioning scheme
-::
-::    adopted from :groups, slightly modified.
-::
-::    for our action/update marks, we
-::      - *must* support our version (+okay)
-::      - *should* support previous versions (especially actions)
-::      - but *can't* support future versions
-::
-::    in the case of updates at unsupported protocol versions,
-::    we backoff and subscribe for version changes (/epic).
-::    (this alone is unlikely to help with future versions,
-::    but perhaps our peer will downgrade. in the meantime,
-::    we wait to be upgraded.)
 ::
 +|  %compat
 ++  okay  `epic`1
@@ -30,6 +16,7 @@
   --
 ::
 +|  %types
+::  $value-type: contact field value type
 ::
 +$  value-type
   $?  %text
@@ -39,12 +26,13 @@
       %cult
       %set
   ==
-::    $value: contact field value
+::  $value: contact field value
 ::
 +$  value
   $+  contact-value
   $@  ~
   $%  [%text p=@t]
+      :: [%quot p=@ud]
       [%date p=@da]
       ::
       ::  color
@@ -79,40 +67,40 @@
   ?.  =(typ -.n.set)
     |
   &
-::    $contact: contact data
+::  $contact: contact data
 ::
 +$  contact  (map @tas value)
-::    $profile: contact profile
+::  $profile: contact profile
 ::
 ::  .wen: last updated
 ::  .con: contact
 ::
 +$  profile  [wen=@da con=contact]
-::    $foreign: foreign profile
+::  $foreign: foreign profile
 ::
 ::  .for: profile
 ::  .sag: connection status
 ::
 +$  foreign  [for=$@(~ profile) sag=$@(~ saga)]
-::    $page: contact page
+::  $page: contact page
 ::
 ::  .p: peer contact
 ::  .q: user overlay
 ::
 +$  page  (pair contact contact)
-::    $cid: contact page id
+::  $cid: contact page id
 ::
 +$  cid  @uvF
-::    $kip: contact book key
+::  $kip: contact book key
 ::
 +$  kip  $@(ship [%id cid])
-::    $book: contact book
+::  $book: contact book
 ::
 +$  book  (map kip page)
-::    $directory: merged contacts
+::  $directory: merged contacts
 ::
 +$  directory  (map ship contact)
-::    $peers: network peers
+::  $peers: network peers
 ::
 +$  peers  (map ship foreign)
 ::
@@ -150,7 +138,7 @@
 +$  update
   $%  [%full profile]
   ==
-::    $news: local update
+::  $news: local update
 ::
 ::  %self: profile update
 ::  %page: contact page update
@@ -164,6 +152,7 @@
       [%peer who=ship con=contact]
   ==
 +|  %legacy
+::  XX move to /sur/contacts-0.hoon?
 ::
 ++  legacy
   |%
@@ -179,7 +168,7 @@
   ::
   +$  foreign-0  [for=$@(~ profile-0) sag=$@(~ saga-0)]
   +$  profile-0  [wen=@da con=$@(~ contact-0)]
-  +$  rolodex-0  (map ship foreign-0)
+  +$  rolodex  (map ship foreign-0)
   ::
   +$  saga-0
     $@  $?  %want    ::  subscribing
