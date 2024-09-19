@@ -15,6 +15,7 @@
     ~|  "{<typ>} expected at {<key>}"
     ?-  typ
       %text  ?>(?=(%text -.u.val) (some p.u.val))
+      %quot  ?>(?=(%quot -.u.val) (some p.u.val))
       %date  ?>(?=(%date -.u.val) (some p.u.val))
       %tint  ?>(?=(%tint -.u.val) (some p.u.val))
       %ship  ?>(?=(%ship -.u.val) (some p.u.val))
@@ -35,6 +36,7 @@
     %-  ~(run in p.u.val)
       ?-  typ
         %text  |=(v=value ?>(?=(%text -.v) v))
+        %quot  |=(v=value ?>(?=(%quot -.v) v))
         %date  |=(v=value ?>(?=(%date -.v) v))
         %tint  |=(v=value ?>(?=(%tint -.v) v))
         %ship  |=(v=value ?>(?=(%ship -.v) v))
@@ -53,6 +55,7 @@
     %-  ~(run in p.val)
       ?-  typ
         %text  |=(v=value ?>(?=(%text -.v) v))
+        %quot  |=(v=value ?>(?=(%quot -.v) v))
         %date  |=(v=value ?>(?=(%date -.v) v))
         %tint  |=(v=value ?>(?=(%tint -.v) v))
         %ship  |=(v=value ?>(?=(%ship -.v) v))
@@ -71,6 +74,7 @@
     ~|  "{<-.def>} expected at {<key>}"
     ?-  -.val
       %text  ?>(?=(%text -.def) p.val)
+      %quot  ?>(?=(%quot -.def) p.val)
       %date  ?>(?=(%date -.def) p.val)
       %tint  ?>(?=(%tint -.def) p.val)
       %ship  ?>(?=(%ship -.def) p.val)
@@ -87,6 +91,7 @@
     ?~  val
       ?+  typ  !!
         %text  *@t
+        %quot  *@ud
         %date  *@da
         %tint  *@ux
         %ship  *@p
@@ -97,6 +102,7 @@
     ~|  "{<typ>} expected at {<key>}"
     ?-  typ
       %text  ?>(?=(%text -.val) p.val)
+      %quot  ?>(?=(%quot -.val) p.val)
       %date  ?>(?=(%date -.val) p.val)
       %tint  ?>(?=(%tint -.val) p.val)
       %ship  ?>(?=(%ship -.val) p.val)

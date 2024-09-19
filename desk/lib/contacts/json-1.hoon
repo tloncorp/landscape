@@ -25,6 +25,7 @@
     ^-  json
     ?-  -.val
       %text  (pairs type+s/%text value+s/p.val ~)
+      %quot  (pairs type+s/%quot value+(numb p.val) ~)
       %date  (pairs type+s/%date value+s/(scot %da p.val) ~)
       %tint  (pairs type+s/%tint value+s/(rsh 3^2 (scot %ux p.val)) ~)
       %ship  (pairs type+s/%ship value+(ship p.val) ~)
@@ -117,6 +118,7 @@
       (ot text+(se %tas) value+json ~)
     ?+  type  !!
       %text  %.  val  (ta %text so)
+      %quot  %.  val  (ta %quot ni)
       %date  %.  val  (ta %date (se %da))
       %tint  %.  val
              %+  ta  %tint

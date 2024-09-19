@@ -19,10 +19,10 @@
 +$  card     card:agent:gall
 +$  state-1  [%1 rof=$@(~ profile) =book =peers]
 --
-:: %-  %^  agent:neg
-::       notify=|
-::       [~.contacts^%1 ~ ~]
-::       [~.contacts^[~.contacts^%1 ~ ~] ~ ~]
+%-  %^  agent:neg
+      notify=|
+      [~.contacts^%1 ~ ~]
+      [~.contacts^[~.contacts^%1 ~ ~] ~ ~]
 %-  agent:dbug
 %+  verb  |
 ^-  agent:gall

@@ -20,6 +20,7 @@
 ::
 +$  value-type
   $?  %text
+      %quot
       %date
       %tint
       %look
@@ -32,7 +33,7 @@
   $+  contact-value
   $@  ~
   $%  [%text p=@t]
-      :: [%quot p=@ud]
+      [%quot p=@ud]
       [%date p=@da]
       ::
       ::  color
