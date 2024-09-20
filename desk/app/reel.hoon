@@ -150,9 +150,6 @@
     =.  open-describes  (~(put in open-describes) nonce)
     =.  stable-id  (~(put by stable-id) id nonce)
     :_  this
-    %+  welp
-      ?~  old-token  ~
-      ~[[%pass /undescribe %agent [civ %bait] %poke %bait-undescribe !>(u.old-token)]]
     ~[[%pass /describe %agent [civ %bait] %poke %bait-describe !>([nonce metadata])]]
   ::
       %reel-confirmation
