@@ -25,12 +25,12 @@
     ^-  json
     ?-  -.val
       %text  (pairs type+s/%text value+s/p.val ~)
-      %quot  (pairs type+s/%quot value+(numb p.val) ~)
+      %numb  (pairs type+s/%numb value+(numb p.val) ~)
       %date  (pairs type+s/%date value+s/(scot %da p.val) ~)
       %tint  (pairs type+s/%tint value+s/(rsh 3^2 (scot %ux p.val)) ~)
       %ship  (pairs type+s/%ship value+(ship p.val) ~)
       %look  (pairs type+s/%look value+s/p.val ~)
-      %cult  (pairs type+s/%cult value+s/(flag:enjs:gj p.val) ~)
+      %flag  (pairs type+s/%flag value+s/(flag:enjs:gj p.val) ~)
       %set   (pairs type+s/%set value+a/(turn ~(tap in p.val) value) ~)
     ==
   ::
@@ -42,7 +42,7 @@
   ++  page
     |=  =page:c
     ^-  json
-    a+[(contact p.page) (contact q.page) ~]
+    a+[(contact con.page) (contact mod.page) ~]
   ::
   ++  book
     |=  =book:c
@@ -64,8 +64,8 @@
     |=  [[who=@p con=contact:c] acc=_dir]
     (~(put by acc) (scot %p who) (contact con))
   ::
-  ++  news
-    |=  n=news:c
+  ++  response
+    |=  n=response:c
     ^-  json
     ?-  -.n
       %self  (frond self+(contact con.n))
@@ -118,7 +118,7 @@
       (ot text+(se %tas) value+json ~)
     ?+  type  !!
       %text  %.  val  (ta %text so)
-      %quot  %.  val  (ta %quot ni)
+      %numb  %.  val  (ta %numb ni)
       %date  %.  val  (ta %date (se %da))
       %tint  %.  val
              %+  ta  %tint
@@ -127,7 +127,7 @@
              so
       %ship  %.  val  (ta %ship ship)
       %look  %.  val  (ta %look so)
-      %cult  %.  val  (ta %cult flag:dejs:gj)
+      %flag  %.  val  (ta %flag flag:dejs:gj)
       %set   %.  val  (ta %set (as value))
     ==
   ::

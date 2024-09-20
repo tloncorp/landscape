@@ -1,5 +1,7 @@
-/-  *contacts
+/-  *contacts, legacy=contacts-0
 |%
+::
++|  %contact
 ::  +cy: contact map engine
 ::
 ++  cy
@@ -15,12 +17,12 @@
     ~|  "{<typ>} expected at {<key>}"
     ?-  typ
       %text  ?>(?=(%text -.u.val) (some p.u.val))
-      %quot  ?>(?=(%quot -.u.val) (some p.u.val))
+      %numb  ?>(?=(%numb -.u.val) (some p.u.val))
       %date  ?>(?=(%date -.u.val) (some p.u.val))
       %tint  ?>(?=(%tint -.u.val) (some p.u.val))
       %ship  ?>(?=(%ship -.u.val) (some p.u.val))
       %look  ?>(?=(%look -.u.val) (some p.u.val))
-      %cult  ?>(?=(%cult -.u.val) (some p.u.val))
+      %flag  ?>(?=(%flag -.u.val) (some p.u.val))
       %set   ?>(?=(%set -.u.val) (some p.u.val))
     ==
   ::  +ges: get specialized to typed set
@@ -36,12 +38,12 @@
     %-  ~(run in p.u.val)
       ?-  typ
         %text  |=(v=value ?>(?=(%text -.v) v))
-        %quot  |=(v=value ?>(?=(%quot -.v) v))
+        %numb  |=(v=value ?>(?=(%numb -.v) v))
         %date  |=(v=value ?>(?=(%date -.v) v))
         %tint  |=(v=value ?>(?=(%tint -.v) v))
         %ship  |=(v=value ?>(?=(%ship -.v) v))
         %look  |=(v=value ?>(?=(%look -.v) v))
-        %cult  |=(v=value ?>(?=(%cult -.v) v))
+        %flag  |=(v=value ?>(?=(%flag -.v) v))
         %set   |=(v=value ?>(?=(%set -.v) v))
       ==
   ::  +gos: got specialized to typed set
@@ -55,12 +57,12 @@
     %-  ~(run in p.val)
       ?-  typ
         %text  |=(v=value ?>(?=(%text -.v) v))
-        %quot  |=(v=value ?>(?=(%quot -.v) v))
+        %numb  |=(v=value ?>(?=(%numb -.v) v))
         %date  |=(v=value ?>(?=(%date -.v) v))
         %tint  |=(v=value ?>(?=(%tint -.v) v))
         %ship  |=(v=value ?>(?=(%ship -.v) v))
         %look  |=(v=value ?>(?=(%look -.v) v))
-        %cult  |=(v=value ?>(?=(%cult -.v) v))
+        %flag  |=(v=value ?>(?=(%flag -.v) v))
         %set   |=(v=value ?>(?=(%set -.v) v))
       ==
   ::  +gut: typed gut with default
@@ -74,12 +76,12 @@
     ~|  "{<-.def>} expected at {<key>}"
     ?-  -.val
       %text  ?>(?=(%text -.def) p.val)
-      %quot  ?>(?=(%quot -.def) p.val)
+      %numb  ?>(?=(%numb -.def) p.val)
       %date  ?>(?=(%date -.def) p.val)
       %tint  ?>(?=(%tint -.def) p.val)
       %ship  ?>(?=(%ship -.def) p.val)
       %look  ?>(?=(%look -.def) p.val)
-      %cult  ?>(?=(%cult -.def) p.val)
+      %flag  ?>(?=(%flag -.def) p.val)
       %set   ?>(?=(%set -.def) p.val)
     ==
   ::  +gub: typed gut with bunt default
@@ -91,23 +93,23 @@
     ?~  val
       ?+  typ  !!
         %text  *@t
-        %quot  *@ud
+        %numb  *@ud
         %date  *@da
         %tint  *@ux
         %ship  *@p
         %look  *@t
-        %cult  *flag:g
+        %flag  *flag:g
         %set   *(set value)
       ==
     ~|  "{<typ>} expected at {<key>}"
     ?-  typ
       %text  ?>(?=(%text -.val) p.val)
-      %quot  ?>(?=(%quot -.val) p.val)
+      %numb  ?>(?=(%numb -.val) p.val)
       %date  ?>(?=(%date -.val) p.val)
       %tint  ?>(?=(%tint -.val) p.val)
       %ship  ?>(?=(%ship -.val) p.val)
       %look  ?>(?=(%look -.val) p.val)
-      %cult  ?>(?=(%cult -.val) p.val)
+      %flag  ?>(?=(%flag -.val) p.val)
       %set   ?>(?=(%set -.val) p.val)
     ==
   --
@@ -145,9 +147,9 @@
 ++  sane-contact
   |=  con=contact
   ^-  ?
-  ::  1kB contact ought to be enough for anybody
+  ::  5kB contact ought to be enough for anybody
   ::
-  ?:  (gth (met 3 (jam con)) 1.000)
+  ?:  (gth (met 3 (jam con)) 10.000)
     |
   ::  prohibit data URLs in the image links
   ::
@@ -182,98 +184,115 @@
     |=  [key=@tas acc=_don]
     (~(del by don) key)
   don
-::  +to-contact: convert legacy to contact
+::  +to: legacy to new type
 ::
-++  to-contact
-  |=  c=contact-0:legacy
-  ^-  contact
-  =/  o=contact
-    %-  malt
-    ^-  (list (pair @tas value))
-    :~  nickname+text/nickname.c
-        bio+text/bio.c
-        status+text/status.c
-        color+tint/color.c
+++  to
+  |%
+  ::  +contact: convert legacy to contact
+  ::
+  ++  contact
+    |=  o=contact-0:legacy
+    ^-  ^contact
+    =/  c=^contact
+      %-  malt
+      ^-  (list (pair @tas value))
+      :~  nickname+text/nickname.o
+          bio+text/bio.o
+          status+text/status.o
+          color+tint/color.o
+      ==
+    =?  c  ?=(^ avatar.o)
+      (~(put by c) %avatar text/u.avatar.o)
+    =?  c  ?=(^ cover.o)
+      (~(put by c) %cover text/u.cover.o)
+    =?  c  !?=(~ groups.o)
+      %+  ~(put by c)  %groups
+      :-  %set
+      %-  ~(run in groups.o)
+      |=  =flag:g
+      flag/flag
+    c
+  ::  +profile: convert legacy to profile
+  ::
+  ++  profile
+    |=  o=profile-0:legacy
+    ^-  ^profile
+    [wen.o ?~(con.o ~ (contact con.o))]
+  ::
+  --
+::  +from: legacy from new type
+:: 
+++  from
+  |%
+  ::  +contact: convert contact to legacy
+  ::
+  ++  contact
+    |=  c=^contact
+    ^-  $@(~ contact-0:legacy)
+    ?~  c  ~
+    =|  o=contact-0:legacy
+    %_  o
+      nickname
+        (~(gub cy c) %nickname %text)
+      bio
+        (~(gub cy c) %bio %text)
+      status
+        (~(gub cy c) %status %text)
+      color
+        (~(gub cy c) %color %tint)
+      avatar
+        (~(get cy c) %avatar %text)
+      cover
+        (~(get cy c) %cover %text)
+      groups
+        =/  groups
+          (~(get cy c) %groups %set)
+        ?~  groups  ~
+        ^-  (set flag:g)
+        %-  ~(run in u.groups)
+        |=  val=value
+        ?>  ?=(%flag -.val)
+        p.val
     ==
-  =?  o  ?=(^ avatar.c)
-    (~(put by o) %avatar text/u.avatar.c)
-  =?  o  ?=(^ cover.c)
-    (~(put by o) %cover text/u.cover.c)
-  =?  o  !?=(~ groups.c)
-    %+  ~(put by o)  %groups
-    :-  %set
-    %-  ~(run in groups.c)
-    |=  =flag:g
-    cult/flag
-  o
-::  +to-contact-0: convert to legacy contact-0
-::
-++  to-contact-0
-  |=  c=contact
-  ^-  $@(~ contact-0:legacy)
-  ?~  c  ~
-  =|  o=contact-0:legacy
-  %_  o
-    nickname
-      (~(gub cy c) %nickname %text)
-    bio
-      (~(gub cy c) %bio %text)
-    status
-      (~(gub cy c) %status %text)
-    color
-      (~(gub cy c) %color %tint)
-    avatar
-      (~(get cy c) %avatar %text)
-    cover
-      (~(get cy c) %cover %text)
-    groups
-      =/  groups
-        (~(get cy c) %groups %set)
-      ?~  groups  ~
-      ^-  (set flag:g)
-      %-  ~(run in u.groups)
-      |=  val=value
-      ?>  ?=(%cult -.val)
-      p.val
-  ==
+    ::  +profile: convert profile to legacy
+    ::
+    ++  profile
+      |=  p=^profile
+      ^-  profile-0:legacy
+      [wen.p (contact:from con.p)]
+    ::  +profile-0-mod: convert profile with contact overlay
+    ::  to legacy
+    ::
+    ++  profile-mod
+      |=  [p=^profile mod=^contact]
+      ^-  profile-0:legacy
+      [wen.p (contact:from (contact-uni con.p mod))]
+    ::  +foreign: convert foreign to legacy
+    ::
+    ++  foreign
+      |=  f=^foreign
+      ^-  foreign-0:legacy
+      [?~(for.f ~ (profile:from for.f)) sag.f]
+    ::  foreign-mod: convert foreign with contact overlay
+    ::  to legacy
+    ::
+    ++  foreign-mod
+      |=  [f=^foreign mod=^contact]
+      ^-  foreign-0:legacy
+      [?~(for.f ~ (profile-mod:from for.f mod)) sag.f]
+  --
 ::  +contact-uni: merge contacts
 ::
 ++  contact-uni
   |=  [c=contact mod=contact]
   ^-  contact
   (~(uni by c) mod)
-::  +to-profile: convert legacy to profile
+::  +foreign-contact: get foreign contact
 ::
-++  to-profile
-  |=  o=profile-0:legacy
-  ^-  profile
-  [wen.o ?~(con.o ~ (to-contact con.o))]
-::  +to-profile-0: convert to legacy profile-0
-::
-++  to-profile-0
-  |=  p=profile
-  ^-  profile-0:legacy
-  [wen.p (to-contact-0 con.p)]
-::  +to-profile-0-mod: convert to legacy profile-0 with
-::  contact overlay
-::
-++  to-profile-0-mod
-  |=  [p=profile mod=contact]
-  ^-  profile-0:legacy
-  [wen.p (to-contact-0 (contact-uni con.p mod))]
-::  +to-foreign-0: convert to legacy foreign-0
-::
-++  to-foreign-0
-  |=  f=foreign
-  ^-  foreign-0:legacy
-  [?~(for.f ~ (to-profile-0 for.f)) sag.f]
-::  +to-foreign-0-mod: convert to legacy foreign-0 
-::  with contact overlay
-::
-++  to-foreign-0-mod
-  |=  [f=foreign mod=contact]
-  ^-  foreign-0:legacy
-  [?~(for.f ~ (to-profile-0-mod for.f mod)) sag.f]
+++  foreign-contact
+  |=  far=foreign
+  ^-  contact
+  ?~(for.far ~ con.for.far)
 ::  +foreign-mod: modify foreign profile with user overlay
 ::
 ++  foreign-mod
@@ -282,12 +301,8 @@
   ?~  for.far
     far
   far(con.for (contact-uni con.for.far mod))
-::  +foreign-contact: get foreign contact
-::
-++  foreign-contact
-  |=  far=foreign
-  ^-  contact
-  ?~(for.far ~ con.for.far)
+::  +sole-field-0: sole field is a field that does
+::  not modify the groups set
 ::
 +$  sole-field-0
   $~  nickname+''
@@ -376,9 +391,9 @@
     |=  [ged=$>(group-type field-0:legacy) =_groups]
     ?-  -.ged
       %add-group
-    (~(put in groups) cult/flag.ged)
+    (~(put in groups) flag/flag.ged)
       %del-group
-    (~(del in groups) cult/flag.ged)
+    (~(del in groups) flag/flag.ged)
     ==
   %-  ~(uni by (to-sole-edit sid))
   ^-  contact

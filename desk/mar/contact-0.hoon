@@ -1,6 +1,6 @@
-/-  c=contacts
+/-  c=contacts, x=contacts-0
 /+  j=contacts-json-0
-|_  contact=contact-0:legacy:c
+|_  contact=contact-0:x
 ++  grad  %noun
 ++  grow
   |%
@@ -9,6 +9,6 @@
   --
 ++  grab
   |%
-  ++  noun  contact-0:legacy:c
+  ++  noun  contact-0:x
   --
 --

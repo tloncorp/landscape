@@ -44,8 +44,8 @@
     '{"type":"text","value":"the lazy fox"}'
     ::
     %+  jen-equal
-    (value:enjs:j quot+42)
-    '{"type":"quot","value":42}'
+    (value:enjs:j numb+42)
+    '{"type":"numb","value":42}'
     ::
     %+  jen-equal
     (value:enjs:j date+~2024.9.11)
@@ -64,13 +64,13 @@
     '{"type":"look","value":"https://ship.io/avatar.png"}'
     ::
     %+  jen-equal
-    (value:enjs:j [%cult [~sampel-palnet %circle]])
-    '{"type":"cult","value":"~sampel-palnet/circle"}'
+    (value:enjs:j [%flag [~sampel-palnet %circle]])
+    '{"type":"flag","value":"~sampel-palnet/circle"}'
     ::
     %+  jen-equal
     %-  value:enjs:j 
-      [%set (silt `(list value)`~[cult/[~sampel-palnet %circle] cult/[~sampel-pardux %square]])]
-    '{"type":"set","value":[{"type":"cult","value":"~sampel-palnet/circle"},{"type":"cult","value":"~sampel-pardux/square"}]}'
+      [%set (silt `(list value)`~[flag/[~sampel-palnet %circle] flag/[~sampel-pardux %square]])]
+    '{"type":"set","value":[{"type":"flag","value":"~sampel-palnet/circle"},{"type":"flag","value":"~sampel-pardux/square"}]}'
   ==
 ++  test-contact
   %+  jen-equal

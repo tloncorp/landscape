@@ -2,29 +2,20 @@
 |%
 ::
 +|  %compat
+::
 ++  okay  `epic`1
-++  mar
-  |%
-  ++  base
-    |%
-    +$  act  %contact-action
-    +$  upd  %contact-update
-    --
-  ::
-  ++  act  `mark`^~((rap 3 *act:base '-' (scot %ud okay) ~))
-  ++  upd  `mark`^~((rap 3 *upd:base '-' (scot %ud okay) ~))
-  --
 ::
 +|  %types
 ::  $value-type: contact field value type
 ::
 +$  value-type
   $?  %text
-      %quot
+      %numb
       %date
       %tint
+      %ship
       %look
-      %cult
+      %flag
       %set
   ==
 ::  $value: contact field value
@@ -33,7 +24,7 @@
   $+  contact-value
   $@  ~
   $%  [%text p=@t]
-      [%quot p=@ud]
+      [%numb p=@ud]
       [%date p=@da]
       ::
       ::  color
@@ -44,7 +35,7 @@
       [%look p=@ta]
       ::
       ::  group
-      [%cult p=flag:g]
+      [%flag p=flag:g]
       ::
       ::  uniform set
       [%set p=$|((set value) unis)]
@@ -57,17 +48,10 @@
   ?~  set  &
   =/  typ  -.n.set
   |-
-  ?^  l.set
-    ?.  =(typ -.n.l.set)
-      |
-    $(set l.set)
-  ?^  r.set
-    ?.  =(typ -.n.r.set)
-      |
-    $(set r.set)
-  ?.  =(typ -.n.set)
-    |
-  &
+  ?&  =(typ -.n.set)
+      ?~(l.set & $(set l.set))
+      ?~(r.set & $(set r.set))
+  ==
 ::  $contact: contact data
 ::
 +$  contact  (map @tas value)
@@ -85,10 +69,10 @@
 +$  foreign  [for=$@(~ profile) sag=$@(~ saga)]
 ::  $page: contact page
 ::
-::  .p: peer contact
-::  .q: user overlay
+::  .con: peer contact
+::  .mod: user overlay
 ::
-+$  page  (pair contact contact)
++$  page  [con=contact mod=contact]
 ::  $cid: contact page id
 ::
 +$  cid  @uvF
@@ -111,8 +95,8 @@
   $?  %want    ::  subscribing
       ~        ::  none intended
   ==
-::  %anon: delete the profile
-::  %self: edit the profile
+::  %anon: delete our profile
+::  %self: edit our profile
 ::  %page: create a new contact page
 ::  %spot: add peer as a contact
 ::  %edit: edit a contact overlay
@@ -146,73 +130,10 @@
 ::  %wipe: contact page delete
 ::  %peer: peer update
 ::
-+$  news
++$  response
   $%  [%self con=contact]
       [%page =kip con=contact mod=contact]
       [%wipe =kip]
       [%peer who=ship con=contact]
   ==
-+|  %legacy
-::  XX move to /sur/contacts-0.hoon?
-::
-++  legacy
-  |%
-  +$  contact-0
-    $:  nickname=@t
-        bio=@t
-        status=@t
-        color=@ux
-        avatar=(unit @t)
-        cover=(unit @t)
-        groups=(set flag:g)
-    ==
-  ::
-  +$  foreign-0  [for=$@(~ profile-0) sag=$@(~ saga-0)]
-  +$  profile-0  [wen=@da con=$@(~ contact-0)]
-  +$  rolodex  (map ship foreign-0)
-  ::
-  +$  saga-0
-    $@  $?  %want    ::  subscribing
-            %fail    ::  %want failed
-            %lost    ::  epic %fail
-            ~        ::  none intended
-        ==
-    saga:e
-  ::
-  +$  field-0
-    $%  [%nickname nickname=@t]
-        [%bio bio=@t]
-        [%status status=@t]
-        [%color color=@ux]
-        [%avatar avatar=(unit @t)]
-        [%cover cover=(unit @t)]
-        [%add-group =flag:g]
-        [%del-group =flag:g]
-    ==
-  ::
-  +$  action-0
-    ::  %anon: delete our profile
-    ::  %edit: change our profile
-    ::  %meet: track a peer
-    ::  %heed: follow a peer
-    ::  %drop: discard a peer
-    ::  %snub: unfollow a peer
-    ::
-    $%  [%anon ~]
-        [%edit p=(list field-0)]
-        [%meet p=(list ship)]
-        [%heed p=(list ship)]
-        [%drop p=(list ship)]
-        [%snub p=(list ship)]
-    ==
-  ::  network
-  ::
-  +$  update-0
-    $%  [%full profile-0]
-    ==
-  ::  local
-  ::
-  +$  news-0
-    [who=ship con=$@(~ contact-0)]
-  --
 --

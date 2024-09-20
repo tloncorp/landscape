@@ -1,9 +1,8 @@
-/-  *contacts
 /+  default-agent, dbug, verb, neg=negotiate
 /+  *contacts
 ::
 ::  performance, keep warm
-/+  j0=contacts-json-0, j1=contacts-json-1
+/+  j0=contacts-json-0, j1=contacts-json-1, mark-warmer
 ::
 |%
 ::  conventions
@@ -17,12 +16,12 @@
 ::
 +|  %molds
 +$  card     card:agent:gall
-+$  state-1  [%1 rof=$@(~ profile) =book =peers]
++$  state-1  [%1 rof=profile =book =peers]
 --
-%-  %^  agent:neg
-      notify=|
-      [~.contacts^%1 ~ ~]
-      [~.contacts^[~.contacts^%1 ~ ~] ~ ~]
+:: %-  %^  agent:neg
+::         notify=|
+::       [~.contacts^%1 ~ ~]
+::     [~.contacts^[~.contacts^%1 ~ ~] ~ ~]
 %-  agent:dbug
 %+  verb  |
 ^-  agent:gall
@@ -130,7 +129,7 @@
         ++  fact
           |=  [pat=(set path) u=update]
           ^-  gift:agent:gall
-          [%fact ~(tap in pat) upd:mar !>(u)]
+          [%fact ~(tap in pat) %contact-update-1 !>(u)]
         --
     ::
     |%
@@ -179,34 +178,31 @@
         ~|  "contact page {<kip>} does not exist"
         (~(got by book) kip)
       =/  old=contact
-        q.page
+        mod.page
       =/  new=contact
         (do-edit old mod)
       ?:  =(old new)
         cor
       ?>  (sane-contact new)
-      (p-send-edit kip p.page new)
+      (p-send-edit kip con.page new)
     ::  +p-wipe: delete a contact page
     ::
     ++  p-wipe
       |=  wip=(list kip)
       %+  roll  wip
-        |=  [=kip acc=_cor]
-        =/  =page
-          ~|  "contact id {<kip>} not found"
-          (~(got by book) kip)
-        (p-send-wipe kip page)
+      |=  [=kip acc=_cor]
+      (p-send-wipe kip)
     ::  +p-send-self: publish modified profile
     ::
     ++  p-send-self
       |=  con=contact
-      =/  p=profile  [?~(rof now.bowl (mono wen.rof now.bowl)) con]
+      =/  p=profile  [(mono wen.rof now.bowl) con]
       =.  rof  p
       ::
       =.  cor
-        (p-news-0 our.bowl (to-contact-0 con))
+        (p-news-0 our.bowl (contact:from con))
       =.  cor
-        (p-news [%self con])
+        (p-resp [%self con])
       (give (fact subs [%full p]))
     ::  +p-send-page: publish new contact page
     ::
@@ -215,33 +211,32 @@
       =/  =page
         [*contact mod]
       =.  book  (~(put by book) id+cid page)
-      (p-news [%page id+cid page])
+      (p-resp [%page id+cid page])
     ::  +p-send-spot: publish peer spot
     ::
     ++  p-send-spot
       |=  [who=ship con=contact mod=contact]
       =.  book
         (~(put by book) who con mod)
-      (p-news [%page who con mod])
+      (p-resp [%page who con mod])
     ::  +p-send-edit: publish contact page update
     ::
     ++  p-send-edit
       |=  [=kip =page]
       =.  book
         (~(put by book) kip page)
-      (p-news [%page kip page])
+      (p-resp [%page kip page])
     ::  +p-send-wipe: publish contact page wipe
     ::
     ++  p-send-wipe
-      |=  [=kip =page]
+      |=  =kip
       =.  book
         (~(del by book) kip)
-      (p-news [%wipe kip])
+      (p-resp [%wipe kip])
     ::  +p-init: publish our profile
     ::
     ++  p-init
       |=  wen=(unit @da)
-      ?~  rof  cor
       ?~  wen  (give (fact ~ full+rof))
       ?:  =(u.wen wen.rof)  cor
       ::
@@ -252,11 +247,11 @@
     ++  p-news-0
       |=  n=news-0:legacy
       (give %fact ~[/news] %contact-news !>(n))
-    ::  +p-news: publish news
+    ::  +p-resp: publish response 
     ::
-    ++  p-news
-      |=  n=news
-      (give %fact ~[/v1/news] %contact-news-1 !>(n))
+    ++  p-resp
+      |=  r=response
+      (give %fact ~[/v1/news] %contact-response-0 !>(r))
     --
   ::
   ::  +sub: subscription mgmt
@@ -299,7 +294,7 @@
                  ::  NB: this assumes con.for is only set in +si-hear
                  ::
                  =.  cor  (p-news-0:pub who ~)
-                 (p-news:pub [%peer who ~])
+                 (p-resp:pub [%peer who ~])
           ::
           %dead  ?:  new  cor
                  =.  peers  (~(del by peers) who)
@@ -308,7 +303,7 @@
                  ::  as *contact* deletion. but it's close, and keeps /news simpler
                  ::
                  =.  cor  (p-news-0:pub who ~)
-                 (p-news:pub [%peer who ~])
+                 (p-resp:pub [%peer who ~])
         ==
       ::
       ++  si-take
@@ -336,15 +331,15 @@
         %_  si-cor
           for  +.u
           cor  =.  cor
-                 (p-news-0:pub who (to-contact-0 con.u))
+                  (p-news-0:pub who (contact:from con.u))
                =/  page=(unit page)  (~(get by book) who)
                ::  update peer contact page
                ::
                =?  cor  ?=(^ page)
-                 ?:  =(p.u.page con.u)  cor
-                 =.  book  (~(put by book) who u.page(p con.u))
-                 (p-news:pub %page who con.u q.u.page)
-               (p-news:pub %peer who con.u)
+                 ?:  =(con.u.page con.u)  cor
+                 =.  book  (~(put by book) who u.page(con con.u))
+                 (p-resp:pub %page who con.u mod.u.page)
+               (p-resp:pub %peer who con.u)
         ==
       ::
       ++  si-meet
@@ -401,7 +396,9 @@
     ::
     |^
     cor(rof us, peers them)
-    ++  us  (biff (~(get by ful) our.bowl) convert)
+    ++  us  %+  fall
+              ^-  (unit profile)  (bind (~(get by ful) our.bowl) convert)
+            *profile
     ::
     ++  them
       ^-  ^peers
@@ -411,9 +408,9 @@
     ::
     ++  convert
       |=  con=contact:legacy
-      ^-  $@(~ profile)
-      ?:  =(*contact:legacy con)  ~
-      [last-updated.con (to-contact con(|6 groups.con))]
+      ^-  profile
+      %-  profile:to
+      [last-updated.con con(|6 groups.con)]
     --
   ::
   +|  %implementation
@@ -429,7 +426,7 @@
         ::
         ?-  -.old
           %0
-        =.  rof  ?~(rof.old ~ (to-profile rof.old))
+        =.  rof  ?~(rof.old *profile (profile:to rof.old))
         ::  migrate peers. for each peer
         ::  1. leave /epic, if any
         ::  2. subscribe if desired
@@ -445,7 +442,7 @@
             [%pass /epic %agent [who dap.bowl] %leave ~]
           =/  fir=$@(~ profile)
             ?~  for  ~
-            (to-profile for)
+            (profile:to for)
           ::  no intent to connect
           ::
           ?:  =(~ sag)
@@ -492,7 +489,7 @@
       ?+  q.vase  !!
         %migrate  migrate
       ==
-        $?  act:base:mar
+        $?  %contact-action
             %contact-action-0
             %contact-action-1
         ==
@@ -501,18 +498,17 @@
         ?-  mark
           ::
           ::  legacy %contact-action
-            ?(act:base:mar %contact-action-0)
+            ?(%contact-action %contact-action-0)
           =/  act-0  !<(action-0:legacy vase)
           ?.  ?=(%edit -.act-0)
             (to-action act-0)
           ::  v0 %edit needs special handling to evaluate 
           ::  groups edit
           ::
-          =/  groups=(set $>(%cult value))
-            ?~  rof  ~
-            =+  set=(~(ges cy con.rof) groups+%cult)
-            ?:  =(~ set)  ~
-            (need set)
+          =/  groups=(set $>(%flag value))
+            ?~  con.rof  ~
+            =+  set=(~(ges cy con.rof) groups+%flag)
+            (fall set ~)
           [%self (to-self-edit p.act-0 groups)]
           ::
             %contact-action-1
@@ -565,51 +561,54 @@
         =/  mod=contact
           ?~  page=(~(get by book) who)
             ~
-          q.u.page
-        (to-foreign-0 (foreign-mod far mod))
+          mod.u.page
+        (foreign:from (foreign-mod far mod))
       =/  lor-0=rolodex:legacy
-        ?:  |(?=(~ rof) ?=(~ con.rof))  rol-0
-        (~(put by rol-0) our.bowl (to-profile-0 rof) ~)
+        ?:  ?=(~ con.rof)  rol-0
+        (~(put by rol-0) our.bowl (profile:from rof) ~)
       ``contact-rolodex+!>(lor-0)
       ::
         [%x %contact her=@ ~]
-      ?~  who=`(unit @p)`(slaw %p her.pat)
+      ?~  who=(slaw %p her.pat)
         [~ ~]
       =/  tac=?(~ contact-0:legacy)
         ?:  =(our.bowl u.who)
-          ?~(rof ~ (to-contact-0 con.rof))
+          ?~(con.rof ~ (contact:from con.rof))
         =+  far=(~(get by peers) u.who)
         ?:  |(?=(~ far) ?=(~ for.u.far))  ~
-        (to-contact-0 con.for.u.far)
+        (contact:from con.for.u.far)
       ?~  tac  [~ ~]
       ``contact+!>(`contact-0:legacy`tac)
       ::
         [%x %v1 %self ~]
-      ?~  rof  [~ ~]
-      ?~  con.rof  [~ ~]
       ``contact-1+!>(`contact`con.rof)
       ::
         [%x %v1 %book ~]
-      ?~  book  [~ ~]
       ``contact-book-0+!>(book)
       ::
+        [%u %v1 %book her=@p ~]
+      ?~  who=(slaw %p her.pat)
+        [~ ~]
+      ``loob+!>((~(has by book) u.who))
+      ::
         [%x %v1 %book her=@p ~]
-      ?~  who=`(unit @p)`(slaw %p her.pat)
+      ?~  who=(slaw %p her.pat)
         [~ ~]
       =/  page=(unit page)
         (~(get by book) u.who)
-      ?~  page
+      ``contact-page-0+!>(`^page`(fall page *^page)) 
+      ::
+        [%u %v1 %book %id =cid ~]
+      ?~  id=(slaw %uv cid.pat)
         [~ ~]
-      ``contact-page-0+!>(`^page`u.page)
+      ``loob+!>((~(has by book) id+u.id))
       ::
         [%x %v1 %book %id =cid ~]
-      ?~  id=`(unit @uv)`(slaw %uv cid.pat)
+      ?~  id=(slaw %uv cid.pat)
         [~ ~]
       =/  page=(unit page)
         (~(get by book) id+u.id)
-      ?~  page
-        [~ ~]
-      ``contact-page-0+!>(`^page`u.page)
+      ``contact-page-0+!>(`^page`(fall page *^page))
       ::
         [%x %v1 %all ~]
       =|  dir=directory
@@ -629,22 +628,38 @@
         ?~  for.far  dir
         ?:  (~(has by dir) who)  dir
         (~(put by dir) who con.for.far)
-      ?~  dir
-        [~ ~]
       ``contact-directory-0+!>(dir)
       ::
-        [%x %v1 %contact her=@p ~]
-      ?~  who=`(unit @p)`(slaw %p her.pat)
+        [%u %v1 %contact her=@p ~]
+      ?~  who=(slaw %p her.pat)
         [~ ~]
+      ?:  (~(has by book) u.who)
+        ``loob+!>(&)
+      =-  ``loob+!>(-)
+      ?~  far=(~(get by peers) u.who)
+        |
+      ?~  for.u.far
+        |
+      &
+      ::
+        [%x %v1 %contact her=@p ~]
+      ?~  who=(slaw %p her.pat)
+        [~ ~]
+      ?^  page=(~(get by book) u.who)
+        ``contact-1+!>((contact-uni u.page))
       ?~  far=(~(get by peers) u.who)
         [~ ~]
-      ?~  page=(~(get by book) u.who)
-        ?~  for.u.far  [~ ~]
-        ``contact-1+!>(con.for.u.far)
-      ``contact-1+!>((contact-uni u.page))
+      ?~  for.u.far  
+        [~ ~]
+      ``contact-1+!>(con.for.u.far)
+      ::
+        [%u %v1 %peer her=@p ~]
+      ?~  who=(slaw %p her.pat)
+        [~ ~]
+      ``loob+!>((~(has by peers) u.who))
       ::
         [%x %v1 %peer her=@p ~]
-      ?~  who=`(unit @p)`(slaw %p her.pat)
+      ?~  who=(slaw %p her.pat)
         [~ ~]
       ?~  far=(~(get by peers) u.who)
         [~ ~]
