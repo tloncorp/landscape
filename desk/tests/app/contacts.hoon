@@ -3,12 +3,14 @@
 /+  c=contacts
 /=  contacts-agent  /app/contacts
 =*  agent  contacts-agent
-::  XX consider simplifying tests 
+::  XX consider simplifying tests
 ::  with functional 'micro' strands, that set
 ::  a contact, subscribe to a peer etc.
 ::
 |%
+::
 +|  %help
+::
 ++  tick  ^~((rsh 3^2 ~s1))
 ++  mono
   |=  [old=@da new=@da]
@@ -112,7 +114,7 @@
   ::  action-0:x profile %edit
   ::
   ;<  caz=(list card)  b  (do-poke %contact-action !>([%edit edit-0]))
-  ;<  ~  b  
+  ;<  ~  b
     %+  ex-cards  caz
     :~  (ex-fact ~[/news] contact-news+!>([our.bowl con-0]))
         (ex-fact ~[/v1/news] contact-response-0+!>([%self con]))
@@ -123,7 +125,7 @@
   ;<  peek=(unit (unit cage))  b
     (get-peek /x/v1/self)
   =/  cag  (need (need peek))
-  ;<  ~  b  
+  ;<  ~  b
     %+  ex-equal
     !>  cag
     !>  contact-1+!>(con)
@@ -133,7 +135,7 @@
     (do-poke %contact-action !>([%edit del-group+~sampel-palnet^%oranges ~]))
   =/  new-con
     (~(put by con) groups+set/~)
-  ;<  ~  b  
+  ;<  ~  b
     %+  ex-cards  caz
     :~  (ex-fact ~[/news] contact-news+!>([our.bowl con-0(groups ~)]))
         (ex-fact ~[/v1/news] contact-response-0+!>([%self new-con]))
@@ -344,7 +346,7 @@
   =/  con-1=contact
     %-  malt
     ^-  (list (pair @tas value))
-    :~  nickname+text/'Sun' 
+    :~  nickname+text/'Sun'
         bio+text/'It is bright today'
         groups+set/(silt groups)
     ==
@@ -475,7 +477,7 @@
     ^-  (list (pair @tas value))
     ~[nickname+text/'Bright Sun' avatar+text/'https://sun.io/sun.png']
   ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%edit ~sun con-mod]))
-  ::  ~sun's contact book page is updated 
+  ::  ~sun's contact book page is updated
   ::
   ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/book/~sun)
   =/  cag=cage  (need (need peek))
@@ -685,7 +687,7 @@
 ::  a peer ~sun. ~sun publishes his contact. subsequently,
 ::  ~sun is added to the contact book. we now snub ~sun.
 ::  ~sun is still found in peers.
-::  
+::
 ++  test-poke-snub
   %-  eval-mare
   =/  m  (mare ,~)
@@ -787,7 +789,7 @@
   ::
   ;<  ~  b  (set-src ~sun)
   ;<  caz=(list card)  b  (do-watch /v1/contact/at/(scot %da now.bowl))
-  ;<  ~  b  
+  ;<  ~  b
     %+  ex-cards  caz
     :~  (ex-fact ~ contact-update-1+!>([%full now con]))
     ==
@@ -972,4 +974,38 @@
   %+  ex-equal
   !>  (~(got by dir) ~mur)
   !>  con-mur
+::  +test-retry: test resubscription logic
+::
+::    scenario
+::
+::  we %meet ~sun. however, ~sun is running incompatible version.
+::  negative %watch-ack arrives. we setup the timer to retry.
+::  the timer fires. we resubscribe.
+::
+++  test-retry
+  %-  eval-mare
+  =/  m  (mare ,~)
+  =*  b  bind:m
+  ^-  form:m
+  ::
+  ;<  caz=(list card)  b  (do-init %contacts contacts-agent)
+  ;<  =bowl  b  get-bowl
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%meet ~[~sun]]))
+  ;<  caz=(list card)  b
+    %^  do-agent  /contact
+      [~sun %contacts]
+    [%watch-ack (some leaf+"outdated contacts" ~)]
+  ;<  ~  b
+    %+  ex-cards  caz
+    :~  %+  ex-arvo  /~/retry/(scot %p ~sun)
+        [%b %wait (add now.bowl ~s10)]
+    ==
+  ;<  caz=(list card)  b
+    %+  do-arvo  /~/retry/(scot %p ~sun)
+    [%behn %wake ~]
+  %+  ex-cards  caz
+  :~  %^  ex-task  /contact
+        [~sun %contacts]
+      [%watch /v1/contact]
+  ==
 --

@@ -14,20 +14,24 @@
 ::    .for: foreign profile
 ::    .sag: foreign subscription state
 ::
-+|  %molds
-+$  card     card:agent:gall
-+$  state-1  [%1 rof=profile =book =peers]
++|  %types
++$  card  card:agent:gall
++$  state-1  $:  %1
+                 rof=profile
+                 =book
+                 =peers
+                 retry=(map ship @da)  ::  retry sub at time
+             ==
 --
-:: %-  %^  agent:neg
-::         notify=|
-::       [~.contacts^%1 ~ ~]
-::     [~.contacts^[~.contacts^%1 ~ ~] ~ ~]
+%-  %^  agent:neg
+        notify=|
+      [~.contacts^%1 ~ ~]
+    [~.contacts^[~.contacts^%1 ~ ~] ~ ~]
 %-  agent:dbug
 %+  verb  |
 ^-  agent:gall
 =|  state-1
 =*  state  -
-::
 =<  |_  =bowl:gall
     +*  this  .
         def   ~(. (default-agent this %|) bowl)
@@ -67,15 +71,19 @@
       =^  cards  state  abet:(agent:cor wire sign)
       [cards this]
     ::
-    ++  on-arvo   on-arvo:def
+    ++  on-arvo
+      |=  [=wire sign=sign-arvo]
+      =^  cards  state  abet:(arvo:cor wire sign)
+      [cards this]
+    ::
     ++  on-fail   on-fail:def
     --
-::
+
 |%
 ::
 +|  %state
 ::
-::    namespaced to avoid accidental direct reference
+::  namespaced to avoid accidental direct reference
 ::
 ++  raw
   =|  out=(list card)
@@ -157,7 +165,7 @@
       ?>  (sane-contact con)
       (p-send-page cid con)
     ::  +p-spot: add peer as a contact
-    ::  
+    ::
     ++  p-spot
       |=  [who=ship mod=contact]
       ?:  (~(has by book) who)
@@ -247,7 +255,7 @@
     ++  p-news-0
       |=  n=news-0:legacy
       (give %fact ~[/news] %contact-news !>(n))
-    ::  +p-resp: publish response 
+    ::  +p-resp: publish response
     ::
     ++  p-resp
       |=  r=response
@@ -313,7 +321,17 @@
           %poke-ack   ~|(strange-poke-ack+wire !!)
         ::
           %watch-ack  ~|  strange-watch-ack+wire
-                      si-cor
+                      ?>  ?=(%want sag)
+                      ?~  p.sign  si-cor
+                      %-  (slog 'contact-fail' u.p.sign)
+                      ::  schedule retry 30m later
+                      ::  XX set production timer
+                      ::
+                      =/  wake=@da  (add now.bowl ~s10)
+                      =.  retry  (~(put by retry) who wake)
+                      %_  si-cor  cor
+                        (pass /~/retry/(scot %p who) %arvo %b %wait wake)
+                      ==
         ::
           %kick       si-meet(sag ~)
         ::
@@ -325,7 +343,8 @@
       ++  si-hear
         |=  u=update
         ^+  si-cor
-        ?>  (sane-contact con.u)
+        ?.  (sane-contact con.u)
+          si-cor
         ?:  &(?=(^ for) (lte wen.u wen.for))
           si-cor
         %_  si-cor
@@ -345,14 +364,19 @@
       ++  si-meet
         ^+  si-cor
         ::
-        ::  already connected
+        ::  already subscribed
         ?:  ?=(%want sag)
           si-cor
         =/  pat  [%v1 %contact ?~(for / /at/(scot %da wen.for))]
-        %=  si-cor
+        %_  si-cor
           cor  (pass /contact %agent [who dap.bowl] %watch pat)
           sag  %want
         ==
+      ::
+      ++  si-retry
+        ^+  si-cor
+        =.  retry  (~(del by retry) who)
+        si-meet(sag ~)
       ::
       ++  si-drop  si-snub(sas %dead)
       ::
@@ -360,7 +384,16 @@
         %_  si-cor
           sag  ~
           cor   ?.  ?=(%want sag)  cor
-                (pass /contact %agent [who dap.bowl] %leave ~)
+                ::  retry is scheduled, cancel the timer
+                ::
+                ::  XX make sure this is correct: if we received
+                ::  negative %watch-ack there is no need to %leave the
+                ::  subscription?
+                ::
+                ?^  when=(~(get by retry) who)
+                  =.  retry  (~(del by retry) who)
+                  (pass /~/retry/(scot %p who)/cancel %arvo %b %rest u.when)
+               (pass /contact %agent [who dap.bowl] %leave ~)
         ==
       --
     --
@@ -502,7 +535,7 @@
           =/  act-0  !<(action-0:legacy vase)
           ?.  ?=(%edit -.act-0)
             (to-action act-0)
-          ::  v0 %edit needs special handling to evaluate 
+          ::  v0 %edit needs special handling to evaluate
           ::  groups edit
           ::
           =/  groups=(set $>(%flag value))
@@ -596,7 +629,7 @@
         [~ ~]
       =/  page=(unit page)
         (~(get by book) u.who)
-      ``contact-page-0+!>(`^page`(fall page *^page)) 
+      ``contact-page-0+!>(`^page`(fall page *^page))
       ::
         [%u %v1 %book %id =cid ~]
       ?~  id=(slaw %uv cid.pat)
@@ -649,7 +682,7 @@
         ``contact-1+!>((contact-uni u.page))
       ?~  far=(~(get by peers) u.who)
         [~ ~]
-      ?~  for.u.far  
+      ?~  for.u.far
         [~ ~]
       ``contact-1+!>(con.for.u.far)
       ::
@@ -688,11 +721,26 @@
     ?+  wire  ~|(evil-agent+wire !!)
         [%contact ~]
       si-abet:(si-take:(sub src.bowl) wire sign)
+      ::
         [%migrate ~]
       ?>  ?=(%poke-ack -.sign)
       ?~  p.sign  cor
       %-  (slog leaf/"{<wire>} failed" u.p.sign)
       cor
+    ==
+  ::
+  ++  arvo
+    |=  [=wire sign=sign-arvo]
+    ^+  cor
+    ?+  wire  ~|(evil-vane+wire !!)
+      ::
+        [%~.~ %retry her=@p ~]
+      ::  XX technically, the timer could fail.
+      ::  it should be ok to still retry.
+      ::
+      ?>  ?=([%behn %wake *] sign)
+      =+  who=(slav %p i.t.t.wire)
+      si-abet:si-retry:(sub who)
     ==
   --
 --
