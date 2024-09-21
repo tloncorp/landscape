@@ -60,6 +60,7 @@
         =remark
         =window
         =future
+        pending=pending-messages
     ==
   --
 ::  $v-post: a channel post
@@ -71,7 +72,7 @@
 ++  mo-v-posts  ((mp id-post (unit v-post)) lte)
 ::  $v-reply: a post comment
 ::
-+$  v-reply       [v-reply-seal memo]
++$  v-reply       [v-reply-seal (rev memo)]
 +$  id-reply      time
 +$  v-replies     ((mop id-reply (unit v-reply)) lte)
 ++  on-v-replies  ((on id-reply (unit v-reply)) lte)
@@ -198,11 +199,23 @@
 ::  $react: either an emoji identifier like :diff or a URL for custom
 +$  react     @ta
 +$  v-reacts  (map ship (rev (unit react)))
++$  client-id  [author=ship sent=time]
++$  pending-posts  (map client-id essay)
++$  pending-replies  (map [top=id-post id=client-id] memo)
++$  pending-messages
+  $:  posts=pending-posts
+      replies=pending-replies
+  ==
+::  $scam: bounded search results
++$  scam
+  $:  last=(unit id-post)  ::  last (top-level) message that was searched
+      =scan                ::  search results
+  ==
 ::  $scan: search results
 +$  scan  (list reference)
 +$  reference
-  $%  [%post =post]
-      [%reply =id-post =reply]
+  $%  [%post post=simple-post]
+      [%reply =id-post reply=simple-reply]
   ==
 ::  $said: used for references
 +$  said  (pair nest reference)
@@ -228,10 +241,11 @@
 +$  unread
   $:  recency=time
       count=@ud
-      unread-id=(unit id-post)
-      threads=(map id-post id-reply)
+      unread=(unit [id=id-post count=@ud])
+      threads=(map id-post [id=id-reply count=@ud])
   ==
 ::  $remark: markers representing unread state
+::    recency:        time of most recent message
 ::    last-read:      time at which the user last read this channel
 ::    watching:       unused, intended for disabling unread accumulation
 ::    unread-threads: threads that contain unread messages
@@ -355,6 +369,7 @@
 ::
 +$  c-reply
   $%  [%add =memo]
+      [%edit id=id-reply =memo]
       [%del id=id-reply]
       c-react
   ==
@@ -397,6 +412,7 @@
 +$  r-channel
   $%  [%posts =posts]
       [%post id=id-post =r-post]
+      [%pending id=client-id =r-pending]
       [%order order=arranged-posts]
       [%view =view]
       [%sort =sort]
@@ -415,9 +431,31 @@
       [%essay =essay]
   ==
 ::
++$  r-pending
+  $%  [%post =essay]
+      [%reply top=id-post =reply-meta =memo]
+  ==
 +$  r-reply
   $%  [%set reply=(unit reply)]
       [%reacts =reacts]
+  ==
+::
++$  r-channels-simple-post  [=nest =r-channel-simple-post]
++$  r-channel-simple-post
+  $%  $<(?(%posts %post) r-channel)
+      [%posts posts=simple-posts]
+      [%post id=id-post r-post=r-simple-post]
+  ==
+::
++$  r-simple-post
+  $%  $<(?(%set %reply) r-post)
+      [%set post=(unit simple-post)]
+      [%reply id=id-reply =reply-meta r-reply=r-simple-reply]
+  ==
+::
++$  r-simple-reply
+  $%  $<(%set r-reply)
+      [%set reply=(unit simple-reply)]
   ==
 ::  versions of backend types with their revision numbers stripped,
 ::  because the frontend shouldn't care to learn those.
@@ -436,26 +474,54 @@
   +$  local
     $:  =net
         =remark
+        pending=pending-messages
     ==
   --
++$  channels-0  (map nest channel-0)
+++  channel-0
+  |^  ,[global:channel local]
+  +$  local
+    $:  =net
+        =remark
+    ==
+  --
++$  channel-heads  (list [=nest recency=time latest=(unit post)])
 +$  paged-posts
   $:  =posts
       newer=(unit time)
       older=(unit time)
       total=@ud
   ==
++$  paged-simple-posts
+  $:  posts=simple-posts
+      newer=(unit time)
+      older=(unit time)
+      total=@ud
+  ==
 +$  posts  ((mop id-post (unit post)) lte)
-+$  post   [seal essay]
++$  simple-posts  ((mop id-post (unit simple-post)) lte)
++$  post   [seal [rev=@ud essay]]
++$  simple-post  [simple-seal essay]
 +$  seal
   $:  id=id-post
       =reacts
       =replies
       =reply-meta
   ==
++$  simple-seal
+  $:  id=id-post
+      =reacts
+      replies=simple-replies
+      =reply-meta
+  ==
 +$  reacts      (map ship react)
-+$  reply       [reply-seal memo]
++$  reply       [reply-seal [rev=@ud memo]]
++$  simple-reply  [reply-seal memo]
 +$  replies     ((mop id-reply reply) lte)
++$  simple-replies     ((mop id-reply simple-reply) lte)
 +$  reply-seal  [id=id-reply parent-id=id-post =reacts]
 ++  on-posts    ((on id-post (unit post)) lte)
+++  on-simple-posts    ((on id-post (unit simple-post)) lte)
 ++  on-replies  ((on id-reply reply) lte)
+++  on-simple-replies  ((on id-reply simple-reply) lte)
 --
