@@ -1,4 +1,4 @@
-/-  c=contacts
+/+  c=contacts
 /+  j=contacts-json-1
 |_  contact=contact:c
 ++  grad  %noun
@@ -11,5 +11,6 @@
   |%
   ++  noun  contact:c
   ++  json  contact:dejs:j
+  ++  contact  contact:to:c
   --
 --

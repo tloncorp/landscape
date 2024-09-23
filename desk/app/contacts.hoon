@@ -696,7 +696,7 @@
         [~ ~]
       ?~  far=(~(get by peers) u.who)
         [~ ~]
-      ``contact-foreign-1+!>(`foreign`u.far)
+      ``contact-foreign-0+!>(`foreign`u.far)
     ==
   ::
   ++  peer
