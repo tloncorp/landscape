@@ -143,7 +143,7 @@
     |%
     ::  +p-anon: delete our profile
     ::
-    ++  p-anon  ?.(?=([@ ^] rof) cor (p-send-self ~))
+    ++  p-anon  ?.(?=([@ ^] rof) cor (p-commit-self ~))
     ::  +p-self: edit our profile
     ::
     ++  p-self
@@ -155,7 +155,7 @@
       ?:  =(old new)
         cor
       ?>  (sane-contact ;;(contact new))
-      (p-send-self new)
+      (p-commit-self new)
     ::  +p-page: create new contact page
     ::
     ++  p-page
@@ -163,7 +163,7 @@
       ?:  (~(has by book) id+cid)
         ~|  "contact page {<cid>} already exists"  !!
       ?>  (sane-contact ;;(contact con))
-      (p-send-page cid con)
+      (p-commit-page cid con)
     ::  +p-spot: add peer as a contact
     ::
     ++  p-spot
@@ -177,7 +177,7 @@
         ?~  for.far  *contact
         con.for.far
       ?>  (sane-contact ;;(contact mod))
-      (p-send-spot who con mod)
+      (p-commit-spot who con mod)
     ::  +p-edit: edit contact page overlay
     ::
     ++  p-edit
@@ -192,17 +192,17 @@
       ?:  =(old new)
         cor
       ?>  (sane-contact ;;(contact new))
-      (p-send-edit kip con.page new)
+      (p-commit-edit kip con.page new)
     ::  +p-wipe: delete a contact page
     ::
     ++  p-wipe
       |=  wip=(list kip)
       %+  roll  wip
       |=  [=kip acc=_cor]
-      (p-send-wipe kip)
-    ::  +p-send-self: publish modified profile
+      (p-commit-wipe kip)
+    ::  +p-commit-self: publish modified profile
     ::
-    ++  p-send-self
+    ++  p-commit-self
       |=  con=contact
       =/  p=profile  [(mono wen.rof now.bowl) con]
       =.  rof  p
@@ -212,31 +212,31 @@
       =.  cor
         (p-resp [%self con])
       (give (fact subs [%full p]))
-    ::  +p-send-page: publish new contact page
+    ::  +p-commit-page: publish new contact page
     ::
-    ++  p-send-page
+    ++  p-commit-page
       |=  [=cid mod=contact]
       =/  =page
         [*contact mod]
       =.  book  (~(put by book) id+cid page)
       (p-resp [%page id+cid page])
-    ::  +p-send-spot: publish peer spot
+    ::  +p-commit-spot: publish peer spot
     ::
-    ++  p-send-spot
+    ++  p-commit-spot
       |=  [who=ship con=contact mod=contact]
       =.  book
         (~(put by book) who con mod)
       (p-resp [%page who con mod])
-    ::  +p-send-edit: publish contact page update
+    ::  +p-commit-edit: publish contact page update
     ::
-    ++  p-send-edit
+    ++  p-commit-edit
       |=  [=kip =page]
       =.  book
         (~(put by book) kip page)
       (p-resp [%page kip page])
-    ::  +p-send-wipe: publish contact page wipe
+    ::  +p-commit-wipe: publish contact page wipe
     ::
-    ++  p-send-wipe
+    ++  p-commit-wipe
       |=  =kip
       =.  book
         (~(del by book) kip)
