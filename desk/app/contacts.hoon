@@ -208,7 +208,7 @@
       =.  rof  p
       ::
       =.  cor
-        (p-news-0 our.bowl (contact:from con))
+        (p-news-0 our.bowl (contact:to-0 con))
       =.  cor
         (p-resp [%self con])
       (give (fact subs [%full p]))
@@ -350,7 +350,7 @@
         %_  si-cor
           for  +.u
           cor  =.  cor
-                  (p-news-0:pub who (contact:from con.u))
+                  (p-news-0:pub who (contact:to-0 con.u))
                =/  page=(unit page)  (~(get by book) who)
                ::  update peer contact page
                ::
@@ -442,7 +442,7 @@
     ++  convert
       |=  con=contact:legacy
       ^-  profile
-      %-  profile:to
+      %-  profile:from-0
       [last-updated.con con(|6 groups.con)]
     --
   ::
@@ -459,7 +459,7 @@
         ::
         ?-  -.old
           %0
-        =.  rof  ?~(rof.old *profile (profile:to rof.old))
+        =.  rof  ?~(rof.old *profile (profile:from-0 rof.old))
         ::  migrate peers. for each peer
         ::  1. leave /epic, if any
         ::  2. subscribe if desired
@@ -475,7 +475,7 @@
             [%pass /epic %agent [who dap.bowl] %leave ~]
           =/  fir=$@(~ profile)
             ?~  for  ~
-            (profile:to for)
+            (profile:from-0 for)
           ::  no intent to connect
           ::
           ?:  =(~ sag)
@@ -595,10 +595,10 @@
           ?~  page=(~(get by book) who)
             ~
           mod.u.page
-        (foreign:from (foreign-mod far mod))
+        (foreign:to-0 (foreign-mod far mod))
       =/  lor-0=rolodex:legacy
         ?:  ?=(~ con.rof)  rol-0
-        (~(put by rol-0) our.bowl (profile:from rof) ~)
+        (~(put by rol-0) our.bowl (profile:to-0 rof) ~)
       ``contact-rolodex+!>(lor-0)
       ::
         [%x %contact her=@ ~]
@@ -606,10 +606,10 @@
         [~ ~]
       =/  tac=?(~ contact-0:legacy)
         ?:  =(our.bowl u.who)
-          ?~(con.rof ~ (contact:from con.rof))
+          ?~(con.rof ~ (contact:to-0 con.rof))
         =+  far=(~(get by peers) u.who)
         ?:  |(?=(~ far) ?=(~ for.u.far))  ~
-        (contact:from con.for.u.far)
+        (contact:to-0 con.for.u.far)
       ?~  tac  [~ ~]
       ``contact+!>(`contact-0:legacy`tac)
       ::

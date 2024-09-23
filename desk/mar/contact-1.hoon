@@ -11,6 +11,6 @@
   |%
   ++  noun  contact:c
   ++  json  contact:dejs:j
-  ++  contact  contact:to:c
+  ++  contact  contact:from-0:c
   --
 --

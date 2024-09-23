@@ -184,9 +184,9 @@
     |=  [key=@tas acc=_don]
     (~(del by don) key)
   don
-::  +to: legacy to new type
+::  +from-0: legacy to new type
 ::
-++  to
+++  from-0
   |%
   ::  +contact: convert legacy to contact
   ::
@@ -222,7 +222,7 @@
   --
 ::  +from: legacy from new type
 :: 
-++  from
+++  to-0
   |%
   ::  +contact: convert contact to legacy
   ::
@@ -259,27 +259,27 @@
     ++  profile
       |=  p=^profile
       ^-  profile-0:legacy
-      [wen.p (contact:from con.p)]
+      [wen.p (contact:to-0 con.p)]
     ::  +profile-0-mod: convert profile with contact overlay
     ::  to legacy
     ::
     ++  profile-mod
       |=  [p=^profile mod=^contact]
       ^-  profile-0:legacy
-      [wen.p (contact:from (contact-uni con.p mod))]
+      [wen.p (contact:to-0 (contact-uni con.p mod))]
     ::  +foreign: convert foreign to legacy
     ::
     ++  foreign
       |=  f=^foreign
       ^-  foreign-0:legacy
-      [?~(for.f ~ (profile:from for.f)) sag.f]
+      [?~(for.f ~ (profile:to-0 for.f)) sag.f]
     ::  foreign-mod: convert foreign with contact overlay
     ::  to legacy
     ::
     ++  foreign-mod
       |=  [f=^foreign mod=^contact]
       ^-  foreign-0:legacy
-      [?~(for.f ~ (profile-mod:from for.f mod)) sag.f]
+      [?~(for.f ~ (profile-mod:to-0 for.f mod)) sag.f]
   --
 ::  +contact-uni: merge contacts
 ::
