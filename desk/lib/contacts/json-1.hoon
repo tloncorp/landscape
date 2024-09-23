@@ -35,9 +35,9 @@
     ==
   ::
   ++  contact
-    |=  c=contact:c
+    |=  con=contact:c
     ^-  json
-    o+(~(run by c) value)
+    o+(~(run by con) value)
   ::
   ++  page
     |=  =page:c

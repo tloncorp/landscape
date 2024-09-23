@@ -141,7 +141,7 @@
   ==
 ::  +sane-contact: verify contact sanity
 ::
-::  - restrict size of the jammed noun to 1kB
+::  - restrict size of the jammed noun to 10kB
 ::  - prohibit 'data:' URLs in image data
 ::
 ++  sane-contact

@@ -154,7 +154,7 @@
         (do-edit old con)
       ?:  =(old new)
         cor
-      ?>  (sane-contact new)
+      ?>  (sane-contact ;;(contact new))
       (p-send-self new)
     ::  +p-page: create new contact page
     ::
@@ -162,7 +162,7 @@
       |=  [=cid con=contact]
       ?:  (~(has by book) id+cid)
         ~|  "contact page {<cid>} already exists"  !!
-      ?>  (sane-contact con)
+      ?>  (sane-contact ;;(contact con))
       (p-send-page cid con)
     ::  +p-spot: add peer as a contact
     ::
@@ -176,7 +176,7 @@
           (~(got by peers) who)
         ?~  for.far  *contact
         con.for.far
-      ?>  (sane-contact mod)
+      ?>  (sane-contact ;;(contact mod))
       (p-send-spot who con mod)
     ::  +p-edit: edit contact page overlay
     ::
@@ -191,7 +191,7 @@
         (do-edit old mod)
       ?:  =(old new)
         cor
-      ?>  (sane-contact new)
+      ?>  (sane-contact ;;(contact new))
       (p-send-edit kip con.page new)
     ::  +p-wipe: delete a contact page
     ::
@@ -343,7 +343,7 @@
       ++  si-hear
         |=  u=update
         ^+  si-cor
-        ?.  (sane-contact con.u)
+        ?.  (sane-contact ;;(contact con.u))
           si-cor
         ?:  &(?=(^ for) (lte wen.u wen.for))
           si-cor
