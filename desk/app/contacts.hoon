@@ -154,7 +154,7 @@
         (do-edit old con)
       ?:  =(old new)
         cor
-      ?>  (sane-contact ;;(contact new))
+      ?>  (sane-contact new)
       (p-commit-self new)
     ::  +p-page: create new contact page
     ::
@@ -162,7 +162,7 @@
       |=  [=cid con=contact]
       ?:  (~(has by book) id+cid)
         ~|  "contact page {<cid>} already exists"  !!
-      ?>  (sane-contact ;;(contact con))
+      ?>  (sane-contact con)
       (p-commit-page cid con)
     ::  +p-spot: add peer as a contact
     ::
@@ -176,7 +176,7 @@
           (~(got by peers) who)
         ?~  for.far  *contact
         con.for.far
-      ?>  (sane-contact ;;(contact mod))
+      ?>  (sane-contact mod)
       (p-commit-spot who con mod)
     ::  +p-edit: edit contact page overlay
     ::
@@ -191,7 +191,7 @@
         (do-edit old mod)
       ?:  =(old new)
         cor
-      ?>  (sane-contact ;;(contact new))
+      ?>  (sane-contact new)
       (p-commit-edit kip con.page new)
     ::  +p-wipe: delete a contact page
     ::
@@ -210,7 +210,7 @@
       =.  cor
         (p-news-0 our.bowl (contact:to-0 con))
       =.  cor
-        (p-resp [%self con])
+        (p-response [%self con])
       (give (fact subs [%full p]))
     ::  +p-commit-page: publish new contact page
     ::
@@ -219,28 +219,28 @@
       =/  =page
         [*contact mod]
       =.  book  (~(put by book) id+cid page)
-      (p-resp [%page id+cid page])
+      (p-response [%page id+cid page])
     ::  +p-commit-spot: publish peer spot
     ::
     ++  p-commit-spot
       |=  [who=ship con=contact mod=contact]
       =.  book
         (~(put by book) who con mod)
-      (p-resp [%page who con mod])
+      (p-response [%page who con mod])
     ::  +p-commit-edit: publish contact page update
     ::
     ++  p-commit-edit
       |=  [=kip =page]
       =.  book
         (~(put by book) kip page)
-      (p-resp [%page kip page])
+      (p-response [%page kip page])
     ::  +p-commit-wipe: publish contact page wipe
     ::
     ++  p-commit-wipe
       |=  =kip
       =.  book
         (~(del by book) kip)
-      (p-resp [%wipe kip])
+      (p-response [%wipe kip])
     ::  +p-init: publish our profile
     ::
     ++  p-init
@@ -255,9 +255,9 @@
     ++  p-news-0
       |=  n=news-0:legacy
       (give %fact ~[/news] %contact-news !>(n))
-    ::  +p-resp: publish response
+    ::  +p-response: publish response
     ::
-    ++  p-resp
+    ++  p-response
       |=  r=response
       (give %fact ~[/v1/news] %contact-response-0 !>(r))
     --
@@ -302,7 +302,7 @@
                  ::  NB: this assumes con.for is only set in +si-hear
                  ::
                  =.  cor  (p-news-0:pub who ~)
-                 (p-resp:pub [%peer who ~])
+                 (p-response:pub [%peer who ~])
           ::
           %dead  ?:  new  cor
                  =.  peers  (~(del by peers) who)
@@ -311,7 +311,7 @@
                  ::  as *contact* deletion. but it's close, and keeps /news simpler
                  ::
                  =.  cor  (p-news-0:pub who ~)
-                 (p-resp:pub [%peer who ~])
+                 (p-response:pub [%peer who ~])
         ==
       ::
       ++  si-take
@@ -330,7 +330,7 @@
                       =/  wake=@da  (add now.bowl ~s10)
                       =.  retry  (~(put by retry) who wake)
                       %_  si-cor  cor
-                        (pass /~/retry/(scot %p who) %arvo %b %wait wake)
+                        (pass /retry/(scot %p who) %arvo %b %wait wake)
                       ==
         ::
           %kick       si-meet(sag ~)
@@ -343,22 +343,22 @@
       ++  si-hear
         |=  u=update
         ^+  si-cor
-        ?.  (sane-contact ;;(contact con.u))
+        ?.  (sane-contact con.u)
           si-cor
         ?:  &(?=(^ for) (lte wen.u wen.for))
           si-cor
         %_  si-cor
           for  +.u
           cor  =.  cor
-                  (p-news-0:pub who (contact:to-0 con.u))
+               (p-news-0:pub who (contact:to-0 con.u))
                =/  page=(unit page)  (~(get by book) who)
                ::  update peer contact page
                ::
                =?  cor  ?=(^ page)
                  ?:  =(con.u.page con.u)  cor
                  =.  book  (~(put by book) who u.page(con con.u))
-                 (p-resp:pub %page who con.u mod.u.page)
-               (p-resp:pub %peer who con.u)
+                 (p-response:pub %page who con.u mod.u.page)
+               (p-response:pub %peer who con.u)
         ==
       ::
       ++  si-meet
@@ -375,6 +375,13 @@
       ::
       ++  si-retry
         ^+  si-cor
+        ::
+        ::  XX this works around a gall/behn bug:
+        ::  the timer is identified by the whole duct.
+        ::  it needn't be the same when gall passes our
+        ::  card to behn.
+        ?.  (~(has by retry) who)
+          si-cor
         =.  retry  (~(del by retry) who)
         si-meet(sag ~)
       ::
@@ -386,13 +393,9 @@
           cor   ?.  ?=(%want sag)  cor
                 ::  retry is scheduled, cancel the timer
                 ::
-                ::  XX make sure this is correct: if we received
-                ::  negative %watch-ack there is no need to %leave the
-                ::  subscription?
-                ::
                 ?^  when=(~(get by retry) who)
                   =.  retry  (~(del by retry) who)
-                  (pass /~/retry/(scot %p who)/cancel %arvo %b %rest u.when)
+                  (pass /retry/(scot %p who)/cancel %arvo %b %rest u.when)
                (pass /contact %agent [who dap.bowl] %leave ~)
         ==
       --
@@ -429,9 +432,10 @@
     ::
     |^
     cor(rof us, peers them)
-    ++  us  %+  fall
-              ^-  (unit profile)  (bind (~(get by ful) our.bowl) convert)
-            *profile
+    ++  us
+      %+  fall
+        (bind (~(get by ful) our.bowl) convert)
+      *profile
     ::
     ++  them
       ^-  ^peers
@@ -734,12 +738,12 @@
     ^+  cor
     ?+  wire  ~|(evil-vane+wire !!)
       ::
-        [%~.~ %retry her=@p ~]
+        [%retry her=@p ~]
       ::  XX technically, the timer could fail.
       ::  it should be ok to still retry.
       ::
       ?>  ?=([%behn %wake *] sign)
-      =+  who=(slav %p i.t.t.wire)
+      =+  who=(slav %p i.t.wire)
       si-abet:si-retry:(sub who)
     ==
   --

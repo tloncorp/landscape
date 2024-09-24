@@ -147,7 +147,9 @@
 ++  sane-contact
   |=  con=contact
   ^-  ?
-  ::  5kB contact ought to be enough for anybody
+  ?~  ((soft contact) con)
+    |
+  ::  10kB contact ought to be enough for anybody
   ::
   ?:  (gth (met 3 (jam con)) 10.000)
     |
@@ -221,7 +223,7 @@
   ::
   --
 ::  +from: legacy from new type
-:: 
+::
 ++  to-0
   |%
   ::  +contact: convert contact to legacy
