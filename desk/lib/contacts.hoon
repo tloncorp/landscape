@@ -1,4 +1,4 @@
-/-  *contacts, legacy=contacts-0
+/-  *contacts, c0=contacts-0
 |%
 ::
 +|  %contact
@@ -115,7 +115,7 @@
   --
 ::
 ++  do-edit-0
-  |=  [c=contact-0:legacy f=field-0:legacy]
+  |=  [c=contact-0:c0 f=field-0:c0]
   ^+  c
   ?-  -.f
     %nickname   c(nickname nickname.f)
@@ -193,7 +193,7 @@
   ::  +contact: convert legacy to contact
   ::
   ++  contact
-    |=  o=contact-0:legacy
+    |=  o=contact-0:c0
     ^-  ^contact
     =/  c=^contact
       %-  malt
@@ -217,7 +217,7 @@
   ::  +profile: convert legacy to profile
   ::
   ++  profile
-    |=  o=profile-0:legacy
+    |=  o=profile-0:c0
     ^-  ^profile
     [wen.o ?~(con.o ~ (contact con.o))]
   ::
@@ -230,9 +230,9 @@
   ::
   ++  contact
     |=  c=^contact
-    ^-  $@(~ contact-0:legacy)
+    ^-  $@(~ contact-0:c0)
     ?~  c  ~
-    =|  o=contact-0:legacy
+    =|  o=contact-0:c0
     %_  o
       nickname
         (~(gub cy c) %nickname %text)
@@ -260,27 +260,27 @@
     ::
     ++  profile
       |=  p=^profile
-      ^-  profile-0:legacy
+      ^-  profile-0:c0
       [wen.p (contact:to-0 con.p)]
     ::  +profile-0-mod: convert profile with contact overlay
     ::  to legacy
     ::
     ++  profile-mod
       |=  [p=^profile mod=^contact]
-      ^-  profile-0:legacy
+      ^-  profile-0:c0
       [wen.p (contact:to-0 (contact-uni con.p mod))]
     ::  +foreign: convert foreign to legacy
     ::
     ++  foreign
       |=  f=^foreign
-      ^-  foreign-0:legacy
+      ^-  foreign-0:c0
       [?~(for.f ~ (profile:to-0 for.f)) sag.f]
     ::  foreign-mod: convert foreign with contact overlay
     ::  to legacy
     ::
     ++  foreign-mod
       |=  [f=^foreign mod=^contact]
-      ^-  foreign-0:legacy
+      ^-  foreign-0:c0
       [?~(for.f ~ (profile-mod:to-0 for.f mod)) sag.f]
   --
 ::  +contact-uni: merge contacts
@@ -308,7 +308,7 @@
 ::
 +$  sole-field-0
   $~  nickname+''
-  $<(?(%add-group %del-group) field-0:legacy)
+  $<(?(%add-group %del-group) field-0:c0)
 ::  +to-sole-edit: convert legacy sole field to contact edit
 ::
 ::  modify any field except for groups
@@ -358,7 +358,7 @@
 ::  +to-self-edit: convert legacy to self edit
 ::
 ++  to-self-edit
-  |=  [edit-0=(list field-0:legacy) groups=(set value)]
+  |=  [edit-0=(list field-0:c0) groups=(set value)]
   ^-  contact
   ::  converting v0 profile edit to v1 is non-trivial.
   ::  for field edits other than groups, we derive a contact
@@ -370,8 +370,8 @@
   :: .gid: only group edit actions
   ::
   =*  group-type  ?(%add-group %del-group)
-  =*  sole-edits  (list $<(group-type field-0:legacy))
-  =*  group-edits  (list $>(group-type field-0:legacy))
+  =*  sole-edits  (list $<(group-type field-0:c0))
+  =*  group-edits  (list $>(group-type field-0:c0))
   ::  sift edits
   ::
   =/  [sid=sole-edits gid=group-edits]
@@ -379,7 +379,7 @@
     ::  XX why is casting neccessary here?
     =-  [(flop `sole-edits`-<) (flop `group-edits`->)]
     %+  roll  edit-0
-    |=  [f=field-0:legacy sid=sole-edits gid=group-edits]
+    |=  [f=field-0:c0 sid=sole-edits gid=group-edits]
     ^+  [sid gid]
     ?.  ?=(group-type -.f)
       :-  [f sid]
@@ -390,7 +390,7 @@
   ::
   =.  groups
     %+  roll  gid
-    |=  [ged=$>(group-type field-0:legacy) =_groups]
+    |=  [ged=$>(group-type field-0:c0) =_groups]
     ?-  -.ged
       %add-group
     (~(put in groups) flag/flag.ged)
@@ -407,7 +407,7 @@
 ::  access to existing groups to be able to process group edits.
 ::
 ++  to-action
-  |=  o=$<(%edit action-0:legacy)
+  |=  o=$<(%edit action-0:c0)
   ^-  action
   ?-  -.o
     %anon  [%anon ~]

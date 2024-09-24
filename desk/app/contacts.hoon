@@ -253,7 +253,7 @@
     ::  +p-news-0: [legacy] publish news
     ::
     ++  p-news-0
-      |=  n=news-0:legacy
+      |=  n=news-0:c0
       (give %fact ~[/news] %contact-news !>(n))
     ::  +p-response: publish response
     ::
@@ -460,8 +460,24 @@
     ^+  cor
     |^  =+  !<([old=versioned-state cool=epic] old-vase)
         =?  cor  !=(okay cool)  l-epic
-        ::
         ?-  -.old
+        ::
+          %1
+        =.  state  old
+        =/  cards
+          %+  roll  ~(tap by peers)
+          |=  [[who=ship foreign] caz=(list card)]
+          ::  intent to connect, resubscribe
+          ::
+          ?:  ?&  =(%want sag)
+                  !(~(has by wex.bowl) [/contact who dap.bowl])
+              ==
+            =/  =path  [%v1 %contact ?~(for / /at/(scot %da wen.for))]
+            :_  caz
+            [%pass /contact %agent [who dap.bowl] %watch path]
+          caz
+        (emil cards)
+        ::
           %0
         =.  rof  ?~(rof.old *profile (profile:from-0 rof.old))
         ::  migrate peers. for each peer
@@ -471,7 +487,7 @@
         ::
         =^  caz=(list card)  peers
           %+  roll  ~(tap by rol.old)
-          |=  [[who=ship foreign-0:legacy] caz=(list card) =_peers]
+          |=  [[who=ship foreign-0:c0] caz=(list card) =_peers]
           ::  leave /epic if any
           ::
           =?  caz  (~(has by wex.bowl) [/epic who dap.bowl])
@@ -492,24 +508,8 @@
           :_  caz
           [%pass /contact %agent [who dap.bowl] %watch path]
         (emil caz)
-        ::
-          %1
-        =.  state  old
-        =/  cards
-          %+  roll  ~(tap by peers)
-          |=  [[who=ship foreign] caz=(list card)]
-          ::  intent to connect, resubscribe
-          ::
-          ?:  ?&  =(%want sag)
-                  !(~(has by wex.bowl) [/contact who dap.bowl])
-              ==
-            =/  =path  [%v1 %contact ?~(for / /at/(scot %da wen.for))]
-            :_  caz
-            [%pass /contact %agent [who dap.bowl] %watch path]
-          caz
-        (emil cards)
         ==
-    +$  state-0  [%0 rof=$@(~ profile-0:legacy) rol=rolodex:legacy]
+    +$  state-0  [%0 rof=$@(~ profile-0:c0) rol=rolodex:c0]
     +$  versioned-state
       $%  state-0
           state-1
@@ -536,7 +536,7 @@
           ::
           ::  legacy %contact-action
             ?(%contact-action %contact-action-0)
-          =/  act-0  !<(action-0:legacy vase)
+          =/  act-0  !<(action-0:c0 vase)
           ?.  ?=(%edit -.act-0)
             (to-action act-0)
           ::  v0 %edit needs special handling to evaluate
@@ -572,8 +572,8 @@
   ::
   ::  v0 scries
   ::
-  ::  /x/all -> $rolodex:legacy
-  ::  /x/contact/her=@ -> $@(~ contact-0:legacy)
+  ::  /x/all -> $rolodex:c0
+  ::  /x/contact/her=@ -> $@(~ contact-0:c0)
   ::
   ::  v1 scries
   ::
@@ -591,16 +591,16 @@
     ?+    pat  [~ ~]
       ::
         [%x %all ~]
-      =/  rol-0=rolodex:legacy
+      =/  rol-0=rolodex:c0
         %-  ~(urn by peers)
         |=  [who=ship far=foreign]
-        ^-  foreign-0:legacy
+        ^-  foreign-0:c0
         =/  mod=contact
           ?~  page=(~(get by book) who)
             ~
           mod.u.page
         (foreign:to-0 (foreign-mod far mod))
-      =/  lor-0=rolodex:legacy
+      =/  lor-0=rolodex:c0
         ?:  ?=(~ con.rof)  rol-0
         (~(put by rol-0) our.bowl (profile:to-0 rof) ~)
       ``contact-rolodex+!>(lor-0)
@@ -608,14 +608,14 @@
         [%x %contact her=@ ~]
       ?~  who=(slaw %p her.pat)
         [~ ~]
-      =/  tac=?(~ contact-0:legacy)
+      =/  tac=?(~ contact-0:c0)
         ?:  =(our.bowl u.who)
           ?~(con.rof ~ (contact:to-0 con.rof))
         =+  far=(~(get by peers) u.who)
         ?:  |(?=(~ far) ?=(~ for.u.far))  ~
         (contact:to-0 con.for.u.far)
       ?~  tac  [~ ~]
-      ``contact+!>(`contact-0:legacy`tac)
+      ``contact+!>(`contact-0:c0`tac)
       ::
         [%x %v1 %self ~]
       ``contact-1+!>(`contact`con.rof)

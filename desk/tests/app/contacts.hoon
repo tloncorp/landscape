@@ -1,4 +1,4 @@
-/-  *contacts, x=contacts-0
+/-  *contacts, c0=contacts-0
 /+  *test-agent
 /+  c=contacts
 /=  contacts-agent  /app/contacts
@@ -29,7 +29,7 @@
   ;<  caz=(list card)  b  (do-init %contacts contacts-agent)
   ;<  =bowl  b  get-bowl
   ::
-  =|  con-0=contact-0:x
+  =|  con-0=contact-0:c0
   =.  nickname.con-0  'Zod'
   =.  bio.con-0  'The first of the galaxies'
   ::
@@ -37,8 +37,8 @@
     %-  malt
     ^-  (list (pair @tas value))
     ~[nickname+text/'Zod' bio+text/'The first of the galaxies']
-  =/  edit-0=(list field-0:x)
-    ^-  (list field-0:x)
+  =/  edit-0=(list field-0:c0)
+    ^-  (list field-0:c0)
     :~  nickname+'Zod'
         bio+'The first of the galaxies'
     ==
@@ -52,11 +52,11 @@
   ;<  caz=(list card)  b  (do-watch /news)
   ::
   ;<  ~  b  (set-src our.bowl)
-  ::  action-0:x profile %edit
+  ::  action-0:c0 profile %edit
   ::
   ;<  caz=(list card)  b  (do-poke contact-action+!>([%edit edit-0]))
   ::
-  =/  upd-0=update-0:x
+  =/  upd-0=update-0:c0
     [%full (add now.bowl (mul 2 tick)) ~]
   =/  upd-1=update
     [%full (add now.bowl (mul 2 tick)) ~]
@@ -76,7 +76,7 @@
   ;<  caz=(list card)  b  (do-init %contacts contacts-agent)
   ;<  =bowl  b  get-bowl
   ::
-  =|  con-0=contact-0:x
+  =|  con-0=contact-0:c0
   =.  nickname.con-0  'Zod'
   =.  bio.con-0  'The first of the galaxies'
   =.  groups.con-0  (silt ~sampel-palnet^%oranges ~)
@@ -89,8 +89,8 @@
         groups+set/(silt flag/~sampel-palnet^%oranges ~)
     ==
   ::
-  =/  edit-0=(list field-0:x)
-    ^-  (list field-0:x)
+  =/  edit-0=(list field-0:c0)
+    ^-  (list field-0:c0)
     :~  nickname+'Zod'
         bio+'The first of the galaxies'
         add-group+~sampel-palnet^%apples
@@ -111,7 +111,7 @@
   ;<  caz=(list card)  b  (do-watch /v1/news)
   ::
   ;<  ~  b  (set-src our.bowl)
-  ::  action-0:x profile %edit
+  ::  action-0:c0 profile %edit
   ::
   ;<  caz=(list card)  b  (do-poke %contact-action !>([%edit edit-0]))
   ;<  ~  b
@@ -254,7 +254,7 @@
   ;<  caz=(list card)  b  (do-init %contacts contacts-agent)
   ;<  =bowl  b  get-bowl
   ::
-  =|  con-0=contact-0:x
+  =|  con-0=contact-0:c0
   =.  nickname.con-0  'Zod'
   =.  bio.con-0  'The first of the galaxies'
   ::
@@ -263,7 +263,7 @@
     ^-  (list (pair @tas value))
     ~[nickname+text/'Zod' bio+text/'The first of the galaxies']
   ::
-  =/  upd-0=update-0:x
+  =/  upd-0=update-0:c0
     [%full (add now.bowl tick) con-0]
   =/  upd-1=update
     [%full (add now.bowl tick) con-1]
@@ -837,7 +837,7 @@
   ;<  peek=(unit (unit cage))  b  (get-peek /x/all)
   =/  cag=cage  (need (need peek))
   ?>  ?=(%contact-rolodex p.cag)
-  =/  rol  !<(rolodex:x q.cag)
+  =/  rol  !<(rolodex:c0 q.cag)
   ;<  ~  b
     %+  ex-equal
     !>  (~(got by rol) ~sun)
