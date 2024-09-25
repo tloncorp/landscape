@@ -153,8 +153,23 @@
   ::
   ?:  (gth (met 3 (jam con)) 10.000)
     |
-  ::  prohibit data URLs in the image links
+  ::  field restrictions
   ::
+  ::  1. %nickname field: max 64 characters
+  ::  2. %bio field: max 2048 characters
+  ::  3. data URLs in %avatar and %cover
+  ::     are forbidden
+  ::
+  =+  nickname=(~(get cy con) %nickname %text)
+  ?:  ?&  ?=(^ nickname)
+          (gth (met 3 u.nickname) 64)
+      ==
+    |
+  =+  bio=(~(get cy con) %bio %text)
+  ?:  ?&  ?=(^ bio)
+          (gth (met 3 u.bio) 2.048)
+      ==
+    |
   =+  avatar=(~(get cy con) %avatar %text)
   ?:  ?&  ?=(^ avatar)
           =('data:' (end 3^5 u.avatar))
