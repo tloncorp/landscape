@@ -515,9 +515,8 @@
         =.  cards       (snoc cards [%pass wire.sub %agent gill.sub %leave ~])
         =.  wex.bowl    (~(del by wex.bowl) -.sub)
         =^  caz  inner
-          %.  [wire.sub %kick ~]
-          =.  src.bowl  p.gill.i.suz
-          ~(on-agent inner inner-bowl:up)
+          =.  src.bowl  p.gill.sub
+          (on-agent:og wire.sub %kick ~)
         =^  caz  state  (play-cards:up caz)
         $(cards (weld cards caz), suz t.suz)
       ::
