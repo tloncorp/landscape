@@ -140,8 +140,7 @@
     %-  of
     :~  anon+ul
         self+contact
-        page+(ot cid+cid contact+contact ~)
-        spot+(ot ship+ship contact+contact ~)
+        page+(ot kip+kip contact+contact ~)
         edit+(ot kip+kip contact+contact ~)
         wipe+(ar kip)
         meet+(ar ship)

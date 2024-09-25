@@ -98,7 +98,6 @@
 ::  %anon: delete our profile
 ::  %self: edit our profile
 ::  %page: create a new contact page
-::  %spot: add peer as a contact
 ::  %edit: edit a contact overlay
 ::  %wipe: delete a contact page
 ::  %meet: track a peer
@@ -108,8 +107,7 @@
 +$  action
   $%  [%anon ~]
       [%self p=contact]
-      [%page p=cid q=contact]
-      [%spot p=ship q=contact]
+      [%page p=kip q=contact]
       [%edit p=kip q=contact]
       [%wipe p=(list kip)]
       [%meet p=(list ship)]

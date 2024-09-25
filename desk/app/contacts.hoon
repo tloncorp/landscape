@@ -156,17 +156,9 @@
         cor
       ?>  (sane-contact new)
       (p-commit-self new)
-    ::  +p-page: create new contact page
+    ::  +p-page-spot: add ship as a contact
     ::
-    ++  p-page
-      |=  [=cid con=contact]
-      ?:  (~(has by book) id+cid)
-        ~|  "contact page {<cid>} already exists"  !!
-      ?>  (sane-contact con)
-      (p-commit-page cid con)
-    ::  +p-spot: add peer as a contact
-    ::
-    ++  p-spot
+    ++  p-page-spot
       |=  [who=ship mod=contact]
       ?:  (~(has by book) who)
         ~|  "peer {<who>} is already a contact"  !!
@@ -177,7 +169,17 @@
         ?~  for.far  *contact
         con.for.far
       ?>  (sane-contact mod)
-      (p-commit-spot who con mod)
+      (p-commit-page who con mod)
+    ::  +p-page: create new contact page
+    ::
+    ++  p-page
+      |=  [=kip mod=contact]
+      ?@  kip
+        (p-page-spot kip mod)
+      ?:  (~(has by book) kip)
+        ~|  "contact page {<cid>} already exists"  !!
+      ?>  (sane-contact mod)
+      (p-commit-page kip ~ mod)
     ::  +p-edit: edit contact page overlay
     ::
     ++  p-edit
@@ -215,18 +217,9 @@
     ::  +p-commit-page: publish new contact page
     ::
     ++  p-commit-page
-      |=  [=cid mod=contact]
-      =/  =page
-        [*contact mod]
-      =.  book  (~(put by book) id+cid page)
-      (p-response [%page id+cid page])
-    ::  +p-commit-spot: publish peer spot
-    ::
-    ++  p-commit-spot
-      |=  [who=ship con=contact mod=contact]
-      =.  book
-        (~(put by book) who con mod)
-      (p-response [%page who con mod])
+      |=  [=kip =page]
+      =.  book  (~(put by book) kip page)
+      (p-response [%page kip page])
     ::  +p-commit-edit: publish contact page update
     ::
     ++  p-commit-edit
@@ -534,7 +527,10 @@
       =/  act=action
         ?-  mark
           ::
-          ::  legacy %contact-action
+            %contact-action-1
+          !<(action vase)
+          ::  upconvert legacy %contact-action
+          ::
             ?(%contact-action %contact-action-0)
           =/  act-0  !<(action-0:c0 vase)
           ?.  ?=(%edit -.act-0)
@@ -547,20 +543,16 @@
             =+  set=(~(ges cy con.rof) groups+%flag)
             (fall set ~)
           [%self (to-self-edit p.act-0 groups)]
-          ::
-            %contact-action-1
-          !<(action vase)
         ==
       ?-  -.act
         %anon  p-anon:pub
         %self  (p-self:pub p.act)
-        %page  (p-page:pub p.act q.act)
-        ::  if we spot someone who is not a peer,
+        ::  if we add a page for someone who is not a peer,
         ::  we meet them first
         ::
-        %spot  =?  cor  !(~(has by peers) p.act)
+        %page  =?  cor  &(?=(ship p.act) !(~(has by peers) p.act))
                  si-abet:si-meet:(sub p.act)
-               (p-spot:pub p.act q.act)
+               (p-page:pub p.act q.act)
         %edit  (p-edit:pub p.act q.act)
         %wipe  (p-wipe:pub p.act)
         %meet  (s-many:sub p.act |=(s=_s-impl:sub si-meet:s))

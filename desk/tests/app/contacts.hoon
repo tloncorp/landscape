@@ -312,7 +312,7 @@
   ;<  ~  b  (set-src our.bowl)
   ::  create new contact page
   ::
-  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%page 0v1 con-1]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%page id+0v1 con-1]))
   ::  news is published on /v1/news
   ::
   ;<  ~  b  %+  ex-cards  caz
@@ -328,7 +328,7 @@
     !>  [%contact-page-0 !>(mypage)]
   ::  fail to create duplicate page
   ::
-  %-  ex-fail  (do-poke contact-action-1+!>([%page 0v1 con-1]))
+  %-  ex-fail  (do-poke contact-action-1+!>([%page id+0v1 con-1]))
 ::  +test-poke-edit: edit the contact book
 ::
 ++  test-poke-edit
@@ -364,7 +364,7 @@
   ;<  ~  b  (set-src our.bowl)
   ::  create new contact page
   ::
-  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%page 0v1 con-1]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%page id+0v1 con-1]))
   ::  news is published on /v1/news
   ::
   ;<  ~  b  %+  ex-cards  caz
@@ -424,7 +424,7 @@
   ;<  caz=(list card)  b  (do-poke %contact-action !>([%meet ~[~sun]]))
   (ex-cards caz ~)
 ::
-++  test-poke-spot-unknown
+++  test-poke-page-unknown
   %-  eval-mare
   =/  m  (mare ,~)
   =*  b  bind:m
@@ -440,9 +440,9 @@
   ::
   ;<  ~  b  (set-src our.bowl)
   ;<  caz=(list card)  b  (do-watch /news)
-  ::  spot ~sun to contact boook: he also becomes our peer
+  ::  page ~sun to contact boook: he also becomes our peer
   ::
-  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%spot ~sun ~]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%page ~sun ~]))
   ;<  ~  b
     %+  ex-cards  caz
     :~  (ex-task /contact [~sun %contacts] %watch /v1/contact)
@@ -493,7 +493,7 @@
   !>  cag
   !>  contact-1+!>((contact-uni:c con-sun con-mod))
 ::
-++  test-poke-spot-wipe
+++  test-poke-page-wipe
   %-  eval-mare
   =/  m  (mare ,~)
   =*  b  bind:m
@@ -534,7 +534,7 @@
   ::  ~sun is added to contacts
   ::
   ;<  ~  b  (set-src our.bowl)
-  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%spot ~sun ~]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%page ~sun ~]))
   ;<  ~  b
     %+  ex-cards  caz
     :~  (ex-fact ~[/v1/news] contact-response-0+!>([%page ~sun con-sun ~]))
@@ -638,7 +638,7 @@
   ::  ~sun is added to contacts
   ::
   ;<  ~  b  (set-src our.bowl)
-  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%spot ~sun ~]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%page ~sun ~]))
   ;<  ~  b
     %+  ex-cards  caz
     :~  (ex-fact ~[/v1/news] contact-response-0+!>([%page ~sun con-sun ~]))
@@ -863,8 +863,8 @@
     ^-  (list (pair @tas value))
     ~[nickname+text/'Mur' bio+text/'Murky waters']
   ::
-  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%page 0v1 con-1]))
-  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%page 0v2 con-2]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%page id+0v1 con-1]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%page id+0v2 con-2]))
   ::  peek book: two contacts are found
   ::
   ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/book)
@@ -896,8 +896,8 @@
     ^-  (list (pair @tas value))
     ~[nickname+text/'Mur' bio+text/'Murky waters']
   ::
-  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%page 0v1 con-1]))
-  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%page 0v2 con-2]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%page id+0v1 con-1]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%page id+0v2 con-2]))
   ::  unknown page is not found
   ::
   ;<  peek=(unit (unit cage))  b  (get-peek /u/v1/book/id/0v3)
@@ -955,7 +955,7 @@
   ::  ~sun is added to the contact book with user overlay
   ::
   ;<  ~  b  (set-src our.bowl)
-  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%spot ~sun con-mod]))
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%page ~sun con-mod]))
   ::  ~mur publishes his contact
   ::
   ;<  ~  b  (set-src ~mur)
