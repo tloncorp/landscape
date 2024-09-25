@@ -121,7 +121,7 @@
 +$  update
   $%  [%full profile]
   ==
-::  $news: local update
+::  $response: local update
 ::
 ::  %self: profile update
 ::  %page: contact page update
