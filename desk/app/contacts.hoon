@@ -317,10 +317,7 @@
                       ?>  ?=(%want sag)
                       ?~  p.sign  si-cor
                       %-  (slog 'contact-fail' u.p.sign)
-                      ::  schedule retry 30m later
-                      ::  XX set production timer
-                      ::
-                      =/  wake=@da  (add now.bowl ~s10)
+                      =/  wake=@da  (add now.bowl ~m30)
                       =.  retry  (~(put by retry) who wake)
                       %_  si-cor  cor
                         (pass /retry/(scot %p who) %arvo %b %wait wake)
