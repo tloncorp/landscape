@@ -780,22 +780,23 @@
     ::  docket tries to serve glob contents from the runtime http server cache.
     ::  as such, we must keep that cache updated as the glob changes.
     ::
-    =;  notes=(list note-arvo)
-      (turn notes arvo:(pass /cache))
-    %+  weld
-      ::  clear old cache entries, if any
-      ::
-      ?~  old  ~
-      ?.  ?=(%glob -.chad.u.old)  ~
-      ?.  ?=(%glob -.href.docket.u.old)  ~
-      =/  base=@t
-        (cat 3 '/apps/' base.href.docket.u.old)
-      %+  turn  ~(tap by glob.chad.u.old)
-      |=  [=path *]
-      ^-  note-arvo
-      =/  url=@t  (rap 3 base (spat (snip path)) '.' (rear path) ~)
-      [%e %set-response url ~]
-    ::  set new cache entries, if needed
+    =;  caches=(map @t (unit cache-entry:eyre))
+      %+  turn  ~(tap by caches)
+      |=  [url=@t entry=(unit cache-entry:eyre)]
+      (arvo:(pass /cache) %e %set-response url entry)
+    %-  %~  gas  by
+        ^-  (map @t (unit cache-entry:eyre))
+        ::  clear old cache entries, if any
+        ::
+        ?~  old  ~
+        ?.  ?=(%glob -.chad.u.old)  ~
+        ?.  ?=(%glob -.href.docket.u.old)  ~
+        =/  base=@t
+          (cat 3 '/apps/' base.href.docket.u.old)
+        %-  ~(rep by glob.chad.u.old)
+        |=  [[=path *] out=(map @t (unit cache-entry:eyre))]
+        (~(put by out) (rap 3 base (spat (snip path)) '.' (rear path) ~) ~)
+    ::  overwrite with new cache entries, if needed
     ::
     =/  new  (~(got by charges) desk)
     ?.  ?=(%glob -.chad.new)  ~
@@ -804,16 +805,15 @@
       (cat 3 '/apps/' base.href.docket.new)
     %+  turn  ~(tap by glob.chad.new)
     |=  [=path =mime]
-    ^-  note-arvo
     ::NOTE  +payload-from-glob responds to both /path.ext and /path/ext,
     ::      and you could argue we should match that behavior here. however,
     ::      we already don't (cannot) match its "fall back to /index/html"
     ::      behavior, and the /path.ext case is by far the more common case.
     ::      so, we simply assume /path.ext intent, ignore /path/ext cases,
     ::      and reap 95% of the gains that way.
-    =/  url=@t  (rap 3 base (spat (snip path)) '.' (rear path) ~)
+    :-  (rap 3 base (spat (snip path)) '.' (rear path) ~)
     =;  payload=simple-payload:http
-      [%e %set-response url ~ & %payload payload]
+      `[& %payload payload]
     ::NOTE  matches +payload-from-glob
     :_  `q.mime
     :-  200
