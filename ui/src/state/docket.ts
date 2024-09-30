@@ -223,10 +223,15 @@ export function useAllyTreaties(ship: string) {
   //     [ship]
   //   )
   // );
-  const { data: treatyData, isLoading } = useReactQueryScry<TreatyUpdateIni>({
+
+  const { data: treatyData, isLoading } = useReactQuerySubscription<
+    TreatyUpdateIni,
+    TreatyUpdate
+  >({
     queryKey: ['treaty', 'treaties', ship],
     app: 'treaty',
     path: `/treaties/${ship}`,
+    scry: `/treaties/${ship}`,
     options: {
       enabled: isAllied,
     },
@@ -238,6 +243,7 @@ export function useAllyTreaties(ship: string) {
     }
     return normalizeDockets(treatyData.ini);
   }, [treatyData]);
+
   const status = getAllyTreatyStatus(
     treaties,
     isLoading,

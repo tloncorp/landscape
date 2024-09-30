@@ -50,15 +50,10 @@ export const useNotifications = (mentionsOnly = false) => {
       };
     }
 
-    const notDmsFromGroupsDesk = (s: Skein) =>
-      !((isDM(s.top.rope) || isClub(s.top.rope)) && isGroups(s.top.rope));
-
-    const unreads = skeins
-      .filter((s) => s.unread)
-      .filter((s) => notDmsFromGroupsDesk(s));
-    const filteredSkeins = skeins
-      .filter((s) => (mentionsOnly ? isMention(s.top) : s))
-      .filter((s) => notDmsFromGroupsDesk(s));
+    const unreads = skeins.filter((s) => s.unread);
+    const filteredSkeins = skeins.filter((s) =>
+      mentionsOnly ? isMention(s.top) : s
+    );
 
     return {
       notifications: groupSkeinsByDate(filteredSkeins),
