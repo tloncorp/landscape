@@ -177,7 +177,7 @@
     |
   =+  cover=(~(get cy con) %cover %text)
   ?:  ?&  ?=(^ cover)
-          !=('data:' (end 3^5 u.cover))
+          =('data:' (end 3^5 u.cover))
       ==
     |
   &
