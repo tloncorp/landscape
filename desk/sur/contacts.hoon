@@ -66,7 +66,7 @@
 ::  .for: profile
 ::  .sag: connection status
 ::
-+$  foreign  [for=$@(~ profile) sag=$@(~ saga)]
++$  foreign  [for=$@(~ profile) sag=saga]
 ::  $page: contact page
 ::
 ::  .con: peer contact

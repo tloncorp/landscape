@@ -366,10 +366,11 @@
       ++  si-retry
         ^+  si-cor
         ::
-        ::  XX this works around a gall/behn bug:
-        ::  the timer is identified by the whole duct.
-        ::  it needn't be the same when gall passes our
-        ::  card to behn.
+        ::XX  this works around a gall/behn bug:
+        ::    the timer is identified by the duct.
+        ::    it needn't be the same when gall passes our
+        ::    card to behn.
+        ::
         ?.  (~(has by retry) who)
           si-cor
         =.  retry  (~(del by retry) who)

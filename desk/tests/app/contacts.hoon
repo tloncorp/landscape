@@ -17,6 +17,23 @@
   ^-  @da
   ?:  (lth old new)  new
   (add old tick)
+::  +filter: filter unwanted cards
+::
+:: ++  filter
+::   |=  caz=(list card)
+::   ^+  caz
+::   %+  skip  caz
+::   |=  =card
+::   ?.  ?=(%pass -.card)  |
+::   ?+  p.card  |
+::     [%~.~ %negotiate *]  &
+::   ==
+:: ++  ex-cards
+::   |=  [caz=(list card) exes=(list $-(card tang))]
+::   %+  ^ex-cards
+::     (filter caz)
+::   exes
+::
 +|  %poke-0
 ::
 ::  +test-poke-0-anon: v0 delete the profile
@@ -733,17 +750,17 @@
   !>  contact-foreign-0+!>(`foreign`[[now.bowl con-sun] ~])
 ::
 +|  %peer
-::  +test-peer-profile
+::  +test-pub-profile
 ::
 ::    scenario
 ::
 ::  ~sun subscribes to our /contact. we publish
-::  our profile with current time-a. we then change
-::  the profile, advancing the timestamp to time-b.
-::  ~sun now subscribes to /contact/at/time-b.
+::  our profile with current time a. we then change
+::  the profile, advancing the timestamp to time b.
+::  ~sun now subscribes to /contact/at/b.
 ::  no update is sent.
 ::
-++  test-peer-profile
+++  test-pub-profile
   %-  eval-mare
   =/  m  (mare ,~)
   =*  b  bind:m
@@ -799,6 +816,71 @@
   ;<  ~  b  (set-src ~sun)
   ;<  caz=(list card)  b  (do-watch /v1/contact/at/(scot %da now))
   %+  ex-cards  caz  ~
+::
+::  +test-sub-profile
+::
+::    scenario
+::
+::  we subscribe to ~sun's /contact. we receive
+::  her profile at time a. subsequently, another update
+::  of the profile with older timestamp is received.
+::  ~sun's profile is not updated. most recent update
+::  at time b arrives. ~sun's profile is updated.
+::  we are kicked off the subscription, and in
+::  the result we subscribe to /contact/at/b
+::  path.
+::
+++  test-sub-profile
+  %-  eval-mare
+  =/  m  (mare ,~)
+  =*  b  bind:m
+  ^-  form:m
+  ;<  caz=(list card)  b  (do-init %contacts contacts-agent)
+  ;<  =bowl  b  get-bowl
+  ::
+  =/  con=contact
+    %-  malt
+    ^-  (list (pair @tas value))
+    ~[nickname+text/'Sun' bio+text/'It is sunny today']
+  =/  mod=contact
+    %-  ~(uni by con)
+    %-  malt  ^-  (list (pair @tas value))
+    ~[birthday+date/~2000.1.1]
+  ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%meet ~sun ~]))
+  ;<  ~  b
+    %+  ex-cards  caz
+    :~  (ex-task /contact [~sun %contacts] %watch /v1/contact)
+        (ex-fact ~[/news] contact-news+!>([~sun ~]))
+        (ex-fact ~[/v1/news] contact-response-0+!>([%peer ~sun ~]))
+    ==
+  ;<  ~  b  (set-src ~sun)
+  ;<  caz=(list card)  b
+    (do-agent /contact [~sun %contacts] %fact contact-update-1+!>([%full now.bowl con]))
+  ;<  caz=(list card)  b
+    (do-agent /contact [~sun %contacts] %fact contact-update-1+!>([%full (sub now.bowl tick) mod]))
+  ::  ~sun's profile is unchanged
+  ::
+  ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/peer/~sun)
+  =/  cag=cage  (need (need peek))
+  ;<  ~  b
+    %+  ex-equal
+    !>  cag
+    !>  contact-foreign-0+!>(`foreign`[[now.bowl con] %want])
+  ;<  caz=(list card)  b
+    (do-agent /contact [~sun %contacts] %fact contact-update-1+!>([%full (add now.bowl tick) mod]))
+  ;<  peek=(unit (unit cage))  b  (get-peek /x/v1/peer/~sun)
+  =/  cag=cage  (need (need peek))
+  ;<  ~  b
+    %+  ex-equal
+    !>  cag
+    !>  contact-foreign-0+!>(`foreign`[[(add now.bowl tick) mod] %want])
+  ;<  caz=(list card)  b
+    (do-agent /contact [~sun %contacts] %kick ~)
+  %+  ex-cards  caz
+  :~  %^  ex-task  /contact
+          [~sun %contacts]
+          [%watch /v1/contact/at/(scot %da (add now.bowl tick))]
+  ==
 ::
 +|  %peek
 ::
@@ -998,7 +1080,7 @@
   ;<  ~  b
     %+  ex-cards  caz
     :~  %+  ex-arvo  /retry/(scot %p ~sun)
-        [%b %wait (add now.bowl ~s10)]
+        [%b %wait (add now.bowl ~m30)]
     ==
   ;<  caz=(list card)  b
     %+  do-arvo  /retry/(scot %p ~sun)
