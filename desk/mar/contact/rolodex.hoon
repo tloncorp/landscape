@@ -1,6 +1,6 @@
-/-  c=contacts
-/+  j=contacts-json
-|_  rol=rolodex:c
+/-  c=contacts, x=contacts-0
+/+  j=contacts-json-0
+|_  rol=rolodex:x
 ++  grad  %noun
 ++  grow
   |%
@@ -9,6 +9,6 @@
   --
 ++  grab
   |%
-  ++  noun  rolodex:c
+  ++  noun  rolodex:x
   --
 --

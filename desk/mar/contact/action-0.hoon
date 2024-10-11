@@ -1,6 +1,6 @@
-/-  c=contacts
-/+  j=contacts-json
-|_  =action:c
+/-  c=contacts, legacy=contacts-0
+/+  j=contacts-json-0
+|_  action=action-0:legacy
 ++  grad  %noun
 ++  grow
   |%
@@ -9,7 +9,7 @@
   --
 ++  grab
   |%
-  ++  noun  action:c
+  ++  noun  action-0:legacy
   ++  json  action:dejs:j
   --
 --

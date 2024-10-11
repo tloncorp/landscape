@@ -1,14 +1,14 @@
 /-  c=contacts, x=contacts-0
 /+  j=contacts-json-0
-|_  news=news-0:x
+|_  contact=contact-0:x
 ++  grad  %noun
 ++  grow
   |%
-  ++  noun  news
-  ++  json  (news:enjs:j news)
+  ++  noun  contact
+  ++  json  (contact:enjs:j contact)
   --
 ++  grab
   |%
-  ++  noun  news-0:x
+  ++  noun  contact-0:x
   --
 --

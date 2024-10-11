@@ -1,6 +1,7 @@
 /-  c=contacts, g=groups
+/-  legacy=contacts-0
 /+  gj=groups-json
-=,  legacy:c
+=,  legacy
 |%
 ++  enjs
   =,  enjs:format
@@ -10,21 +11,21 @@
   ++  ship
     |=(her=@p n+(rap 3 '"' (scot %p her) '"' ~))
   ::
-  ++  action-0
-    |=  a=action-0:c
+  ++  action
+    |=  a=action-0
     ^-  json
     %+  frond  -.a
     ?-  -.a
       %anon  ~
-      %edit  a+(turn p.a field-0)
+      %edit  a+(turn p.a field)
       %meet  a+(turn p.a ship)
       %heed  a+(turn p.a ship)
       %drop  a+(turn p.a ship)
       %snub  a+(turn p.a ship)
     ==
   ::
-  ++  contact-0
-    |=  c=contact-0:c
+  ++  contact
+    |=  c=contact-0
     ^-  json
     %-  pairs
     :~  nickname+s+nickname.c
@@ -39,8 +40,8 @@
         |=([f=flag:g j=(list json)] [s+(flag:enjs:gj f) j])
     ==
   ::
-  ++  field-0
-    |=  f=field-0:c
+  ++  field
+    |=  f=field-0
     ^-  json
     %+  frond  -.f
     ?-  -.f
@@ -54,20 +55,20 @@
       %del-group  s+(flag:enjs:gj flag.f)
     ==
   ::
-  ++  rolodex-0
-    |=  r=rolodex-0:c
+  ++  rolodex
+    |=  r=^rolodex
     ^-  json
     %-  pairs
     %-  ~(rep by r)
-    |=  [[who=@p foreign-0:c] j=(list [@t json])]
-    [[(scot %p who) ?.(?=([@ ^] for) ~ (contact-0 con.for))] j]  :: XX stale flag per sub state?
+    |=  [[who=@p foreign-0] j=(list [@t json])]
+    [[(scot %p who) ?.(?=([@ ^] for) ~ (contact con.for))] j]  :: XX stale flag per sub state?
   ::
-  ++  news-0
-    |=  n=news-0:c
+  ++  news
+    |=  n=news-0
     ^-  json
     %-  pairs
     :~  who+(ship who.n)
-        con+?~(con.n ~ (contact-0 con.n))
+        con+?~(con.n ~ (contact con.n))
     ==
   --
 ::
@@ -84,6 +85,8 @@
     |=  jon=json
     ?+  jon  !!
       [%s *]  (slav aur p.jon)
+    ::  XX this seems wrong: current JSON parser
+    ::  would never pass a ship as a number
     ::
       [%n *]  ~|  bad-n+p.jon
               =/  wyd  (met 3 p.jon)
@@ -93,19 +96,19 @@
               (slav aur (cut 3 [1 (sub wyd 2)] p.jon))
     ==
   ::
-  ++  action-0
-    ^-  $-(json action-0:c)
+  ++  action
+    ^-  $-(json action-0)
     %-  of
     :~  anon+ul
-        edit+(ar field-0)
+        edit+(ar field)
         meet+(ar ship)
         heed+(ar ship)
         drop+(ar ship)
         snub+(ar ship)
     ==
   ::
-  ++  contact-0
-    ^-  $-(json contact-0:c)
+  ++  contact
+    ^-  $-(json contact-0)
     %-  ot
     :~  nickname+so
         bio+so
@@ -116,8 +119,8 @@
         groups+(as flag:dejs:gj)
     ==
   ::
-  ++  field-0
-    ^-  $-(json field-0:c)
+  ++  field
+    ^-  $-(json field-0)
     %-  of
     :~  nickname+so
         bio+so
