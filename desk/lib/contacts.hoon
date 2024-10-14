@@ -161,6 +161,9 @@
 ::
 ::  - restrict size of the jammed noun to 10kB
 ::  - prohibit 'data:' URLs in image data
+::  - nickname and bio must be a %text
+::  - avatar and cover must be %look
+::  - groups must be a %set of %flags
 ::
 ++  sane-contact
   |=  con=contact
@@ -200,6 +203,16 @@
   =+  cover=(~(get cy con) %cover %look)
   ?:  ?&  ?=(^ cover)
           =('data:' (end 3^5 u.cover))
+      ==
+    |
+  ?.  (~(typ cy con) %groups %set)  |
+  =+  groups=(~(get cy con) %groups %set)
+  ::  verifying the type of the first set element is enough,
+  ::  set uniformity is verified by +soft above.
+  ::
+  ?:  ?&  ?=(^ groups)
+          ?=(^ u.groups)
+          !?=(%flag -.n.u.groups)
       ==
     |
   &
