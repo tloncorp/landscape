@@ -6,6 +6,24 @@
 ::
 ++  cy
   |_  c=contact
+  ::  +typ: enforce type if value exists
+  ::
+  ++  typ
+    |*  [key=@tas typ=value-type]
+    ^-  ?
+    =/  val=(unit value)  (~(get by c) key)
+    ?~  val  &
+    ?~  u.val  |
+    ?-  typ
+      %text  ?=(%text -.u.val)
+      %numb  ?=(%numb -.u.val)
+      %date  ?=(%date -.u.val)
+      %tint  ?=(%tint -.u.val)
+      %ship  ?=(%ship -.u.val)
+      %look  ?=(%look -.u.val)
+      %flag  ?=(%flag -.u.val)
+      %set   ?=(%set -.u.val)
+    ==
   ::  +get: typed get
   ::
   ++  get
@@ -160,21 +178,25 @@
   ::  3. data URLs in %avatar and %cover
   ::     are forbidden
   ::
+  ?.  (~(typ cy con) %nickname %text)  |
   =+  nickname=(~(get cy con) %nickname %text)
   ?:  ?&  ?=(^ nickname)
           (gth (met 3 u.nickname) 64)
       ==
     |
+  ?.  (~(typ cy con) %bio %text)  |
   =+  bio=(~(get cy con) %bio %text)
   ?:  ?&  ?=(^ bio)
           (gth (met 3 u.bio) 2.048)
       ==
     |
+  ?.  (~(typ cy con) %avatar %look)  |
   =+  avatar=(~(get cy con) %avatar %look)
   ?:  ?&  ?=(^ avatar)
           =('data:' (end 3^5 u.avatar))
       ==
     |
+  ?.  (~(typ cy con) %cover %look)  |
   =+  cover=(~(get cy con) %cover %look)
   ?:  ?&  ?=(^ cover)
           =('data:' (end 3^5 u.cover))
