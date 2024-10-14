@@ -170,12 +170,12 @@
           (gth (met 3 u.bio) 2.048)
       ==
     |
-  =+  avatar=(~(get cy con) %avatar %text)
+  =+  avatar=(~(get cy con) %avatar %look)
   ?:  ?&  ?=(^ avatar)
           =('data:' (end 3^5 u.avatar))
       ==
     |
-  =+  cover=(~(get cy con) %cover %text)
+  =+  cover=(~(get cy con) %cover %look)
   ?:  ?&  ?=(^ cover)
           =('data:' (end 3^5 u.cover))
       ==
@@ -219,9 +219,9 @@
           color+tint/color.o
       ==
     =?  c  ?=(^ avatar.o)
-      (~(put by c) %avatar text/u.avatar.o)
+      (~(put by c) %avatar look/u.avatar.o)
     =?  c  ?=(^ cover.o)
-      (~(put by c) %cover text/u.cover.o)
+      (~(put by c) %cover look/u.cover.o)
     =?  c  !?=(~ groups.o)
       %+  ~(put by c)  %groups
       :-  %set
@@ -258,9 +258,9 @@
       color
         (~(gub cy c) %color %tint)
       avatar
-        (~(get cy c) %avatar %text)
+        (~(get cy c) %avatar %look)
       cover
-        (~(get cy c) %cover %text)
+        (~(get cy c) %cover %look)
       groups
         =/  groups
           (~(get cy c) %groups %set)
