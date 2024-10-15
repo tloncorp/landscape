@@ -162,7 +162,7 @@
 ::  - restrict size of the jammed noun to 10kB
 ::  - prohibit 'data:' URLs in image data
 ::  - nickname and bio must be a %text
-::  - avatar and cover must be %look
+::  - avatar and cover must be a %look
 ::  - groups must be a %set of %flags
 ::
 ++  sane-contact
@@ -416,40 +416,40 @@
   ::  we need to operate directly on (existing?) groups field in
   ::  the profile.
   ::
-  :: .tid: field edit actions, no group edit
-  :: .gid: only group edit actions
+  :: .sed: sole field edits, no group edits
+  :: .ged: only group edit actions
   ::
   =*  group-type  ?(%add-group %del-group)
   =*  sole-edits  (list $<(group-type field-0:c0))
   =*  group-edits  (list $>(group-type field-0:c0))
   ::  sift edits
   ::
-  =/  [sid=sole-edits gid=group-edits]
+  =/  [sed=sole-edits ged=group-edits]
     ::
     ::  XX why is casting neccessary here?
     =-  [(flop `sole-edits`-<) (flop `group-edits`->)]
     %+  roll  edit-0
-    |=  [f=field-0:c0 sid=sole-edits gid=group-edits]
-    ^+  [sid gid]
+    |=  [f=field-0:c0 sed=sole-edits ged=group-edits]
+    ^+  [sed ged]
     ?.  ?=(group-type -.f)
-      :-  [f sid]
-      gid
-    :-  sid
-    [f gid]
+      :-  [f sed]
+      ged
+    :-  sed
+    [f ged]
   ::  edit favourite groups
   ::
   =.  groups
-    %+  roll  gid
-    |=  [ged=$>(group-type field-0:c0) =_groups]
-    ?-  -.ged
+    %+  roll  ged
+    |=  [fav=$>(group-type field-0:c0) =_groups]
+    ?-  -.fav
       %add-group
-    (~(put in groups) flag/flag.ged)
+    (~(put in groups) flag/flag.fav)
       %del-group
-    (~(del in groups) flag/flag.ged)
+    (~(del in groups) flag/flag.fav)
     ==
-  %-  ~(uni by (to-sole-edit sid))
-  ^-  contact
-  [%groups^set/groups ~ ~]
+  %+  ~(put by (to-sole-edit sed))
+    %groups
+  set/groups
 ::  +to-action: convert legacy to action
 ::
 ::  convert any action except %edit.
