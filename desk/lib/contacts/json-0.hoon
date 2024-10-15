@@ -1,5 +1,7 @@
 /-  c=contacts, g=groups
+/-  legacy=contacts-0
 /+  gj=groups-json
+=,  legacy
 |%
 ++  enjs
   =,  enjs:format
@@ -10,7 +12,7 @@
     |=(her=@p n+(rap 3 '"' (scot %p her) '"' ~))
   ::
   ++  action
-    |=  a=action:c
+    |=  a=action-0
     ^-  json
     %+  frond  -.a
     ?-  -.a
@@ -23,7 +25,7 @@
     ==
   ::
   ++  contact
-    |=  c=contact:c
+    |=  c=contact-0
     ^-  json
     %-  pairs
     :~  nickname+s+nickname.c
@@ -39,7 +41,7 @@
     ==
   ::
   ++  field
-    |=  f=field:c
+    |=  f=field-0
     ^-  json
     %+  frond  -.f
     ?-  -.f
@@ -54,15 +56,15 @@
     ==
   ::
   ++  rolodex
-    |=  r=rolodex:c
+    |=  r=^rolodex
     ^-  json
     %-  pairs
     %-  ~(rep by r)
-    |=  [[who=@p foreign:c] j=(list [@t json])]
+    |=  [[who=@p foreign-0] j=(list [@t json])]
     [[(scot %p who) ?.(?=([@ ^] for) ~ (contact con.for))] j]  :: XX stale flag per sub state?
   ::
   ++  news
-    |=  n=news:c
+    |=  n=news-0
     ^-  json
     %-  pairs
     :~  who+(ship who.n)
@@ -83,6 +85,8 @@
     |=  jon=json
     ?+  jon  !!
       [%s *]  (slav aur p.jon)
+    ::  XX this seems wrong: current JSON parser
+    ::  would never pass a ship as a number
     ::
       [%n *]  ~|  bad-n+p.jon
               =/  wyd  (met 3 p.jon)
@@ -93,7 +97,7 @@
     ==
   ::
   ++  action
-    ^-  $-(json action:c)
+    ^-  $-(json action-0)
     %-  of
     :~  anon+ul
         edit+(ar field)
@@ -104,7 +108,7 @@
     ==
   ::
   ++  contact
-    ^-  $-(json contact:c)
+    ^-  $-(json contact-0)
     %-  ot
     :~  nickname+so
         bio+so
@@ -116,7 +120,7 @@
     ==
   ::
   ++  field
-    ^-  $-(json field:c)
+    ^-  $-(json field-0)
     %-  of
     :~  nickname+so
         bio+so

@@ -1,14 +1,14 @@
 /-  c=contacts
 /+  j=contacts-json-1
-|_  action=action:c
+|_  =page:c
 ++  grad  %noun
 ++  grow
   |%
-  ++  noun  action
+  ++  noun  page
+  ++  json  (page:enjs:j page)
   --
 ++  grab
   |%
-  ++  noun  action:c
-  ++  json  action:dejs:j
+  ++  noun  page:c
   --
 --
