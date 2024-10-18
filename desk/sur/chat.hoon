@@ -1,12 +1,6 @@
-/-  g=groups, d=channels, dos=chat-2, uno=chat-1, zer=chat-0
+/-  g=groups, d=channels
 /-  meta
 |%
-++  old
-  |%
-  ++  zero  zer
-  ++  one   uno
-  ++  two   dos
-  --
 ::
 ::  $id: an identifier for chat messages
 +$  id     (pair ship time)
@@ -16,6 +10,11 @@
 +$  reply   [reply-seal memo:d]
 ::  $react: either an emoji identifier like :wave: or a URL for custom
 +$  react   @ta
+::  $scam: bounded search results
++$  scam
+  $:  last=(unit time)  ::  last (top-level) msg (local) id that was searched
+      =scan             ::  search results
+  ==
 ::  $scan: search results
 +$  scan  (list reference)
 ::  $blocked: a set of ships that the user has blocked
@@ -77,11 +76,12 @@
 ::
 +$  paged-writs
   $:  =writs
-      newer=(unit id)
-      older=(unit id)
+      newer=(unit time)
+      older=(unit time)
       total=@ud
   ==
 ::
++$  chat-heads  (list [=whom recency=time latest=(unit writ)])
 ::  $writs: a set of time ordered chat messages
 ::
 ++  writs
@@ -229,10 +229,12 @@
       [%club p=id:club]
   ==
 ::
++$  message-key  [=id =time]
+::
 ::  $unreads: a map of club/dm unread information
 ::
-::    unread: the last time a message was read, how many messages since,
-::    and the id of the last read message
+::    unread: the time of the most recent message, how many messages since,
+::    the id of the last read message, and the set of unread threads
 ::
 ++  unreads
   =<  unreads
@@ -242,8 +244,8 @@
   +$  unread
     $:  recency=time
         count=@ud
-        unread-id=(unit id)
-        threads=(map id id)
+        unread=(unit [message-key count=@ud])
+        threads=(map message-key [message-key count=@ud])
     ==
   +$  update
     (pair whom unread)
