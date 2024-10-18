@@ -721,6 +721,9 @@
       ?~  p.sign  cor
       %-  (slog leaf/"{<wire>} failed" u.p.sign)
       cor
+      ::
+        [%epic ~]
+      cor
     ==
   ::
   ++  arvo
