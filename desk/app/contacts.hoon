@@ -238,9 +238,8 @@
     ::
     ++  p-init
       |=  wen=(unit @da)
-      ::  TODO: figure out if we can just give the profile every time
       ?~  wen  (give (fact ~ full+rof))
-      ?:  =(u.wen wen.rof)  cor
+      ?:  (gte u.wen wen.rof)  cor
       (give (fact ~ full+rof))
     ::  +p-news-0: [legacy] publish news
     ::
