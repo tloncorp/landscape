@@ -239,10 +239,8 @@
     ++  p-init
       |=  wen=(unit @da)
       ?~  wen  (give (fact ~ full+rof))
-      ?:  =(u.wen wen.rof)  cor
-      ::
-      :: no future subs
-      ?>((lth u.wen wen.rof) (give (fact ~ full+rof)))
+      ?:  (gte u.wen wen.rof)  cor
+      (give (fact ~ full+rof))
     ::  +p-news-0: [legacy] publish news
     ::
     ++  p-news-0
