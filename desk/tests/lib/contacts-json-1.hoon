@@ -195,4 +195,53 @@
       '{"snub":["~sampel-palnet", "~master-botnet"]}'
     [%snub ~sampel-palnet ~master-botnet ~]
   ==
+++  test-response
+  =/  con=contact:c
+    %-  malt
+    ^-  (list [@tas value])
+    :~  name+text/'Sampel'
+    ==
+  =/  mod=contact:c
+    %-  malt
+    ^-  (list [@tas value])
+    :~  surname+text/'Palnet'
+    ==
+  ;:  weld
+    %+  enjs-equal  
+      (response:enjs:j [%self con])
+    '{"self":{"contact":{"name":{"type":"text","value":"Sampel"}}}}'
+    ::
+    %+  enjs-equal
+      (response:enjs:j [%page id+0v1 con mod])
+    ^~  %-  en:json:html  %-  need  %-  de:json:html
+    '''
+    {
+      "page": {
+        "mod":{"surname":{"type":"text","value":"Palnet"}},
+        "kip":"0v1",
+        "contact":{"name":{"type":"text","value":"Sampel"}}
+      }
+    }
+    '''
+    ::
+    %+  enjs-equal  
+      (response:enjs:j [%wipe id+0v1])
+    '{"wipe":{"kip":"0v1"}}'
+    ::
+    %+  enjs-equal  
+      (response:enjs:j [%wipe ~sampel-palnet])
+    '{"wipe":{"kip":"~sampel-palnet"}}'
+    ::
+    %+  enjs-equal  
+      (response:enjs:j [%peer ~sampel-palnet con])
+    ^~  %-  en:json:html  %-  need  %-  de:json:html
+    '''
+    {
+      "peer": {
+        "who":"~sampel-palnet",
+        "contact":{"name":{"type":"text","value":"Sampel"}}
+      }
+    }
+    '''
+  ==
 --
