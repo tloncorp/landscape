@@ -115,7 +115,7 @@
     ::
     =/  [type=@tas val=json]
       %.  jon
-      (ot text+(se %tas) value+json ~)
+      (ot type+(se %tas) value+json ~)
     ?+  type  !!
       %text  %.  val  (ta %text so)
       %numb  %.  val  (ta %numb ni)
