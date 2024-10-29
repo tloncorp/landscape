@@ -16,7 +16,7 @@
 ::
 +|  %types
 +$  card  card:agent:gall
-+$  state-1  $:  %1
++$  state-2  $:  %2
                  rof=profile
                  =book
                  =peers
@@ -30,7 +30,7 @@
 %-  agent:dbug
 %+  verb  |
 ^-  agent:gall
-=|  state-1
+=|  state-2
 =*  state  -
 =<  |_  =bowl:gall
     +*  this  .
@@ -132,7 +132,10 @@
         ++  subs
           ^-  (set path)
           %-  ~(rep by sup.bowl)
-          |=  [[duct ship pat=path] acc=(set path)]
+          ::  default .acc prevents invalid empty fact path in the case
+          ::  of no subscribers
+          ::
+          |=  [[duct ship pat=path] acc=_(sy `path`/v1/contact ~)]
           ?.(?=([%v1 %contact *] pat) acc (~(put in acc) pat))
         ++  fact
           |=  [pat=(set path) u=update]
@@ -208,7 +211,6 @@
       |=  con=contact
       =/  p=profile  [(mono wen.rof now.bowl) con]
       =.  rof  p
-      ::
       =.  cor
         (p-news-0 our.bowl (contact:to-0 con))
       =.  cor
@@ -239,8 +241,10 @@
     ++  p-init
       |=  wen=(unit @da)
       ?~  wen  (give (fact ~ full+rof))
-      ?:  (gte u.wen wen.rof)  cor
-      (give (fact ~ full+rof))
+      ?:  =(u.wen wen.rof)  cor
+      ::
+      ::  no future subs
+      ?>((lth u.wen wen.rof) (give (fact ~ full+rof)))
     ::  +p-news-0: [legacy] publish news
     ::
     ++  p-news-0
@@ -442,6 +446,7 @@
   +|  %implementation
   ::
   ++  init
+    =.  wen.rof  now.bowl
     (emit %pass /migrate %agent [our dap]:bowl %poke noun+!>(%migrate))
   ::
   ++  load
@@ -451,60 +456,80 @@
         =?  cor  !=(okay cool)  l-epic
         ?-  -.old
         ::
-          %1
-        =.  state  old
-        =/  cards
-          %+  roll  ~(tap by peers)
-          |=  [[who=ship foreign] caz=(list card)]
-          ::  intent to connect, resubscribe
+            %2
+          =.  state  old
+          inflate-io
+        ::
+            %1
+          =.  state  old(- %2)
+          ::  fix incorrectly bunted timestamp for
+          ::  an empty profile migrated from %0
           ::
-          ?:  ?&  =(%want sag)
-                  !(~(has by wex.bowl) [/contact who dap.bowl])
-              ==
-            =/  =path  [%v1 %contact ?~(for / /at/(scot %da wen.for))]
+          =?  cor  &(=(*@da wen.rof) ?=(~ con.rof))
+            (p-commit-self:pub ~)
+          inflate-io
+        ::
+            %0
+          =.  rof  ?~(rof.old *profile (profile:from-0 rof.old))
+          ::  migrate peers. for each peer
+          ::  1. leave /epic, if any
+          ::  2. subscribe if desired
+          ::  3. put into peers
+          ::
+          =^  caz=(list card)  peers
+            %+  roll  ~(tap by rol.old)
+            |=  [[who=ship foreign-0:c0] caz=(list card) =_peers]
+            ::  leave /epic if any
+            ::
+            =?  caz  (~(has by wex.bowl) [/epic who dap.bowl])
+              :_  caz
+              [%pass /epic %agent [who dap.bowl] %leave ~]
+            =/  fir=$@(~ profile)
+              ?~  for  ~
+              (profile:from-0 for)
+            ::  no intent to connect
+            ::
+            ?:  =(~ sag)
+              :-  caz
+              (~(put by peers) who fir ~)
+            :_  (~(put by peers) who fir %want)
+            ?:  (~(has by wex.bowl) [/contact who dap.bowl])
+              caz
+            =/  =path  [%v1 %contact ?~(fir / /at/(scot %da wen.fir))]
             :_  caz
             [%pass /contact %agent [who dap.bowl] %watch path]
-          caz
-        (emil cards)
-        ::
-          %0
-        =.  rof  ?~(rof.old *profile (profile:from-0 rof.old))
-        ::  migrate peers. for each peer
-        ::  1. leave /epic, if any
-        ::  2. subscribe if desired
-        ::  3. put into peers
-        ::
-        =^  caz=(list card)  peers
-          %+  roll  ~(tap by rol.old)
-          |=  [[who=ship foreign-0:c0] caz=(list card) =_peers]
-          ::  leave /epic if any
-          ::
-          =?  caz  (~(has by wex.bowl) [/epic who dap.bowl])
-            :_  caz
-            [%pass /epic %agent [who dap.bowl] %leave ~]
-          =/  fir=$@(~ profile)
-            ?~  for  ~
-            (profile:from-0 for)
-          ::  no intent to connect
-          ::
-          ?:  =(~ sag)
-            :-  caz
-            (~(put by peers) who fir ~)
-          :_  (~(put by peers) who fir %want)
-          ?:  (~(has by wex.bowl) [/contact who dap.bowl])
-            caz
-          =/  =path  [%v1 %contact ?~(fir / /at/(scot %da wen.fir))]
-          :_  caz
-          [%pass /contact %agent [who dap.bowl] %watch path]
-        (emil caz)
+          (emil caz)
         ==
     +$  state-0  [%0 rof=$@(~ profile-0:c0) rol=rolodex:c0]
+    +$  state-1  $:  %1
+                     rof=profile
+                     =^book
+                     =^peers
+                     retry=(map ship @da)  ::  retry sub at time
+                 ==
     +$  versioned-state
-      $%  state-0
+      $%  state-2
           state-1
+          state-0
       ==
     ::
     ++  l-epic  (give %fact [/epic ~] epic+!>(okay))
+    ::
+    ++  inflate-io
+      ^+  cor
+      =/  cards
+        %+  roll  ~(tap by peers)
+        |=  [[who=ship foreign] caz=(list card)]
+        ::  intent to connect, resubscribe
+        ::
+        ?:  ?&  =(%want sag)
+                !(~(has by wex.bowl) [/contact who dap.bowl])
+            ==
+          =/  =path  [%v1 %contact ?~(for / /at/(scot %da wen.for))]
+          :_  caz
+          [%pass /contact %agent [who dap.bowl] %watch path]
+        caz
+      (emil cards)
     --
   ::
   ++  poke
