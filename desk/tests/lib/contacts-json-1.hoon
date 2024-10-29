@@ -122,7 +122,7 @@
     flag+[~sampel-palnet %circle]
     ::
     %+  enjs-equal
-    %-  value:enjs:j 
+    %-  value:enjs:j
       set+(silt `(list value)`~[flag/[~sampel-palnet %circle] flag/[~sampel-pardux %square]])
     '{"type":"set","value":[{"type":"flag","value":"~sampel-palnet/circle"},{"type":"flag","value":"~sampel-pardux/square"}]}'
     ::
@@ -207,7 +207,7 @@
     :~  surname+text/'Palnet'
     ==
   ;:  weld
-    %+  enjs-equal  
+    %+  enjs-equal
       (response:enjs:j [%self con])
     '{"self":{"contact":{"name":{"type":"text","value":"Sampel"}}}}'
     ::
@@ -224,15 +224,15 @@
     }
     '''
     ::
-    %+  enjs-equal  
+    %+  enjs-equal
       (response:enjs:j [%wipe id+0v1])
     '{"wipe":{"kip":"0v1"}}'
     ::
-    %+  enjs-equal  
+    %+  enjs-equal
       (response:enjs:j [%wipe ~sampel-palnet])
     '{"wipe":{"kip":"~sampel-palnet"}}'
     ::
-    %+  enjs-equal  
+    %+  enjs-equal
       (response:enjs:j [%peer ~sampel-palnet con])
     ^~  %-  en:json:html  %-  need  %-  de:json:html
     '''
