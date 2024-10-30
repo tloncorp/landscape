@@ -64,6 +64,11 @@
   ==
 ++  test-value
   ;:  weld
+    ::  submit null value to delete entry in contacts
+    ::
+    %^  dejs-equal  value:dejs:j
+      'null'
+    ~
     ::
     %+  enjs-equal
       (value:enjs:j text+'the lazy fox')
