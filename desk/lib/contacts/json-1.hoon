@@ -23,6 +23,7 @@
   ++  value
     |=  val=value:c
     ^-  json
+    ?@  val  ~
     ?-  -.val
       %text  (pairs type+s/%text value+s/p.val ~)
       %numb  (pairs type+s/%numb value+(numb p.val) ~)
@@ -67,17 +68,18 @@
   ++  response
     |=  n=response:c
     ^-  json
+    %+  frond  -.n
     ?-  -.n
-      %self  (frond self+(contact con.n))
+      %self  (frond contact+(contact con.n))
       %page  %-  pairs
              :~  kip+(kip kip.n)
-                 con+(contact con.n)
+                 contact+(contact con.n)
                  mod+(contact mod.n)
              ==
       %wipe  (frond kip+(kip kip.n))
       %peer  %-  pairs
              :~  who+(ship who.n)
-                 con+(contact con.n)
+                 contact+(contact con.n)
              ==
     ==
   --
@@ -115,7 +117,7 @@
     ::
     =/  [type=@tas val=json]
       %.  jon
-      (ot text+(se %tas) value+json ~)
+      (ot type+(se %tas) value+json ~)
     ?+  type  !!
       %text  %.  val  (ta %text so)
       %numb  %.  val  (ta %numb ni)
