@@ -67,17 +67,18 @@
   ++  response
     |=  n=response:c
     ^-  json
+    %+  frond  -.n
     ?-  -.n
-      %self  (frond self+(contact con.n))
+      %self  (frond contact+(contact con.n))
       %page  %-  pairs
              :~  kip+(kip kip.n)
-                 con+(contact con.n)
+                 contact+(contact con.n)
                  mod+(contact mod.n)
              ==
       %wipe  (frond kip+(kip kip.n))
       %peer  %-  pairs
              :~  who+(ship who.n)
-                 con+(contact con.n)
+                 contact+(contact con.n)
              ==
     ==
   --
@@ -111,11 +112,10 @@
   ++  value
     ^-  $-(json value:c)
     |=  jon=json
-    ::  XX is there a way to do it in one go?
-    ::
+    ?~  jon  ~
     =/  [type=@tas val=json]
       %.  jon
-      (ot text+(se %tas) value+json ~)
+      (ot type+(se %tas) value+json ~)
     ?+  type  !!
       %text  %.  val  (ta %text so)
       %numb  %.  val  (ta %numb ni)
