@@ -112,8 +112,7 @@
   ++  value
     ^-  $-(json value:c)
     |=  jon=json
-    ::  XX is there a way to do it in one go?
-    ::
+    ?~  jon  ~
     =/  [type=@tas val=json]
       %.  jon
       (ot type+(se %tas) value+json ~)
