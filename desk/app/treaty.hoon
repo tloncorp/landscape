@@ -143,6 +143,10 @@
       [%allies ~]
     :_  this
     (fact-init:io (ally-update:cg:cc %ini allies))^~
+    ::
+      [%sovereign ~]
+    :_  this
+    (fact-init:io (sovereign-update:cg:cc %ini sovereign))^~
   ==
 ::
 ::
