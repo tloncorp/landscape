@@ -96,8 +96,10 @@
       =,  update
       =.  entente  (~(del in entente) [ship desk])
       ?.  =(our.bowl ship)  `this
+      =/  so  ~(. so:cc desk)
       =.  sovereign  (~(del by sovereign) desk)
-      :_(this ~(kick so:cc desk)^~)
+      :_  this
+      [unpublish kick gone]:so
    ==
   --
 ::
@@ -367,8 +369,15 @@
     =/  t=treaty  (~(got by sovereign) desk)
     :~  (fact:io (treaty-update:cg %add t) /treaties ~)
         (fact:io (treaty:cg t) path ~)
+        (fact:io (sovereign-update:cg %add [desk t]) /sovereign ~)
     ==
+  ++  gone
+    ^-  (list card)
+    =/  t=treaty  (~(got by sovereign) desk)
+    (fact:io (sovereign-update:cg %del [desk t]) /sovereign ~)^~
   ++  publish
     (poke-our:pass %hood kiln-permission+!>([desk / &]))
+  ++  unpublish
+    (poke-our:pass %hood kiln-permission+!>([desk / |]))
   --
 --
