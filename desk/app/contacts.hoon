@@ -1,4 +1,5 @@
-/+  default-agent, dbug, verb, neg=negotiate, activity
+/-  activity
+/+  default-agent, dbug, verb, neg=negotiate
 /+  *contacts
 ::
 ::  performance, keep warm
@@ -103,7 +104,7 @@
   ++  pass-activity
     |=  [who=ship field=(pair @tas value)]
     ^-  card
-    =/  =cage  activity-action+!>([%add %contact who field])
+    =/  =cage  activity-action+!>(`action:activity`[%add %contact who field])
     [%pass /activity %agent [our.bowl %activity] %poke cage]
   ::
   ::  +pub: publication management
@@ -377,6 +378,7 @@
         ?~  val
           [(pass-activity who field) cards]
         ?<  ?=(~ u.val)
+        ::NOTE  currently shouldn't happen in practice 
         ?.  =(-.q.field -.u.val)  cards
         ?:  =(p.q.field p.u.val)  cards
         ?.  ?=(%set -.q.field)
@@ -772,17 +774,17 @@
         [%contact ~]
       si-abet:(si-take:(sub src.bowl) wire sign)
       ::
-          [%migrate ~]
-        ?>  ?=(%poke-ack -.sign)
-        ?~  p.sign  cor
-        %-  (slog leaf/"{<wire>} failed" u.p.sign)
+        [%migrate ~]
+      ?>  ?=(%poke-ack -.sign)
+      ?~  p.sign  cor
+      %-  (slog leaf/"{<wire>} failed" u.p.sign)
       cor
       ::
-          [%activity ~]
-        cor
+        [%activity ~]
+      cor
       ::
-          [%epic ~]
-        cor
+        [%epic ~]
+      cor
     ==
   ::
   ++  arvo
