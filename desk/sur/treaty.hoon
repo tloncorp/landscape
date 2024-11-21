@@ -34,7 +34,16 @@
         diff
     ==
   --
-
+::  +sovereign: Our published desks
+::
+++  sovereign
+  |%
+    +$  update
+      $%  [%ini (map =desk =treaty)]
+          [%add =desk =treaty]
+          [%del =desk =treaty]
+      ==
+  --
 ::  +ally: Discovery structures
 ::
 ++  ally
