@@ -1,3 +1,4 @@
+/-  activity
 /+  default-agent, dbug, verb, neg=negotiate
 /+  *contacts
 ::
@@ -99,6 +100,12 @@
   ++  pass  |=([=wire =note:agent:gall] (emit %pass wire note))
   ::
   +|  %operations
+  ::
+  ++  pass-activity
+    |=  [who=ship field=(pair @tas value)]
+    ^-  card
+    =/  =cage  activity-action+!>(`action:activity`[%add %contact who field])
+    [%pass /activity %agent [our.bowl %activity] %poke cage]
   ::
   ::  +pub: publication management
   ::
@@ -344,14 +351,42 @@
           cor  =.  cor
                (p-news-0:pub who (contact:to-0 con.u))
                =/  page=(unit page)  (~(get by book) who)
-               ::  update peer contact page
+               ::  update contact book and send notification
                ::
                =?  cor  ?=(^ page)
                  ?:  =(con.u.page con.u)  cor
                  =.  book  (~(put by book) who u.page(con con.u))
+                 =.  cor  (emil (send-activity u con.u.page))
                  (p-response:pub %page who con.u mod.u.page)
                (p-response:pub %peer who con.u)
         ==
+      ::
+      ++  send-activity
+        |=  [u=update con=contact]
+        ^-  (list card)
+        ?.  .^(? %gu /(scot %p our.bowl)/activity/(scot %da now.bowl)/$)
+          ~
+        %-  ~(rep by con.u)
+        |=  [field=(pair @tas value) cards=(list card)]
+        ?>  ?=(^ q.field)
+        ::  do not broadcast empty changes
+        ::
+        ?:  (is-value-empty q.field) 
+          cards
+        ::
+        =/  val=(unit value)  (~(get by con) p.field)
+        ?~  val
+          [(pass-activity who field) cards]
+        ?<  ?=(~ u.val)
+        ::NOTE  currently shouldn't happen in practice 
+        ?.  =(-.q.field -.u.val)  cards
+        ?:  =(p.q.field p.u.val)  cards
+        ?.  ?=(%set -.q.field)
+          [(pass-activity who field) cards]
+        =/  diff=(set value)
+          (~(dif in p.q.field) ?>(?=(%set -.u.val) p.u.val))
+        ?~  diff  cards
+        [(pass-activity who p.field set+diff) cards]
       ::
       ++  si-meet
         ^+  si-cor
@@ -735,7 +770,7 @@
   ++  agent
     |=  [=wire =sign:agent:gall]
     ^+  cor
-    ?+  wire  ~|(evil-agent+wire !!)
+    ?+    wire  ~|(evil-agent+wire !!)
         [%contact ~]
       si-abet:(si-take:(sub src.bowl) wire sign)
       ::
@@ -743,6 +778,9 @@
       ?>  ?=(%poke-ack -.sign)
       ?~  p.sign  cor
       %-  (slog leaf/"{<wire>} failed" u.p.sign)
+      cor
+      ::
+        [%activity ~]
       cor
       ::
         [%epic ~]
