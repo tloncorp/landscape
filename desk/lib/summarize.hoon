@@ -37,21 +37,21 @@
       ==
   %+  roll
     %~  tap  by
-    .^  channels:c
+    .^  channels-0:c
       %gx
       (scry-path %channels /channels/channels)
     ==
-  |=  [[n=nest:c channel:c] g=(map flag:groups @ud) s=@ud r=@ud]
+  |=  [[n=nest:c channel-0:c] g=(map flag:groups @ud) s=@ud r=@ud]
   ?.  ?=(%chat kind.n)  [g s r]
-  =+  .^  paged-posts:c
+  =+  .^  paged-simple-posts:c
         %gx
         %+  scry-path  %channels
-        /chat/(scot %p ship.n)/[name.n]/posts/newer/(scot %ud (sub now range))/(scot %ud limit)/outline/channel-posts
+        /chat/(scot %p ship.n)/[name.n]/posts/newer/(scot %ud (sub now range))/(scot %ud limit)/outline/channel-simple-posts
       ==
   :-  %+  ~(put by g)  group.perm
-      (add (~(gut by g) group.perm 0) (wyt:on-posts:c posts))
-  %+  roll  (tap:on-posts:c posts)
-  |=  [[id-post:c p=(unit post:c)] s=_s r=_r]
+      (add (~(gut by g) group.perm 0) (wyt:on-simple-posts:c posts))
+  %+  roll  (tap:on-simple-posts:c posts)
+  |=  [[id-post:c p=(unit simple-post:c)] s=_s r=_r]
   ?~  p  [s r]
   ?:(=(our author.u.p) [+(s) r] [s +(r)])
 ::
@@ -115,9 +115,9 @@
   =/  [duc=@ud faz=(list [g=flag:groups n=nest:c u=@ud])]
     %+  roll
       %~  tap  by
-      .^(channels:c %gx (scry-path %channels /channels/channels))
+      .^(channels-0:c %gx (scry-path %channels /channels/channels))
     =+  .^(=unreads:c %gx (scry-path %channels /unreads/channel-unreads))
-    |=  [[n=nest:c channel:c] duc=@ud faz=(list [flag:groups nest:c @ud])]
+    |=  [[n=nest:c channel-0:c] duc=@ud faz=(list [flag:groups nest:c @ud])]
     ?.  ?=(%chat kind.n)  [duc faz]  ::  ignore non-chat channels for now
     =/  =unread:c  (~(gut by unreads) n *unread:c)
     :-  (add duc count.unread)
