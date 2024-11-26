@@ -2,6 +2,16 @@
 |%
 ::
 +|  %contact
+::  +is-value-empty: is value considered empty
+::
+++  is-value-empty
+  |=  val=value
+  ^-  ?
+  ?+  -.val  |
+    %text  =('' p.val)
+    %look  =('' p.val)
+    %set   ?=(~ p.val)
+  ==
 ::  +cy: contact map engine
 ::
 ++  cy
