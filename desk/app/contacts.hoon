@@ -356,7 +356,7 @@
                =?  cor  ?=(^ page)
                  ?:  =(con.u.page con.u)  cor
                  =.  book  (~(put by book) who u.page(con con.u))
-                 =.  cor  (emil (send-activity u con.u.page))
+                 =?  cor  ?=(^ for)  (emil (send-activity u con.u.page))
                  (p-response:pub %page who con.u mod.u.page)
                (p-response:pub %peer who con.u)
         ==
