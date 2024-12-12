@@ -96,8 +96,10 @@
       =,  update
       =.  entente  (~(del in entente) [ship desk])
       ?.  =(our.bowl ship)  `this
+      =/  so  ~(. so:cc desk)
       =.  sovereign  (~(del by sovereign) desk)
-      :_(this ~(kick so:cc desk)^~)
+      :_  this
+      [unpublish kick gone]:so
    ==
   --
 ::
@@ -143,6 +145,10 @@
       [%allies ~]
     :_  this
     (fact-init:io (ally-update:cg:cc %ini allies))^~
+    ::
+      [%sovereign ~]
+    :_  this
+    (fact-init:io (sovereign-update:cg:cc %ini sovereign))^~
   ==
 ::
 ::
@@ -154,6 +160,7 @@
     [%x %default-ally ~]  ``ship+!>(default-ally)
     [%x %allies ~]        ``(ally-update:cg:ca %ini allies)
     [%x %treaties ~]      ``(treaty-update:cg:ca:cc %ini treaties)
+    [%x %sovereign ~]     ``(sovereign-update:cg:ca:cc %ini sovereign)
   ::
      [%x %treaties @ ~]
     =/  =ship  (slav %p i.t.t.path)
@@ -309,6 +316,7 @@
   ++  alliance-update  |=(=update:alliance alliance-update-0+!>(update))
   ++  treaty  |=(t=^treaty treaty-0+!>(t))
   ++  treaty-update  |=(u=update:^treaty treaty-update-0+!>(u))
+  ++  sovereign-update  |=(u=update:^sovereign sovereign-update-0+!>(u))
   --
 ::  +ca: Card construction
 ++  ca
@@ -361,8 +369,15 @@
     =/  t=treaty  (~(got by sovereign) desk)
     :~  (fact:io (treaty-update:cg %add t) /treaties ~)
         (fact:io (treaty:cg t) path ~)
+        (fact:io (sovereign-update:cg %add [desk t]) /sovereign ~)
     ==
+  ++  gone
+    ^-  (list card)
+    =/  t=treaty  (~(got by sovereign) desk)
+    (fact:io (sovereign-update:cg %del [desk t]) /sovereign ~)^~
   ++  publish
     (poke-our:pass %hood kiln-permission+!>([desk / &]))
+  ++  unpublish
+    (poke-our:pass %hood kiln-permission+!>([desk / |]))
   --
 --
