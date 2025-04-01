@@ -1,5 +1,5 @@
 /-  reel
-/+  default-agent, verb, dbug, *reel
+/+  default-agent, verb, dbug, logs, *reel
 |%
 +$  card  card:agent:gall
 +$  versioned-state
@@ -66,8 +66,9 @@
 %-  agent:dbug
 %+  verb  |
 |_  =bowl:gall
-+*  this       .
-    def        ~(. (default-agent this %|) bowl)
++*  this  .
+    def   ~(. (default-agent this %|) bowl)
+    log   ~(. logs [our.bowl /logs])
 ::
 ++  on-init
   ^-  (quip card _this)
@@ -156,16 +157,22 @@
     ?>  =(civ src.bowl)
     =+  !<(confirmation:reel vase)
     =.  open-describes  (~(del in open-describes) nonce)
-    ?~  md=(~(get by our-metadata) nonce)
-      ~|("no metadata for nonce: {<nonce>}" !!)
     =/  ids=(list [id=cord =token:reel])
       %+  skim
         ~(tap by stable-id)
       |=  [key=cord =token:reel]
       =(nonce token)
     ?~  ids
-      ~|("no stable id for nonce: {<nonce>}" !!)
+      :_  this  :_  ~
+      %^  tell:log  %warn
+        ~[leaf+"no stable id found for nonce {<nonce>}"]
+      ~['event'^s+'Nonce Revoked' 'flow'^s+'lure']
     =*  id  -<.ids
+    ?~  md=(~(get by our-metadata) nonce)
+      :_  this  :_  ~
+      %^  tell:log  %crit
+        ~[leaf+"no metadata for nonce {<nonce>}"]
+      ~['event'^s+'Invite Creation Failed' 'flow'^s+'lure']
     ::  update the token the id points to
     =.  stable-id  (~(put by stable-id) id token)
     ::  swap out the nonce for the token in our-metadata
@@ -174,6 +181,9 @@
     :_  this
     =/  url  (cat 3 vic token)
     =/  path  (stab (cat 3 '/v1/id-link/' id))
+    :-  %^  tell:log  %info
+          ~[leaf+"invite link for {(trip id)} created"]
+        ~['event'^s+'Invite Link Created' 'flow'^s+'lure' 'lure-id'^s+token]
     ~[[%give %fact ~[path] %json !>(s+url)]]
   ::
       %reel-undescribe
@@ -181,6 +191,9 @@
     =+  !<(=token:reel vase)
     ::  the token here should be the actual token given to us by the provider
     :_  this(our-metadata (~(del by our-metadata) token))
+    :-  %^  tell:log  %info
+          ~[leaf+"invite link removed"]
+        ~['event'^s+'Invite Link Removed' 'flow'^s+'lure' 'lure-id'^s+token]
     ~[[%pass /undescribe %agent [civ %bait] %poke %bait-undescribe !>(token)]]
   ::  old pokes for getting links, we no longer use these because all links
   ::  are unique to that ship/user and can be scried out
@@ -298,7 +311,8 @@
       [%set-ship ~]
     ?>  ?=([%khan %arow *] sign-arvo)
     ?:  ?=(%.n -.p.sign-arvo)
-      ((slog 'reel: fetch bait ship failed' p.p.sign-arvo) `this)
+      :_  this
+      ~[(tell:log %warn ~['fetch bait ship failed'] ~)]
     `this
   ::
       [%expire @ @ ~]
@@ -313,5 +327,9 @@
       (on-arvo:def wire sign-arvo)
     ==
   ==
-++  on-fail   on-fail:def
+++  on-fail
+  |=  [=term =tang]
+  ^-  (quip card _this)
+  :_  this
+  [(fail:log term tang ~)]~
 --

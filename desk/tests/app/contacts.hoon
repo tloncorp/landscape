@@ -492,7 +492,7 @@
   =/  con-mod=contact
     %-  malt
     ^-  (list (pair @tas value))
-    ~[nickname+text/'Bright Sun' avatar+text/'https://sun.io/sun.png']
+    ~[nickname+text/'Bright Sun' avatar+look/'https://sun.io/sun.png']
   ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%edit ~sun con-mod]))
   ::  ~sun's contact book page is updated
   ::
@@ -561,7 +561,7 @@
   =/  con-mod=contact
     %-  malt
     ^-  (list (pair @tas value))
-    ~[nickname+text/'Bright Sun' avatar+text/'https://sun.io/sun.png']
+    ~[nickname+text/'Bright Sun' avatar+look/'https://sun.io/sun.png']
   ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%edit ~sun con-mod]))
   ;<  ~  b
     %+  ex-cards  caz
@@ -665,7 +665,7 @@
   =/  con-mod=contact
     %-  malt
     ^-  (list (pair @tas value))
-    ~[nickname+text/'Bright Sun' avatar+text/'https://sun.io/sun.png']
+    ~[nickname+text/'Bright Sun' avatar+look/'https://sun.io/sun.png']
   ;<  caz=(list card)  b  (do-poke contact-action-1+!>([%edit ~sun con-mod]))
   ;<  ~  b
     %+  ex-cards  caz
@@ -1024,7 +1024,7 @@
   =/  con-mod=contact
     %-  malt
     ^-  (list (pair @tas value))
-    ~[avatar+text/'https://sun.io/sun.png']
+    ~[avatar+look/'https://sun.io/sun.png']
   ::  meet ~sun and ~mur
   ::
   ;<  ~  b  (set-src our.bowl)

@@ -1,5 +1,5 @@
 /-  reel
-/+  default-agent, verb, dbug, server, *reel
+/+  default-agent, verb, dbug, server, logs, *reel
 |%
 +$  card  card:agent:gall
 +$  versioned-state
@@ -64,8 +64,9 @@
 %-  agent:dbug
 %+  verb  |
 |_  =bowl:gall
-+*  this       .
-    def        ~(. (default-agent this %|) bowl)
++*  this  .
+    def   ~(. (default-agent this %|) bowl)
+    log   ~(. logs [our.bowl /logs])
 ::
 ++  on-init
   ^-  (quip card _this)
@@ -115,38 +116,63 @@
     ::
         %'POST'
       ?~  body.request
-        (give-not-found 'body not found')
+        :_  (give-not-found 'body not found')
+        %^  tell:log  %crit
+          ~['POST body not found']
+        ~['event'^s+'Lure POST Fail' 'flow'^s+'lure']
       ?.  =('ship=%7E' (end [3 8] q.u.body.request))
-        (give-not-found 'ship not found in body')
-      =/  joiner  (slav %p (cat 3 '~' (rsh [3 8] q.u.body.request)))
-      =;  [=bite:reel inviter=(unit ship)]
+        :_  (give-not-found 'ship not found in body')
+        %^  tell:log  %crit
+          ~['ship not found in POST body']
+        ~['event'^s+'Lure POST Fail' 'flow'^s+'lure']
+      =/  joiner=@p  (slav %p (cat 3 '~' (rsh [3 8] q.u.body.request)))
+      ::
+      =/  token
+        ?~  ext.full-line  i.line
+        (crip "{(trip i.line)}.{(trip u.ext.full-line)}")
+      =>
+        |%
+        ++  lure-log
+          |=  [=volume:logs event=@t =echo:logs]
+          %^  tell:log  volume
+            echo
+          :~  'event'^s+event
+              'flow'^s+'lure'
+              'lure-id'^s+token
+              'lure-joiner'^s+(scot %p joiner)
+          ==
+        --
+      =;  [bite=(unit bite:reel) inviter=(unit ship)]
+        ?~  bite
+          :_  (give-not-found 'invite token not found')
+          %^  lure-log  %crit  'Invite Token Missing'
+          ~[leaf+"invite token {<token>} not found"]
         ?~  inviter
-          (give-not-found 'inviter not found')
+          :_  (give-not-found 'inviter not found')
+          %^  lure-log  %crit  'Inviter Not Found'
+          ~['inviter not found']
         ^-  (list card)
-        ::  TODO: figure out if we need to send both pokes
-        :*  :*  %pass  /bite  %agent  [u.inviter %reel]
-                %poke  %reel-bite  !>(bite)
+        :*  %^  lure-log  %info  'Invite Redeemed'
+            ~[leaf+"{<joiner>} redeemed lure invite from {<u.inviter>}"]
+            ::
+            :*  %pass  /bite  %agent  [u.inviter %reel]
+                %poke  %reel-bite  !>(u.bite)
             ==
-            :*  %pass  /bite  %agent  [our.bowl %reel]
-                %poke  %reel-bite  !>(bite)
-            ==
-            (give (manx-response:gen:server (sent-page joiner)))
+          (give (manx-response:gen:server (sent-page joiner)))
         ==
       =/  =(pole knot)  line
       ?:  ?=([@ @ ~] line)
         =/  inviter  (slav %p i.line)
         =/  old-token  i.t.line
         :_  `inviter
-        [%bite-1 old-token joiner inviter]
-      =/  token
-        ?~  ext.full-line  i.line
-        (crip "{(trip i.line)}.{(trip u.ext.full-line)}")
+        `[%bite-1 old-token joiner inviter]
       =/  =metadata:reel  (~(gut by token-metadata) token *metadata:reel)
       ?~  type=(~(get by fields.metadata) 'bite-type')
-        ~|("no bite type for token: {<token>}" !!)
+        [~ ~]
       ?>  =('2' u.type)
-      :-  [%bite-2 token joiner metadata]
-      ?~  inviter-field=(~(get by fields.metadata) 'inviter')  ~
+      :-  `[%bite-2 token joiner metadata]
+      ?~  inviter-field=(~(get by fields.metadata) 'inviter')
+        ~
       `(slav %p u.inviter-field)
     ==
     ++  get-request
@@ -220,5 +246,9 @@
     [~ this]
   ==
 ::
-++  on-fail   on-fail:def
+++  on-fail
+  |=  [=term =tang]
+  ^-  (quip card _this)
+  :_  this
+  [(fail:log term tang ~)]~
 --

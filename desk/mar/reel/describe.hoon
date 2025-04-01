@@ -4,7 +4,7 @@
 ++  grad  %noun
 ++  grab
   |%
-  ++  noun  (pair cord cord)
+  ++  noun  [token:reel metadata:reel]
   ++  json  (ot:dejs:format ~[token+so:dejs:format metadata+dejs-metadata])
   --
 ++  grow

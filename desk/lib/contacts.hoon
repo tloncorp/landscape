@@ -2,10 +2,38 @@
 |%
 ::
 +|  %contact
+::  +is-value-empty: is value considered empty
+::
+++  is-value-empty
+  |=  val=value
+  ^-  ?
+  ?+  -.val  |
+    %text  =('' p.val)
+    %look  =('' p.val)
+    %set   ?=(~ p.val)
+  ==
 ::  +cy: contact map engine
 ::
 ++  cy
   |_  c=contact
+  ::  +typ: enforce type if value exists
+  ::
+  ++  typ
+    |*  [key=@tas typ=value-type]
+    ^-  ?
+    =/  val=(unit value)  (~(get by c) key)
+    ?~  val  &
+    ?~  u.val  |
+    ?-  typ
+      %text  ?=(%text -.u.val)
+      %numb  ?=(%numb -.u.val)
+      %date  ?=(%date -.u.val)
+      %tint  ?=(%tint -.u.val)
+      %ship  ?=(%ship -.u.val)
+      %look  ?=(%look -.u.val)
+      %flag  ?=(%flag -.u.val)
+      %set   ?=(%set -.u.val)
+    ==
   ::  +get: typed get
   ::
   ++  get
@@ -143,6 +171,9 @@
 ::
 ::  - restrict size of the jammed noun to 10kB
 ::  - prohibit 'data:' URLs in image data
+::  - nickname and bio must be a %text
+::  - avatar and cover must be a %look
+::  - groups must be a %set of %flags
 ::
 ++  sane-contact
   |=  con=contact
@@ -160,11 +191,13 @@
   ::  3. data URLs in %avatar and %cover
   ::     are forbidden
   ::
+  ?.  (~(typ cy con) %nickname %text)  |
   =+  nickname=(~(get cy con) %nickname %text)
   ?:  ?&  ?=(^ nickname)
           (gth (met 3 u.nickname) 64)
       ==
     |
+  ?.  (~(typ cy con) %bio %text)  |
   =+  bio=(~(get cy con) %bio %text)
   ?:  ?&  ?=(^ bio)
           (gth (met 3 u.bio) 2.048)
@@ -178,6 +211,16 @@
   =+  cover=(~(get cy con) %cover %look)
   ?:  ?&  ?=(^ cover)
           =('data:' (end 3^5 u.cover))
+      ==
+    |
+  ?.  (~(typ cy con) %groups %set)  |
+  =+  groups=(~(get cy con) %groups %set)
+  ::  verifying the type of the first set element is enough,
+  ::  set uniformity is verified by +soft above.
+  ::
+  ?:  ?&  ?=(^ groups)
+          ?=(^ u.groups)
+          !?=(%flag -.n.u.groups)
       ==
     |
   &
@@ -199,7 +242,7 @@
   =?  don  !=(~ del)
     %+  roll  del
     |=  [key=@tas acc=_don]
-    (~(del by don) key)
+    (~(del by acc) key)
   don
 ::  +from-0: legacy to new type
 ::
@@ -381,40 +424,40 @@
   ::  we need to operate directly on (existing?) groups field in
   ::  the profile.
   ::
-  :: .tid: field edit actions, no group edit
-  :: .gid: only group edit actions
+  :: .sed: sole field edits, no group edits
+  :: .ged: only group edit actions
   ::
   =*  group-type  ?(%add-group %del-group)
   =*  sole-edits  (list $<(group-type field-0:c0))
   =*  group-edits  (list $>(group-type field-0:c0))
   ::  sift edits
   ::
-  =/  [sid=sole-edits gid=group-edits]
+  =/  [sed=sole-edits ged=group-edits]
     ::
     ::  XX why is casting neccessary here?
     =-  [(flop `sole-edits`-<) (flop `group-edits`->)]
     %+  roll  edit-0
-    |=  [f=field-0:c0 sid=sole-edits gid=group-edits]
-    ^+  [sid gid]
+    |=  [f=field-0:c0 sed=sole-edits ged=group-edits]
+    ^+  [sed ged]
     ?.  ?=(group-type -.f)
-      :-  [f sid]
-      gid
-    :-  sid
-    [f gid]
+      :-  [f sed]
+      ged
+    :-  sed
+    [f ged]
   ::  edit favourite groups
   ::
   =.  groups
-    %+  roll  gid
-    |=  [ged=$>(group-type field-0:c0) =_groups]
-    ?-  -.ged
+    %+  roll  ged
+    |=  [fav=$>(group-type field-0:c0) =_groups]
+    ?-  -.fav
       %add-group
-    (~(put in groups) flag/flag.ged)
+    (~(put in groups) flag/flag.fav)
       %del-group
-    (~(del in groups) flag/flag.ged)
+    (~(del in groups) flag/flag.fav)
     ==
-  %-  ~(uni by (to-sole-edit sid))
-  ^-  contact
-  [%groups^set/groups ~ ~]
+  %+  ~(put by (to-sole-edit sed))
+    %groups
+  set/groups
 ::  +to-action: convert legacy to action
 ::
 ::  convert any action except %edit.
