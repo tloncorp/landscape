@@ -52,10 +52,10 @@
     =|  kob=(map @ta json)
     :-  %o
     %-  ~(rep by book)
-    |=  [[=kip:c =page:c] acc=_kob]
+    |=  [[=kip:c =page:c] =_kob]
     ?^  kip
-      (~(put by acc) (scot %uv +.kip) (^page page))
-    (~(put by acc) (scot %p kip) (^page page))
+      (~(put by kob) (scot %uv +.kip) (^page page))
+    (~(put by kob) (scot %p kip) (^page page))
   ::
   ++  directory
     |=  =directory:c
@@ -63,8 +63,8 @@
     =|  dir=(map @ta json)
     :-  %o
     %-  ~(rep by directory)
-    |=  [[who=@p con=contact:c] acc=_dir]
-    (~(put by acc) (scot %p who) (contact con))
+    |=  [[who=@p =page:c] =_dir]
+    (~(put by dir) (scot %p who) (^page page))
   ::
   ++  response
     |=  n=response:c

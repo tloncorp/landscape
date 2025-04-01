@@ -203,11 +203,13 @@
           (gth (met 3 u.bio) 2.048)
       ==
     |
+  ?.  (~(typ cy con) %avatar %look)  |
   =+  avatar=(~(get cy con) %avatar %look)
   ?:  ?&  ?=(^ avatar)
           =('data:' (end 3^5 u.avatar))
       ==
     |
+  ?.  (~(typ cy con) %cover %look)  |
   =+  cover=(~(get cy con) %cover %look)
   ?:  ?&  ?=(^ cover)
           =('data:' (end 3^5 u.cover))

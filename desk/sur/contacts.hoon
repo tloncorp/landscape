@@ -82,9 +82,9 @@
 ::  $book: contact book
 ::
 +$  book  (map kip page)
-::  $directory: merged contacts
+::  $directory: all known contacts
 ::
-+$  directory  (map ship contact)
++$  directory  (map ship page)
 ::  $peers: network peers
 ::
 +$  peers  (map ship foreign)

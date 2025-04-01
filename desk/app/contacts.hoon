@@ -603,7 +603,7 @@
       ?-  -.act
         %anon  p-anon:pub
         %self  (p-self:pub p.act)
-        ::  if we add a page for someone who is not a peer,
+        ::  when we add a page for someone who is not a peer,
         ::  we meet them first
         ::
         %page  =?  cor  &(?=(ship p.act) !(~(has by peers) p.act))
@@ -616,22 +616,21 @@
         %snub  (s-many:sub p.act |=(s=_s-impl:sub si-snub:s))
       ==
     ==
-  ::  +peek: scry
-  ::
-  ::  v0 scries
+  ::  +peek: handle scry
   ::
   ::  /x/all -> $rolodex:c0
   ::  /x/contact/her=@ -> $@(~ contact-0:c0)
   ::
-  ::  v1 scries
-  ::
   ::  /x/v1/self -> $contact
+  ::
   ::  /x/v1/book -> $book
   ::  /x/v1/book/her=@p -> $page
   ::  /x/v1/book/id/cid=@uv -> $page
-  ::  /x/v1/all -> $directory
+  ::
   ::  /x/v1/contact/her=@p -> $contact
   ::  /x/v1/peer/her=@p -> $contact
+  ::
+  ::  /x/v1/directory -> $directory
   ::
   ++  peek
     |=  pat=(pole knot)
@@ -695,7 +694,7 @@
         (~(get by book) id+u.id)
       ``contact-page-0+!>(`^page`(fall page *^page))
       ::
-        [%x %v1 %all ~]
+        [%x %v1 %directory ~]
       =|  dir=directory
       ::  export all ship contacts
       ::
@@ -704,7 +703,7 @@
         |=  [[=kip =page] =_dir]
         ?^  kip
           dir
-        (~(put by dir) kip (contact-uni page))
+        (~(put by dir) kip page)
       ::  export all peers
       ::
       =.  dir
@@ -712,7 +711,11 @@
         |=  [[who=ship far=foreign] =_dir]
         ?~  for.far  dir
         ?:  (~(has by dir) who)  dir
-        (~(put by dir) who con.for.far)
+        (~(put by dir) who con.for.far ~)
+      ::  export self
+      ::
+      =.  dir
+        (~(put by dir) our.bowl con.rof ~)
       ``contact-directory-0+!>(dir)
       ::
         [%u %v1 %contact her=@p ~]
