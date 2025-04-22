@@ -3,7 +3,7 @@
 |%
 +$  card  card:agent:gall
 +$  app-state
-  $:  %5
+  $:  %6
       ::  local
       charges=(map desk charge)
   ==
@@ -44,8 +44,10 @@
   :_  this
   :~  ~(tire pass /tire)
       (~(connect pass /eyre) [~ /] %docket)
-      (~(wait pass /init) (add 1 now.bowl))
       (~(connect pass /eyre) [~ /apps] %docket)
+      (~(connect pass /eyre) [~ /docket] %docket)
+      (~(connect pass /eyre) [~ /session] %docket)
+      (~(wait pass /init) (add 1 now.bowl))
   ==
 ::
 ++  on-load
@@ -70,13 +72,19 @@
     :_  old(- %5)  :_  ~
     =/  =cage  [%kiln-suspend !>(`desk`%garden)]
     [%pass /suspend %agent [our.bowl %hood] %poke cage]
-  ?>  ?=(%5 -.old)
+  =^  cards-5  old
+    ?.  ?=(%5 -.old)  `old
+    :_  old(- %6)
+    :~  (~(connect pass /eyre) [~ /docket] %docket)
+        (~(connect pass /eyre) [~ /session] %docket)
+    ==
+  ?>  ?=(%6 -.old)
   =/  cards-tire  [~(tire pass /tire) ~]
   =.  -.state  old
   ::  inflate-cache needs to be called after the state is set
   ::
   =.  +.state  inflate-cache
-  [:(weld cards-1 cards-2 cards-3 cards-4 cards-tire) this]
+  [:(weld cards-1 cards-2 cards-3 cards-4 cards-5 cards-tire) this]
   ::
   ++  inflate-cache
     ^-  cache
@@ -93,9 +101,11 @@
         state-2
         state-3
         state-4
+        state-5
         app-state
     ==
   ::
+  +$  state-5  [%5 (map desk charge)]
   +$  state-4  [%4 (map desk charge)]
   +$  state-3  [%3 (map desk charge)]
   +$  state-2  [%2 (map desk charge)]
@@ -267,14 +277,16 @@
     ~|  [%took-for-nonexistent-charge desk]
     ?>  |((~(has by charges) desk) ?=([%uninstall ~] wire))
     =*  cha  ~(. ch desk)
+    =/  pre  (~(get by charges) desk)
     ?+  wire  ~|(%bad-charge-wire !!)
     ::
         [%install ~]
       ?>  ?=(%poke-ack -.sign)
       ?~  p.sign
         `state
-      =.  charges   (new-chad:cha hung+'Failed install')
-      ((slog leaf+"Failed installing %{(trip desk)}" u.p.sign) `state)
+      =.  charges  (new-chad:cha hung+'Failed install')
+      %.  [(new-cache:cha pre) state]
+      (slog leaf+"Failed installing %{(trip desk)}" u.p.sign)
     ::
         [%uninstall ~]
       ?>  ?=(%poke-ack -.sign)
@@ -293,7 +305,8 @@
           ?:  ?=(%http i.t.t.wire)
             hung+'failed to fetch glob via http'
           hung+'failed to fetch glob via ames'
-        ((slog leaf+"docket: couldn't {act} thread; will retry" u.p.sign) `state)
+        %.  [(new-cache:cha pre) state]
+        (slog leaf+"docket: couldn't {act} thread; will retry" u.p.sign)
       ::
           %fact
         ?+    p.cage.sign  `state
@@ -301,12 +314,12 @@
           =+  !<([=term =tang] q.cage.sign)
           ?.  |(=(term %cancelled) =(term %http-request-cancelled))
             =.  charges  (new-chad:cha hung+'glob-failed')
-            :-  ~[add-fact:cha]
+            :-  [add-fact:cha (new-cache:cha pre)]
             ((slog leaf+"docket: thread failed;" leaf+<term> tang) state)
           %-  (slog leaf+"docket: thread cancelled; retrying" leaf+<term> tang)
           =.  charges  (new-chad:cha %install ~)
           :_   state
-          [add-fact:cha fetch-glob:cha]
+          [add-fact:cha (weld fetch-glob:cha (new-cache:cha pre))]
         ::
             %thread-done
           =+  !<(=glob q.cage.sign)
@@ -322,7 +335,7 @@
           =/  have=@uv  (hash-glob glob)
           ?.  =(want have)
             =.  charges   (new-chad:cha hung+'glob hash mismatch')
-            %.  `state
+            %.  [(new-cache:cha `charge) state]
             =/  url=@t  (fall (slaw %t i.t.t.t.wire) '???')
             %-  slog
             :~  leaf+"docket: glob hash mismatch on {<desk>} from {(trip url)}"
@@ -331,7 +344,7 @@
             ==
           =.  charges   (new-chad:cha glob+glob)
           =.  by-base   (~(put by by-base) base.href.docket.charge desk)
-          :_(state ~[add-fact:cha])
+          [[add-fact:cha (new-cache:cha `charge)] state]
         ==
       ==
     ==
@@ -401,14 +414,14 @@
           %live
         ?.  ?=(%glob -.href.docket.charge)
           =.  charges  (new-chad:cha %site ~)
-          :_(state ~[add-fact:cha])
+          :_(state [add-fact:cha (new-cache:cha `charge)])
         :_(state ~[add-fact:cha])
       ::
           ?(%held %dead)
         =/  glob=(unit glob)
           ?:(?=(%glob -.chad.charge) `glob.chad.charge ~)
         =.  charges  (new-chad:cha %suspend glob)
-        :_(state ~[add-fact:cha])
+        :_(state [add-fact:cha (new-cache:cha `charge)])
       ==
     [[card-1 cards-2] state]
   ::
@@ -441,7 +454,7 @@
       ::
       ?:  ?=(%site -.href.docket)
         =.  charges  (new-chad:cha %site ~)
-        :-  ~[add-fact:cha]
+        :-  [add-fact:cha (new-cache:cha pre)]
         state
       ::
       =.  by-base  (~(put by by-base) base.href.docket desk)
@@ -462,7 +475,7 @@
       ::  if the glob changed, forget the old and fetch the new
       ::
       =.  charges  (new-chad:cha %install ~)
-      [[add-fact:cha fetch-glob:cha] state]
+      [[add-fact:cha (weld fetch-glob:cha (new-cache:cha pre))] state]
     [[card-1 cards-2] state]
   --
 ::
@@ -624,6 +637,7 @@
         base.href.docket.charge
       ::
       :_  state
+      %+  weld  (new-cache:cha `charge)
       ::
       =/  ours=?
         =/  loc  location.glob-reference.href.docket.charge
@@ -770,6 +784,50 @@
     %+  ~(put by charges)  desk
     [d chad:(~(gut by charges) desk *charge)]
   ++  new-chad  |=(c=chad (~(jab by charges) desk |=(charge +<(chad c))))
+  ++  new-cache
+    |=  old=(unit charge)
+    ^-  (list card)
+    ::  docket tries to serve glob contents from the runtime http server cache.
+    ::  as such, we must keep that cache updated as the glob changes.
+    ::
+    =;  caches=(map @t (unit cache-entry:eyre))
+      %+  turn  ~(tap by caches)
+      |=  [url=@t entry=(unit cache-entry:eyre)]
+      (arvo:(pass /cache) %e %set-response url entry)
+    %-  %~  gas  by
+        ^-  (map @t (unit cache-entry:eyre))
+        ::  clear old cache entries, if any
+        ::
+        ?~  old  ~
+        ?.  ?=(%glob -.chad.u.old)  ~
+        ?.  ?=(%glob -.href.docket.u.old)  ~
+        =/  base=@t
+          (cat 3 '/apps/' base.href.docket.u.old)
+        %-  ~(rep by glob.chad.u.old)
+        |=  [[=path *] out=(map @t (unit cache-entry:eyre))]
+        (~(put by out) (rap 3 base (spat (snip path)) '.' (rear path) ~) ~)
+    ::  overwrite with new cache entries, if needed
+    ::
+    =/  new  (~(got by charges) desk)
+    ?.  ?=(%glob -.chad.new)  ~
+    ?.  ?=(%glob -.href.docket.new)  ~
+    =/  base=@t
+      (cat 3 '/apps/' base.href.docket.new)
+    %+  turn  ~(tap by glob.chad.new)
+    |=  [=path =mime]
+    ::NOTE  +payload-from-glob responds to both /path.ext and /path/ext,
+    ::      and you could argue we should match that behavior here. however,
+    ::      we already don't (cannot) match its "fall back to /index/html"
+    ::      behavior, and the /path.ext case is by far the more common case.
+    ::      so, we simply assume /path.ext intent, ignore /path/ext cases,
+    ::      and reap 95% of the gains that way.
+    :-  (rap 3 base (spat (snip path)) '.' (rear path) ~)
+    =;  payload=simple-payload:http
+      `[& %payload payload]
+    ::NOTE  matches +payload-from-glob
+    :_  `q.mime
+    :-  200
+    [content-type+(rsh 3 (crip <p.mime>))]~
   ++  fetch-glob
     ^-  (list card)
     =/  =charge
