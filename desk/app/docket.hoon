@@ -3,7 +3,7 @@
 |%
 +$  card  card:agent:gall
 +$  app-state
-  $:  %5
+  $:  %6
       ::  local
       charges=(map desk charge)
   ==
@@ -44,8 +44,10 @@
   :_  this
   :~  ~(tire pass /tire)
       (~(connect pass /eyre) [~ /] %docket)
-      (~(wait pass /init) (add 1 now.bowl))
       (~(connect pass /eyre) [~ /apps] %docket)
+      (~(connect pass /eyre) [~ /docket] %docket)
+      (~(connect pass /eyre) [~ /session] %docket)
+      (~(wait pass /init) (add 1 now.bowl))
   ==
 ::
 ++  on-load
@@ -70,13 +72,19 @@
     :_  old(- %5)  :_  ~
     =/  =cage  [%kiln-suspend !>(`desk`%garden)]
     [%pass /suspend %agent [our.bowl %hood] %poke cage]
-  ?>  ?=(%5 -.old)
+  =^  cards-5  old
+    ?.  ?=(%5 -.old)  `old
+    :_  old(- %6)
+    :~  (~(connect pass /eyre) [~ /docket] %docket)
+        (~(connect pass /eyre) [~ /session] %docket)
+    ==
+  ?>  ?=(%6 -.old)
   =/  cards-tire  [~(tire pass /tire) ~]
   =.  -.state  old
   ::  inflate-cache needs to be called after the state is set
   ::
   =.  +.state  inflate-cache
-  [:(weld cards-1 cards-2 cards-3 cards-4 cards-tire) this]
+  [:(weld cards-1 cards-2 cards-3 cards-4 cards-5 cards-tire) this]
   ::
   ++  inflate-cache
     ^-  cache
@@ -93,9 +101,11 @@
         state-2
         state-3
         state-4
+        state-5
         app-state
     ==
   ::
+  +$  state-5  [%5 (map desk charge)]
   +$  state-4  [%4 (map desk charge)]
   +$  state-3  [%3 (map desk charge)]
   +$  state-2  [%2 (map desk charge)]
