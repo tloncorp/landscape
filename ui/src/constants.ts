@@ -83,16 +83,6 @@ export const APPS = [
     image: 'https://raw.githubusercontent.com/thecommons-urbit/blog/main/assets/tile.png'
   },
   {
-    title: "Feeds",
-    description: "Aggregate, discover, and publish web feeds.",
-    color: "#CCCCCC",
-    link: "/feeds/~/recent",
-    source: '~dister-migrev-dolseg',
-    section: SECTIONS.MEDIA,
-    desk: 'feeds',
-    image: 'https://nyc3.digitaloceanspaces.com/drain/2023.12.13..02.46.56-feeds.png'
-  },
-  {
     title: 'Scratch',
     description: 'For writing and sharing bits of text.',
     color: '#50AAEC',
@@ -104,14 +94,14 @@ export const APPS = [
   },
   // UTILITIES
   {
-    title: "Eyas",
-    description: "Text editor.",
-    color: '#7F5AB6',
-    link: '/eyas',
+    title: "Hawk",
+    description: "Programmable environment.",
+    color: '#4e70a1',
+    link: '/apps/hawk',
     source: '~dister-migrev-dolseg',
     section: SECTIONS.UTILITIES,
-    desk: 'eyas',
-    image: 'https://nyc3.digitaloceanspaces.com/drain/2023.10.29..09.56.09-eyas-icon.png'
+    desk: 'hawk',
+    image: 'https://nyc3.digitaloceanspaces.com/drain/hawk-assets/2024.2.09..14.26.28-hawk.png'
   },
   {
     title: 'Albums',
