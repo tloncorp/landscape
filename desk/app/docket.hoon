@@ -531,7 +531,7 @@
       (rap 3 'window.ship = "' (rsh 3 (scot %p our.bowl)) '";' ~)
     ::
         [[%docket %upload ~] ?(~ [~ %html])]
-      [[200 ~] `(upload-page ~)]
+      [[200 ['content-type' 'text/html']~] `(upload-page ~)]
     ::
         [[%apps @ *] *]
       %+  payload-from-glob
