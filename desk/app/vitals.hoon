@@ -125,14 +125,8 @@
     ?>  =(our src)
     =+  !<(=ship vase)
     =/  in-chain=?  !=(~ (find ~[our] (saxo:title our now ship)))
-    =/  own-moon=?
-      ?&  ?=(%earl (clan:title ship))
-          =(our (end 5 ship))
-      ==
     =/  check-thread=@tas
-      ?:  ?|  in-chain
-              own-moon
-          ==
+      ?:  in-chain
         %vitals-sponsored-connection-check
       %vitals-connection-check
     =/  stat=(unit result:v)  (~(get by connections) ship)
