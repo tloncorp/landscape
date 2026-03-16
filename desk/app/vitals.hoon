@@ -124,7 +124,13 @@
       %run-check
     ?>  =(our src)
     =+  !<(=ship vase)
-    ?>  =(~ (find ~[our] (saxo:title our now ship)))
+    ::  allow checks for descendants in sponsor chain, plus direct own-moon case
+    ::  (moon sponsor relation can be determined locally without saxo lookup)
+    ?>  ?|  =(~ (find ~[our] (saxo:title our now ship)))
+            ?&  ?=(%earl (clan:title ship))
+                =(our (end 5 ship))
+            ==
+        ==
     =/  stat=(unit result:v)  (~(get by connections) ship)
     ::  XX: code duplicated because of annoying type issue
     ?~  stat
