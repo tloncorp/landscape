@@ -124,13 +124,17 @@
       %run-check
     ?>  =(our src)
     =+  !<(=ship vase)
-    ::  allow checks for descendants in sponsor chain, plus direct own-moon case
-    ::  (moon sponsor relation can be determined locally without saxo lookup)
-    ?>  ?|  =(~ (find ~[our] (saxo:title our now ship)))
-            ?&  ?=(%earl (clan:title ship))
-                =(our (end 5 ship))
-            ==
-        ==
+    =/  in-chain=?  !=(~ (find ~[our] (saxo:title our now ship)))
+    =/  own-moon=?
+      ?&  ?=(%earl (clan:title ship))
+          =(our (end 5 ship))
+      ==
+    =/  check-thread=@tas
+      ?:  ?|  in-chain
+              own-moon
+          ==
+        %vitals-sponsored-connection-check
+      %vitals-connection-check
     =/  stat=(unit result:v)  (~(get by connections) ship)
     ::  XX: code duplicated because of annoying type issue
     ?~  stat
@@ -142,7 +146,7 @@
           %k
           %fard
           %landscape
-          %vitals-connection-check
+          check-thread
           %noun
           !>((some ship))
       ==
@@ -157,7 +161,7 @@
         %k
         %fard
         %landscape
-        %vitals-connection-check
+        check-thread
         %noun
         !>((some ship))
     ==

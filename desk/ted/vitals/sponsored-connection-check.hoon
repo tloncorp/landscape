@@ -96,6 +96,14 @@
     :: ... otherwise, check next sponsor
     $(sponsors t.sponsors)
   ::  report whether sponsor can reach target
+  ::
+  ::  if the target is our moon and we are the sponsor reporting %live,
+  ::  treat that as a successful direct path for this check.
+  ?:  ?&  u.live
+          ?=(%earl (clan:title target))
+          =(i.sponsors our)
+      ==
+    (post-result [%yes ~])
   %-  post-result
   ?:  u.live
     [%no-sponsor-hit i.sponsors]
