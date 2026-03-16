@@ -13,101 +13,32 @@
 =+  !<([~ target=ship] arg)
 ;<  our=@p  bind:m  get-our:io
 |^
-  ::  early exit; check if we have live path to target
-  ;<  tqos=qos:ames  bind:m  (get-qos target)
-  ;<  now=@da  bind:m  get-time:io
-  ?:  ?&  ?=(%live -.tqos)
-          (gth last-contact.tqos (sub now info-timeout:vitals))
-      ==
-    (post-result [%yes ~])
-  ::  set pending to %trying-dns
-  ::  XX: can we use the strand cards for these?
-  ;<  ~  bind:m  (update-status [%trying-dns ~])
-  ::  check if we can fetch example.com
-  ;<  ~  bind:m  (send-request:io [%'GET' 'http://example.com' ~ ~])
-  ;<  =client-response:iris  bind:m  take-client-response:io
-  ?.  ?&  ?=(%finished -.client-response)
-          =(200 status-code.response-header.client-response)
-      ==
-    (post-result [%no-dns ~])
-  ::  set pending to %trying-local
-  ;<  ~  bind:m  (update-status [%trying-local ~])
-  ::  check if we can contact our own galaxy
-  ;<  =ping:vitals  bind:m  (scry:io ping:vitals ~[%gx %ping %noun])
-  ;<  gqos=qos:ames  bind:m  (scry:io qos:ames ~[%gx %vitals %galaxy %vitals-qos])
-  ?:  !(galaxy-reachable ping gqos)
-    (post-result [%no-our-galaxy last-contact.gqos])
-  ::  set pending to %trying-target
+  ::  sponsored-target check: only evaluate path to target and sponsor chain
+  ::  (skip global DNS/local-galaxy diagnostics used by generic checks)
   ;<  ~  bind:m  (update-status [%trying-target ~])
-  ::  check if we can contact target (with timeout)
   ;<  chek=(unit)  bind:m  (check-online target target-timeout:vitals)
   ?:  ?=([%$ %$] chek)
     (post-result [%yes ~])
-  ::  if we're a moon, check if we can contact our planet
-  ::
-  ::  NN: failing to contact our sponsor is only a failure condition for moons,
-  ::      since currently only moons require the direct sponsor to be online for
-  ::      peers to grab the moon keys
-  ::  NN: we do this after the initial target check because if we're a moon and
-  ::      our planet is down, it's useful to talk to ships that still have live
-  ::      wires (e.g. for troubleshooting); thus, by waiting to perform this
-  ::      check, we don't report %no-our-planet for every connectivity check
-  ::      when attempting to track down a live peer from whom to seek help
-  ::
-  ;<  moon-sponsor-reachable=?
-      bind:m
-    =/  mm  (strand ,?)
-    ^-  form:mm
-    ?.  ?=(%earl (clan:title our))
-      (pure:mm %.y)
-    =/  sponsor=@p  (end 5 our)
-    ;<  ~  bind:mm  (update-status [%trying-sponsor sponsor])
-    ;<  pchek=(unit)   bind:mm  (check-online sponsor target-timeout:vitals)
-    ?:  ?=([%$ %$] pchek)
-      (pure:mm %.y)
-    (pure:mm %.n)
-  ::
-  ?:  !moon-sponsor-reachable
-    ;<  pqos=qos:ames  bind:m  (scry:io qos:ames ~[%gx %vitals %sponsor %vitals-qos])
-    (post-result [%no-our-planet last-contact.pqos])
-  ::  early exit; if target is a galaxy, there's nothing more we can check
-  ?:  ?=(%czar (clan:title target))
-    (galaxy-down target)
-  ::  check if target sponsors can reach target
+  ::  walk target's sponsor chain toward us
   ;<  saxo=(list ship)  bind:m  (scry:io (list ship) ~[%j %saxo (scot %p target)])
   =/  sponsors
     ?~  saxo  ~
     t.saxo
   |-
-  ::  case impossible:
-  ::    - early exit for target = galaxy
-  ::    - base case is sponsor = galaxy
-  ?~  sponsors  !!
-  ::  set pending to %trying-sponsor
-  ;<  ~  bind:m  (update-status [%trying-sponsor i.sponsors])
-  ::  ask sponsor if he has live wire to target
-  ;<  live=(unit ?)  bind:m  (ask-sponsor i.sponsors)
-  ::  if timeout...
+  ?~  sponsors
+    (post-result [%no-sponsor-miss our])
+  =/  sponsor=ship  i.sponsors
+  ;<  ~  bind:m  (update-status [%trying-sponsor sponsor])
+  ;<  live=(unit ?)  bind:m  (ask-sponsor sponsor)
   ?~  live
-    ::  ... and sponsor is galaxy ...
-    ?:  ?=(%czar (clan:title i.sponsors))
-      ::  ... it's so over
-      (galaxy-down i.sponsors)
-    :: ... otherwise, check next sponsor
+    ?:  =(sponsor our)
+      (post-result [%no-sponsor-miss sponsor])
     $(sponsors t.sponsors)
-  ::  report whether sponsor can reach target
-  ::
-  ::  if the target is our moon and we are the sponsor reporting %live,
-  ::  treat that as a successful direct path for this check.
-  ?:  ?&  u.live
-          ?=(%earl (clan:title target))
-          =(i.sponsors our)
-      ==
-    (post-result [%yes ~])
-  %-  post-result
   ?:  u.live
-    [%no-sponsor-hit i.sponsors]
-  [%no-sponsor-miss i.sponsors]
+    ?:  =(sponsor our)
+      (post-result [%yes ~])
+    $(sponsors t.sponsors)
+  (post-result [%no-sponsor-miss sponsor])
 ::
 ++  galaxy-reachable
   |=  [=ping:vitals =qos:ames]
