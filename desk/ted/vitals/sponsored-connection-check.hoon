@@ -30,13 +30,15 @@
   (post-result [%no-sponsor-miss our])
 =/  sponsor=ship  i.sponsors
 ;<  ~  bind:m  (update-status target [%trying-sponsor sponsor])
-;<  live=(unit ?)  bind:m  (ask-sponsor sponsor target)
+;<  live=(unit ?)  bind:m
+  ::  we know we ourselves are live so can short circuit
+  ?:  =(our sponsor)  (pure:(strand (unit ?)) `&)
+  (ask-sponsor sponsor target)
 ?~  live
-  ?:  =(sponsor our)
-    (post-result [%no-sponsor-miss sponsor])
   $(sponsors t.sponsors)
 ?:  u.live
-  ?:  =(sponsor our)
+  ::  if we're a not a star, we're done, otherwise we need to check galaxy
+  ?:  &(=(sponsor our) !?=(%king (clan:title our)))
     (post-result [%yes ~])
   $(sponsors t.sponsors)
 (post-result [%no-sponsor-miss sponsor])
