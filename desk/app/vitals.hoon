@@ -124,7 +124,11 @@
       %run-check
     ?>  =(our src)
     =+  !<(=ship vase)
-    ?>  =(~ (find ~[our] (saxo:title our now ship)))
+    =/  in-chain=?  !=(~ (find ~[our] (saxo:title our now ship)))
+    =/  check-thread=@tas
+      ?:  in-chain
+        %vitals-sponsored-connection-check
+      %vitals-connection-check
     =/  stat=(unit result:v)  (~(get by connections) ship)
     ::  XX: code duplicated because of annoying type issue
     ?~  stat
@@ -136,7 +140,7 @@
           %k
           %fard
           %landscape
-          %vitals-connection-check
+          check-thread
           %noun
           !>((some ship))
       ==
@@ -151,7 +155,7 @@
         %k
         %fard
         %landscape
-        %vitals-connection-check
+        check-thread
         %noun
         !>((some ship))
     ==
