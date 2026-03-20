@@ -60,18 +60,15 @@ export default function SourceSetter({
       <div className="space-y-3">
         {srcShip ? (
           <div className="inner-section relative bg-gray-100">
-            <h3 className="h4 mb-5 block">Automatic Updates</h3>
+            <h3 className="h4 mb-5 block">Automatic updates enabled</h3>
             <p className="mb-5 leading-5">
-              Automatically download and apply updates to keep {appName} up to
-              date.
-            </p>
-            <p className="mb-5 leading-5">
-              OTA Source:{' '}
+              {appName} will automatically download and apply updates from{' '}
               <ShipName
                 name={srcShip}
                 truncate={false}
                 className="font-mono font-semibold"
-              />
+              />{' '}
+              to keep itself up to date.
             </p>
             <Button onClick={onUnset} variant="destructive">
               Unsync Updates for {appName}...

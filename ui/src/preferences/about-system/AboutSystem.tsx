@@ -12,6 +12,7 @@ import { FullTlon16Icon } from '../../components/icons/FullTlon16Icon';
 import { useSystemUpdate } from '../../logic/useSystemUpdate';
 import { usePike, useLag } from '../../state/kiln';
 import useVereState from '../../state/vere';
+import { isHosted } from '@/logic/utils';
 import { disableDefault, pluralize } from '@/logic/utils';
 import { UpdatePreferences } from './UpdatePreferences';
 import { ShipCode } from '@/components/ShipCode';
@@ -49,7 +50,10 @@ export const AboutSystem = () => {
         <div className="space-y-4 leading-5">
           <FullTlon16Icon className="h-4" />
           <div>
-            <p>Arvo Kernel Version ({hash})</p>
+            <p>
+              Arvo kernel version{' '}
+              <span className="font-mono font-semibold">{hash}</span>
+            </p>
           </div>
           {systemBlocked ? (
             <>
@@ -153,24 +157,37 @@ export const AboutSystem = () => {
             <>
               {runtimeUpToDate ? (
                 <>
-                  <p>Vere Runtime Version {vereVersion}</p>
-                  <p>You are running the latest version.</p>
+                  <p>Vere runtime version {vereVersion}</p>
+                  <p>You are running the latest runtime.</p>
                 </>
               ) : (
                 <>
                   <p className="text-orange-500">
-                    Your Vere version is {vereVersion}, the latest runtime
-                    version is {latestVereVersion}.
+                    Your version is {vereVersion}, the latest published version
+                    is {latestVereVersion}.
                   </p>
-                  <p className="text-orange-500">
-                    <a
-                      className="font-bold text-blue-500"
-                      href="https://operators.urbit.org/manual/os/updates#runtime-updates"
-                    >
-                      Update your runtime{' '}
-                    </a>
-                    or contact your hosting provider.
-                  </p>
+                  {!isHosted ? (
+                    <p className="text-orange-500">
+                      <a
+                        className="font-bold text-blue-500"
+                        href="https://operators.urbit.org/manual/os/updates#runtime-updates"
+                      >
+                        Update your runtime{' '}
+                      </a>
+                      or contact your hosting provider.
+                    </p>
+                  ) : (
+                    <p className="text-orange-500">
+                      Tlon Hosting is currently updating your runtime. Please{' '}
+                      <a
+                        className="font-bold text-blue-500"
+                        href="mailto:support@tlon.io"
+                      >
+                        contact support
+                      </a>{' '}
+                      for more information.
+                    </p>
+                  )}
                 </>
               )}
             </>
