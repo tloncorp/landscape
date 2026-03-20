@@ -1,8 +1,5 @@
-import React, { useCallback, useState, FormEvent, useEffect } from 'react';
+import React, { useState, useEffect, FormEvent } from 'react';
 import api from '../api';
-import { useForm } from 'react-hook-form';
-import cn from 'classnames';
-import { useAsyncCall } from '../logic/useAsyncCall';
 import { useStorage } from '../state/storage';
 import { Button } from '../components/Button';
 import { Spinner } from '../components/Spinner';
@@ -14,15 +11,8 @@ import {
 } from '@/gear';
 import { isHosted } from '@/logic/utils';
 import { Toggle } from '@/components/Toggle';
-
-interface CredentialsSubmit {
-  endpoint: string;
-  accessId: string;
-  accessSecret: string;
-  region: string;
-  publicUrlBase: string;
-  bucket: string;
-}
+import { useAsyncCall } from '../logic/useAsyncCall';
+import { useCallback } from 'react';
 
 type S3Update =
   | { 'set-region': string }
@@ -34,7 +24,7 @@ type S3Update =
   | { 'add-bucket': string }
   | { 'remove-bucket': string };
 
-function storagePoke(data: S3Update | { 'set-region': string }) {
+function storagePoke(data: S3Update) {
   return {
     app: 'storage',
     mark: 'storage-action',
@@ -46,25 +36,14 @@ export const StoragePrefs = () => {
   const { s3, loaded } = useStorage();
   const hostedStorage = s3.configuration.service === 'presigned-url';
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { isSubmitting, isDirty, isValid, isSubmitSuccessful },
-  } = useForm<CredentialsSubmit>({
-    mode: 'onChange',
-  });
-
-  const { call: addS3Credentials, status } = useAsyncCall(
-    useCallback(async (data: CredentialsSubmit) => {
-      api.poke(storagePoke({ 'set-endpoint': data.endpoint }));
-      api.poke(storagePoke({ 'set-access-key-id': data.accessId }));
-      api.poke(storagePoke({ 'set-secret-access-key': data.accessSecret }));
-      api.poke(storagePoke({ 'set-current-bucket': data.bucket }));
-      api.poke(storagePoke({ 'set-region': data.region }));
-      api.poke(storagePoke({ 'set-public-url-base': data.publicUrlBase }));
-    }, [])
-  );
+  const [endpoint, setEndpoint] = useState('');
+  const [accessId, setAccessId] = useState('');
+  const [accessSecret, setAccessSecret] = useState('');
+  const [region, setRegion] = useState('');
+  const [publicUrlBase, setPublicUrlBase] = useState('');
+  const [bucket, setBucket] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   const { call: toggleS3, status: toggleStatus } = useAsyncCall(
     useCallback(() => {
@@ -86,10 +65,32 @@ export const StoragePrefs = () => {
   }, []);
 
   useEffect(() => {
-    loaded && reset();
-  }, [loaded, reset]);
+    if (loaded) {
+      setEndpoint(s3.credentials?.endpoint ?? '');
+      setAccessId(s3.credentials?.accessKeyId ?? '');
+      setAccessSecret(s3.credentials?.secretAccessKey ?? '');
+      setRegion(s3.configuration?.region ?? '');
+      setPublicUrlBase(s3.configuration?.publicUrlBase ?? '');
+      setBucket(s3.configuration?.currentBucket ?? '');
+    }
+  }, [loaded]);
 
-  console.log(s3.configuration, toggleStatus);
+  async function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    setSubmitting(true);
+    setSaved(false);
+    try {
+      await api.poke(storagePoke({ 'set-endpoint': endpoint }));
+      await api.poke(storagePoke({ 'set-access-key-id': accessId }));
+      await api.poke(storagePoke({ 'set-secret-access-key': accessSecret }));
+      await api.poke(storagePoke({ 'set-current-bucket': bucket }));
+      await api.poke(storagePoke({ 'set-region': region }));
+      await api.poke(storagePoke({ 'set-public-url-base': publicUrlBase }));
+      setSaved(true);
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   return (
     <div className="inner-section">
@@ -135,20 +136,19 @@ export const StoragePrefs = () => {
               .
             </p>
 
-            <form onSubmit={handleSubmit(addS3Credentials)} className="mt-6">
+            <form onSubmit={onSubmit} className="mt-6">
               <div className="mb-8 flex flex-col space-y-2">
                 <label className="font-semibold" htmlFor="endpoint">
-                  Endpoint<span title="Required field">*</span>
+                  Endpoint
                 </label>
                 <div className="relative">
                   <input
                     disabled={!loaded}
-                    required
                     id="endpoint"
-                    type="url"
+                    type="text"
                     autoCorrect="off"
-                    defaultValue={s3.credentials?.endpoint}
-                    {...register('endpoint', { required: true })}
+                    value={endpoint}
+                    onChange={(e) => setEndpoint(e.target.value)}
                     className="input default-ring bg-gray-50"
                   />
                   {!loaded && <Spinner className="absolute top-1 right-2" />}
@@ -156,18 +156,17 @@ export const StoragePrefs = () => {
               </div>
               <div className="mb-8 flex flex-col space-y-2">
                 <label className="font-semibold" htmlFor="key">
-                  Access Key ID<span title="Required field">*</span>
+                  Access Key ID
                 </label>
                 <div className="relative">
                   <input
                     disabled={!loaded}
-                    required
                     id="key"
                     type="text"
                     autoCorrect="off"
                     spellCheck="false"
-                    defaultValue={s3.credentials?.accessKeyId}
-                    {...register('accessId', { required: true })}
+                    value={accessId}
+                    onChange={(e) => setAccessId(e.target.value)}
                     className="input default-ring bg-gray-50"
                   />
                   {!loaded && <Spinner className="absolute top-1 right-2" />}
@@ -175,18 +174,17 @@ export const StoragePrefs = () => {
               </div>
               <div className="mb-8 flex flex-col space-y-2">
                 <label className="font-semibold" htmlFor="secretAccessKey">
-                  Secret Access Key<span title="Required field">*</span>
+                  Secret Access Key
                 </label>
                 <div className="relative">
                   <input
                     disabled={!loaded}
-                    required
                     id="secretAccessKey"
                     type="text"
                     autoCorrect="off"
                     spellCheck="false"
-                    defaultValue={s3.credentials?.secretAccessKey}
-                    {...register('accessSecret', { required: true })}
+                    value={accessSecret}
+                    onChange={(e) => setAccessSecret(e.target.value)}
                     className="input default-ring bg-gray-50"
                   />
                   {!loaded && <Spinner className="absolute top-1 right-2" />}
@@ -194,17 +192,16 @@ export const StoragePrefs = () => {
               </div>
               <div className="mb-8 flex flex-col space-y-2">
                 <label className="font-semibold" htmlFor="region">
-                  Region<span title="Required field">*</span>
+                  Region
                 </label>
                 <div className="relative">
                   <input
                     disabled={!loaded}
-                    required
                     id="region"
                     type="text"
                     autoCorrect="off"
-                    defaultValue={s3.configuration?.region}
-                    {...register('region', { required: true })}
+                    value={region}
+                    onChange={(e) => setRegion(e.target.value)}
                     className="input default-ring bg-gray-50"
                   />
                   {!loaded && <Spinner className="absolute top-1 right-2" />}
@@ -220,8 +217,8 @@ export const StoragePrefs = () => {
                     id="publicUrlBase"
                     type="text"
                     autoCorrect="off"
-                    defaultValue={s3.configuration?.publicUrlBase}
-                    {...register('publicUrlBase')}
+                    value={publicUrlBase}
+                    onChange={(e) => setPublicUrlBase(e.target.value)}
                     className="input default-ring bg-gray-50"
                   />
                   {!loaded && <Spinner className="absolute top-1 right-2" />}
@@ -229,33 +226,23 @@ export const StoragePrefs = () => {
               </div>
               <div className="mb-8 flex flex-col space-y-2">
                 <label className="font-semibold" htmlFor="bucket">
-                  Bucket Name<span title="Required field">*</span>
+                  Bucket Name
                 </label>
                 <div className="relative">
                   <input
                     disabled={!loaded}
-                    required
                     id="bucket"
                     type="text"
                     autoCorrect="off"
-                    defaultValue={s3.configuration.currentBucket}
-                    {...register('bucket', { required: true })}
+                    value={bucket}
+                    onChange={(e) => setBucket(e.target.value)}
                     className="input default-ring bg-gray-50"
                   />
                   {!loaded && <Spinner className="absolute top-1 right-2" />}
                 </div>
               </div>
-              <Button
-                type="submit"
-                disabled={!isDirty || !isValid}
-                className={cn(
-                  !isDirty || !isValid || isSubmitSuccessful
-                    ? 'cursor-not-allowed bg-gray-200 text-gray-100'
-                    : ''
-                )}
-              >
-                {isSubmitting ? <Spinner /> : 'Save'}
-                {isSubmitSuccessful && ' Successful'}
+              <Button type="submit" disabled={!loaded || submitting}>
+                {submitting ? <Spinner /> : saved ? 'Saved' : 'Save'}
               </Button>
             </form>
           </>
