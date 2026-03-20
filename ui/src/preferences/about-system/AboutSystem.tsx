@@ -51,7 +51,7 @@ export const AboutSystem = () => {
           <FullTlon16Icon className="h-4" />
           <div>
             <p>
-              Arvo kernel version{' '}
+              Arvo kernel (%base) version{' '}
               <span className="font-mono font-semibold">{hash}</span>
             </p>
           </div>
@@ -100,7 +100,7 @@ export const AboutSystem = () => {
                       <p>
                         Landscape is the application launcher and system
                         interface. It needs an update before you can apply the
-                        %base update.
+                        kernel update.
                       </p>
                     </>
                   ) : (
@@ -108,7 +108,7 @@ export const AboutSystem = () => {
                       <DialogTrigger asChild>
                         <Button variant="caution">
                           Suspend {blockedCount}{' '}
-                          {pluralize('App', blockedCount)} and Apply %base
+                          {pluralize('App', blockedCount)} and Apply Kernel
                           Update
                         </Button>
                       </DialogTrigger>
@@ -122,7 +122,7 @@ export const AboutSystem = () => {
                         >
                           <h2 className="h4">
                             Suspend {blockedCount}{' '}
-                            {pluralize('App', blockedCount)} and Apply %base
+                            {pluralize('App', blockedCount)} and Apply Kernel
                             Update
                           </h2>
                           <p>

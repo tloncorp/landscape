@@ -17,7 +17,7 @@ export const UpdatePreferences = () => {
         toggleSrc={toggleInstall}
         srcDesk={desk}
         srcShip={srcShip}
-        title="%base Updates"
+        title="Kernel Updates"
       />
     </div>
   );
