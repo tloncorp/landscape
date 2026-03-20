@@ -21,7 +21,6 @@ import create from 'zustand';
 import { Avatar } from '../components/Avatar';
 import { Dialog } from '../components/Dialog';
 import { ErrorAlert } from '../components/ErrorAlert';
-import { Help } from './Help';
 import { Notifications } from './notifications/Notifications';
 import { NotificationsLink } from './notifications/NotificationsLink';
 import { Search } from './Search';
@@ -72,7 +71,6 @@ export type MenuState =
   | 'search'
   | 'app'
   | 'notifications'
-  | 'help-and-support'
   | 'system-preferences'
   | 'upgrading';
 
@@ -207,7 +205,6 @@ export const Nav: FunctionComponent = () => {
               >
                 <Route path=":submenu/*" element={<SystemPreferences />} />
               </Route>
-              <Route path="help-and-support" element={<Help />} />
               <Route path="search/*" element={<Search />} />
             </Routes>
           </div>

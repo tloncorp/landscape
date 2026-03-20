@@ -24,10 +24,8 @@ import { ErrorAlert } from '../components/ErrorAlert';
 import { useIsMobile, useMedia } from '../logic/useMedia';
 import { LeftArrow } from '../components/icons/LeftArrow';
 import { getAppName, isHosted } from '@/logic/utils';
-import { Help } from '../nav/Help';
 import { Hosting } from '../nav/Hosting';
 import TlonIcon from '../components/icons/TlonIcon';
-import HelpIcon from '../components/icons/HelpIcon';
 import LogoutIcon from '../components/icons/LogoutIcon';
 import BellIcon from '../components/icons/BellIcon';
 import BurstIcon from '../components/icons/BurstIcon';
@@ -133,10 +131,6 @@ export const SystemPreferences = () => {
                     Tlon Hosting
                   </SystemPreferencesSection>
                 )}
-                <SystemPreferencesSection to="help" active={matchSub('help')}>
-                  <HelpIcon className="mr-3 h-6 w-6 rounded-md text-gray-600" />
-                  Help and Support
-                </SystemPreferencesSection>
                 <SystemPreferencesSection
                   to="security"
                   active={matchSub('security')}
@@ -228,7 +222,6 @@ export const SystemPreferences = () => {
             <Routes>
               <Route path="apps/:desk" element={<AppPrefs />} />
               <Route path="hosting" element={<Hosting />} />
-              <Route path="help" element={<Help />} />
               <Route path="interface" element={<InterfacePrefs />} />
               <Route path="appearance" element={<AppearancePrefs />} />
               <Route path="shortcuts" element={<ShortcutPrefs />} />
