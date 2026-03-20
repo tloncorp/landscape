@@ -7,9 +7,9 @@ export const Hosting = () => {
       <div className="inner-section space-y-8">
         <h2 className="text-lg font-bold">Tlon Hosting</h2>
         <div>
-          <h3 className="text-md mb-2 font-bold">Service Account Dashboard</h3>
+          <h3 className="text-md mb-2 font-bold">Hosting Service Dashboard</h3>
           <p className="leading-5">
-            View your hosted urbits, their current status, and account info.
+            View your hosted accounts, their current status, and account info.
           </p>
         </div>
         <Button
@@ -18,7 +18,7 @@ export const Hosting = () => {
           href="https://tlon.network/dashboard"
           target="_blank"
         >
-          Open Service Account Dashboard
+          Open Dashboard
         </Button>
       </div>
     </div>

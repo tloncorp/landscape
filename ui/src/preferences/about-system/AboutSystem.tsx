@@ -39,10 +39,10 @@ export const AboutSystem = () => {
     <>
       <div className="inner-section relative mb-4 space-y-8">
         <div className="flex items-center justify-between">
-          <h2 className="h4">About System</h2>
+          <h2 className="h3">About System</h2>
           {systemBlocked && (
             <span className="rounded-md bg-orange-50 px-2 py-1 text-sm font-semibold text-orange-500">
-              System Update Blocked
+              Runtime update blocked
             </span>
           )}
         </div>
@@ -56,7 +56,7 @@ export const AboutSystem = () => {
               {lag ? (
                 <>
                   <p className="text-orange-500">
-                    System update failed because your runtime was out of date.
+                    Kernel update failed because your runtime was out of date.
                   </p>
                   <p>
                     Your runtime version is {vereVersion}, the latest runtime
@@ -65,18 +65,18 @@ export const AboutSystem = () => {
                   <p>Update your runtime or contact your hosting provider.</p>
                   <p>Once your runtime is up to date, click retry below.</p>
                   <Button variant="caution" onClick={freezeApps}>
-                    Retry System Update
+                    Retry Kernel Update
                   </Button>
                 </>
               ) : blockedCount == 0 ? (
                 <>
-                  <p className="text-orange-500">System update failed.</p>
+                  <p className="text-orange-500">Kernel update failed.</p>
                   <p>
                     For additional debugging output, open the terminal and click
                     retry below.
                   </p>
                   <Button variant="caution" onClick={freezeApps}>
-                    Retry System Update
+                    Retry Kernel Update
                   </Button>
                 </>
               ) : (
@@ -178,11 +178,12 @@ export const AboutSystem = () => {
         </div>
       </div>
       <UpdatePreferences />
-      <div className="inner-section relative mt-4 space-y-8">
-        <h2 className="h3">Access Key</h2>
+      <div className="inner-section relative mt-4 space-y-6">
+        <h2 className="h3">+code</h2>
         <p className="leading-5">
-          Reveal or show your Landscape Access Key below to sign in to other
-          browsers and mobile applications.
+          Reveal your +code below to sign in to other services. Your +code is a{' '}
+          <strong>root-level</strong> access key for the system; handle it with
+          care.
         </p>
         <ShipCode />
       </div>
