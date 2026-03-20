@@ -9,7 +9,6 @@ export const AttentionAndPrivacy = () => {
     disableNicknames,
     disableSpellcheck,
     disableRemoteContent,
-    disableWayfinding,
   } = useCalm();
   const { mutate: tileUnreads } = usePutEntryMutation({
     bucket: 'calmEngine',
@@ -31,11 +30,6 @@ export const AttentionAndPrivacy = () => {
     bucket: 'calmEngine',
     key: 'disableRemoteContent',
   });
-  const { mutate: wayfinding } = usePutEntryMutation({
-    bucket: 'calmEngine',
-    key: 'disableWayfinding',
-  });
-
   const toggle = useCallback((fn: typeof tileUnreads) => {
     return async (val: boolean) => fn({ val });
   }, []);
@@ -76,15 +70,6 @@ export const AttentionAndPrivacy = () => {
           <p className="leading-5 text-gray-600">
             Turn user-set nicknames off and only display urbit-style names
             across all of your apps.
-          </p>
-        </Setting>
-        <Setting
-          on={disableWayfinding}
-          toggle={toggle(wayfinding)}
-          name="Disable wayfinding"
-        >
-          <p className="leading-5 text-gray-600">
-            Turn off the "wayfinding" menu in the bottom left of Landscape.
           </p>
         </Setting>
       </div>

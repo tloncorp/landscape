@@ -29,8 +29,6 @@ import { useSystemUpdate } from '../logic/useSystemUpdate';
 import useVereState from '../state/vere';
 import { Bullet } from '../components/icons/Bullet';
 import { Cross } from '../components/icons/Cross';
-import LandscapeWayfinding from '../components/LandscapeWayfinding';
-import { useCalm } from '../state/settings';
 import { isHosted } from '@/logic/utils';
 import TlonIcon from '@/components/icons/TlonIcon';
 
@@ -128,7 +126,6 @@ export const Nav: FunctionComponent = () => {
   const navigate = useNavigate();
   const { menu } = useParams<{ menu: MenuState }>();
   const navRef = useRef<HTMLDivElement>(null);
-  const { disableWayfinding } = useCalm();
   const { systemBlocked } = useSystemUpdate();
   const { isLatest, loaded } = useVereState();
   const [dialogContentOpen, setDialogContentOpen] = useState(false);
@@ -169,7 +166,6 @@ export const Nav: FunctionComponent = () => {
           notificationsOpen={menu === 'notifications'}
         />
         <HostingLink />
-        {!disableWayfinding && <LandscapeWayfinding className="sm:hidden" />}
       </Portal.Root>
 
       <div
