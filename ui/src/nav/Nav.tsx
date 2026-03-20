@@ -30,7 +30,6 @@ import { useSystemUpdate } from '../logic/useSystemUpdate';
 import useVereState from '../state/vere';
 import { Bullet } from '../components/icons/Bullet';
 import { Cross } from '../components/icons/Cross';
-import GetApps from './GetApps';
 import LandscapeWayfinding from '../components/LandscapeWayfinding';
 import { useCalm } from '../state/settings';
 import { isHosted } from '@/logic/utils';
@@ -71,7 +70,6 @@ window.appSearch = useAppSearchStore.getState;
 export type MenuState =
   | 'closed'
   | 'search'
-  | 'get-apps'
   | 'app'
   | 'notifications'
   | 'help-and-support'
@@ -128,19 +126,6 @@ export const HostingLink = () => {
   return <></>;
 };
 
-export const GetAppsLink = () => {
-  return (
-    <Link
-      to="/get-apps"
-      className="flex h-9 w-[125px] items-center justify-center space-x-2 rounded-lg bg-blue-soft px-3 py-2.5 dark:bg-blue-100"
-    >
-      <span className="whitespace-nowrap font-semibold text-blue">
-        Get Urbit Apps
-      </span>
-    </Link>
-  );
-};
-
 export const Nav: FunctionComponent = () => {
   const navigate = useNavigate();
   const { menu } = useParams<{ menu: MenuState }>();
@@ -186,7 +171,6 @@ export const Nav: FunctionComponent = () => {
           notificationsOpen={menu === 'notifications'}
         />
         <HostingLink />
-        <GetAppsLink />
         {!disableWayfinding && <LandscapeWayfinding className="sm:hidden" />}
       </Portal.Root>
 
@@ -224,7 +208,6 @@ export const Nav: FunctionComponent = () => {
                 <Route path=":submenu/*" element={<SystemPreferences />} />
               </Route>
               <Route path="help-and-support" element={<Help />} />
-              <Route path="get-apps" element={<GetApps />} />
               <Route path="search/*" element={<Search />} />
             </Routes>
           </div>
