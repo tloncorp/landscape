@@ -43,7 +43,7 @@ export const AboutSystem = () => {
           <h2 className="h3">About System</h2>
           {systemBlocked && (
             <span className="rounded-md bg-orange-50 px-2 py-1 text-sm font-semibold text-orange-500">
-              Runtime update blocked
+              Kernel update blocked
             </span>
           )}
         </div>
