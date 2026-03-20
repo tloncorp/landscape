@@ -12,11 +12,7 @@ export const SecurityPrefs = () => {
         <div className="flex flex-col space-y-3">
           <p className="leading-5">
             Logging out of Landscape will additionally log you out of any
-            applications installed on your urbit.
-          </p>
-          <p className="leading-5">
-            You&apos;ll need to log into your urbit again in order to access its
-            apps.
+            applications you've installed.
           </p>
         </div>
         <Checkbox

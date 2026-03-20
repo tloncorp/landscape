@@ -6,19 +6,28 @@ import { Spinner } from '../components/Spinner';
 import cn from 'classnames';
 
 export const InvitePrefs = () => {
-  const {baitURL, setBaitURL, loaded, save} = useInviteState();
+  const { baitURL, setBaitURL, loaded, save } = useInviteState();
   const {
     register,
     handleSubmit,
     reset,
     formState: { isSubmitting, isDirty, isValid, isSubmitSuccessful },
-  } = useForm<{url: string}>({
+  } = useForm<{ url: string }>({
     mode: 'onChange',
   });
 
   return (
     <div className="inner-section space-y-8">
       <h2 className="h4">Invite Links</h2>
+      <p className="leading-5">
+        Invite links allow you to invite new users to Tlon Hosting. When a new
+        user clicks on an invite link, they will be prompted to create a new
+        Tlon account and automatically pair with you as a contact.
+      </p>
+      <p className="leading-5">
+        Other hosting providers may run their own Lure servers for onboarding.
+        For the time being, there's no reason to change this setting.
+      </p>
       <form onSubmit={handleSubmit(save)}>
         <div className="mb-8 flex flex-col space-y-2">
           <label className="font-semibold" htmlFor="endpoint">
@@ -38,8 +47,8 @@ export const InvitePrefs = () => {
           disabled={!isDirty || !isValid}
           className={cn(
             !isDirty || !isValid || isSubmitSuccessful
-            ? 'cursor-not-allowed bg-gray-200 text-gray-100'
-            : ''
+              ? 'cursor-not-allowed bg-gray-200 text-gray-100'
+              : ''
           )}
         >
           {isSubmitting ? <Spinner /> : 'Save'}

@@ -27,16 +27,28 @@ const config = resolveConfig({
   theme: {
     fontFamily: {
       sans: [
-        'Inter',
-        'Inter UI',
         '-apple-system',
         'BlinkMacSystemFont',
-        'San Francisco',
-        'Helvetica Neue',
-        'Arial',
+        'segoe ui',
+        'helvetica neue',
+        'Adwaita Sans',
+        'Cantarell',
+        'Ubuntu',
+        'roboto',
+        'noto',
+        'helvetica',
+        'arial',
         'sans-serif',
       ],
-      mono: ['Source Code Pro', 'Roboto mono', 'Courier New', 'monospace'],
+      mono: [
+        'Menlo',
+        'Consolas',
+        'Monaco',
+        'Adwaita Mono',
+        'Liberation Mono',
+        'Lucida Console',
+        'monospace',
+      ],
     },
     extend: {
       lineHeight: {

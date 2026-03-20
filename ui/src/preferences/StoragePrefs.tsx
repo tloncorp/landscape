@@ -98,7 +98,7 @@ export const StoragePrefs = () => {
         {isHosted ? (
           <div className="my-6 flex items-center rounded-xl border border-gray-100 py-3 px-4">
             <label id="use-hosting" className="text-lg font-semibold">
-              Use Tlon image hosting
+              Use Tlon file hosting
             </label>
             <Toggle
               aria-labelledby="use-hosting"
@@ -112,25 +112,25 @@ export const StoragePrefs = () => {
         ) : null}
         {hostedStorage && isHosted ? (
           <p>
-            Your Tlon-hosted urbit comes with free image hosting for Groups and
-            Talk. If you would like to use your own S3-compatible back-end for
-            image hosting, you can enable it on this screen.
+            Your node comes with free file hosting for Tlon Messenger. If you
+            would like to use your own S3-compatible back-end for image hosting,
+            you can enable it on this screen.
           </p>
         ) : (
           <>
             <p>
-              Configure your urbit to enable uploading your own images or other
-              files in Urbit applications.
+              Configure external storage to enable sharing images or other
+              files.
             </p>
             <p className="mt-3">
-              Read more about setting up S3 storage in the{' '}
+              Read more about setting up S3-compatible storage in the{' '}
               <a
                 className="font-bold"
                 rel="external"
                 target="_blank"
-                href="https://operators.urbit.org/manual/os/s3"
+                href="https://docs.urbit.org/user-manual/os/s3"
               >
-                Urbit Operator's Manual
+                Urbit documentation
               </a>
               .
             </p>

@@ -6,11 +6,9 @@ import MagnifyingGlassIcon from '../components/icons/MagnifyingGlassIcon';
 import BellIcon from '../components/icons/BellIcon';
 import { Interface } from '../components/icons/Interface';
 import BurstIcon from '../components/icons/BurstIcon';
-import HelpIcon from '../components/icons/HelpIcon';
 import TlonIcon from '../components/icons/TlonIcon';
 import LogoutIcon from '../components/icons/LogoutIcon';
 import PencilIcon from '../components/icons/PencilIcon';
-import ForwardSlashIcon from '../components/icons/ForwardSlashIcon';
 
 type NavOption = {
   route: string;
@@ -19,11 +17,6 @@ type NavOption = {
 };
 
 const navOptions: NavOption[] = [
-  {
-    route: 'help',
-    title: 'Help and Support',
-    icon: <HelpIcon className="h-4 w-4 text-gray-600" />,
-  },
   {
     route: 'interface',
     title: 'Interface Settings',
@@ -38,11 +31,6 @@ const navOptions: NavOption[] = [
     route: 'appearance',
     title: 'Appearance',
     icon: <PencilIcon className="h-4 w-4 text-gray-600" />,
-  },
-  {
-    route: 'shortcuts',
-    title: 'Shortcuts',
-    icon: <ForwardSlashIcon className="h-4 w-4 text-gray-600" />,
   },
   {
     route: 'privacy',

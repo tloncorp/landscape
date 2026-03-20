@@ -19,7 +19,7 @@ export const NotificationPrefs = () => {
         <h2 className="h4">Notifications</h2>
         <Setting on={doNotDisturb} toggle={toggleDnd} name="Do Not Disturb">
           <p className="leading-5">
-            Blocks Urbit notifications in Landscape from appearing as badges and
+            Blocks notifications in Landscape from appearing as badges and
             prevents browser notifications if enabled.
           </p>
         </Setting>
