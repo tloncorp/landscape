@@ -17,7 +17,7 @@ export default function SourceSetter({
   srcDesk,
   srcShip,
   title,
-  toggleSrc
+  toggleSrc,
 }: SourceSetterProps) {
   const [newSyncShip, setNewSyncShip] = useState(srcShip ?? '');
   const { status: requestStatus, call: handleSubmit } = useAsyncCall(toggleSrc);
@@ -29,17 +29,22 @@ export default function SourceSetter({
     }
     if (
       // eslint-disable-next-line no-alert, no-restricted-globals
-      confirm(`Are you sure you want to unsync ${appName}? You will no longer receive updates.`)
+      confirm(
+        `Are you sure you want to unsync ${appName}? You will no longer receive updates.`
+      )
     ) {
       toggleSrc(srcDesk, srcShip);
     }
   }, [srcShip, srcDesk]);
 
-  const handleSourceChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const { target } = e;
-    const value = target.value.trim();
-    setNewSyncShip(value.startsWith('~') ? value : `~${value}`);
-  }, []);
+  const handleSourceChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { target } = e;
+      const value = target.value.trim();
+      setNewSyncShip(value.startsWith('~') ? value : `~${value}`);
+    },
+    []
+  );
 
   const onSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
@@ -54,42 +59,53 @@ export default function SourceSetter({
       <h2 className="h3 mb-7">{title}</h2>
       <div className="space-y-3">
         {srcShip ? (
-          <>
-            <h3 className="flex items-center h4 mb-2">Automatic Updates</h3>
-            <p>Automatically download and apply updates to keep {appName} up to date.</p>
-            <div className="flex-1 flex flex-col justify-center space-y-6">
-              <p>
-                OTA Source:{' '}
-                <ShipName name={srcShip} truncate={false} className="font-semibold font-mono" />
-              </p>
-            </div>
-            <div className="flex space-x-2">
-              <Button onClick={onUnset} variant="destructive">
-                Unsync Updates for {appName}...
-              </Button>
-            </div>
-          </>
+          <div className="inner-section relative bg-gray-100">
+            <h3 className="h4 mb-5 block">Automatic Updates</h3>
+            <p className="mb-5 leading-5">
+              Automatically download and apply updates to keep {appName} up to
+              date.
+            </p>
+            <p className="mb-5 leading-5">
+              OTA Source:{' '}
+              <ShipName
+                name={srcShip}
+                truncate={false}
+                className="font-mono font-semibold"
+              />
+            </p>
+            <Button onClick={onUnset} variant="destructive">
+              Unsync Updates for {appName}...
+            </Button>
+          </div>
         ) : (
-          <form className="inner-section relative" onSubmit={onSubmit}>
-            <label htmlFor="ota-source" className="h4 mb-3">
-              Set Update Source
+          <form
+            className="inner-section relative bg-gray-100"
+            onSubmit={onSubmit}
+          >
+            <label htmlFor="ota-source" className="h4 mb-5 block">
+              Set Automatic Update Source
             </label>
-            <p className="mb-2">Enter a valid urbit name to receive updates for {appName}.</p>
+            <p className="mb-5 leading-5">
+              Enter a valid upstream source to receive updates for {appName}.
+            </p>
             <div className="relative">
               <input
                 id="ota-source"
                 type="text"
                 value={newSyncShip}
                 onChange={handleSourceChange}
-                className="input font-semibold default-ring"
+                className="input default-ring font-semibold"
               />
               {syncDirty && (
-                <Button type="submit" className="absolute top-1 right-1 py-1 px-3 text-sm">
+                <Button
+                  type="submit"
+                  className="absolute top-1 right-1 py-1 px-3 text-sm"
+                >
                   {requestStatus !== 'loading' && 'Save'}
                   {requestStatus === 'loading' && (
                     <>
                       <span className="sr-only">Saving...</span>
-                      <Spinner className="w-5 h-5" />
+                      <Spinner className="h-5 w-5" />
                     </>
                   )}
                 </Button>

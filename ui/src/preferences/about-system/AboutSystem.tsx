@@ -49,7 +49,7 @@ export const AboutSystem = () => {
         <div className="space-y-4 leading-5">
           <FullTlon16Icon className="h-4" />
           <div>
-            <p>Urbit Kernel Version ({hash})</p>
+            <p>Arvo Kernel Version ({hash})</p>
           </div>
           {systemBlocked ? (
             <>
@@ -96,7 +96,7 @@ export const AboutSystem = () => {
                       <p>
                         Landscape is the application launcher and system
                         interface. It needs an update before you can apply the
-                        System Update.
+                        %base update.
                       </p>
                     </>
                   ) : (
@@ -104,7 +104,8 @@ export const AboutSystem = () => {
                       <DialogTrigger asChild>
                         <Button variant="caution">
                           Suspend {blockedCount}{' '}
-                          {pluralize('App', blockedCount)} and Apply Update
+                          {pluralize('App', blockedCount)} and Apply %base
+                          Update
                         </Button>
                       </DialogTrigger>
                       <Dialog.Portal>
@@ -117,7 +118,7 @@ export const AboutSystem = () => {
                         >
                           <h2 className="h4">
                             Suspend {blockedCount}{' '}
-                            {pluralize('App', blockedCount)} and Apply System
+                            {pluralize('App', blockedCount)} and Apply %base
                             Update
                           </h2>
                           <p>
@@ -152,13 +153,13 @@ export const AboutSystem = () => {
             <>
               {runtimeUpToDate ? (
                 <>
-                  <p>Urbit Runtime Version {vereVersion}</p>
-                  <p>Your urbit is up to date.</p>
+                  <p>Vere Runtime Version {vereVersion}</p>
+                  <p>You are running the latest version.</p>
                 </>
               ) : (
                 <>
                   <p className="text-orange-500">
-                    Your runtime version is {vereVersion}, the latest runtime
+                    Your Vere version is {vereVersion}, the latest runtime
                     version is {latestVereVersion}.
                   </p>
                   <p className="text-orange-500">
