@@ -30,14 +30,12 @@ import LogoutIcon from '../components/icons/LogoutIcon';
 import BellIcon from '../components/icons/BellIcon';
 import BurstIcon from '../components/icons/BurstIcon';
 import PencilIcon from '../components/icons/PencilIcon';
-import ForwardSlashIcon from '../components/icons/ForwardSlashIcon';
 import SlidersIcon from '../components/icons/SlidersIcon';
 import Sig16Icon from '../components/icons/Sig16Icon';
 import InvitesIcom from '../components/icons/InvitesIcon';
 import { useSystemUpdate } from '../logic/useSystemUpdate';
 import { Bullet } from '../components/icons/Bullet';
 import SearchSystemPreferences from './SearchSystemPrefences';
-import { ShortcutPrefs } from './ShortcutPrefs';
 import { AttentionAndPrivacy } from './AttentionAndPrivacy';
 
 interface SystemPreferencesSectionProps {
@@ -167,13 +165,6 @@ export const SystemPreferences = () => {
                   Appearance
                 </SystemPreferencesSection>
                 <SystemPreferencesSection
-                  to="shortcuts"
-                  active={matchSub('shortcuts')}
-                >
-                  <ForwardSlashIcon className="mr-3 h-6 w-6 rounded-md text-gray-600" />
-                  Shortcuts
-                </SystemPreferencesSection>
-                <SystemPreferencesSection
                   to="interface"
                   active={matchSub('interface')}
                 >
@@ -224,8 +215,7 @@ export const SystemPreferences = () => {
               <Route path="hosting" element={<Hosting />} />
               <Route path="interface" element={<InterfacePrefs />} />
               <Route path="appearance" element={<AppearancePrefs />} />
-              <Route path="shortcuts" element={<ShortcutPrefs />} />
-              <Route path="notifications" element={<NotificationPrefs />} />
+<Route path="notifications" element={<NotificationPrefs />} />
               <Route path="privacy" element={<AttentionAndPrivacy />} />
               <Route path="storage" element={<StoragePrefs />} />
               <Route path="security" element={<SecurityPrefs />} />
