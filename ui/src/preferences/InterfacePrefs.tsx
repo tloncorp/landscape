@@ -69,11 +69,11 @@ export function InterfacePrefs() {
         <Setting
           on={protocolHandling}
           toggle={toggleProtoHandling}
-          name="Handle Urbit links"
+          name="Handle urb:// links"
           disabled={!linkHandlingAllowed}
         >
           <p>
-            Automatically open urbit links when using this browser.
+            Automatically open urb:// links when using this browser.
             {!linkHandlingAllowed && (
               <>
                 <strong className="text-orange-500">

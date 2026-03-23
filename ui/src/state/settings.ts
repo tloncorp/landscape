@@ -34,7 +34,6 @@ export interface SettingsState {
     disableNicknames: boolean;
     disableSpellcheck: boolean;
     disableRemoteContent: boolean;
-    disableWayfinding: boolean;
   };
   display: {
     theme: 'light' | 'dark' | 'auto';
@@ -104,7 +103,6 @@ const emptyCalm: SettingsState['calmEngine'] = {
   disableRemoteContent: false,
   disableSpellcheck: false,
   disableNicknames: false,
-  disableWayfinding: false,
 };
 
 const loadingCalm: SettingsState['calmEngine'] = {
@@ -113,7 +111,6 @@ const loadingCalm: SettingsState['calmEngine'] = {
   disableRemoteContent: true,
   disableSpellcheck: true,
   disableNicknames: true,
-  disableWayfinding: true,
 };
 
 export function useCalm() {

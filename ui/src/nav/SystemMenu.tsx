@@ -118,15 +118,6 @@ export const SystemMenu = ({
                 </DropdownMenu.Item>
                 <DropdownMenu.Item asChild onSelect={handleDropdownLink()}>
                   <Link
-                    to="/leap/help-and-support"
-                    className="focus:outline-none mb-2 flex items-center space-x-2 rounded p-2 focus:bg-blue-200"
-                  >
-                    <span className="h-5 w-5 rounded-full bg-gray-100" />
-                    <span className="h4">Help and Support</span>
-                  </Link>
-                </DropdownMenu.Item>
-                <DropdownMenu.Item asChild onSelect={handleDropdownLink()}>
-                  <Link
                     to={`/app/${window.desk}`}
                     className="focus:outline-none mb-2 flex items-center space-x-2 rounded p-2 focus:bg-blue-200"
                   >
