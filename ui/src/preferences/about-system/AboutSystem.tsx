@@ -12,6 +12,7 @@ import { FullTlon16Icon } from '../../components/icons/FullTlon16Icon';
 import { useSystemUpdate } from '../../logic/useSystemUpdate';
 import { usePike, useLag } from '../../state/kiln';
 import useVereState from '../../state/vere';
+import { isHosted } from '@/logic/utils';
 import { disableDefault, pluralize } from '@/logic/utils';
 import { UpdatePreferences } from './UpdatePreferences';
 import { ShipCode } from '@/components/ShipCode';
@@ -39,24 +40,27 @@ export const AboutSystem = () => {
     <>
       <div className="inner-section relative mb-4 space-y-8">
         <div className="flex items-center justify-between">
-          <h2 className="h4">About System</h2>
+          <h2 className="h3">About System</h2>
           {systemBlocked && (
             <span className="rounded-md bg-orange-50 px-2 py-1 text-sm font-semibold text-orange-500">
-              System Update Blocked
+              Kernel update blocked
             </span>
           )}
         </div>
         <div className="space-y-4 leading-5">
           <FullTlon16Icon className="h-4" />
           <div>
-            <p>Urbit Kernel Version ({hash})</p>
+            <p>
+              Arvo kernel (%base) version{' '}
+              <span className="font-mono font-semibold">{hash}</span>
+            </p>
           </div>
           {systemBlocked ? (
             <>
               {lag ? (
                 <>
                   <p className="text-orange-500">
-                    System update failed because your runtime was out of date.
+                    Kernel update failed because your runtime was out of date.
                   </p>
                   <p>
                     Your runtime version is {vereVersion}, the latest runtime
@@ -65,18 +69,18 @@ export const AboutSystem = () => {
                   <p>Update your runtime or contact your hosting provider.</p>
                   <p>Once your runtime is up to date, click retry below.</p>
                   <Button variant="caution" onClick={freezeApps}>
-                    Retry System Update
+                    Retry Kernel Update
                   </Button>
                 </>
               ) : blockedCount == 0 ? (
                 <>
-                  <p className="text-orange-500">System update failed.</p>
+                  <p className="text-orange-500">Kernel update failed.</p>
                   <p>
                     For additional debugging output, open the terminal and click
                     retry below.
                   </p>
                   <Button variant="caution" onClick={freezeApps}>
-                    Retry System Update
+                    Retry Kernel Update
                   </Button>
                 </>
               ) : (
@@ -96,7 +100,7 @@ export const AboutSystem = () => {
                       <p>
                         Landscape is the application launcher and system
                         interface. It needs an update before you can apply the
-                        System Update.
+                        kernel update.
                       </p>
                     </>
                   ) : (
@@ -104,7 +108,8 @@ export const AboutSystem = () => {
                       <DialogTrigger asChild>
                         <Button variant="caution">
                           Suspend {blockedCount}{' '}
-                          {pluralize('App', blockedCount)} and Apply Update
+                          {pluralize('App', blockedCount)} and Apply Kernel
+                          Update
                         </Button>
                       </DialogTrigger>
                       <Dialog.Portal>
@@ -117,7 +122,7 @@ export const AboutSystem = () => {
                         >
                           <h2 className="h4">
                             Suspend {blockedCount}{' '}
-                            {pluralize('App', blockedCount)} and Apply System
+                            {pluralize('App', blockedCount)} and Apply Kernel
                             Update
                           </h2>
                           <p>
@@ -152,24 +157,37 @@ export const AboutSystem = () => {
             <>
               {runtimeUpToDate ? (
                 <>
-                  <p>Urbit Runtime Version {vereVersion}</p>
-                  <p>Your urbit is up to date.</p>
+                  <p>Vere runtime version {vereVersion}</p>
+                  <p>You are running the latest runtime.</p>
                 </>
               ) : (
                 <>
                   <p className="text-orange-500">
-                    Your runtime version is {vereVersion}, the latest runtime
-                    version is {latestVereVersion}.
+                    Your version is {vereVersion}, the latest published version
+                    is {latestVereVersion}.
                   </p>
-                  <p className="text-orange-500">
-                    <a
-                      className="font-bold text-blue-500"
-                      href="https://operators.urbit.org/manual/os/updates#runtime-updates"
-                    >
-                      Update your runtime{' '}
-                    </a>
-                    or contact your hosting provider.
-                  </p>
+                  {!isHosted ? (
+                    <p className="text-orange-500">
+                      <a
+                        className="font-bold text-blue-500"
+                        href="https://operators.urbit.org/manual/os/updates#runtime-updates"
+                      >
+                        Update your runtime{' '}
+                      </a>
+                      or contact your hosting provider.
+                    </p>
+                  ) : (
+                    <p className="text-orange-500">
+                      Tlon Hosting is currently updating your runtime. Please{' '}
+                      <a
+                        className="font-bold text-blue-500"
+                        href="mailto:support@tlon.io"
+                      >
+                        contact support
+                      </a>{' '}
+                      for more information.
+                    </p>
+                  )}
                 </>
               )}
             </>
@@ -177,11 +195,12 @@ export const AboutSystem = () => {
         </div>
       </div>
       <UpdatePreferences />
-      <div className="inner-section relative mt-4 space-y-8">
-        <h2 className="h3">Access Key</h2>
+      <div className="inner-section relative mt-4 space-y-6">
+        <h2 className="h3">+code</h2>
         <p className="leading-5">
-          Reveal or show your Landscape Access Key below to sign in to other
-          browsers and mobile applications.
+          Reveal your +code below to sign in to other services. Your +code is a{' '}
+          <strong>root-level</strong> access key for the system; handle it with
+          care.
         </p>
         <ShipCode />
       </div>

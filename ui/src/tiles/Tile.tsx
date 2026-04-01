@@ -125,7 +125,10 @@ export const Tile: FunctionComponent<TileProps> = ({
         )}
         {image && status !== 'installing' && (
           <img
-            className="absolute top-0 left-0 h-full w-full object-cover"
+            className={classNames(
+              'absolute top-0 left-0 h-full w-full object-cover',
+              suspended && 'grayscale'
+            )}
             src={image}
             alt=""
           />

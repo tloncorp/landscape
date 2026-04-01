@@ -267,7 +267,7 @@ export const AppSearch = () => {
       </form>
       {menuState === 'search' && (
         <Link
-          to="/get-apps"
+          to="/"
           className="circle-button default-ring absolute top-1/2 right-2 h-8 w-8 flex-none -translate-y-1/2 text-gray-600"
           onClick={() => select(null)}
         >

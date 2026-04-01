@@ -17,7 +17,7 @@ export const ShipCode: FunctionComponent = () => {
     </div>
   ) : (
     <button className="button" onClick={() => setShow(true)}>
-      Show Access Key
+      Show +code
     </button>
   );
 };
