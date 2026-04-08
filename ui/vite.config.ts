@@ -25,11 +25,13 @@ export default ({ mode }) => {
     build:
       mode !== 'profile'
         ? {
+            target: 'es2022',
             rollupOptions: {
               external: 'node-fetch',
             },
           }
         : {
+            target: 'es2022',
             rollupOptions: {
               plugins: [
                 analyze({
@@ -39,6 +41,11 @@ export default ({ mode }) => {
               ],
             },
           },
+    optimizeDeps: {
+      esbuildOptions: {
+        target: 'es2022',
+      },
+    },
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
