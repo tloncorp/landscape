@@ -74,7 +74,7 @@
     "@tloncorp/eslint-config": "^0.0.6",
     "@types/lodash": "^4.14.172",
     "@types/mousetrap": "^1.6.8",
-    "@types/node": "^22.15.30",
+    "@types/node": "^16.18.126",
     "@types/react": "^16.0.0",
     "@types/react-dom": "^16.0.0",
     "@typescript-eslint/eslint-plugin": "^4.26.1",
