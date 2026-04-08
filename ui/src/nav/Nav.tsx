@@ -29,6 +29,7 @@ import { useSystemUpdate } from '../logic/useSystemUpdate';
 import useVereState from '../state/vere';
 import { Bullet } from '../components/icons/Bullet';
 import { Cross } from '../components/icons/Cross';
+import MagnifyingGlass16Icon from '@/components/icons/MagnifyingGlass16Icon';
 import { isHosted } from '@/logic/utils';
 import TlonIcon from '@/components/icons/TlonIcon';
 
@@ -122,6 +123,38 @@ export const HostingLink = () => {
   return <></>;
 };
 
+type SearchLinkProps = Omit<LinkProps, 'to'> & {
+  navOpen: boolean;
+  searchOpen: boolean;
+};
+
+export const SearchLink = ({ navOpen, searchOpen }: SearchLinkProps) => {
+  const select = useAppSearchStore((s) => s.select);
+  const clearSelection = useCallback(() => select(null), [select]);
+
+  return (
+    <Link
+      to={searchOpen ? '/' : '/search'}
+      className={classNames(
+        'circle-button h4 default-ring relative z-50 flex-none',
+        navOpen && !searchOpen && 'text-opacity-60',
+        searchOpen ? 'bg-gray-50' : 'bg-gray-50 text-gray-400'
+      )}
+      onClick={clearSelection}
+      aria-label={searchOpen ? 'Close app search' : 'Search for apps'}
+    >
+      {searchOpen ? (
+        <>
+          <Cross className="h-3 w-3 fill-current" />
+          <span className="sr-only">Close</span>
+        </>
+      ) : (
+        <MagnifyingGlass16Icon className="h-5 w-5" />
+      )}
+    </Link>
+  );
+};
+
 export const Nav: FunctionComponent = () => {
   const navigate = useNavigate();
   const { menu } = useParams<{ menu: MenuState }>();
@@ -165,6 +198,7 @@ export const Nav: FunctionComponent = () => {
           navOpen={isOpen}
           notificationsOpen={menu === 'notifications'}
         />
+        <SearchLink navOpen={isOpen} searchOpen={menuState === 'search'} />
         <HostingLink />
       </Portal.Root>
 
