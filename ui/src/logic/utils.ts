@@ -15,6 +15,8 @@ import { useCallback, useState } from 'react';
 
 export const useMockData = import.meta.env.MODE === 'mock';
 
+export const dummy = 'dummy';
+
 export const isStagingHosted =
   import.meta.env.DEV ||
   (import.meta.env.VITE_SHIP_URL || '').endsWith('.test.tlon.systems') ||
