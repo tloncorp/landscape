@@ -27,6 +27,7 @@ export default ({ mode }) => {
         ? {
             target: 'es2022',
             rollupOptions: {
+              output: { hashCharacters: 'hex' },
               external: 'node-fetch',
             },
           }
