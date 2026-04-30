@@ -1,9 +1,9 @@
-/-  *vitals
+/-  vitals
 =,  format
-|_  =result
+|_  =result:vitals
 ++  grab
   |%
-  ++  noun  result
+  ++  noun  result:vitals
   --
 ++  grow
   |%
