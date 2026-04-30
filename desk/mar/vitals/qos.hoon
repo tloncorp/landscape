@@ -1,9 +1,8 @@
-/-  *vitals
 =,  format
 |_  =qos:ames
 ++  grab
   |%
-  ++  noun  qos
+  ++  noun  qos:ames
   --
 ++  grow
   |%
