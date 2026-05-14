@@ -179,7 +179,7 @@
     =/  =charge  ~|(no-charge-installed+desk (~(got by charges) desk))
     =.  charges  (~(del by charges) desk)
     =?  by-base  ?=(%glob -.href.docket.charge)
-      (~(del by by-base) base.href.docket)
+      (~(del by by-base) base.href.docket.charge)
     =*  cha  ~(. ch desk)
     :_  state
     ~[del-fact:cha uninstall:cha]
