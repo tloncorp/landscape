@@ -3,7 +3,7 @@
 |_  =result
 ++  grab
   |%
-  ++  noun  result
+  ++  noun  ^result
   --
 ++  grow
   |%
