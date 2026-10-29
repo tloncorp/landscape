@@ -1,8 +1,9 @@
 const assert = require('node:assert/strict');
 const { webcrypto } = require('node:crypto');
-const Module = require('node:module');
+const { createRequire } = require('node:module');
 const path = require('node:path');
 const test = require('node:test');
+const { compileFunction } = require('node:vm');
 
 // Compile the actual store with the app's bundler so its ES module cycles and
 // aliases behave as they do in the browser. Only browser storage is in memory.
@@ -54,10 +55,11 @@ Object.defineProperty(global, 'crypto', {
 const storePath = path.join(src, 'state/local.ts');
 const storageKey = '~zod/landscape/local';
 function loadStore() {
-  const loaded = new Module(storePath, module);
-  loaded.filename = storePath;
-  loaded.paths = Module._nodeModulePaths(path.dirname(storePath));
-  loaded._compile(compiled, storePath);
+  const loaded = { exports: {} };
+  const evaluate = compileFunction(compiled, ['exports', 'require', 'module'], {
+    filename: storePath,
+  });
+  evaluate(loaded.exports, createRequire(storePath), loaded);
   return loaded.exports;
 }
 
