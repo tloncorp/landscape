@@ -15,13 +15,12 @@
     "serve": "vite preview",
     "lint": "eslint --cache \"**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "npm run lint -- --fix",
-    "test": "tsc --noEmit",
+    "test": "tsc --noEmit && node --test test/*.test.cjs",
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.348.0",
     "@aws-sdk/s3-request-presigner": "^3.348.0",
-    "@fingerprintjs/fingerprintjs": "^3.3.3",
     "@radix-ui/react-checkbox": "^0.1.5",
     "@radix-ui/react-dialog": "^1.0.2",
     "@radix-ui/react-dropdown-menu": "^2.0.1",

@@ -11,14 +11,13 @@ import {
 } from 'react-router-dom';
 import { TooltipProvider } from '@radix-ui/react-tooltip';
 import { ErrorBoundary } from 'react-error-boundary';
-import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import { Grid } from './pages/Grid';
 import { PermalinkRoutes } from './pages/PermalinkRoutes';
 import useKilnState from './state/kiln';
 import useContactState from './state/contact';
 import { useMedia } from './logic/useMedia';
 import { useDisplay } from './state/settings';
-import { useBrowserId, useLocalState } from './state/local';
+import { initializeBrowserId, useLocalState } from './state/local';
 import { ErrorAlert } from './components/ErrorAlert';
 import { useErrorHandler } from './logic/useErrorHandler';
 import useSchedulerStore, { useScheduler } from './state/scheduler';
@@ -41,13 +40,6 @@ const getNoteRedirect = (path: string) => {
   return '';
 };
 
-const getId = async () => {
-  const fpPromise = FingerprintJS.load();
-  const fp = await fpPromise;
-  const result = await fp.get();
-  return result.visitorId;
-};
-
 function OldLeapRedirect() {
   const location = useLocation();
   const path = location.pathname.replace('/leap', '');
@@ -58,13 +50,7 @@ const AppRoutes = () => {
   const navigate = useNavigate();
   const { search } = useLocation();
   const handleError = useErrorHandler();
-  const browserId = useBrowserId();
-
-  useEffect(() => {
-    getId().then((value) => {
-      useLocalState.setState({ browserId: value });
-    });
-  }, [browserId]);
+  useEffect(initializeBrowserId, []);
 
   useEffect(() => {
     const query = new URLSearchParams(search);

@@ -14,9 +14,6 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.348.0
         version: 3.1026.0
-      '@fingerprintjs/fingerprintjs':
-        specifier: ^3.3.3
-        version: 3.4.2
       '@radix-ui/react-checkbox':
         specifier: ^0.1.5
         version: 0.1.5(react@17.0.2)
@@ -121,7 +118,7 @@ importers:
         version: 17.0.2
       react-dnd:
         specifier: ^15.1.1
-        version: 15.1.2(@types/node@22.19.17)(@types/react@16.14.69)(react@17.0.2)
+        version: 15.1.2(@types/node@20.19.43)(@types/react@16.14.69)(react@17.0.2)
       react-dnd-html5-backend:
         specifier: ^15.1.2
         version: 15.1.3
@@ -166,8 +163,8 @@ importers:
         specifier: ^1.6.8
         version: 1.6.15
       '@types/node':
-        specifier: ^22.15.30
-        version: 22.19.17
+        specifier: ^20.19.22
+        version: 20.19.43
       '@types/react':
         specifier: ^16.0.0
         version: 16.14.69
@@ -182,13 +179,13 @@ importers:
         version: 4.33.0(eslint@7.32.0)(typescript@4.9.5)
       '@urbit/vite-plugin-urbit':
         specifier: ^0.8.0
-        version: 0.8.0(vite@5.4.21(@types/node@22.19.17))
+        version: 0.8.0(vite@5.4.21(@types/node@20.19.43))
       '@vitejs/plugin-basic-ssl':
         specifier: ^1.2.0
-        version: 1.2.0(vite@5.4.21(@types/node@22.19.17))
+        version: 1.2.0(vite@5.4.21(@types/node@20.19.43))
       '@vitejs/plugin-react':
         specifier: ^4.7.0
-        version: 4.7.0(vite@5.4.21(@types/node@22.19.17))
+        version: 4.7.0(vite@5.4.21(@types/node@20.19.43))
       autoprefixer:
         specifier: ^10.3.7
         version: 10.4.27(postcss@8.5.9)
@@ -254,7 +251,7 @@ importers:
         version: 4.9.5
       vite:
         specifier: ^5.4.19
-        version: 5.4.21(@types/node@22.19.17)
+        version: 5.4.21(@types/node@20.19.43)
 
 packages:
 
@@ -664,9 +661,6 @@ packages:
   '@eslint/eslintrc@0.4.3':
     resolution: {integrity: sha512-J6KFFz5QCYUJq3pf0mjEcCJVERbzv71PUIDczuh9JkwGEzced6CO5ADLHB1rbf/+oPBtoPfMYNOpGDzCANlbXw==}
     engines: {node: ^10.12.0 || >=12.0.0}
-
-  '@fingerprintjs/fingerprintjs@3.4.2':
-    resolution: {integrity: sha512-3Ncze6JsJpB7BpYhqIgvBpfvEX1jsEKrad5hQBpyRQxtoAp6hx3+R46zqfsuQG4D9egQZ+xftQ0u4LPFMB7Wmg==}
 
   '@floating-ui/core@1.7.5':
     resolution: {integrity: sha512-1Ih4WTWyw0+lKyFMcBHGbb5U5FtuHJuujoyyr5zTaWS5EYMeT6Jb2AuDeftsCsEuchO+mM2ij5+q9crhydzLhQ==}
@@ -1621,8 +1615,8 @@ packages:
   '@types/mousetrap@1.6.15':
     resolution: {integrity: sha512-qL0hyIMNPow317QWW/63RvL1x5MVMV+Ru3NaY9f/CuEpCqrmb7WeuK2071ZY5hczOnm38qExWM2i2WtkXLSqFw==}
 
-  '@types/node@22.19.17':
-    resolution: {integrity: sha512-wGdMcf+vPYM6jikpS/qhg6WiqSV/OhG+jeeHT/KlVqxYfD40iYJf9/AE1uQxVWFvU7MipKRkRv8NSHiCGgPr8Q==}
+  '@types/node@20.19.43':
+    resolution: {integrity: sha512-6oYBAi5ikg4Pl+kGsoYtawUMBT2zZMCvPNF7pVLnHZfd1zf38DRiWn/gT01RYCdUqkv7Fhr+C9ot4/tb+2sVvA==}
 
   '@types/parse-json@4.0.2':
     resolution: {integrity: sha512-dISoDXWWQwUquiKsyZ4Ng+HX2KsPL7LyHKHQwgGFEA3IaKac4Obd+h2a/a6waisAoepJlBcx9paWqjA8/HVjCw==}
@@ -4794,10 +4788,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@fingerprintjs/fingerprintjs@3.4.2':
-    dependencies:
-      tslib: 2.8.1
-
   '@floating-ui/core@1.7.5':
     dependencies:
       '@floating-ui/utils': 0.2.11
@@ -5872,7 +5862,7 @@ snapshots:
 
   '@types/mousetrap@1.6.15': {}
 
-  '@types/node@22.19.17':
+  '@types/node@20.19.43':
     dependencies:
       undici-types: 6.21.0
 
@@ -5970,18 +5960,18 @@ snapshots:
       browser-or-node: 1.3.0
       core-js: 3.49.0
 
-  '@urbit/vite-plugin-urbit@0.8.0(vite@5.4.21(@types/node@22.19.17))':
+  '@urbit/vite-plugin-urbit@0.8.0(vite@5.4.21(@types/node@20.19.43))':
     dependencies:
-      vite-plugin-html-config: 1.0.11(vite@5.4.21(@types/node@22.19.17))
-      vite-plugin-rewrite-all: 0.1.2(vite@5.4.21(@types/node@22.19.17))
+      vite-plugin-html-config: 1.0.11(vite@5.4.21(@types/node@20.19.43))
+      vite-plugin-rewrite-all: 0.1.2(vite@5.4.21(@types/node@20.19.43))
     transitivePeerDependencies:
       - vite
 
-  '@vitejs/plugin-basic-ssl@1.2.0(vite@5.4.21(@types/node@22.19.17))':
+  '@vitejs/plugin-basic-ssl@1.2.0(vite@5.4.21(@types/node@20.19.43))':
     dependencies:
-      vite: 5.4.21(@types/node@22.19.17)
+      vite: 5.4.21(@types/node@20.19.43)
 
-  '@vitejs/plugin-react@4.7.0(vite@5.4.21(@types/node@22.19.17))':
+  '@vitejs/plugin-react@4.7.0(vite@5.4.21(@types/node@20.19.43))':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/plugin-transform-react-jsx-self': 7.27.1(@babel/core@7.29.0)
@@ -5989,7 +5979,7 @@ snapshots:
       '@rolldown/pluginutils': 1.0.0-beta.27
       '@types/babel__core': 7.20.5
       react-refresh: 0.17.0
-      vite: 5.4.21(@types/node@22.19.17)
+      vite: 5.4.21(@types/node@20.19.43)
     transitivePeerDependencies:
       - supports-color
 
@@ -7814,7 +7804,7 @@ snapshots:
       '@react-dnd/invariant': 3.0.1
       dnd-core: 15.1.2
 
-  react-dnd@15.1.2(@types/node@22.19.17)(@types/react@16.14.69)(react@17.0.2):
+  react-dnd@15.1.2(@types/node@20.19.43)(@types/react@16.14.69)(react@17.0.2):
     dependencies:
       '@react-dnd/invariant': 3.0.1
       '@react-dnd/shallowequal': 3.0.1
@@ -7823,7 +7813,7 @@ snapshots:
       hoist-non-react-statics: 3.3.2
       react: 17.0.2
     optionalDependencies:
-      '@types/node': 22.19.17
+      '@types/node': 20.19.43
       '@types/react': 16.14.69
 
   react-dom@17.0.2(react@17.0.2):
@@ -8511,22 +8501,22 @@ snapshots:
 
   v8-compile-cache@2.4.0: {}
 
-  vite-plugin-html-config@1.0.11(vite@5.4.21(@types/node@22.19.17)):
+  vite-plugin-html-config@1.0.11(vite@5.4.21(@types/node@20.19.43)):
     dependencies:
-      vite: 5.4.21(@types/node@22.19.17)
+      vite: 5.4.21(@types/node@20.19.43)
 
-  vite-plugin-rewrite-all@0.1.2(vite@5.4.21(@types/node@22.19.17)):
+  vite-plugin-rewrite-all@0.1.2(vite@5.4.21(@types/node@20.19.43)):
     dependencies:
       connect-history-api-fallback: 1.6.0
-      vite: 5.4.21(@types/node@22.19.17)
+      vite: 5.4.21(@types/node@20.19.43)
 
-  vite@5.4.21(@types/node@22.19.17):
+  vite@5.4.21(@types/node@20.19.43):
     dependencies:
       esbuild: 0.21.5
       postcss: 8.5.9
       rollup: 4.60.1
     optionalDependencies:
-      '@types/node': 22.19.17
+      '@types/node': 20.19.43
       fsevents: 2.3.3
 
   webidl-conversions@3.0.1: {}
