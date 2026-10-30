@@ -44,6 +44,20 @@ export const useLocalState = create<LocalState>(
   )
 );
 
+export function initializeBrowserId() {
+  if (useLocalState.getState().browserId) {
+    return;
+  }
+
+  // A persistent settings key must not change with fingerprint protection.
+  // getRandomValues also works on HTTP origins, unlike randomUUID.
+  const browserId = Array.from(
+    crypto.getRandomValues(new Uint8Array(16)),
+    (byte) => byte.toString(16).padStart(2, '0')
+  ).join('');
+  useLocalState.setState({ browserId });
+}
+
 const selBrowserId = (s: LocalState) => s.browserId;
 export function useBrowserId() {
   return useLocalState(selBrowserId);

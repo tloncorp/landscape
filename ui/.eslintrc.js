@@ -7,6 +7,12 @@ module.exports = {
         project: ['tsconfig.json'],
         tsconfigRootDir: __dirname
       }
+    },
+    {
+      files: ['test/**/*.test.cjs'],
+      rules: {
+        'import/no-extraneous-dependencies': ['error', { devDependencies: true }]
+      }
     }
   ],
   rules: {
@@ -43,16 +49,9 @@ module.exports = {
       officialSorting: true
     },
     'import/resolver': {
-      alias: {
-        // mapping big-integer and fuzzy to a non-existent to squash error described here:
-        // https://github.com/johvin/eslint-import-resolver-alias/issues/18
-        map: [
-          ['@', './src'],
-          ['big-integer', 'hack'],
-          ['fuzzy', 'hack'],
-          ['vitest', 'hack']
-        ],
-        extensions: ['.ts', '.tsx']
+      typescript: {
+        alwaysTryTypes: true,
+        project: './tsconfig.json'
       }
     }
   }
